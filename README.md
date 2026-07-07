@@ -1,9 +1,3 @@
----
-title: Home
-nav_order: 1
-permalink: /
----
-
 # claude-helm
 
 Take the helm.
