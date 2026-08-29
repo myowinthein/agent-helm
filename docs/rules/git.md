@@ -38,7 +38,7 @@ Activate by declaring `git-strategy: solo` in `CLAUDE.md`. When active:
 
 Use this mode for solo work where peer review and branch protection have no audience. Switch to GitHub Flow the moment you have collaborators.
 
-Exception: [`/helm:refactor`](../commands/refactor.html)'s `refactor/*` branch and its "Open PR" option in Step 7 are used regardless of `git-strategy`, including under Solo Mode — the sanctioned path for multi-wave, resumable refactor sessions (a session can span multiple runs, and leaving work on a branch between them is the point), not an ad-hoc feature branch. Same reasoning as `/helm:ship`'s exception below, applied to a different command.
+Exception: [`/helm:refactor`](../commands/refactor.html)'s `refactor/*` branch and its "Open PR" option in Step 7 are used regardless of `git-strategy`, including under Solo Mode: the sanctioned path for multi-wave, resumable refactor sessions (a session can span multiple runs, and leaving work on a branch between them is the point), not an ad-hoc feature branch. Same reasoning as `/helm:ship`'s exception below, applied to a different command.
 
 ### GitHub Flow (default)
 
@@ -64,10 +64,10 @@ build/*
 - All branches base from `main`.
 - `main` is always deployable.
 - Open a PR before merging to `main`.
-- Merge using the strategy declared as `git-merge-strategy` (default: `squash`). Before merging, confirm which is active — same self-check as `git-strategy` above. State it explicitly: "Squash merge", "Rebase merge", or "Merge commit."
-  - `squash` — squash all commits into one with a Conventional Commit message
-  - `rebase` — replay branch commits onto `main` without a merge commit
-  - `merge` — create a merge commit preserving full branch topology
+- Merge using the strategy declared as `git-merge-strategy` (default: `squash`). Before merging, confirm which is active, the same self-check as `git-strategy` above. State it explicitly: "Squash merge", "Rebase merge", or "Merge commit."
+  - `squash`: squash all commits into one with a Conventional Commit message
+  - `rebase`: replay branch commits onto `main` without a merge commit
+  - `merge`: create a merge commit preserving full branch topology
 - If CI is configured, it must pass before merge.
 
 #### Branch Naming
@@ -89,19 +89,19 @@ Types mirror Conventional Commits types. Lowercase, hyphens only, no spaces.
 
 ## Auto-Commit
 
-Governs every commit made by any command in this plugin, by default — individual commands don't restate this, only follow it, unless an explicit exception applies (see below).
+Governs every commit made by any command in this plugin, by default; individual commands don't restate this, only follow it, unless an explicit exception applies (see below).
 
-Set with `git-auto-commit: true` in `CLAUDE.md`. Independent of git strategy — works with both Solo and GitHub Flow. Absence defaults to off — ask for confirmation before every commit.
+Set with `git-auto-commit: true` in `CLAUDE.md`. Independent of git strategy: works with both Solo and GitHub Flow. Absence defaults to off: ask for confirmation before every commit.
 
 When active:
 
 - After completing a task, commit without asking for confirmation.
 - Stage only the files changed for the task. Never use `git add -A` blindly.
 - Derive the commit message from the work done; follow Conventional Commits.
-- Push still requires confirmation — same rule as Universal Rules → Safety below, restated here since it's the exception auto-commit doesn't override.
+- Push still requires confirmation: same rule as Universal Rules → Safety below, restated here since it's the exception auto-commit doesn't override.
 - If the task spans multiple logical units, commit each unit separately before moving on.
 
-**Exception:** commits covered by [`safety.md`](safety.html#agent-execution-boundaries)'s Agent Execution Boundaries — e.g. committing generated legal documents ([`/helm:legal`](../commands/legal.html)) — always ask for confirmation regardless of this setting. Those are public or otherwise high-stakes content where autonomy level should never skip review.
+**Exception:** commits covered by [`safety.md`](safety.html#agent-execution-boundaries)'s Agent Execution Boundaries (e.g. committing generated legal documents via [`/helm:legal`](../commands/legal.html)) always ask for confirmation regardless of this setting. Those are public or otherwise high-stakes content where autonomy level should never skip review.
 
 ## Universal Rules
 
@@ -116,7 +116,7 @@ Apply in both strategies.
 - Never delete a published tag from a public repository.
 - Delete feature branches immediately after merge.
 
-Exception: release commits made by `/helm:ship` (version bump + tag) may land directly on `main` in any mode — the sanctioned release path, not an ad-hoc direct commit.
+Exception: release commits made by `/helm:ship` (version bump + tag) may land directly on `main` in any mode: the sanctioned release path, not an ad-hoc direct commit.
 
 **Commits**
 
@@ -149,9 +149,9 @@ fix(payment): resolve stripe timeout
 refactor(orders): extract service layer
 ```
 
-**Multi-scope**: when a change is inseparably about two or more named areas, not just adjacent to them, use a comma-separated scope instead of picking one arbitrarily — `refactor(log,manifest): merge broken-structure and gap-based recommendation blocks`. Prefer a single scope whenever one area is clearly dominant; keep the list short, or it's really `project`/`core`.
+**Multi-scope**: when a change is inseparably about two or more named areas, not just adjacent to them, use a comma-separated scope instead of picking one arbitrarily, e.g. `refactor(log,manifest): merge broken-structure and gap-based recommendation blocks`. Prefer a single scope whenever one area is clearly dominant; keep the list short, or it's really `project`/`core`.
 
-**Scope inference** — for commands that infer scope from a diff or cluster of changed files (e.g. `/helm:refactor`, `/helm:test`): use the primary module, folder, or domain actually touched, never a command's own internal category/priority taxonomy (e.g. "architecture", "high-priority"), which is a report/selection grouping, not a commit scope. Dominant area wins if a change spans multiple, or comma-separated multi-scope if none is dominant; `project` or `core` if truly cross-cutting with no specific areas to name. Keep it lowercase, one word or hyphenated per scope.
+**Scope inference**: for commands that infer scope from a diff or cluster of changed files (e.g. `/helm:refactor`, `/helm:test`), use the primary module, folder, or domain actually touched, never a command's own internal category/priority taxonomy (e.g. "architecture", "high-priority"), which is a report/selection grouping, not a commit scope. Dominant area wins if a change spans multiple, or comma-separated multi-scope if none is dominant; `project` or `core` if truly cross-cutting with no specific areas to name. Keep it lowercase, one word or hyphenated per scope.
 
 **Breaking changes**: append `!` to the type and include a `BREAKING CHANGE:` footer.
 
@@ -192,7 +192,7 @@ Independent of strategy. Applies under both Solo and GitHub Flow.
 
 Independent of strategy. Works alongside Solo and GitHub Flow.
 
-Environment branches are long-lived branches that are not `main`, `master`, or feature branches — e.g. `staging`, `stage`, `uat`, `preprod`, `production`, `prod`, or similar. The presence of any such branch on the remote activates these rules:
+Environment branches are long-lived branches that are not `main`, `master`, or feature branches: e.g. `staging`, `stage`, `uat`, `preprod`, `production`, `prod`, or similar. The presence of any such branch on the remote activates these rules:
 
 - Environment branches are permanent. Never delete.
 - Nothing merges directly to an environment branch.
@@ -202,12 +202,12 @@ Environment branches are long-lived branches that are not `main`, `master`, or f
 
 **Promotion model**: governs `/helm:ship`'s release promotion specifically. Set with `environment-promotion` in CLAUDE.md's Project Config (`fan-out` or `chain`; absence defaults to `fan-out`).
 
-Before promoting anything, confirm which model is active — same self-check as `git-strategy` above. State it explicitly: "Fan-out promotion" or "Chain promotion."
+Before promoting anything, confirm which model is active, the same self-check as `git-strategy` above. State it explicitly: "Fan-out promotion" or "Chain promotion."
 
-- **Fan-out** (default): `main` promotes directly to any combination of environment branches, independently — no ordering between them. Simple parallel deploy targets.
-- **Chain**: environments form an ordered pipeline (e.g. `main → staging → production`). Only the first tier (`staging`, `stage`, `uat`, `preprod`) is ever merged into directly from `main`. A later tier (`production`, `prod`) is never a direct deploy target — it's only reached by merging the previous tier's branch forward into it, one tier at a time.
+- **Fan-out** (default): `main` promotes directly to any combination of environment branches, independently, with no ordering between them. Simple parallel deploy targets.
+- **Chain**: environments form an ordered pipeline (e.g. `main → staging → production`). Only the first tier (`staging`, `stage`, `uat`, `preprod`) is ever merged into directly from `main`. A later tier (`production`, `prod`) is never a direct deploy target; it's only reached by merging the previous tier's branch forward into it, one tier at a time.
 
-`/helm:legal`, `/helm:log`, `/helm:manifest`, `/helm:adopt`, `/helm:env`, and `/helm:test` always use fan-out for promoting their own generated content or fixes (legal documents, `CLAUDE.md`, `README.md`, rule files, env/gitignore fixes, tests), regardless of this setting — those are content syncs, not a release pipeline, so there's no tier for the change to pass through.
+`/helm:legal`, `/helm:log`, `/helm:manifest`, `/helm:adopt`, `/helm:env`, and `/helm:test` always use fan-out for promoting their own generated content or fixes (legal documents, `CLAUDE.md`, `README.md`, rule files, env/gitignore fixes, tests), regardless of this setting: those are content syncs, not a release pipeline, so there's no tier for the change to pass through.
 
 The [`/helm:ship`](../commands/ship.html) command detects environment branches automatically and offers a multi-select for which to promote alongside the main release (filtered to first-tier branches only under `chain` mode). [`/helm:legal`](../commands/legal.html), [`/helm:log`](../commands/log.html), [`/helm:manifest`](../commands/manifest.html), [`/helm:adopt`](../commands/adopt.html), [`/helm:env`](../commands/env.html), and [`/helm:test`](../commands/test.html) do the same after committing their changes, so environment branches don't fall behind main on legal documents, `CLAUDE.md`, `README.md`, the installed rule files, env/gitignore fixes, or tests.
 

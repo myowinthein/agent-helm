@@ -63,7 +63,7 @@ flowchart TD
   CommitWrite -->|no| ChangesCheck{Changes written?}
 
   ChangesCheck -->|no| Cleanup
-  ChangesCheck -->|yes| Commit["Commit — silent under<br/>git-auto-commit, or confirm"]
+  ChangesCheck -->|yes| Commit["Commit: silent under<br/>git-auto-commit, or confirm"]
 
   Commit --> SoloOrFlow{Which mode?}
   SoloOrFlow -->|Solo| PushAsk[Ask: push main now?<br/>always confirmed, regardless<br/>of git-auto-commit]
@@ -88,25 +88,25 @@ flowchart TD
 
 ### Before starting
 
-Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html) — skipped entirely on a fresh bootstrap (no git repo yet, or no CLAUDE.md to read the flag from):
+Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html), skipped entirely on a fresh bootstrap (no git repo yet, or no CLAUDE.md to read the flag from):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
-- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`chore/adopt-{date}`) — regardless of what the starting branch was. Returns to the original branch at the end (see Step 5).
+- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`chore/adopt-{date}`), regardless of what the starting branch was. Returns to the original branch at the end (see Step 5).
 
-If the command exits at any point without writing anything — Cancel at any prompt, or the No-change path — this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command (not a fresh bootstrap, though — see Step 5).
+If the command exits at any point without writing anything (Cancel at any prompt, or the No-change path), this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command (not a fresh bootstrap, though; see Step 5).
 
 ### 1. Sanity check
 
-Looks for `.git/`, `CLAUDE.md`, or a recognised manifest (`package.json`, `composer.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`). Proceeds when markers are found, and also when the directory is empty (a plausible fresh-project setup with nothing to clobber). Only prompts to confirm or cancel when the directory is non-empty but has no project markers — the case that suggests a wrong directory. Cancelling here still proceeds to Step 5, which cleans up the GitHub Flow branch if one was created (or does nothing further on a fresh bootstrap).
+Looks for `.git/`, `CLAUDE.md`, or a recognised manifest (`package.json`, `composer.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`). Proceeds when markers are found, and also when the directory is empty (a plausible fresh-project setup with nothing to clobber). Only prompts to confirm or cancel when the directory is non-empty but has no project markers: the case that suggests a wrong directory. Cancelling here still proceeds to Step 5, which cleans up the GitHub Flow branch if one was created (or does nothing further on a fresh bootstrap).
 
 ### 2. Scan existing rules
 
-Reads `.claude/rules/git.md` and `.claude/rules/safety.md`, and detects the `CLAUDE.md` reference type for each — a *marketplace ref* (`marketplaces/claude-helm/rules/{name}`), a *local ref* (`.claude/rules/{name}`, written by copy mode), or *no ref*. Classification is driven by the file first; the reference type only disambiguates the file-absent cases:
+Reads `.claude/rules/git.md` and `.claude/rules/safety.md`, and detects the `CLAUDE.md` reference type for each: a *marketplace ref* (`marketplaces/claude-helm/rules/{name}`), a *local ref* (`.claude/rules/{name}`, written by copy mode), or *no ref*. Classification is driven by the file first; the reference type only disambiguates the file-absent cases:
 
 - **Helm-marked**: file exists and starts with `<!-- helm-rule: claude-helm@v{X.Y.Z} -->`. The version is recorded.
 - **Foreign**: file exists but does not carry the helm marker. Authored manually or by another tool.
 - **Referenced**: the file does not exist as a physical copy, but a marketplace ref is present in CLAUDE.md (reference-mode install).
-- **Absent**: the file does not exist and no marketplace ref is present. A stray local ref (e.g. a copy-mode file that was later deleted) does not block this — the Execute step rewrites the reference.
+- **Absent**: the file does not exist and no marketplace ref is present. A stray local ref (e.g. a copy-mode file that was later deleted) does not block this; the Execute step rewrites the reference.
 
 Then reads the installed helm version from `~/.claude/plugins/marketplaces/claude-helm/.claude-plugin/plugin.json` so the prompt can show users which version they would adopt.
 
@@ -121,33 +121,33 @@ First prints a small status table (per-file state plus the installed version) so
 
 ### 4. Execute
 
-Both the Copy or Update and Reference paths update CLAUDE.md's `## Rules` section the same way: they set only the helm entries (detected by path), preserve any user-authored entries, and never add a second `## Rules` heading. If CLAUDE.md exists the section is written silently (the mode was already chosen in the previous step); if it does not exist, a minimal CLAUDE.md is created silently — there is no prompt or manual-placement path, since the pointer is required for the rules to load and skipping it would leave the install non-functional. The two paths differ only in the snippet they write.
+Both the Copy or Update and Reference paths update CLAUDE.md's `## Rules` section the same way: they set only the helm entries (detected by path), preserve any user-authored entries, and never add a second `## Rules` heading. If CLAUDE.md exists the section is written silently (the mode was already chosen in the previous step); if it does not exist, a minimal CLAUDE.md is created silently; there is no prompt or manual-placement path, since the pointer is required for the rules to load and skipping it would leave the install non-functional. The two paths differ only in the snippet they write.
 
-**Copy or Update**: ensures `.claude/rules/` exists, then writes `git.md` and `safety.md` from the installed plugin source — each with a leading `<!-- helm-rule: claude-helm@v{X.Y.Z} -->` marker so a future run detects them as helm-managed. The `## Rules` snippet lists the local `.claude/rules/` paths, so the rules load as context rather than relying on implicit auto-loading.
+**Copy or Update**: ensures `.claude/rules/` exists, then writes `git.md` and `safety.md` from the installed plugin source, each with a leading `<!-- helm-rule: claude-helm@v{X.Y.Z} -->` marker so a future run detects them as helm-managed. The `## Rules` snippet lists the local `.claude/rules/` paths, so the rules load as context rather than relying on implicit auto-loading.
 
 **Conflict / Review per file**: for each foreign file, asks Overwrite or Skip. Overwrite installs the file via the Copy or Update path; Skip leaves it untouched (the developer can diff against the plugin source manually if they want to compare first).
 
-**Reference**: first clears any local `.claude/rules/git.md` / `safety.md` that would otherwise sit alongside — and conflict with — the referenced plugin rules. Helm-marked files are deleted without asking (the mode was already chosen), which also makes the next scan classify as REFERENCED rather than UPDATE. A Foreign, user-authored file at either of those two paths is never deleted silently — the command asks Delete or Skip, and a kept file is flagged in the report as a possible conflict. Any other file in `.claude/rules/` is left untouched. The `## Rules` snippet points at `~/.claude/plugins/marketplaces/claude-helm/rules/` — always the latest installed version, auto-updating after `/plugin update helm@claude-helm` — and includes a warning to install the plugin if those paths are missing.
+**Reference**: first clears any local `.claude/rules/git.md` / `safety.md` that would otherwise sit alongside, and conflict with, the referenced plugin rules. Helm-marked files are deleted without asking (the mode was already chosen), which also makes the next scan classify as REFERENCED rather than UPDATE. A Foreign, user-authored file at either of those two paths is never deleted silently; the command asks Delete or Skip, and a kept file is flagged in the report as a possible conflict. Any other file in `.claude/rules/` is left untouched. The `## Rules` snippet points at `~/.claude/plugins/marketplaces/claude-helm/rules/` (always the latest installed version, auto-updating after `/plugin update helm@claude-helm`) and includes a warning to install the plugin if those paths are missing.
 
-**No change**: for the no-op choices — "Nothing" (already in sync), "Keep project rules" (project ahead of the installed plugin), or "Keep references" (already in reference mode) — writes nothing and just reports the status. Proceeds to Step 5 for cleanup, same as Cancel.
+**No change**: for the no-op choices, "Nothing" (already in sync), "Keep project rules" (project ahead of the installed plugin), or "Keep references" (already in reference mode), writes nothing and just reports the status. Proceeds to Step 5 for cleanup, same as Cancel.
 
 ### 5. Commit and finalize
 
-**Fresh bootstrap** (Before starting's branch-strategy setup was skipped — no repo, or no pre-existing CLAUDE.md): there's no branch to clean up, since none was created, and no merge or promotion applies. If Step 4 made no changes, there's nothing to do at all. If Step 4 wrote anything, commits it per [git.md's Auto-Commit rule](../rules/git.html#auto-commit), then checks whether an `origin` remote exists: if not, there's nothing to push to and the command stops; if one does, push gets its own confirmation ("Push main now?"), same as every other command — the fact that CLAUDE.md didn't exist yet doesn't mean this is a throwaway clone with no remote to push to.
+**Fresh bootstrap** (Before starting's branch-strategy setup was skipped: no repo, or no pre-existing CLAUDE.md): there's no branch to clean up, since none was created, and no merge or promotion applies. If Step 4 made no changes, there's nothing to do at all. If Step 4 wrote anything, commits it per [git.md's Auto-Commit rule](../rules/git.html#auto-commit), then checks whether an `origin` remote exists: if not, there's nothing to push to and the command stops; if one does, push gets its own confirmation ("Push main now?"), same as every other command; the fact that CLAUDE.md didn't exist yet doesn't mean this is a throwaway clone with no remote to push to.
 
-**Normal flow**: if Step 4 made no changes (No-change or Cancel path), skips commit, merge, and environment promotion — nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
+**Normal flow**: if Step 4 made no changes (No-change or Cancel path), skips commit, merge, and environment promotion: nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
 
-Otherwise, commits per that same rule: silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit` — git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
+Otherwise, commits per that same rule: silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit`; git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
 
-If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update — that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
+If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update: that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
 
-**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there — no promotion, no branch cleanup — leaving the commit (or merge) in place locally for a manual push later.
+**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there: no promotion, no branch cleanup, leaving the commit (or merge) in place locally for a manual push later.
 
 ### 6. Report
 
 For Copy or Update installs, verifies the written files before reporting: reads `.claude/rules/git.md` and `.claude/rules/safety.md` and confirms each exists and contains the `<!-- helm-rule: claude-helm@v{X.Y.Z} -->` marker. If a file is missing or the marker is absent, reports the error instead of success.
 
-Final summary line per file describing what was written, updated, skipped, or referenced, and which helm version was recorded in the marker, plus a `Pushed:` line (yes / no — push manually when ready / N/A if no remote exists) — present for Copy/Update and Reference outcomes, including the Fresh bootstrap path.
+Final summary line per file describing what was written, updated, skipped, or referenced, and which helm version was recorded in the marker, plus a `Pushed:` line (yes / no: push manually when ready / N/A if no remote exists), present for Copy/Update and Reference outcomes, including the Fresh bootstrap path.
 
 ## Stop conditions
 
@@ -156,7 +156,7 @@ Final summary line per file describing what was written, updated, skipped, or re
 - **User picks Cancel at any of the install-mode prompts.**
 - **No `CLAUDE.md` and Reference mode chosen, user declines to create it**: the snippet is printed but nothing is written; user takes over.
 
-Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created — see Before starting. Not applicable to a fresh bootstrap, since no branch was ever created there.
+Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; see Before starting. Not applicable to a fresh bootstrap, since no branch was ever created there.
 
 ## Notes
 

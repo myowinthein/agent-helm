@@ -8,7 +8,7 @@ nav_order: 2
 
 The operational safety reference for a project. Defines which actions always need explicit confirmation, what to scan when bootstrapping a new project, and how to document risk categories so future agents read the same constraints.
 
-Loaded as context so that any agent acting in the project respects the same operational guardrails. It is not a checklist to execute top to bottom — the safety scan runs only when triggered (see When to run a safety scan).
+Loaded as context so that any agent acting in the project respects the same operational guardrails. It is not a checklist to execute top to bottom: the safety scan runs only when triggered (see When to run a safety scan).
 
 ## Agent Execution Boundaries
 
@@ -22,19 +22,19 @@ These actions always require explicit confirmation, regardless of context or aut
 - Infrastructure changes, DNS changes, secret rotation.
 - Destructive operations: resets, drops, clears, environment recreation.
 
-A user-invoked command that confirms these actions within its own flow (e.g. `/helm:ship` confirming the version, deploy targets, and release; `/helm:legal` confirming before committing generated documents) satisfies this boundary — do not add a separate prompt on top.
+A user-invoked command that confirms these actions within its own flow (e.g. `/helm:ship` confirming the version, deploy targets, and release; `/helm:legal` confirming before committing generated documents) satisfies this boundary; do not add a separate prompt on top.
 
 Projects can extend the list, never shrink it. Document any project-specific additions.
 
 ## When to run a safety scan
 
-Run at project bootstrap, and re-run whenever the operational risk surface changes — when anything in the Scan Targets or Risk Categories below is added, removed, or reconfigured (e.g. a new production remote, a new background job, a new credential location).
+Run at project bootstrap, and re-run whenever the operational risk surface changes: when anything in the Scan Targets or Risk Categories below is added, removed, or reconfigured (e.g. a new production remote, a new background job, a new credential location).
 
-`/helm:log` Full scan mode may surface and propose safety findings for CLAUDE.md's Hard Safety Rules section, but it does not run this scan or write `.claude/rules` automatically — findings are proposed, never auto-written.
+`/helm:log` Full scan mode may surface and propose safety findings for CLAUDE.md's Hard Safety Rules section, but it does not run this scan or write `.claude/rules` automatically: findings are proposed, never auto-written.
 
 Only document risks supported by evidence in the repository. No assumptions, no speculation.
 
-**Output:** Documented findings — the Risk/Instruction pairs, environment classifications, and any project-specific boundary additions — go into CLAUDE.md's `## Hard Safety Rules` section as the project's concrete never-do list. Propose the findings first and write them only on confirmation — never auto-write a safety rule without review. They belong in `## Hard Safety Rules` (written by `/helm:log`, loaded with CLAUDE.md), not the adopt-managed `## Rules` section (rewritten each run) and not the shipped `git.md` / `safety.md` (overwritten on update).
+**Output:** Documented findings (the Risk/Instruction pairs, environment classifications, and any project-specific boundary additions) go into CLAUDE.md's `## Hard Safety Rules` section as the project's concrete never-do list. Propose the findings first and write them only on confirmation; never auto-write a safety rule without review. They belong in `## Hard Safety Rules` (written by `/helm:log`, loaded with CLAUDE.md), not the adopt-managed `## Rules` section (rewritten each run) and not the shipped `git.md` / `safety.md` (overwritten on update).
 
 ## Scan Targets
 
@@ -54,7 +54,7 @@ Bootstrap scan looks at:
 
 ## Risk Categories
 
-These are the lenses for documenting what the Scan Targets above surface — one per operational domain.
+These are the lenses for documenting what the Scan Targets above surface: one per operational domain.
 
 For each category, scan for evidence and document findings as a pair:
 

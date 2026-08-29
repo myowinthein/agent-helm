@@ -53,7 +53,7 @@ Links below go to detail pages. Command logic lives in `commands/*.md`.
 | [`/helm:legal`](https://myowinthein.github.io/claude-helm/docs/commands/legal.html) | Generate GDPR-aware legal documents from a project scan. |
 | [`/helm:normalize`](https://myowinthein.github.io/claude-helm/docs/commands/normalize.html) | Rewrite non-conventional commit messages across full repo history. |
 | [`/helm:archive`](https://myowinthein.github.io/claude-helm/docs/commands/archive.html) | Archive an old project for long-term storage and future recovery. |
-| [`/helm:adopt`](https://myowinthein.github.io/claude-helm/docs/commands/adopt.html) | Install or update the rule files into the current project. Setup helper, not a workflow command — see below. |
+| [`/helm:adopt`](https://myowinthein.github.io/claude-helm/docs/commands/adopt.html) | Install or update the rule files into the current project. Setup helper, not a workflow command: see below. |
 
 ### Rules
 

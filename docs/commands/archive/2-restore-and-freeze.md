@@ -1,13 +1,13 @@
 ---
-title: "Step 2 — Restore and Freeze"
+title: "Step 2: Restore and Freeze"
 parent: /helm:archive
 grand_parent: Commands
 nav_order: 2
 ---
 
-# Step 2 — Restore and Freeze
+# Step 2: Restore and Freeze
 
-Gets the project running locally and freezes its environment for long-term recovery. Creates or updates a Docker setup with pinned image versions, restores available data, and exports all images to gzipped tarballs. Recovery years later requires only Docker and the tarballs — no internet, no registry dependency.
+Gets the project running locally and freezes its environment for long-term recovery. Creates or updates a Docker setup with pinned image versions, restores available data, and exports all images to gzipped tarballs. Recovery years later requires only Docker and the tarballs: no internet, no registry dependency.
 
 ## Flow
 
@@ -44,7 +44,7 @@ flowchart TD
   BlockerReport --> Report
 
   Report --> Outcome{Restoration\noutcome?}
-  Outcome -->|Fully Restored| Stop([Stop — wait for approval])
+  Outcome -->|Fully Restored| Stop([Stop: wait for approval])
   Outcome -->|Partial or Blocked| Warn[/Warn: resolve blockers\nbefore Step 3/] --> Stop
 ```
 
@@ -72,16 +72,16 @@ The best available source is used in this order:
 
 1. Repository-contained database dumps or backup files
 2. Seed scripts, fixture files, or sample datasets
-3. Schema migrations — reconstruct from scratch
+3. Schema migrations: reconstruct from scratch
 4. File-based data (CSV, JSON, XML used by the application)
 5. Documented external exports
-6. Existing localhost database — only if no repository source exists
+6. Existing localhost database: only if no repository source exists
 
 Two distinct approval gates apply here, not one: if no data source exists at all and the project requires one, the step stops to ask whether to continue with an empty/schema-only database or wait for a dump; separately, if restoration requires a network, VPN-accessible, or cloud database, the step stops to ask whether to skip it and fall back to the next-best source or wait for access.
 
 ## Image export
 
-After verification, all Docker images are exported to `recovery/docker/` as gzipped tarballs — one per service. The folder is **not** gitignored here — these tarballs are the freeze mechanism and must travel with the archive for a clean-machine recovery. Step 5 decides how: committed via Git LFS (recommended), or kept local only and gitignored if you decline there.
+After verification, all Docker images are exported to `recovery/docker/` as gzipped tarballs: one per service. The folder is **not** gitignored here: these tarballs are the freeze mechanism and must travel with the archive for a clean-machine recovery. Step 5 decides how: committed via Git LFS (recommended), or kept local only and gitignored if you decline there.
 
 Each export is validated twice before being trusted: an empty-file check right after export (`docker save` can silently produce an empty tarball if it fails mid-pipe), and a `docker load` test against the exported tarball (confirms it isn't corrupt, not just non-empty). Either failure means re-exporting that service before proceeding. If this step is interrupted and re-run, a pre-existing tarball that already passes both checks is skipped rather than re-exported.
 
@@ -94,9 +94,9 @@ docker-compose up
 
 ## Data persistence
 
-`docker save` captures the service image, not the database's data — that lives in a volume. Without an extra step, `docker load` + `docker-compose up` comes back with an empty database. Skipped for non-database data layers; for database-backed and local/file-based projects, one of two mechanisms makes the restored data recoverable:
+`docker save` captures the service image, not the database's data, which lives in a volume. Without an extra step, `docker load` + `docker-compose up` comes back with an empty database. Skipped for non-database data layers; for database-backed and local/file-based projects, one of two mechanisms makes the restored data recoverable:
 
-- **Re-runnable source already in the repo** (a dump, seed, or migrations — the common case): wired to restore on startup, e.g. mounted into `/docker-entrypoint-initdb.d/` for Postgres/MySQL.
+- **Re-runnable source already in the repo** (a dump, seed, or migrations, the common case): wired to restore on startup, e.g. mounted into `/docker-entrypoint-initdb.d/` for Postgres/MySQL.
 - **No re-runnable source** (data only exists in the live volume): the volume itself is exported to `recovery/docker/` as a validated, non-empty gzipped tarball, restored before `docker-compose up`.
 
 Whichever mechanism applies, the exact recovery step is documented in `docs/setup.md` alongside the image-load commands.
@@ -107,8 +107,8 @@ Whichever mechanism applies, the exact recovery step is documented in `docs/setu
 - Record every file created, modified, or deleted with the reason.
 - No production systems, live databases, or external services.
 - No emails, SMS, notifications, webhooks, or payment gateways without explicit approval.
-- No Git state changes — no commit, push, checkout, or history rewrite.
-- Work only within the current repository. If another repository appears required, stop and ask how to proceed — continue without it (noting the gap), or wait for it to be made available.
+- No Git state changes: no commit, push, checkout, or history rewrite.
+- Work only within the current repository. If another repository appears required, stop and ask how to proceed: continue without it (noting the gap), or wait for it to be made available.
 
 ## Outcome ratings
 
@@ -122,4 +122,4 @@ Whichever mechanism applies, the exact recovery step is documented in `docs/setu
 
 If the outcome is anything other than Fully Restored, the step warns the developer and waits for explicit approval before Step 3 begins.
 
-The report also records whether the project ended up running as an explicit "App running: yes/no" field (stated even when "not applicable"), rather than leaving it to be inferred from the Access Points prose — Step 3 (Postman collection generation) reads this field directly.
+The report also records whether the project ended up running as an explicit "App running: yes/no" field (stated even when "not applicable"), rather than leaving it to be inferred from the Access Points prose; Step 3 (Postman collection generation) reads this field directly.
