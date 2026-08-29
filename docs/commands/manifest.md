@@ -36,7 +36,7 @@ flowchart TD
   StructCheck -->|broken| Mode3["Ask: full scan (default),<br/>gap update, or skip?"]
   StructCheck -->|intact| Gap{Gap significance<br/>since last review?}
 
-  Gap -->|none — only noise| UpToDate[/Exit: README.md up to date<br/>still runs Step 5 cleanup/]
+  Gap -->|none: only noise| UpToDate[/Exit: README.md up to date<br/>still runs Step 5 cleanup/]
   Gap -->|small or moderate| Mode2["Ask: gap update (default),<br/>full scan, or skip?"]
   Gap -->|large or significant| Mode3
 
@@ -52,7 +52,7 @@ flowchart TD
   Full["Investigate project<br/>Write per readme-style<br/>Append last-reviewed hash"] --> Commit
   GapPath["Identify affected sections<br/>Propose per-section changes<br/>Confirm, then write per style"] --> Commit
 
-  Commit["Commit — silent under<br/>git-auto-commit, or confirm"] --> SoloOrFlow{Which mode?}
+  Commit["Commit: silent under<br/>git-auto-commit, or confirm"] --> SoloOrFlow{Which mode?}
   SoloOrFlow -->|Solo| PushAsk[Ask: push main now?<br/>always confirmed, regardless<br/>of git-auto-commit]
   SoloOrFlow -->|GitHub Flow| MergeMain[Merge branch into main] --> PushAsk
   PushAsk -->|Cancel| Done2[/Report: committed but<br/>not pushed, branch left as-is/]
@@ -75,20 +75,20 @@ flowchart TD
 
 ### Before starting
 
-Rewrites `README.md` from the project's state, so it needs the full merged, stable state — never an in-progress feature branch. Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
+Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
-- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/manifest-{date}`) — regardless of what the starting branch was. README.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something README.md should reflect, re-run `/helm:manifest` after that branch merges to main. Returns to the original branch at the end (see Step 5).
+- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/manifest-{date}`), regardless of what the starting branch was. README.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something README.md should reflect, re-run `/helm:manifest` after that branch merges to main. Returns to the original branch at the end (see Step 5).
 
-If the command exits at any point without writing anything — Skip selected at any prompt, README.md already up to date, or custom mode finding nothing to preserve — this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command, not just the specific cases called out below, so the user is never left stranded on an empty temporary branch it created. (Gap Update's no-significant-changes outcome doesn't count as "nothing written" either — it still advances the saved hash, so it goes through the normal commit path in Step 4, same as log.md's Outcome A.)
+If the command exits at any point without writing anything (Skip selected at any prompt, README.md already up to date, or custom mode finding nothing to preserve), this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command, not just the specific cases called out below, so the user is never left stranded on an empty temporary branch it created. (Gap Update's no-significant-changes outcome doesn't count as "nothing written" either; it still advances the saved hash, so it goes through the normal commit path in Step 4, same as log.md's Outcome A.)
 
 ## Scope
 
-README.md is human-facing documentation for contributors, GitHub visitors, and new users — not a changelog, not a technical spec, not a deployment manual. Audience is humans, not future Claude sessions, so keep it clear and scannable. Whenever writing to README.md, in any step: use em-dashes sparingly — only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
+README.md is human-facing documentation for contributors, GitHub visitors, and new users; not a changelog, not a technical spec, not a deployment manual. Audience is humans, not future Claude sessions, so keep it clear and scannable. Whenever writing to README.md, in any step: use em-dashes sparingly, only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
 
 ### 1. Assessment
 
-First determines the README style by reading `readme-style` from CLAUDE.md Project Config. If the flag is absent, checks whether README.md already exists with content and asks accordingly — the question and the Custom option's description differ depending on whether there's an existing README to be "custom" relative to, since a brand-new project has nothing yet. Saves the choice (`readme-style: standard` or `readme-style: custom`) to CLAUDE.md before continuing.
+First determines the README style by reading `readme-style` from CLAUDE.md Project Config. If the flag is absent, checks whether README.md already exists with content and asks accordingly: the question and the Custom option's description differ depending on whether there's an existing README to be "custom" relative to, since a brand-new project has nothing yet. Saves the choice (`readme-style: standard` or `readme-style: custom`) to CLAUDE.md before continuing.
 
 Then reads the current `README.md`, checks for a saved `<!-- last-reviewed: {hash} -->` marker, and if found, runs `git log {hash}..HEAD --oneline` to measure the gap. Ignores noise commits.
 
@@ -100,12 +100,12 @@ Four outcomes, default depending on assessment:
 
 - **No file or no hash**: Full scan or skip.
 - **Standard style, structure broken**: Full scan (recommended), gap update, or skip.
-- **Structure intact (or custom) and no meaningful commits since the last review**: exits cleanly — "README.md is up to date" — no prompt shown.
+- **Structure intact (or custom) and no meaningful commits since the last review**: exits cleanly ("README.md is up to date"), no prompt shown.
 - **Structure intact (or custom) and meaningful commits since the last review**: Gap update or Full scan, recommended option first based on gap size, or skip.
 
 ### 3. Full scan
 
-**Custom mode with no existing README exits immediately, before investigation runs.** Custom mode preserves structure, it doesn't author it — if there's nothing to preserve, there's nothing worth investigating the project for either. Reports that there's no README.md yet and asks the developer to write one in whatever structure they prefer; a future run then preserves it. No project scan, no write, no proceeding to Step 5.
+**Custom mode with no existing README exits immediately, before investigation runs.** Custom mode preserves structure, it doesn't author it; if there's nothing to preserve, there's nothing worth investigating the project for either. Reports that there's no README.md yet and asks the developer to write one in whatever structure they prefer; a future run then preserves it. No project scan, no write, no proceeding to Step 5.
 
 Otherwise, investigates: business purpose and target audience, stack and dependencies, installation steps, core usage patterns and CLI commands, public API surface, license, contributing model, maintainers, and project motivation/limitations worth surfacing.
 
@@ -127,36 +127,36 @@ Reads commit messages first. Reads file changes only for significant commits. Fo
 
 For each significant change, identifies the affected README section. Updates only those sections. Does not rewrite unaffected sections.
 
-If no significant changes are found despite the initial gap estimate: reports that no update is needed — the equivalent of [`/helm:log`](log.html)'s Outcome A — and skips the proposal and confirmation below; only the hash advances.
+If no significant changes are found despite the initial gap estimate: reports that no update is needed (the equivalent of [`/helm:log`](log.html)'s Outcome A) and skips the proposal and confirmation below; only the hash advances.
 
-If `readme-style: standard`: sections remain in spec order after updates. A significant change can also add a newly-relevant optional section (e.g. a first public API) in its spec position, or remove one whose justification went away (e.g. the API was removed) — never inventing a section outside the spec.
-If `readme-style: custom`: preserves existing section order and naming, and — matching Step 2 — does not add, remove, or rename sections without explicit approval. If a significant change doesn't fit any existing section, asks whether to add a new one or fold it into the closest existing section rather than deciding silently.
+If `readme-style: standard`: sections remain in spec order after updates. A significant change can also add a newly-relevant optional section (e.g. a first public API) in its spec position, or remove one whose justification went away (e.g. the API was removed), never inventing a section outside the spec.
+If `readme-style: custom`: preserves existing section order and naming, and, matching Step 2, does not add, remove, or rename sections without explicit approval. If a significant change doesn't fit any existing section, asks whether to add a new one or fold it into the closest existing section rather than deciding silently.
 
 Proposes the changes per section, asks for confirmation, then writes. Bumps the saved hash to HEAD.
 
 ### 5. Commit and finalize
 
-If Full scan wrote nothing (the custom-mode, absent-README case): skips commit, merge, and environment promotion — nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
+If Full scan wrote nothing (the custom-mode, absent-README case): skips commit, merge, and environment promotion: nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
 
-Otherwise commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit` — git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
+Otherwise commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit`; git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
 
-If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update — that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
+If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update: that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
 
-**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there — no promotion, no branch cleanup — leaving the commit (or merge) in place locally for a manual push later.
+**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there (no promotion, no branch cleanup), leaving the commit (or merge) in place locally for a manual push later.
 
 ### 6. Confirm completion
 
-If a scan or gap update wrote anything this run, first verifies it: reads README.md back and confirms the `<!-- last-reviewed: {hash} -->` comment and the claimed section changes actually landed, reporting per-section errors instead of a false-clean outcome — mirroring adopt.md's and legal.md's own write-verification pattern. Then reports the outcome (up to date / full scan written / gap update written / skipped), the style used (standard or custom), which sections were updated, and which environments were promoted. Under GitHub Flow, also reports the temporary branch's fate and which branch you were returned to. Runs even when nothing was written, since that's still an outcome worth reporting.
+If a scan or gap update wrote anything this run, first verifies it: reads README.md back and confirms the `<!-- last-reviewed: {hash} -->` comment and the claimed section changes actually landed, reporting per-section errors instead of a false-clean outcome, mirroring adopt.md's and legal.md's own write-verification pattern. Then reports the outcome (up to date / full scan written / gap update written / skipped), the style used (standard or custom), which sections were updated, and which environments were promoted. Under GitHub Flow, also reports the temporary branch's fate and which branch you were returned to. Runs even when nothing was written, since that's still an outcome worth reporting.
 
 ## Stop conditions
 
 - **Solo Mode, not on main/master.** Switch to main or master and re-run.
-- **README.md is up to date.** Structure intact and no meaningful commits since the last review — clean exit, no prompt.
+- **README.md is up to date.** Structure intact and no meaningful commits since the last review; clean exit, no prompt.
 - **User picks Skip.** Clean exit, no changes.
 - **User cancels at the proposed-changes confirmation.** No write.
 - **No significant changes found during Gap Update.** Only the hash advances.
 
-Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created — see Before starting.
+Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; see Before starting.
 
 ## See also
 

@@ -1,11 +1,11 @@
 ---
-title: "Step 5 — Finalize"
+title: "Step 5: Finalize"
 parent: /helm:archive
 grand_parent: Commands
 nav_order: 5
 ---
 
-# Step 5 — Finalize
+# Step 5: Finalize
 
 Seals the archive. Verifies and switches the Git remote to the private archive URL, cleans up branches, handles large files with Git LFS, consolidates archive assets, stops running services, and commits everything accumulated across the full workflow with a single commit pushed to the private remote.
 
@@ -53,15 +53,15 @@ flowchart TD
   Push --> Done([Archive complete])
 ```
 
-## Task 1 — Remote verification
+## Task 1: Remote verification
 
 All configured remotes are listed and presented. The developer identifies which point to company, client, or external repositories and provides the private archive URL. The remote must already exist before this step runs.
 
 All non-personal remotes are removed. Origin is set to the provided private URL. No other task proceeds until origin is confirmed as the private archive remote.
 
-## Task 2 — Branch cleanup
+## Task 2: Branch cleanup
 
-All local and remote branches are listed. The branch this workflow was run from is the one being archived — read from Step 1's report's explicit "Archiving from:" field, not the current branch, since a resumed multi-session archive may have started on a different branch than the original run (older reports without the field fall back to inferring it from Step 1's prose). It becomes the single surviving branch, renamed to `main` if it isn't already. No merging: nothing is combined, the archived branch is simply relabeled as canonical and everything else is discarded. A plan is presented for explicit approval:
+All local and remote branches are listed. The branch this workflow was run from is the one being archived: read from Step 1's report's explicit "Archiving from:" field, not the current branch, since a resumed multi-session archive may have started on a different branch than the original run (older reports without the field fall back to inferring it from Step 1's prose). It becomes the single surviving branch, renamed to `main` if it isn't already. No merging: nothing is combined, the archived branch is simply relabeled as canonical and everything else is discarded. A plan is presented for explicit approval:
 
 ```
 BRANCH CLEANUP
@@ -71,48 +71,48 @@ Delete:          main (superseded)   (local + remote)
 Delete:          fix/payment-bug     (local + remote)
 ```
 
-Execution order matters here: every other branch is deleted first — including a distinct, superseded `main`/`master` — and only then is the archived branch renamed to `main` and pushed. Renaming first would fail outright, since git refuses to rename a branch onto a name that's already taken. Once renamed, the `main` name is free, so this is a clean push, not a force-push.
+Execution order matters here: every other branch is deleted first, including a distinct, superseded `main`/`master`, and only then is the archived branch renamed to `main` and pushed. Renaming first would fail outright, since git refuses to rename a branch onto a name that's already taken. Once renamed, the `main` name is free, so this is a clean push, not a force-push.
 
-After the push, verifies local `main` is actually in sync with remote — not just assumed from a successful push. If local and remote `main` have diverged, the step stops for approval before resolving the divergence.
+After the push, verifies local `main` is actually in sync with remote, not just assumed from a successful push. If local and remote `main` have diverged, the step stops for approval before resolving the divergence.
 
 After deletion, runs `git ls-remote --heads origin` to confirm the deleted branches no longer appear on the remote.
 
-## Task 3 — Git LFS and recovery tarballs
+## Task 3: Git LFS and recovery tarballs
 
 Reports the total size of `recovery/docker/` and any other files over 100 MB (tracked or untracked). Since the Docker tarballs are the freeze mechanism and must travel with the archive for a clean-machine recovery, the developer is asked how they should travel:
 
-- **Commit via Git LFS (recommended)** — sets up Git LFS, tracks `recovery/docker/*.tar.gz` and any other over-100 MB files with patterns in `.gitattributes`, and stages `.gitattributes`. Keeps the archive self-contained.
-- **Keep local only** — adds `recovery/docker/` to `.gitignore`; the report notes the tarballs must be backed up separately and placed back before recovery. Other over-100 MB files staying in the repo are still LFS-tracked.
-- **Cancel** — stops here to decide later.
+- **Commit via Git LFS (recommended)**: sets up Git LFS, tracks `recovery/docker/*.tar.gz` and any other over-100 MB files with patterns in `.gitattributes`, and stages `.gitattributes`. Keeps the archive self-contained.
+- **Keep local only**: adds `recovery/docker/` to `.gitignore`; the report notes the tarballs must be backed up separately and placed back before recovery. Other over-100 MB files staying in the repo are still LFS-tracked.
+- **Cancel**: stops here to decide later.
 
-## Task 4 — Asset consolidation
+## Task 4: Asset consolidation
 
 Identifies archive-worthy assets scattered across the project: screenshots, videos, audio files, sample exports, database dumps, and demo files that are not part of the application source.
 
 Each asset is classified:
-- **Safe to move** — not referenced anywhere; moved to `recovery/assets/`
-- **Referenced** — one or more files reference the current path; reported to the developer, not moved automatically
+- **Safe to move**: not referenced anywhere; moved to `recovery/assets/`
+- **Referenced**: one or more files reference the current path; reported to the developer, not moved automatically
 
-## Task 5 — Stop services
+## Task 5: Stop services
 
 All running services tied to the project are listed (Docker containers, dev servers, etc.) and stopped after explicit approval. Skips silently if nothing is running.
 
-## Task 6 — Final commit and push
+## Task 6: Final commit and push
 
-Shows `git status` for everything accumulated across the full workflow, then requires explicit approval before proceeding — this is the final destructive action in the whole `/helm:archive` flow:
+Shows `git status` for everything accumulated across the full workflow, then requires explicit approval before proceeding: this is the final destructive action in the whole `/helm:archive` flow:
 
 ```
 Seal the archive? This commits all accumulated changes and pushes to
 {archive_remote_url} (main).
 ```
 
-Declining leaves the changes staged/uncommitted for a manual seal later; nothing is committed or pushed. On approval, all changes are committed in a single commit, including `.archive/` — it is not gitignored, so the step reports and `state.json` become a permanent audit trail in the archive rather than being lost once the local copy is cleaned up:
+Declining leaves the changes staged/uncommitted for a manual seal later; nothing is committed or pushed. On approval, all changes are committed in a single commit, including `.archive/`: it is not gitignored, so the step reports and `state.json` become a permanent audit trail in the archive rather than being lost once the local copy is cleaned up:
 
 ```
 chore(archive): seal project archive
 ```
 
-Pushed to origin as `main` — the branch kept and renamed in Task 2. The step confirms the push was successful and closes with the archive date, remote URL, and a quick-start recovery snippet.
+Pushed to origin as `main`, the branch kept and renamed in Task 2. The step confirms the push was successful and closes with the archive date, remote URL, and a quick-start recovery snippet.
 
 ## Rules
 
