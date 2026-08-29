@@ -49,6 +49,7 @@ Reload locally: `/reload-plugins` after any change
 - Conventional Commits required on every commit (scope is mandatory)
 - No PRs, no feature branches: commit directly to main
 - `git push` always requires its own confirmation, even with `git-auto-commit: true`; the commit itself may be silent, but push is not
+- Prose in `docs/` avoids em dashes; use a comma, semicolon, colon, or restructure the sentence instead. Does not apply to `prompts/` or other files outside `docs/`.
 
 ## Hard Safety Rules
 
