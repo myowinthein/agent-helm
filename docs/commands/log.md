@@ -28,7 +28,7 @@ flowchart TD
   Schema -->|no| Mode4["Ask: full scan (default),<br/>gap update, or skip?<br/>(names missing sections)"]
   Schema -->|yes| Gap{Gap significance<br/>since last review?}
 
-  Gap -->|none — only noise| UpToDate[/Exit: CLAUDE.md up to date<br/>still runs Step 5 cleanup/]
+  Gap -->|none: only noise| UpToDate[/Exit: CLAUDE.md up to date<br/>still runs Step 5 cleanup/]
   Gap -->|small or moderate| Mode2["Ask: gap update (default),<br/>full scan, or skip?"]
   Gap -->|large or significant| Mode3["Ask: full scan (default),<br/>gap update, or skip?"]
 
@@ -47,7 +47,7 @@ flowchart TD
   Full["Investigate project<br/>Q1: git-strategy?<br/>Q2: auto-commit yes or no?<br/>Q3: merge strategy? (GitHub Flow only)<br/>write 8-section CLAUDE.md<br/>append last-reviewed hash"] --> Commit
   GapPath[Review commits since hash<br/>apply 3-question filter<br/>update sections or report<br/>no change, bump hash] --> Commit
 
-  Commit["Commit — silent under<br/>git-auto-commit, or confirm"] --> SoloOrFlow{Which mode?}
+  Commit["Commit: silent under<br/>git-auto-commit, or confirm"] --> SoloOrFlow{Which mode?}
   SoloOrFlow -->|Solo| PushAsk[Ask: push main now?<br/>always confirmed, regardless<br/>of git-auto-commit]
   SoloOrFlow -->|GitHub Flow| MergeMain[Merge branch into main] --> PushAsk
   PushAsk -->|Cancel| Done2[/Report: committed but<br/>not pushed, branch left as-is/]
@@ -70,16 +70,16 @@ flowchart TD
 
 ### Before starting
 
-Rewrites `CLAUDE.md` from the project's state, so it needs the full merged, stable state — never an in-progress feature branch. Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
+Rewrites `CLAUDE.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
-- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/log-{date}`) — regardless of what the starting branch was. CLAUDE.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something CLAUDE.md should reflect, re-run `/helm:log` after that branch merges to main. Returns to the original branch at the end (see Step 5).
+- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/log-{date}`), regardless of what the starting branch was. CLAUDE.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something CLAUDE.md should reflect, re-run `/helm:log` after that branch merges to main. Returns to the original branch at the end (see Step 5).
 
-If the command exits at any point without writing anything — Skip selected at any prompt, or CLAUDE.md already up to date — this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command, not just the specific case called out below, so the user is never left stranded on an empty temporary branch it created. (Gap Update's Outcome A doesn't count as "nothing written" — it still bumps the last-reviewed hash, so it goes through the normal commit path in Step 5.)
+If the command exits at any point without writing anything (Skip selected at any prompt, or CLAUDE.md already up to date), this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command, not just the specific case called out below, so the user is never left stranded on an empty temporary branch it created. (Gap Update's Outcome A doesn't count as "nothing written"; it still bumps the last-reviewed hash, so it goes through the normal commit path in Step 5.)
 
 ## Scope
 
-`CLAUDE.md` is descriptive project knowledge (orientation layer); `.claude/rules/` is prescriptive (architecture, safety, git, testing). Keep them consistent. Project-specific safety rules live in `CLAUDE.md`'s `## Hard Safety Rules` section (written here, loaded with CLAUDE.md) — proposed, not auto-written. Never auto-edit the adopt-managed `.claude/rules` files (`git.md`, `safety.md`); they're overwritten by `/helm:adopt`, so propose any needed change to those instead. Whenever writing to CLAUDE.md, in any step: use em-dashes sparingly — only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
+`CLAUDE.md` is descriptive project knowledge (orientation layer); `.claude/rules/` is prescriptive (architecture, safety, git, testing). Keep them consistent. Project-specific safety rules live in `CLAUDE.md`'s `## Hard Safety Rules` section (written here, loaded with CLAUDE.md), proposed, not auto-written. Never auto-edit the adopt-managed `.claude/rules` files (`git.md`, `safety.md`); they're overwritten by `/helm:adopt`, so propose any needed change to those instead. Whenever writing to CLAUDE.md, in any step: use em-dashes sparingly, only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
 
 ### 1. Assessment
 
@@ -99,11 +99,11 @@ Modes, with the default depending on assessment:
 
 ### 3. Full scan
 
-Investigates the project from scratch: business purpose, modules and workflows, stack and versions, architectural patterns (from implementation, not folder names), conventions, domain rules, operational context. Reviews any existing docs and `.claude/rules`. Before writing, runs the Project Config Check — up to three single-select questions:
+Investigates the project from scratch: business purpose, modules and workflows, stack and versions, architectural patterns (from implementation, not folder names), conventions, domain rules, operational context. Reviews any existing docs and `.claude/rules`. Before writing, runs the Project Config Check, up to three single-select questions:
 
-1. **Branching strategy** — Solo Mode (`git-strategy: solo`, commit directly to `main`, no PRs) or GitHub Flow (`git-strategy: github-flow`, branch per change, PR to merge).
-2. **Auto-commit** — yes (Claude commits after each task without prompting) or no (ask before every commit).
-3. **Merge strategy** (GitHub Flow only) — Squash (default), Rebase, or Merge commit. Stored as `git-merge-strategy`.
+1. **Branching strategy**: Solo Mode (`git-strategy: solo`, commit directly to `main`, no PRs) or GitHub Flow (`git-strategy: github-flow`, branch per change, PR to merge).
+2. **Auto-commit**: yes (Claude commits after each task without prompting) or no (ask before every commit).
+3. **Merge strategy** (GitHub Flow only): Squash (default), Rebase, or Merge commit. Stored as `git-merge-strategy`.
 
 Then writes `CLAUDE.md` using an eight-section schema:
 
@@ -111,18 +111,18 @@ Then writes `CLAUDE.md` using an eight-section schema:
 2. Project Config (e.g. `git-strategy: solo`, `git-auto-commit: true`, `git-merge-strategy: squash`)
 3. Dev Commands
 4. Architecture Pointers
-5. Domain Rules (non-obvious business, lifecycle, and permission constraints — "None" if there are none)
+5. Domain Rules (non-obvious business, lifecycle, and permission constraints; "None" if there are none)
 6. Behavior Rules
 7. Hard Safety Rules
 8. Known Traps
 
-Sections 5–7 are **inline** rules. A separate `## Rules` section — the pointer to the adopted rule files (`git.md`, `safety.md`), written by `/helm:adopt` — is not part of this schema; log preserves it untouched and never writes, moves, or removes it.
+Sections 5–7 are **inline** rules. A separate `## Rules` section, the pointer to the adopted rule files (`git.md`, `safety.md`), written by `/helm:adopt`, is not part of this schema; log preserves it untouched and never writes, moves, or removes it.
 
 Appends the current HEAD hash as `<!-- last-reviewed: ... -->`. Writes directly. Target under 150 lines.
 
 ### 4. Gap update
 
-Before reviewing commits, runs the Project Config Check for any flags missing from the existing Project Config section — skipped silently if both are already present. Each question is asked independently: branching strategy if `git-strategy` is absent, auto-commit if `git-auto-commit` is absent, merge strategy if `git-merge-strategy` is absent and GitHub Flow is active.
+Before reviewing commits, runs the Project Config Check for any flags missing from the existing Project Config section, skipped silently if both are already present. Each question is asked independently: branching strategy if `git-strategy` is absent, auto-commit if `git-auto-commit` is absent, merge strategy if `git-merge-strategy` is absent and GitHub Flow is active.
 
 Then reads commit messages to get the shape of what changed. Reads file changes only for significant commits. Focuses on architectural changes, new modules, new conventions, domain rule changes, new operational knowledge, and newly discovered traps.
 
@@ -132,30 +132,30 @@ Applies a three-question filter to each candidate change:
 2. Would knowing it improve future development decisions?
 3. Will it stay true for weeks or months?
 
-Only updates if all three answers are yes. Every change is bound to one of the eight schema sections — the schema defines what each holds, so each finding lands in its section and never in a new heading; a finding that fits no section is left out. Then either reports **Outcome A** (no durable knowledge introduced, just bump the hash) or **Outcome B** (proposes per-section changes and asks for confirmation before writing).
+Only updates if all three answers are yes. Every change is bound to one of the eight schema sections: the schema defines what each holds, so each finding lands in its section and never in a new heading; a finding that fits no section is left out. Then either reports **Outcome A** (no durable knowledge introduced, just bump the hash) or **Outcome B** (proposes per-section changes and asks for confirmation before writing).
 
 ### 5. Commit and finalize
 
-If nothing was written (the "CLAUDE.md is already up to date" case, or Skip selected anywhere): skips commit, merge, and environment promotion — nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
+If nothing was written (the "CLAUDE.md is already up to date" case, or Skip selected anywhere): skips commit, merge, and environment promotion: nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
 
-Otherwise commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit` — git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
+Otherwise commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit`; git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
 
-If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update — that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
+If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update: that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
 
-**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there — no promotion, no branch cleanup — leaving the commit (or merge) in place locally for a manual push later.
+**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there (no promotion, no branch cleanup), leaving the commit (or merge) in place locally for a manual push later.
 
 ### 6. Confirm completion
 
-If a scan or gap update wrote anything this run, first verifies it: reads CLAUDE.md back and confirms the `<!-- last-reviewed: {hash} -->` comment and the claimed section changes actually landed, reporting per-section errors instead of a false-clean outcome — mirroring adopt.md's and legal.md's own write-verification pattern. Then reports what was changed, what the new last-reviewed hash is, which environments were promoted, and whether any rule files in `.claude/rules` should also be revisited. Under GitHub Flow, also reports the temporary branch's fate and which branch you were returned to. Runs even when nothing was written, since that's still an outcome worth reporting.
+If a scan or gap update wrote anything this run, first verifies it: reads CLAUDE.md back and confirms the `<!-- last-reviewed: {hash} -->` comment and the claimed section changes actually landed, reporting per-section errors instead of a false-clean outcome, mirroring adopt.md's and legal.md's own write-verification pattern. Then reports what was changed, what the new last-reviewed hash is, which environments were promoted, and whether any rule files in `.claude/rules` should also be revisited. Under GitHub Flow, also reports the temporary branch's fate and which branch you were returned to. Runs even when nothing was written, since that's still an outcome worth reporting.
 
 ## Stop conditions
 
 - **Solo Mode, not on main/master.** Switch to main or master and re-run.
-- **CLAUDE.md is up to date.** Schema intact and no meaningful commits since the last-reviewed hash — clean exit, no prompt.
+- **CLAUDE.md is up to date.** Schema intact and no meaningful commits since the last-reviewed hash; clean exit, no prompt.
 - **User picks Skip.** Clean exit, no changes.
 - **Gap update finds no durable knowledge.** Outcome A: only the hash advances.
 
-Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created — see Before starting.
+Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; see Before starting.
 
 ## See also
 

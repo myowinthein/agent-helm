@@ -21,7 +21,7 @@ flowchart TD
   NoteExisting --> Ledger
 
   Ledger{.claude/helm/refactor-log.json<br/>exists?}
-  Ledger -->|no — first run| DeepAuto["Inform: running Deep Mode<br/>to build baseline"]
+  Ledger -->|no: first run| DeepAuto["Inform: running Deep Mode<br/>to build baseline"]
   Ledger -->|yes| ModeAsk["Ask: Deep Mode, Quick Mode,<br/>or Fix Backlog?\nrecommendation based on commits,<br/>days elapsed, changed files,<br/>and open_count"]
 
   DeepAuto --> CreateBranch["Switch to main if needed<br/>create refactor/{timestamp}<br/>(or ask to continue existing)"]
@@ -79,9 +79,9 @@ flowchart TD
 
 ### Before starting
 
-Runs from `main`, `master`, or an existing `refactor/*` branch — resuming a session left via Step 7's "Leave as-is" option happens directly from that branch, not via a manual switch back to main first. Halts on any other branch.
+Runs from `main`, `master`, or an existing `refactor/*` branch: resuming a session left via Step 7's "Leave as-is" option happens directly from that branch, not via a manual switch back to main first. Halts on any other branch.
 
-Unlike most other commands, this one doesn't branch its flow on `git-strategy` — it always works on a `refactor/*` branch and Step 7 always offers the same Merge/PR/Leave choice, Solo Mode included. This is a documented exception in [`git.md`](../rules/git.html#solo-mode): a refactor session is multi-wave and resumable by design (see The ledger below), and a branch is what makes leaving work between runs possible — the same reasoning as `/helm:ship`'s release-commit exception, applied to a different command.
+Unlike most other commands, this one doesn't branch its flow on `git-strategy`: it always works on a `refactor/*` branch and Step 7 always offers the same Merge/PR/Leave choice, Solo Mode included. This is a documented exception in [`git.md`](../rules/git.html#solo-mode): a refactor session is multi-wave and resumable by design (see The ledger below), and a branch is what makes leaving work between runs possible, the same reasoning as `/helm:ship`'s release-commit exception, applied to a different command.
 
 ### 1. Check for existing refactor branch
 
@@ -89,30 +89,30 @@ Runs `git branch --list 'refactor/*'` and records any existing branch name. No b
 
 ### 2. Scan boundaries
 
-Reads the project but skips `vendor/`, `node_modules/`, `public/`, `storage/`, `__pycache__/`/`.venv/`/`dist/`/`build/` (Python), `tmp/`/`log/` (Ruby), `bin/` (Go), migration files, `.env` files, generated or compiled files, and `.claude/helm/` itself — this plugin's own ledgers, never treated as source. Tests are included on purpose because test quality degrades fastest.
+Reads the project but skips `vendor/`, `node_modules/`, `public/`, `storage/`, `__pycache__/`/`.venv/`/`dist/`/`build/` (Python), `tmp/`/`log/` (Ruby), `bin/` (Go), migration files, `.env` files, generated or compiled files, and `.claude/helm/` itself, this plugin's own ledgers, never treated as source. Tests are included on purpose because test quality degrades fastest.
 
 ### 3. Load history and choose mode
 
-Looks for `.claude/helm/refactor-log.json` — the command's persistent memory. Falls back to the legacy flat path `.claude/refactor-log.json` if the new one isn't found; a legacy file gets migrated to `.claude/helm/` and removed the next time the ledger is written.
+Looks for `.claude/helm/refactor-log.json`: the command's persistent memory. Falls back to the legacy flat path `.claude/refactor-log.json` if the new one isn't found; a legacy file gets migrated to `.claude/helm/` and removed the next time the ledger is written.
 
 **First run (no ledger):** skips the mode question and runs Deep Mode automatically to build a baseline.
 
 **Later runs:** computes commits, days elapsed, and the real changed-file count (`git diff --name-only`) since the last scan, plus the number of open findings, then recommends a mode:
-- **Fix Backlog** if there are open findings and zero commits since last scan — nothing new to scan for
-- **Deep Mode** if 40+ commits, 60+ days, two Quick Mode scans in a row (`consecutive_quick_count >= 2`), or more than 50 files changed — commit count alone is a weak proxy for diff size, so the real file count is checked upfront rather than discovered as a surprise after Quick Mode is already chosen
+- **Fix Backlog** if there are open findings and zero commits since last scan: nothing new to scan for
+- **Deep Mode** if 40+ commits, 60+ days, two Quick Mode scans in a row (`consecutive_quick_count >= 2`), or more than 50 files changed: commit count alone is a weak proxy for diff size, so the real file count is checked upfront rather than discovered as a surprise after Quick Mode is already chosen
 - **Quick Mode** otherwise
 
-The Fix Backlog option only appears when there are open findings. The user picks via a prompt with the reason for the recommendation shown inline — the recommendation is a suggestion, not a restriction, and nothing later re-checks or overrides the choice.
+The Fix Backlog option only appears when there are open findings. The user picks via a prompt with the reason for the recommendation shown inline: the recommendation is a suggestion, not a restriction, and nothing later re-checks or overrides the choice.
 
 **After mode is confirmed**, the refactor branch is created: `refactor/{YYYYMMDD-HHMMSS}`. If an existing `refactor/*` branch was found in Step 1, the user is asked whether to continue on it or start fresh.
 
 ### 4. Scan
 
-**Deep Mode** — splits the project into folder/module chunks (keeping related files together), spawns one sub-agent per chunk, and has each agent read its full chunk in a single pass across five per-file categories: **Architecture**, **Code Quality**, **Performance**, **Tests**, and **Dependencies**. **Tests** findings are about existing test *code quality*, never about missing coverage — that's [`/helm:test`](test.html)'s job exclusively, and a file lacking tests is never itself a Tests-category finding here. What it does flag: 3+ test cases sharing the same input → assertion shape (e.g. one expected output per entry in a dictionary or lookup table) that could collapse into a single parametrized test with zero coverage loss. A chunk-scoped sub-agent can't see the sixth category, **Consistency**, by design — it only has visibility into its own folder — so Consistency runs as a separate, dedicated pass: it maps the codebase's key persisted/synced state and the features that should react to each (sync, cache invalidation, notifications, audit logging), traces every site that writes that state to check the expected reactions are wired up consistently everywhere, and separately looks for related data handled with mismatched rigor in the same flow (e.g. one gets conflict review before being overwritten, a related one is silently replaced). This pass is scoped by feature or data flow rather than by folder, and every finding it produces is always `needs-review` — never auto-applied, since deciding whether a missing connection is intentional needs product judgment. The main agent then consolidates everything: merges reports (including the consistency pass), spots cross-chunk patterns, checks new findings against the ledger to avoid duplicates, auto-resolves stale entries, assigns `risk` (`safe` / `needs-review`), groups related findings into `cluster_id`s, and records `depends_on` order where one fix must precede another.
+**Deep Mode**: splits the project into folder/module chunks (keeping related files together), spawns one sub-agent per chunk, and has each agent read its full chunk in a single pass across five per-file categories: **Architecture**, **Code Quality**, **Performance**, **Tests**, and **Dependencies**. **Tests** findings are about existing test *code quality*, never about missing coverage: that's [`/helm:test`](test.html)'s job exclusively, and a file lacking tests is never itself a Tests-category finding here. What it does flag: 3+ test cases sharing the same input → assertion shape (e.g. one expected output per entry in a dictionary or lookup table) that could collapse into a single parametrized test with zero coverage loss. A chunk-scoped sub-agent can't see the sixth category, **Consistency**, by design (it only has visibility into its own folder), so Consistency runs as a separate, dedicated pass: it maps the codebase's key persisted/synced state and the features that should react to each (sync, cache invalidation, notifications, audit logging), traces every site that writes that state to check the expected reactions are wired up consistently everywhere, and separately looks for related data handled with mismatched rigor in the same flow (e.g. one gets conflict review before being overwritten, a related one is silently replaced). This pass is scoped by feature or data flow rather than by folder, and every finding it produces is always `needs-review`: never auto-applied, since deciding whether a missing connection is intentional needs product judgment. The main agent then consolidates everything: merges reports (including the consistency pass), spots cross-chunk patterns, checks new findings against the ledger to avoid duplicates, auto-resolves stale entries, assigns `risk` (`safe` / `needs-review`), groups related findings into `cluster_id`s, and records `depends_on` order where one fix must precede another.
 
-**Quick Mode** — reuses the changed-file list already computed in Step 3 (size already accounted for in the mode recommendation, so no second size check here). Re-validates all open ledger entries, Consistency findings included: a deleted or heavily rewritten file auto-resolves its findings; an untouched file carries its findings forward unchanged; a file touched but not heavily rewritten — the common case — gets each finding's `line` re-verified and refreshed before carrying it forward, since line numbers drift with any unrelated edit above them and `risk: safe` findings apply with no human review to catch a stale one. Then scans just the changed files in a single pass for new issues in the five per-file categories only — it does not look for new Consistency findings, since that needs the whole-codebase, cross-feature visibility only Deep Mode's dedicated pass provides.
+**Quick Mode**: reuses the changed-file list already computed in Step 3 (size already accounted for in the mode recommendation, so no second size check here). Re-validates all open ledger entries, Consistency findings included: a deleted or heavily rewritten file auto-resolves its findings; an untouched file carries its findings forward unchanged; a file touched but not heavily rewritten (the common case) gets each finding's `line` re-verified and refreshed before carrying it forward, since line numbers drift with any unrelated edit above them and `risk: safe` findings apply with no human review to catch a stale one. Then scans just the changed files in a single pass for new issues in the five per-file categories only: it does not look for new Consistency findings, since that needs the whole-codebase, cross-feature visibility only Deep Mode's dedicated pass provides.
 
-**Fix Backlog** — skips scanning entirely. Loads every finding with `status: open` from the ledger and proceeds directly to presenting findings. Scan metadata (`last_scanned_commit`, `last_mode`, `consecutive_quick_count`) is left untouched since no scan was performed.
+**Fix Backlog**: skips scanning entirely. Loads every finding with `status: open` from the ledger and proceeds directly to presenting findings. Scan metadata (`last_scanned_commit`, `last_mode`, `consecutive_quick_count`) is left untouched since no scan was performed.
 
 Deep and Quick Mode commit the updated ledger before moving on: `chore(refactor): update ledger after {deep/quick} scan`, per [git.md's Auto-Commit rule](../rules/git.html#auto-commit) like every commit this command makes.
 
@@ -120,37 +120,37 @@ Deep and Quick Mode commit the updated ledger before moving on: `chore(refactor)
 
 Builds a structured report. For Deep and Quick Mode, findings are split into three sections:
 
-- **New** — found for the first time this run
-- **Still Open** — carried over from a previous run, still valid
-- **Auto-Resolved** — previously open, file since deleted or rewritten
+- **New**: found for the first time this run
+- **Still Open**: carried over from a previous run, still valid
+- **Auto-Resolved**: previously open, file since deleted or rewritten
 
-For Fix Backlog mode, only **Still Open** is shown — no New or Auto-Resolved sections, since no scan was performed.
+For Fix Backlog mode, only **Still Open** is shown: no New or Auto-Resolved sections, since no scan was performed.
 
 Each finding is tagged `[New]`/`[Still Open]`, priority (`High`/`Medium`/`Low`), and risk (`Safe`/`Needs Review`). Total count at the bottom shows new vs still-open separately.
 
-Then presents a category-selection prompt scaled to how many of the six categories (Architecture, Consistency, Code Quality, Performance, Tests, Dependencies) actually have at least one `new` or `still open` finding: none qualifying means nothing to apply — informs the user and skips straight to Merge and cleanup; exactly one qualifying means a direct yes/no confirmation, since a multi-select needs at least 2 options; two or more qualifying is the normal multi-select (max 4 options — smallest two merge if more than four qualify). Categories with only auto-resolved findings are excluded. Selecting nothing (or Skip, in the single-category case) is a clean skip with no harm done.
+Then presents a category-selection prompt scaled to how many of the six categories (Architecture, Consistency, Code Quality, Performance, Tests, Dependencies) actually have at least one `new` or `still open` finding: none qualifying means nothing to apply: informs the user and skips straight to Merge and cleanup; exactly one qualifying means a direct yes/no confirmation, since a multi-select needs at least 2 options; two or more qualifying is the normal multi-select (max 4 options: smallest two merge if more than four qualify). Categories with only auto-resolved findings are excluded. Selecting nothing (or Skip, in the single-category case) is a clean skip with no harm done.
 
 ### 6. Apply category by category
 
 For each selected category in turn:
 
-1. **Order by dependency** — findings with `depends_on` entries are applied after their prerequisites. Findings sharing a `cluster_id` (touching the same or related files) are handled together in one pass, never split across parallel agents.
-2. **Safe findings** — applied automatically, no prompt needed.
-3. **Needs-review findings** — presented one at a time (or batched if closely related) for the user to approve or skip. Skipped findings are marked `skipped-by-user` in the ledger and stop resurfacing unless the surrounding code changes significantly enough to warrant a second look.
-4. **Test, lint, commit** — run tests after each category; if they fail, halt and wait for resolution. Then lint, format, and commit: `refactor({scope}): {summary}`, where scope is the primary module/feature/domain touched by the cluster (e.g. `orders`, `auth`) per git.md's Conventional Commits convention — not the category name itself, which is a report/selection grouping, not a commit scope. Update ledger statuses: `fixed` with `resolved_commit` and `resolved_date`, or `skipped-by-user`.
+1. **Order by dependency**: findings with `depends_on` entries are applied after their prerequisites. Findings sharing a `cluster_id` (touching the same or related files) are handled together in one pass, never split across parallel agents.
+2. **Safe findings**: applied automatically, no prompt needed.
+3. **Needs-review findings**: presented one at a time (or batched if closely related) for the user to approve or skip. Skipped findings are marked `skipped-by-user` in the ledger and stop resurfacing unless the surrounding code changes significantly enough to warrant a second look.
+4. **Test, lint, commit**: run tests after each category; if they fail, halt and wait for resolution. Then lint, format, and commit: `refactor({scope}): {summary}`, where scope is the primary module/feature/domain touched by the cluster (e.g. `orders`, `auth`) per git.md's Conventional Commits convention, not the category name itself, which is a report/selection grouping, not a commit scope. Update ledger statuses: `fixed` with `resolved_commit` and `resolved_date`, or `skipped-by-user`.
 
-**Scoped verification pass (Step 6.4)** — after all selected categories are applied, re-checks only the files touched this session, not a fresh full scan. Confirms each `fixed` finding is actually gone, and catches anything new the fixes themselves introduced. Updates the ledger accordingly. Results surface in the final report.
+**Scoped verification pass (Step 6.4)**: after all selected categories are applied, re-checks only the files touched this session, not a fresh full scan. Confirms each `fixed` finding is actually gone, and catches anything new the fixes themselves introduced. Updates the ledger accordingly. Results surface in the final report.
 
 ### 7. Merge, PR, or leave
 
 Asks how to land the work:
-- **Auto-merge** into `main` with `refactor(project): apply refactoring {timestamp}`, then a dedicated "Push main now?" confirmation — separate from the merge above, never skipped regardless of `git-auto-commit`. Cancelling leaves main merged locally but unpushed, and skips promotion and branch deletion below; the refactor branch stays in place. If pushed: checks CI status for the commit just pushed (if environment branches exist — same detection [`/helm:ship`](ship.html) uses; same `gh run list`, matched-by-SHA mechanics as [`/helm:ship`](ship.html)'s Step 4; skipped silently if not GitHub-hosted or no workflows exist), folds the result into the promotion question, asks which environments should also receive the refactor — capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options) — and merges main into each selected one, then deletes the refactor branch — locally always, but remotely only if it was ever pushed there (Auto-merge itself never pushes the refactor branch, only `main`, so the common case has nothing remote to delete)
-- **Open PR** — push the branch (with updated ledger), then, if the repo is hosted on GitHub, attempt `gh pr create` directly (same pattern as [`/helm:ship`](ship.html)'s GitHub Release step). Falls back to a manual "open a PR yourself" instruction if the repo isn't on GitHub, `gh` isn't installed, or it isn't authenticated
-- **Leave as-is** — branch stays locally for manual review
+- **Auto-merge** into `main` with `refactor(project): apply refactoring {timestamp}`, then a dedicated "Push main now?" confirmation, separate from the merge above, never skipped regardless of `git-auto-commit`. Cancelling leaves main merged locally but unpushed, and skips promotion and branch deletion below; the refactor branch stays in place. If pushed: checks CI status for the commit just pushed (if environment branches exist, same detection [`/helm:ship`](ship.html) uses; same `gh run list`, matched-by-SHA mechanics as [`/helm:ship`](ship.html)'s Step 4; skipped silently if not GitHub-hosted or no workflows exist), folds the result into the promotion question, asks which environments should also receive the refactor: capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options), and merges main into each selected one, then deletes the refactor branch: locally always, but remotely only if it was ever pushed there (Auto-merge itself never pushes the refactor branch, only `main`, so the common case has nothing remote to delete)
+- **Open PR**: push the branch (with updated ledger), then, if the repo is hosted on GitHub, attempt `gh pr create` directly (same pattern as [`/helm:ship`](ship.html)'s GitHub Release step). Falls back to a manual "open a PR yourself" instruction if the repo isn't on GitHub, `gh` isn't installed, or it isn't authenticated
+- **Leave as-is**: branch stays locally for manual review
 
 ### 8. Confirm completion
 
-Closes with a structured summary: branch, mode, scan scope (new / carried-over / auto-resolved findings this run — omitted for Fix Backlog, since no scan occurred), changes per category, ledger state (still open / auto-resolved / newly fixed / skipped by user), verification result (confirmed resolved / newly introduced), commits made, tests passing, outcome. Ends with a sample of up to 5 applied fixes (description and file) so the closing report shows what was actually done, not just how many.
+Closes with a structured summary: branch, mode, scan scope (new / carried-over / auto-resolved findings this run, omitted for Fix Backlog, since no scan occurred), changes per category, ledger state (still open / auto-resolved / newly fixed / skipped by user), verification result (confirmed resolved / newly introduced), commits made, tests passing, outcome. Ends with a sample of up to 5 applied fixes (description and file) so the closing report shows what was actually done, not just how many.
 
 ## Stop conditions
 
@@ -166,5 +166,5 @@ It also carries a `schema_version` field, bumped only if this structure changes 
 
 ## See also
 
-- [`/helm:test`](test.html) — the test framework setup that this command relies on between categories
-- [`/helm:ship`](ship.html) — ship the merged refactor as a release
+- [`/helm:test`](test.html): the test framework setup that this command relies on between categories
+- [`/helm:ship`](ship.html): ship the merged refactor as a release

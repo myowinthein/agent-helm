@@ -1,11 +1,11 @@
 ---
-title: "Step 4 — Documentation"
+title: "Step 4: Documentation"
 parent: /helm:archive
 grand_parent: Commands
 nav_order: 4
 ---
 
-# Step 4 — Documentation
+# Step 4: Documentation
 
 Writes fresh, archive-focused documentation using verified information from all previous steps. Reads every existing doc first and presents a consolidation plan for explicit approval before touching anything. Produces three required files and one optional file.
 
@@ -32,7 +32,7 @@ flowchart TD
 
   WriteMeta --> Verify[Verify every active doc\nis reachable from README.md]
 
-  Verify --> Report[Output report] --> StopApprove([Stop — wait for approval])
+  Verify --> Report[Output report] --> StopApprove([Stop: wait for approval])
 ```
 
 ## Consolidation plan
@@ -41,14 +41,14 @@ Before making any changes, every existing documentation file is reviewed and ass
 
 | Existing doc type | Action |
 |---|---|
-| Accurate, has recovery or demonstration value | Keep — link from README |
+| Accurate, has recovery or demonstration value | Keep: link from README |
 | Accurate but duplicates `docs/setup.md` content | Merge into `docs/setup.md`, remove original |
 | Outdated instructions that affect restoration | Update |
-| Historical context, domain knowledge, business background | Archive — move to `docs/historical-notes.md` |
-| Contributor guides, PR templates, code of conduct | Remove — irrelevant for private archive |
-| Changelogs and release notes | Archive — move to `docs/historical-notes.md` if useful; otherwise remove |
-| CI/CD documentation, deployment runbooks | Remove — no recovery value |
-| Auto-generated documentation | Remove — regenerate if needed |
+| Historical context, domain knowledge, business background | Archive: move to `docs/historical-notes.md` |
+| Contributor guides, PR templates, code of conduct | Remove: irrelevant for private archive |
+| Changelogs and release notes | Archive: move to `docs/historical-notes.md` if useful; otherwise remove |
+| CI/CD documentation, deployment runbooks | Remove: no recovery value |
+| Auto-generated documentation | Remove: regenerate if needed |
 | Outdated and no recovery or historical value | Remove |
 
 The plan is presented and must be explicitly approved before any file is touched.
@@ -65,13 +65,13 @@ The new README contains: project name, one-paragraph purpose, tech stack summary
 
 The single recovery reference. Sections written only when applicable:
 
-- **Environment** — original runtime requirements, verified restoration environment from Step 2
-- **Restore & Run** — exact commands to restore and start the project
-- **Recovery Priority** — each dependency classified as Required, Optional, or Not Required
-- **Demo** — demo accounts, happy path walkthrough, key screens; omitted for CLI tools and libraries
-- **API** — authentication method, collection location; included only if Step 3 generated a collection
-- **Restoration Fixes** — every fix applied in Step 2, why it was necessary, and whether it may need revisiting
-- **Known Limitations** — features that could not be restored or require unavailable services
+- **Environment**: original runtime requirements, verified restoration environment from Step 2
+- **Restore & Run**: exact commands to restore and start the project
+- **Recovery Priority**: each dependency classified as Required, Optional, or Not Required
+- **Demo**: demo accounts, happy path walkthrough, key screens; omitted for CLI tools and libraries
+- **API**: authentication method, collection location; included only if Step 3 generated a collection
+- **Restoration Fixes**: every fix applied in Step 2, why it was necessary, and whether it may need revisiting
+- **Known Limitations**: features that could not be restored or require unavailable services
 
 ### docs/archive-metadata.md
 
@@ -89,7 +89,7 @@ Structured snapshot for quick inventory across archived projects:
 
 ## Optional file
 
-**docs/historical-notes.md** — created only when significant historical content exists that has archival value but would clutter current docs. All content is clearly labelled as historical.
+**docs/historical-notes.md**: created only when significant historical content exists that has archival value but would clutter current docs. All content is clearly labelled as historical.
 
 ## Rules
 
@@ -98,5 +98,5 @@ Structured snapshot for quick inventory across archived projects:
 - Do not invent setup procedures, demo workflows, runtime requirements, or API behavior.
 - No secrets, credentials, API keys, or private/production URLs.
 - Every active document must be reachable from README.md.
-- Use em-dashes sparingly — only when no other punctuation works as well.
+- Use em-dashes sparingly: only when no other punctuation works as well.
 - No commit or push.

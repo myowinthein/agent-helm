@@ -1,11 +1,11 @@
 ---
-title: "Step 3 — Postman Collection"
+title: "Step 3: Postman Collection"
 parent: /helm:archive
 grand_parent: Commands
 nav_order: 3
 ---
 
-# Step 3 — Postman Collection
+# Step 3: Postman Collection
 
 Generates a Postman collection for projects that expose an API they own. Discovers endpoints from source code, routes, or OpenAPI specs, verifies safe requests against the running local app, and saves the collection to `recovery/postman/`. Skips silently for projects with no API surface.
 
@@ -15,10 +15,10 @@ Generates a Postman collection for projects that expose an API they own. Discove
 flowchart TD
   Start([Begin Step 3]) --> Check{Project exposes\nan API it owns?}
 
-  Check -->|no: frontend, static,\nCLI, library, etc.| Skip[/Skip — explain why\nand stop/]
+  Check -->|no: frontend, static,\nCLI, library, etc.| Skip[/Skip: explain why\nand stop/]
   Check -->|yes| Existing{Existing Postman\ncollection found\nin Step 1?}
 
-  Existing -->|yes| UseExisting[Use as starting point —\nupdate, verify, expand]
+  Existing -->|yes| UseExisting[Use as starting point:\nupdate, verify, expand]
   Existing -->|no| Discover
 
   UseExisting --> Discover[Discover endpoints from:\nroutes, source code,\nor OpenAPI/Swagger specs]
@@ -29,16 +29,16 @@ flowchart TD
 
   Generate --> Verify[Verify representative requests\nagainst running local app:\nGET, health, auth flows]
 
-  Verify --> Mark[Mark unverified requests\nwith reason:\n— destructive\n— sends external messages\n— processes payments]
+  Verify --> Mark[Mark unverified requests\nwith reason:\n- destructive\n- sends external messages\n- processes payments]
 
   Mark --> Save["Save to recovery/postman/:\n{project-name}.postman_collection.json\n{project-name}.postman_environment.json"]
 
-  Save --> Report[Output report] --> Stop([Stop — wait for approval])
+  Save --> Report[Output report] --> Stop([Stop: wait for approval])
 ```
 
 ## Applicability
 
-A collection is generated when the project exposes an API it owns — REST, GraphQL, or similar.
+A collection is generated when the project exposes an API it owns: REST, GraphQL, or similar.
 
 The step skips when:
 - The project has no API surface (pure frontend, static site, CLI tool, library)
@@ -82,17 +82,17 @@ Saved to `recovery/postman/` using the project name from Step 1, slugified to lo
 
 Requests are organized by functional area (Authentication, Users, Admin, Products, Orders, etc.) with collection variables, environment variables, request descriptions, and authentication notes.
 
-Written in **Postman Collection Format v2.1** (`schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"`) — supported by Postman, Bruno, and most modern API clients. Never v2.0, which Bruno can't import without a conversion step first.
+Written in **Postman Collection Format v2.1** (`schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"`), supported by Postman, Bruno, and most modern API clients. Never v2.0, which Bruno can't import without a conversion step first.
 
 ## Output
 
 The step produces a report with the following sections:
 
-- **Applicability** — whether a collection was generated or skipped and why, stated explicitly as "Postman collection generated: yes/no" in its own field — Step 4's structured `docs/archive-metadata.md` snapshot reads this field directly rather than inferring it from prose
-- **Existing Collection** — whether an existing Postman collection was found and how it was used
-- **Endpoints Discovered** — total endpoints found, how they were discovered, and any excluded
-- **Authentication** — auth method used and how it is configured in the collection
-- **Files Created or Updated** — file paths and what changed
-- **Verified Requests** — requests tested against the running app and their results
-- **Unverified Requests** — requests that could not be safely verified and the reason for each
-- **Known Limitations** — endpoints not covered, external dependencies, or gaps in coverage
+- **Applicability**: whether a collection was generated or skipped and why, stated explicitly as "Postman collection generated: yes/no" in its own field; Step 4's structured `docs/archive-metadata.md` snapshot reads this field directly rather than inferring it from prose
+- **Existing Collection**: whether an existing Postman collection was found and how it was used
+- **Endpoints Discovered**: total endpoints found, how they were discovered, and any excluded
+- **Authentication**: auth method used and how it is configured in the collection
+- **Files Created or Updated**: file paths and what changed
+- **Verified Requests**: requests tested against the running app and their results
+- **Unverified Requests**: requests that could not be safely verified and the reason for each
+- **Known Limitations**: endpoints not covered, external dependencies, or gaps in coverage
