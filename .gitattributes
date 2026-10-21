@@ -1,3 +1,9 @@
+/.helm/ export-ignore
+/.helm/** export-ignore
 /.claude/helm/ export-ignore
 /.claude/helm/** export-ignore
 /.claude/settings.local.json export-ignore
+/.claude/refactor-log.json export-ignore
+/.claude/test-log.json export-ignore
+/.claude/normalize-log.json export-ignore
+/.claude/legal-manifest.json export-ignore

@@ -77,7 +77,7 @@ module HelmValidation
       read(file).scan(%r{\{package_root\}/([\w./-]+\.md)}).flatten.each { |path| resource(root, path) }
     end
     check(root.glob("prompts/archive/step*.md").length == 5, "Archive steps must stay separate from discoverable entry points")
-    %w[rules/git.md rules/safety.md prompts/shared/runtime.md].each { |path| resource(root, path) }
+    %w[rules/git.md rules/safety.md prompts/shared/runtime.md prompts/shared/project-state.md].each { |path| resource(root, path) }
     true
   end
 end

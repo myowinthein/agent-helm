@@ -70,6 +70,8 @@ Links below go to detail pages. Workflow logic lives in `workflows/*.md`; portab
 
 Run `/helm:log` in a project to establish shared `AGENTS.md` instructions and a `CLAUDE.md` importing them. Existing projects receive a reviewed migration proposal; future Claude/Codex sessions then share the same knowledge without rerunning setup when switching agents.
 
+Project state is shared under `.helm/` on both hosts. Existing `.claude/helm/` and flat `.claude/` state migrates one file at a time when its owning command next writes successfully, with validation and explicit reconciliation of conflicting copies. See [compatibility and migration](https://myowinthein.github.io/claude-helm/docs/setup/compatibility.html#shared-project-state). Native Claude rules stay in `.claude/rules/`.
+
 ### Rules
 
 | Rule | What it does |

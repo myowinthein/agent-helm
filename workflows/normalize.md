@@ -27,13 +27,13 @@ Before any writes, ask:
       - label: "Cancel"
         description: "Exit without changes"
 
-Cancel leaves instruction files, history, and both ledger paths untouched. Continuing authorizes inspection only.
+Cancel leaves instruction files, history, and all ledger paths untouched. Continuing authorizes inspection only.
 
 ## Step 2 — Load ledger and scan history
 
 ### 2.1 Load and validate the shared ledger
 
-Look for `.claude/helm/normalize-log.json`, then the legacy `.claude/normalize-log.json`. Load a legacy-only ledger using the same schema and queue migration for Step 6; do not write or remove either path during scanning. If both exist, compare them: identical data can be deduplicated in the later authorized migration; conflicting data requires explicit resolution before proceeding, not silent replacement. Malformed or unsupported schemas stop the run with the files preserved. A missing `schema_version` means `1`.
+Read `{package_root}/prompts/shared/project-state.md` and apply it to `normalize-log.json`. The canonical path is `.helm/normalize-log.json`; check both `.claude/helm/normalize-log.json` and `.claude/normalize-log.json` too. Validate and compare all existing candidates before using their watermarks. Differing data requires explicit reconciliation, never silent replacement. Load legacy state without writing or removing any candidate during inspection; migration waits for Step 6's eligible authorized write. Malformed or unsupported schemas stop the run with the files preserved. A missing `schema_version` means `1`.
 
 ```json
 {
@@ -47,7 +47,7 @@ Look for `.claude/helm/normalize-log.json`, then the legacy `.claude/normalize-l
 }
 ```
 
-With neither file, report first run and use an empty `branches` map. `branches` remains keyed by local branch name. A watermark is a fully inspected tip, using the post-rewrite SHA when rewriting occurred, captured before a later ledger commit.
+With no candidate file, report first run and use an empty `branches` map. `branches` remains keyed by local branch name. A watermark is a fully inspected tip, using the post-rewrite SHA when rewriting occurred, captured before a later ledger commit.
 
 ### 2.2 Freeze exact refs and inputs
 
@@ -182,11 +182,11 @@ Any mismatch stops ledger advance and publication. Report the unexpected change 
 
 Only a complete clean scan or fully verified rewrite reaches this step. Cancellation, unresolved classifications, changed scan inputs, or verification failure leaves the prior ledger unchanged and does not delete the legacy file.
 
-For the frozen branch list, capture verified current tip SHAs before any ledger commit. Build schema version 1 with those tips/dates, adding new branches and dropping removed ones. Do not add a newly created bookkeeping branch to this run's watermark set or record a tip that was not inspected. If no serialized data or migration change is needed, skip the write/commit entirely.
+For the frozen branch list, capture verified current tip SHAs before any ledger commit. Build schema version 1 with those tips/dates, adding new branches and dropping removed ones. Do not add a newly created bookkeeping branch to this run's watermark set or record a tip that was not inspected. If no checkpoint data change is needed, skip the write/commit entirely; legacy paths alone do not justify a cleanup-only write.
 
 Switch to the planned ledger destination only after verification. Under Solo, commit on main/master. Under GitHub Flow, create the planned unique `chore/normalize-ledger-{date}` branch from main/master and leave its ledger change for normal PR review; never auto-merge it or force-push it as part of rewritten history. Recheck destination instructions and any existing ledger for unexpected divergence from the reviewed inputs before overwriting. If placement is blocked, leave history intact and report the pending ledger update; do not force checkout or bypass project policy.
 
-Write `.claude/helm/normalize-log.json` and read it back to verify schema, every watermark, and branch coverage. For a queued legacy migration, remove `.claude/normalize-log.json` only after the canonical file has been verified. Stage both the canonical change and legacy removal together using exact paths. Never stage unrelated files. A cancelled commit leaves both changes pending together for review; do not claim the migration was committed.
+Write `.helm/normalize-log.json` and read it back to verify schema, every watermark, and branch coverage, following the shared project-state procedure. Re-resolve candidates on the planned destination branch before writing. Retire only queued same-file legacy sources after canonical verification and commit authorization; stage the canonical change and tracked legacy removals together using exact paths. Never stage unrelated files. A declined commit preserves legacy sources and leaves any canonical draft pending; report migration as pending.
 
 Follow the resolved `git-auto-commit` for **this ledger commit**: true permits an automatic commit; false or absent requires explicit commit confirmation, independent of rewrite/push approvals. A declined commit leaves verified files uncommitted, reports the actual branch, and never silently commits during publication. Commit message: `chore(normalize): update ledger after {scan / rewrite}`.
 
