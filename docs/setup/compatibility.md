@@ -9,32 +9,43 @@ permalink: /docs/setup/compatibility.html
 
 Helm has one workflow body per operation in `workflows/`. Portable entries in `skills/` load the shared runtime and that workflow. Legacy `commands/` files remain small adapters. The manifest exposes skills and disables automatic command-directory discovery, preventing duplicate entries while preserving `/helm:<name>` in Claude. Claude's existing invocation policy is retained; Codex's new skill entries disable implicit invocation.
 
-## Keep one memory owner
+## One shared owner and a Claude adapter
 
-Helm reads project knowledge and configuration from its existing owner. It does not convert a project just because a different host is running.
+Successful `log` setup uses root `AGENTS.md` for shared project knowledge, Helm configuration, adopted Rules, and one review marker. A real root `CLAUDE.md` imports it using a standalone `@AGENTS.md` line, followed by any Claude-specific additions. This import works without relying on Claude's conditional native AGENTS.md discovery. Normal agent switching between sessions needs no log rerun.
 
-| Project layout | Behavior |
+| Existing layout | log setup |
 |---|---|
-| CLAUDE.md only | Keep CLAUDE.md as owner. Codex adoption adds a small AGENTS.md bridge that explicitly reads it. |
-| AGENTS.md only | Use AGENTS.md as owner. A fresh Codex project uses this layout. |
-| CLAUDE.md imports AGENTS.md | Preserve the wrapper and edit the AGENTS.md owner. |
-| Both contain independent instructions | Preserve both. Resolve conflicting Helm settings or ambiguous ownership before Git changes. |
+| Neither file | A chosen full scan creates AGENTS.md and the Claude adapter. Skip creates neither. |
+| AGENTS.md only | Preserve it and propose the missing Claude adapter. |
+| CLAUDE.md only | Propose moving shared instructions to AGENTS.md and keeping Claude-specific content in the adapter. |
+| Both already connected | Preserve the layout and assess project knowledge. |
+| Both independent, partially connected or cyclic | Compare agreements, unique instructions and conflicts; propose a reviewed merge or either source as the baseline. |
 
-Codex's active `AGENTS.override.md` and nested instruction precedence still apply. Adoption writes the persistent root entry (CLAUDE.md or AGENTS.md), preserving its unrelated content. If a root AGENTS.override.md shadows AGENTS.md without explicitly reading it, Codex adoption stops before writing or branching. Connect the persistent entry from the override or resolve that override before retrying. Adoption never edits or commits override files or the other host's entry.
+A Claude adapter that imports AGENTS.md but still holds shared settings, Rules or a review marker also needs reconciliation. Log can propose repairing a cycle confined to the two readable root files, reading each once and resolving settings before Git actions; other cycles and missing targets still stop.
 
-Recognized configuration includes Helm's `## Project Config` declarations and the existing Compass-style fenced `text` configuration block. When both independent entry files exist but only one declares Helm settings, that file owns configuration; the setting-free entry is preserved and is not a conflict. Identical settings are not conflicts. Invalid or conflicting values, missing bridge targets, and pointer cycles must be resolved before branching. Missing settings retain the existing defaults; a different heading does not silently change a declared strategy.
+A baseline does not silently discard unique safety rules or preferences. Existing-file moves/reconciliation require a concrete approved diff. Cancel exits without a layout write or scan. Shared instructions imported with Claude's `@` syntax need explicit read-and-follow directives for Codex; migrations show that conversion rather than silently losing the dependency. Custom sections and fenced configuration keep their existing structure. The eight-section schema is for fresh or already-standard project memory, not a reason to overwrite a custom document.
 
-`log` follows the owner rather than replacing a wrapper. For a customized owner it proposes targeted changes in the existing structure, preserving imports, host-specific instructions, the configuration block, and `## Rules`. The eight-section format remains the generation format for fresh or already-standard Helm memory files. Any removal or restructuring of custom instructions requires an approved diff.
+Layout setup happens before the up-to-date test. Creating an adapter or moving files is a real change even if the user subsequently skips the knowledge scan. Moves preserve the existing review point and are committed separately from knowledge updates when Git is available. Without a repository or HEAD, log does not initialize Git, commit, or invent a review marker. Current-run Git finalization uses the strategy and commit policy resolved at invocation; a newly chosen policy applies on the next run.
 
-Changing to an AGENTS.md-owned layout is optional. If you do it manually, preserve Claude-specific instructions and use an explicit `@AGENTS.md` import from CLAUDE.md. Helm does not perform that conversion during an ordinary workflow run.
+Only log migrates existing owners. Other workflows still resolve and preserve legacy CLAUDE.md owners, explicit memory targets and bridges. Legacy Codex adoption may add the existing bridge to a CLAUDE.md owner and recommends log for migration. In the shared layout, adoption writes rule pointers to AGENTS.md from either host, creates a missing Claude adapter as part of the chosen install/connection, and preserves an existing adapter. It does not repeat Rules in CLAUDE.md or migrate an independent owner.
+
+Recognized configuration includes Helm's `## Project Config` declarations and Compass-style fenced `text` project configuration. Setting-free independent entries are not configuration conflicts; identical values agree. Conflicting/invalid values and ambiguous ownership need explicit resolution before Git actions. Migration preserves confirmed settings. Missing values retain the existing defaults.
+
+## Scope and precedence
+
+Root `AGENTS.override.md` and nested instruction precedence still apply. If the override does not explicitly read AGENTS.md, log and adopt stop on either host before branching/writing; they do not claim shared setup or edit/import the override. An explicitly connected override stays intact, and intentional host-specific policy is reported. Conflicting effective Helm settings still require resolution.
+
+Root migration does not flatten nested files, personal CLAUDE.local.md, global instructions, or imported files. Non-root memory owners, `.claude/CLAUDE.md`, and symlinks require an explicit placement decision instead of silently creating competing roots or writing outside the project. A root Claude adapter alone does not give Claude every nested AGENTS.md; those scopes need separate adapters or verified native support. Explicitly disabled instruction loading remains a host setting, not something Helm changes.
+
+Helm checks existing instruction files for uncommitted work before migration. It builds the diff from the actual log branch, rechecks inputs before applying it, and stops if the branch's configuration changed from preflight. Review markers are preserved during moves; ambiguous merged review histories are disclosed rather than stamped as freshly reviewed.
 
 ## Shared rules and history
 
-Both hosts use `.claude/rules/git.md` and `safety.md`. The directory name is retained for compatibility; Codex reads these files through explicit entry-file directives. Copied rules include their own configuration-resolution guidance so they can work in a new session without loading a Helm skill.
+Both hosts use `.claude/rules/git.md` and `safety.md`. In the canonical layout, AGENTS.md explicitly tells either agent to read these files. The directory name is retained for compatibility; Codex reads these files through explicit entry-file directives. Copied rules include their own configuration-resolution guidance so they can work in a new session without loading a Helm skill.
 
 On Claude, copy and reference modes retain their existing behavior. The stable marketplace checkout remains the preferred adoption source and reference target. A fallback to the loaded package is reported explicitly, and new reference mode is unavailable when that stable source is missing.
 
-Codex installs copies from its loaded package. It does not create references to a versioned cache directory. If a project already uses readable Claude marketplace references, Codex can connect through a bridge to the existing owner without copying marketplace paths into AGENTS.md or changing that installation. If those references are unavailable, stop and use Claude's adoption flow to switch the shared installation to copies; do not create competing copies alongside the old references. Claude reference mode must not delete copies that a separate Codex entry still depends on. Switching to copies also stops if a separate Codex entry directly references marketplace paths; reconnect it through the owner first.
+Codex installs copies from its loaded package. It does not create references to a versioned cache directory. If a project already uses readable Claude marketplace references, Codex can follow the existing shared owner or connect through a legacy bridge without duplicating marketplace paths or changing that installation. If those references are unavailable, stop and use Claude's adoption flow to switch the shared installation to copies; do not create competing copies alongside the old references. Claude reference mode must not delete copies that a separate Codex entry still depends on. Switching to copies also stops if a separate Codex entry directly references marketplace paths; reconnect it through the owner first.
 
 Existing foreign-file review, ahead-version protection, and version markers remain. After a released update changes the bundled rules, rerun `adopt` to update copies; review the shared change because both hosts may read them.
 

@@ -137,7 +137,7 @@ cases.each do |name, scenario|
         end
       end
       bridge = workspace.join("AGENTS.md")
-      raise "#{name}: missing explicit Codex memory bridge" unless bridge.file? && bridge.read.include?("CLAUDE.md")
+      raise "#{name}: missing explicit Codex memory bridge (#{bridge.file? ? bridge.read : 'absent'}). Response: #{answer}" unless bridge.file? && bridge.read.include?("CLAUDE.md")
       if scenario[:reference_connection]
         raise "#{name}: duplicated marketplace pointers" if bridge.read.include?("marketplaces/") || bridge.read.include?("rules/git.md") || bridge.read.include?("rules/safety.md")
         before.each { |path, digest| raise "#{name}: changed preserved #{path}" unless Digest::SHA256.file(workspace.join(path)).hexdigest == digest }

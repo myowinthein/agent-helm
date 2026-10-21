@@ -24,9 +24,9 @@ flowchart TD
   Exists{README.md exists<br/>with content?}
 
   Exists -->|no| Mode1[Ask: full scan or skip?]
-  Exists -->|yes| StyleFlag{readme-style<br/>in CLAUDE.md?}
+  Exists -->|yes| StyleFlag{readme-style<br/>in AGENTS.md?}
 
-  StyleFlag -->|no| AskStyle["Ask: standard or custom?\nSave to CLAUDE.md Project Config"]
+  StyleFlag -->|no| AskStyle["Ask: standard or custom?\nSave to AGENTS.md Project Config"]
   StyleFlag -->|yes| HashCheck
   AskStyle --> HashCheck
 
@@ -77,7 +77,7 @@ flowchart TD
 
 ### Before starting
 
-Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
+Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in AGENTS.md's Project Config (absence defaults to GitHub Flow, per git.html):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
 - **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/manifest-{date}`), regardless of what the starting branch was. README.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something README.md should reflect, re-run `/helm:manifest` after that branch merges to main. Returns to the original branch at the end (see Step 5).
@@ -90,7 +90,7 @@ README.md is human-facing documentation for contributors, GitHub visitors, and n
 
 ### 1. Assessment
 
-First determines the README style by reading `readme-style` from CLAUDE.md Project Config. If the flag is absent, checks whether README.md already exists with content and asks accordingly: the question and the Custom option's description differ depending on whether there's an existing README to be "custom" relative to, since a brand-new project has nothing yet. Saves the choice (`readme-style: standard` or `readme-style: custom`) to CLAUDE.md before continuing.
+First determines the README style by reading `readme-style` from AGENTS.md Project Config. If the flag is absent, checks whether README.md already exists with content and asks accordingly: the question and the Custom option's description differ depending on whether there's an existing README to be "custom" relative to, since a brand-new project has nothing yet. Saves the choice (`readme-style: standard` or `readme-style: custom`) to AGENTS.md before continuing.
 
 Then reads the current `README.md`, checks for a saved `<!-- last-reviewed: {hash} -->` marker, and if found, runs `git log {hash}..HEAD --oneline` to measure the gap. Ignores noise commits.
 
@@ -162,5 +162,5 @@ Every exit above still runs GitHub Flow cleanup (delete the temporary branch, re
 
 ## See also
 
-- [`/helm:log`](log.html) - same lifecycle for `CLAUDE.md` (the agent-facing version)
+- [`/helm:log`](log.html) - same lifecycle for `AGENTS.md` (the agent-facing version)
 - [`/helm:ship`](ship.html) - typically run before shipping so the manifest reflects the release

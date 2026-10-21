@@ -2,15 +2,17 @@
 
 ## Memory ownership and preserved instructions
 
-Resolve `{memory_file}` before the branch checks. Follow an explicit bridge to its owner; never assess or overwrite a pointer-only CLAUDE.md/AGENTS.md as an incomplete eight-section document. Report the actual target. Imports, host-specific instructions, user-authored sections, and `## Rules` remain protected in both update modes. Do not move settings from a recognized fenced configuration block into a new Project Config section.
+Read `{package_root}/prompts/shared/project-layout.md` and perform its read-only preflight before the branch checks. It defines the migration to root AGENTS.md plus a real CLAUDE.md adapter for both hosts. Resolve existing effective configuration first; compare independent roots and ask about conflicts before Git actions. Never assess a pointer-only entry as an incomplete eight-section document. Report the old owner and the proposed target. Existing instructions remain protected; only the approved layout diff may move them. Do not move settings from a recognized fenced configuration block into a new Project Config section.
 
-If an active override contains only host-specific policy and has no explicit project-memory target, resolve the knowledge target with the user before branching; do not generate project knowledge over the override or bypass it by silently editing an inactive root entry. Effective configuration still follows the active instruction chain.
+If an active root override does not explicitly read AGENTS.md, stop before branching as the layout procedure requires. Do not overwrite or bypass overrides, personal files, nested instructions, or external memory targets to claim shared setup.
 
 The eight-section schema below is the generation format for a fresh file or a file already using that format. For a customized owner (including Compass's AGENTS.md), preserve its section structure and configuration block. Investigate the same topics, but propose targeted changes in the existing sections and wait for approval before applying them. Do not recommend replacing the file merely because its headings differ. Any explicitly requested removal or restructuring must be shown in a diff and approved; never drop durable instructions because the scan did not rederive them. A full scan of a standard-format file must carry protected imports, Rules, and host-specific content forward verbatim in the replacement.
 
 ## Before starting
 
-`/helm:log` updates {memory_file} from the project's state, so it needs the full merged, stable state — never an in-progress feature branch. Behavior depends on `git-strategy` in {memory_file}'s recognized configuration block (absence defaults to GitHub Flow, per git.md).
+`/helm:log` updates {memory_file} from the project's state, so it needs the full merged, stable state — never an in-progress feature branch. Record `{run_git_strategy}` and `{run_auto_commit}` from the resolved existing configuration (defaults per git.md) and use those values through this invocation's Git finalization. Project Config Check can save new policy for later runs; it cannot change the current run's branch/commit path.
+
+**No repository or no HEAD:** skip branch setup, Solo branch restrictions, commit, merge, push and promotion. Do not initialize Git. Run the same layout approvals and knowledge assessment on the actual workspace; omit `last-reviewed` until a real HEAD exists. Report generated files as uncommitted. The next Git-backed run can perform a full review.
 
 **Solo Mode** (`git-strategy: solo`):
 - Only proceed if on `main` or `master`. If on any other branch, stop: "log must be run on main or master in Solo Mode. Current branch is {branch} — switch and re-run."
@@ -19,7 +21,13 @@ The eight-section schema below is the generation format for a fresh file or a fi
 - Record the current branch as `{original_branch}` — the workflow returns here at the end, whatever it was.
 - Checkout a fresh branch from main's current tip: update local main (`git pull` if a remote exists), then `git checkout -b docs/log-{YYYYMMDD}` from it. This happens unconditionally — {memory_file} is always scanned from main's own state, never from a feature branch's unmerged work. If a feature branch changes something {memory_file} should reflect, re-run `/helm:log` after that branch merges to main.
 - Call this branch `{branch}` for the rest of this command.
-- If this command exits at any point without writing anything — the user selects Skip at any prompt, or {memory_file} is already up to date — delete `{branch}` and return to `{original_branch}` before exiting. This applies everywhere in this command, not just at the specific case called out later: never leave the user stranded on an empty temporary branch it created. (Gap Update's Outcome A does not qualify — it still bumps the last-reviewed hash, a real change that needs the normal commit path in Step 5.)
+- If neither layout nor knowledge changed or was committed, delete the empty `{branch}` and return to `{original_branch}` before exiting. A scan Skip or current knowledge does not qualify when Step 0 changed layout. Never strand the user on an empty temporary branch, or delete one carrying a layout commit. (Gap Update's Outcome A still bumps the review hash and needs normal finalization.)
+
+## Step 0 — Shared layout
+
+After branch setup, follow the layout procedure's planning, approval, application and read-back steps on the actual branch files. Run this before checking whether knowledge is current. After successful setup, `{memory_file}` is root AGENTS.md. A fresh project defers both files until a full scan is selected; selecting Skip then writes neither.
+
+Record layout writes/commits independently from scan writes. Adapter creation and approved moves count as real changes even if the later assessment says up to date or the user skips the scan. Cancel at layout approval exits with no scan and the empty-branch cleanup; it does not approve a legacy fallback. Commit a completed layout migration separately from any knowledge update under the run's recorded commit policy. Retain its original review marker; do not advance it for layout work.
 
 ## Scope
 
@@ -45,19 +53,23 @@ A `## Rules` section, if present, is **not** part of this schema — it is writt
 
 ## Noise commits
 
-"Noise" means commits that carry no durable knowledge: bug fixes, styling, dependency updates, and routine CRUD. Both the gap assessment and the gap review skip them.
+"Noise" means commits that carry no durable knowledge: bug fixes, styling, dependency updates, routine CRUD, and pure instruction-layout moves/adapter additions. Both the gap assessment and gap review skip them. Exclude this run's own layout commit from knowledge-gap significance; it did not review or change shared knowledge.
 
 ---
 
 ## Step 1 — Assessment
 
+Without HEAD, no saved hash can establish currency. Offer full scan/investigation or Skip without running Git history commands, even if a moved file retains an old marker as provenance. A layout-only move/Skip preserves it; a chosen full scan without HEAD omits it. Do not claim up-to-date knowledge from unavailable history.
+
 First classify the resolved owner as standard-format or customized. A file with custom sections or the recognized Compass-style configuration layout is customized, not a broken standard schema. For a customized owner, skip the standard schema-completeness check and replacement descriptions below. Assess its review hash and meaningful changes normally: no hash offers `Full investigation` or `Skip`; a meaningful gap offers `Gap update`, `Full investigation`, or `Skip`; an unchanged current file reports no update. Explain that both custom update modes investigate and propose targeted edits in the existing structure, then wait for approval before writing. Full investigation covers all topics in Step 3, not a full-file replacement. Continue with Step 2's custom-owner rule and the matching investigation path.
+
+An otherwise empty Rules-only bootstrap from adopt is fresh, not a customized knowledge document. Offer full scan or Skip and preserve its Rules section when generating the standard sections.
 
 Check {memory_file}:
 - Does it exist?
 - Does it have content?
 - Is there a saved commit hash? (look for `<!-- last-reviewed: {hash} -->`)
-- If hash exists, run `git log {hash}..HEAD --oneline` to see the gap
+- If hash exists and HEAD is available, verify it resolves to a commit and is an ancestor of HEAD (`git merge-base --is-ancestor {hash} HEAD`), then run `git log {hash}..HEAD --oneline` to see the gap. An invalid or unrelated marker is reported and offers full investigation; do not run an invalid range or silently treat it as current.
 - How significant is the gap? (ignore noise commits — see Noise commits above)
 - If the file exists and has content, check whether all eight sections from the {memory_file} Schema (above) are present.
 
@@ -77,7 +89,7 @@ If {memory_file} is absent, empty, or has no saved commit hash:
         description: "No update needed"
 
 If {memory_file} exists with a saved commit hash and schema is intact, and there are no meaningful commits since the hash (`git log {hash}..HEAD` is empty, or only noise commits):
-  {memory_file} is already current. Inform the user: "{memory_file} is up to date — no meaningful commits since last review." Do not present any prompt. Proceed to Step 5 — it writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created.
+  {memory_file} is already current. Inform the user: "{memory_file} is up to date — no meaningful commits since last review." Do not present a scan prompt. Proceed to Step 5, retaining any Step 0 layout changes/commits; only the knowledge update is a no-op.
 
 If {memory_file} exists with a saved commit hash, and either schema is broken or there are meaningful commits since the hash:
   Determine recommendation:
@@ -181,8 +193,7 @@ session would struggle to discover quickly from the codebase alone.
 Do not create or modify .claude/rules during full scan unless explicitly
 requested. Safety findings should be proposed, not auto-written.
 
-At the end of the file, append:
-`<!-- last-reviewed: {current HEAD commit hash} -->`
+When a real HEAD exists, append `<!-- last-reviewed: {current HEAD commit hash} -->` at the end of the file. Without HEAD, omit the marker rather than fabricating one. On a genuinely fresh setup, also create CLAUDE.md containing only a standalone `@AGENTS.md` import; verify both together before claiming setup complete.
 
 Be concise. Target under 150 lines. Do not pad.
 For a standard-format owner, write directly after the chosen full scan; no additional write approval is needed. A customized owner still requires the proposed-diff approval above.
@@ -238,7 +249,13 @@ Ask for confirmation before writing.
 
 ## Step 5 — Commit and finalize
 
-If nothing was written (the "{memory_file} is already up to date" case in Step 1, or the user selected Skip anywhere): skip commit, merge, and environment promotion below — there is nothing to act on. Under GitHub Flow, still delete `{branch}` and return to `{original_branch}` (per Before starting's cleanup rule) — do not skip that part. Either way, proceed to Step 6 to report the outcome.
+With no repository or no HEAD, skip all Git finalization and report the actual file changes as uncommitted.
+
+If neither layout nor knowledge changed or was committed: skip commit, merge, and environment promotion below. Under GitHub Flow, delete the empty `{branch}` and return to `{original_branch}`. An up-to-date assessment or scan Skip does not erase Step 0 changes: if layout changed, finalize it normally and report knowledge as unchanged/skipped. Do not delete a branch carrying a layout commit as though it were empty.
+
+Use `{run_git_strategy}` and `{run_auto_commit}` throughout the existing finalization below. Commit only remaining uncommitted workflow changes; do not recommit the separate layout commit. If commit approval is declined, leave the actual files and branch for review and stop before merge/push.
+
+If only a separately committed layout change remains under GitHub Flow and `{run_auto_commit}` is off, confirm its merge unless that action was already explicitly approved. Approval to commit the layout alone is not approval to merge or push it. Push always retains its own confirmation.
 
 Otherwise, commit per git.md's Auto-Commit rule: silent if `git-auto-commit: true`, otherwise ask for confirmation before committing, merging, and pushing together. Either way, push itself always requires its own confirmation regardless of `git-auto-commit` — git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions. Environment promotion's branch-selection prompt below already serves as that confirmation for environment-branch pushes; under GitHub Flow, confirm separately before step 2's `git push origin main`, even when the commit above was silent.
 
@@ -296,7 +313,7 @@ If Push selected: `git push origin main`, then run Environment promotion above.
 
 **GitHub Flow:**
 1. Commit on `{branch}`.
-2. Merge into main: `git checkout main`, `git merge {branch} --no-ff -m "{same message as the commit above}"`. Before pushing, confirm:
+2. Merge into main: `git checkout main`, `git merge {branch} --no-ff -m "{same message as the commit above}"`. If only Step 0 produced a commit, use that layout commit's message; do not assume a knowledge commit exists. Before pushing, confirm:
 
    AskUserQuestion:
      question: "Push main now? This publishes the merged commit to origin."
@@ -319,11 +336,13 @@ If Push selected: `git push origin main`, then run Environment promotion above.
 
 ## Step 6 — Confirm completion
 
-If a full scan or gap update was written this run, verify it before reporting: read {memory_file} back and confirm it contains the `<!-- last-reviewed: {hash} --> ` comment with the hash just written, and that the sections claimed as updated actually reflect the intended content. If verification fails for any section, report the error for that section instead of folding it into a clean Outcome below — {memory_file} is the orientation layer every future session relies on, so a silently incomplete write is worse than a loud one.
+If a full scan or gap update was written this run, verify it before reporting: read {memory_file} back and confirm the claimed section changes and the review hash just written (or its intentional absence without HEAD). Verify the CLAUDE.md import and preserved Claude-specific additions too. If layout alone changed, verify against its approved diff and unchanged review point. Verify both host paths resolve the same shared owner/settings and report active override/nested limitations. If any check fails, report it and the actual files/commits left behind instead of a clean completion.
 
 Report:
 
 - Outcome: {up to date / full scan written / gap update written / skipped}
+- Shared setup: {already connected / adapter created / migrated / reconciled / cancelled / incomplete}, with actual owner and adapter paths
+- Layout and knowledge commits: {separate hashes, or uncommitted/no changes}; Pushed: {yes / no / N/A}
 - Last-reviewed commit: {new hash, or unchanged if nothing written}
 - Sections updated: {list, or none}
 - Environments promoted: {list or none}

@@ -33,4 +33,4 @@ Check the installed version and enabled state, then start a fresh session. To re
 codex plugin remove helm@claude-helm
 ```
 
-Adopted rules and project ledgers remain in the project after removal. Read [Compatibility](compatibility.html) for the AGENTS.md bridge and shared rule storage.
+Adopted rules and project ledgers remain in the project after removal. Read [Compatibility](compatibility.html) for the shared AGENTS.md owner, Claude adapter, and shared rule storage.

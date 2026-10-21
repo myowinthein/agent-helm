@@ -56,7 +56,7 @@ flowchart TD
 
 ### Before starting
 
-Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
+Behavior depends on `git-strategy` in AGENTS.md's Project Config (absence defaults to GitHub Flow, per git.html):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch. No branch is created: every commit lands directly on main as it happens.
 - **GitHub Flow**: records the current branch, then checks out a fresh branch from main's current tip (`test/{date}`). Every commit (per cluster, per priority tier, the ledger) lands on this branch, mirroring `/helm:refactor`'s single-branch-per-run model, merged back to main once at the end (see Step 7) rather than pushing to main after each cluster. Returns to the original branch at the end.

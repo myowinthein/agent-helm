@@ -10,13 +10,13 @@ The git workflow rules for a project. Defines two strategies (Solo and GitHub Fl
 
 ## Configuration owner
 
-Use the rule file's Project memory and configuration procedure before Git actions. Configuration may live in CLAUDE.md, AGENTS.md, or an explicit project's memory target. Both the standard Project Config section and Compass's fenced configuration block are recognized. Preserve wrappers and active override precedence, and resolve invalid values, conflicting declarations, missing targets, or cycles before branching. Copied rules carry this procedure themselves; no loaded plugin runtime is required. The examples below use CLAUDE.md as the original layout.
+Use the rule file's Project memory and configuration procedure before Git actions. Configuration may live in CLAUDE.md, AGENTS.md, or an explicit project's memory target. Both the standard Project Config section and Compass's fenced configuration block are recognized. Preserve wrappers and active override precedence, and resolve invalid values, conflicting declarations, missing targets, or cycles before branching. Copied rules carry this procedure themselves; no loaded plugin runtime is required. New shared setup uses AGENTS.md as owner and a CLAUDE.md import adapter. Only log offers reviewed migration; other workflows preserve existing owners. The examples below use AGENTS.md.
 
 ## Git Strategy
 
 ```mermaid
 flowchart TD
-  Start([Project loads git.md]) --> Check{git-strategy: solo<br/>in CLAUDE.md<br/>Project Config?}
+  Start([Project loads git.md]) --> Check{git-strategy: solo<br/>in AGENTS.md<br/>Project Config?}
   Check -->|yes| Solo[Solo Mode active]
   Check -->|no| Flow[GitHub Flow active<br/>reads git-merge-strategy]
 
@@ -24,13 +24,13 @@ flowchart TD
   Flow --> Sections2[Apply:<br/>Universal, Conventional Commits,<br/>Code Quality, GitHub Flow, Branch Naming,<br/>Deployment, optional Environment Branches]
 ```
 
-The `git-strategy` flag lives in `CLAUDE.md` under `## Project Config`. Set to `solo` for Solo Mode or `github-flow` for GitHub Flow. Absence defaults to GitHub Flow. Exactly one strategy is active at a time. The `git-auto-commit: true` flag is independent of strategy. The `git-merge-strategy` flag applies only under GitHub Flow and sets the PR merge method (`squash`, `rebase`, or `merge`; defaults to `squash`).
+The `git-strategy` flag lives in `AGENTS.md` under `## Project Config`. Set to `solo` for Solo Mode or `github-flow` for GitHub Flow. Absence defaults to GitHub Flow. Exactly one strategy is active at a time. The `git-auto-commit: true` flag is independent of strategy. The `git-merge-strategy` flag applies only under GitHub Flow and sets the PR merge method (`squash`, `rebase`, or `merge`; defaults to `squash`).
 
-After reading `CLAUDE.md`, confirm which mode is active before taking any git action. State it explicitly: "Solo Mode active" or "GitHub Flow active."
+After reading `AGENTS.md`, confirm which mode is active before taking any git action. State it explicitly: "Solo Mode active" or "GitHub Flow active."
 
 ### Solo Mode
 
-Activate by declaring `git-strategy: solo` in `CLAUDE.md`. When active:
+Activate by declaring `git-strategy: solo` in `AGENTS.md`. When active:
 
 - Commit directly to `main`. No feature branches required.
 - No PR required.
@@ -95,7 +95,7 @@ Types mirror Conventional Commits types. Lowercase, hyphens only, no spaces.
 
 Governs every commit made by any command in this plugin, by default; individual commands don't restate this, only follow it, unless an explicit exception applies (see below).
 
-Set with `git-auto-commit: true` in `CLAUDE.md`. Independent of git strategy: works with both Solo and GitHub Flow. Absence defaults to off: ask for confirmation before every commit.
+Set with `git-auto-commit: true` in `AGENTS.md`. Independent of git strategy: works with both Solo and GitHub Flow. Absence defaults to off: ask for confirmation before every commit.
 
 When active:
 
@@ -204,16 +204,16 @@ Environment branches are long-lived branches that are not `main`, `master`, or f
 - Hotfixes follow the same rule: `main` first, then promote.
 - If CI is configured, it must pass before promoting.
 
-**Promotion model**: governs `/helm:ship`'s release promotion specifically. Set with `environment-promotion` in CLAUDE.md's Project Config (`fan-out` or `chain`; absence defaults to `fan-out`).
+**Promotion model**: governs `/helm:ship`'s release promotion specifically. Set with `environment-promotion` in AGENTS.md's Project Config (`fan-out` or `chain`; absence defaults to `fan-out`).
 
 Before promoting anything, confirm which model is active, the same self-check as `git-strategy` above. State it explicitly: "Fan-out promotion" or "Chain promotion."
 
 - **Fan-out** (default): `main` promotes directly to any combination of environment branches, independently, with no ordering between them. Simple parallel deploy targets.
 - **Chain**: environments form an ordered pipeline (e.g. `main → staging → production`). Only the first tier (`staging`, `stage`, `uat`, `preprod`) is ever merged into directly from `main`. A later tier (`production`, `prod`) is never a direct deploy target; it's only reached by merging the previous tier's branch forward into it, one tier at a time.
 
-`/helm:legal`, `/helm:log`, `/helm:manifest`, `/helm:adopt`, `/helm:env`, and `/helm:test` always use fan-out for promoting their own generated content or fixes (legal documents, `CLAUDE.md`, `README.md`, rule files, env/gitignore fixes, tests), regardless of this setting: those are content syncs, not a release pipeline, so there's no tier for the change to pass through.
+`/helm:legal`, `/helm:log`, `/helm:manifest`, `/helm:adopt`, `/helm:env`, and `/helm:test` always use fan-out for promoting their own generated content or fixes (legal documents, `AGENTS.md`, `README.md`, rule files, env/gitignore fixes, tests), regardless of this setting: those are content syncs, not a release pipeline, so there's no tier for the change to pass through.
 
-The [`/helm:ship`](../commands/ship.html) command detects environment branches automatically and offers a multi-select for which to promote alongside the main release (filtered to first-tier branches only under `chain` mode). [`/helm:legal`](../commands/legal.html), [`/helm:log`](../commands/log.html), [`/helm:manifest`](../commands/manifest.html), [`/helm:adopt`](../commands/adopt.html), [`/helm:env`](../commands/env.html), and [`/helm:test`](../commands/test.html) do the same after committing their changes, so environment branches don't fall behind main on legal documents, `CLAUDE.md`, `README.md`, the installed rule files, env/gitignore fixes, or tests.
+The [`/helm:ship`](../commands/ship.html) command detects environment branches automatically and offers a multi-select for which to promote alongside the main release (filtered to first-tier branches only under `chain` mode). [`/helm:legal`](../commands/legal.html), [`/helm:log`](../commands/log.html), [`/helm:manifest`](../commands/manifest.html), [`/helm:adopt`](../commands/adopt.html), [`/helm:env`](../commands/env.html), and [`/helm:test`](../commands/test.html) do the same after committing their changes, so environment branches don't fall behind main on legal documents, `AGENTS.md`, `README.md`, the installed rule files, env/gitignore fixes, or tests.
 
 ## See also
 
