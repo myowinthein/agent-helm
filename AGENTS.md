@@ -1,10 +1,10 @@
-# claude-helm
+# agent-helm
 
 ## Project Identity
 
-**Name:** claude-helm (plugin name: `helm`)
+**Name:** agent-helm (plugin name: `helm`)
 **Stack:** Plugin is pure markdown (no runtime, no framework, no dependencies); a Jekyll + just-the-docs GitHub Pages site lives alongside it in the same repo
-**Purpose:** A Claude and Codex workflow plugin for solo developers. Ten slash commands and two rule files covering shipping, refactoring, testing, documenting, legal-document generation, env auditing, commit-history normalization, rule adoption, and long-term archiving of your own work.
+**Purpose:** A Claude and Codex workflow plugin for solo developers. Ten shared workflows and two rule files covering shipping, refactoring, testing, documenting, legal-document generation, env auditing, commit-history normalization, rule adoption, and long-term archiving of your own work.
 **Blast radius:** Changes to `workflows/*.md` affect every user who has the plugin installed. Changes to `rules/` affect every project that adopted them via `/helm:adopt`.
 
 ## Project Config
@@ -17,7 +17,7 @@ readme-style: custom
 
 No install/build step for the plugin itself: its skills and workflows are Markdown files. Run `ruby scripts/test_plugin.rb` for offline package checks and `ruby scripts/check_clients.rb` for native CLI discovery. The Jekyll docs site does have a local test step: `bundle install`, then `bundle exec rake test` to catch broken links, missing images, and malformed HTML before shipping (see Known Traps for why this isn't automated).
 
-Release: `/helm:ship` (handles version bump, tag, push, and GitHub Release creation)
+Release: the Helm ship workflow (`/helm:ship` in Claude, or select ship from Codex's skill picker) handles version bump, tag, push, and GitHub Release creation.
 
 ## Architecture Pointers
 
@@ -41,7 +41,7 @@ Release: `/helm:ship` (handles version bump, tag, push, and GitHub Release creat
 - Ledger files (`.helm/refactor-log.json`, and `.helm/test-log.json` if a project runs `/helm:test`, including their legacy copies) are append-only audit trails: a scan appends new findings, it never overwrites the array. `normalize-log.json` is a different shape (one entry per branch, replaced/dropped as branches come and go), not append-only in the same sense.
 - Docs pages (`docs/commands/`, `docs/rules/`) must stay behaviorally consistent with the command/rule files they describe, but nothing enforces this automatically; drift is caught only by manual review or a `/helm:refactor` pass.
 - AskUserQuestion caps at 4 options: any command building a picker from a dynamic list (environment branches, refactor categories, legal documents) must merge or truncate down to 4, never assume the list stays small.
-- `README.md` ships in three real contexts (Jekyll site homepage, GitHub.com's own renderer, the distributed plugin package via `marketplace.json`), only one of which resolves relative links to `docs/`. Its doc-page links and banner image use absolute `https://myowinthein.github.io/claude-helm/...` URLs for this reason: don't "simplify" them back to relative paths.
+- `README.md` ships in three real contexts (Jekyll site homepage, GitHub.com's own renderer, the distributed plugin package via `marketplace.json`), only one of which resolves relative links to `docs/`. Its doc-page links and banner image use absolute `https://myowinthein.github.io/agent-helm/...` URLs for this reason: don't "simplify" them back to relative paths.
 - `/helm:refactor` uses a `refactor/*` branch and offers a PR option regardless of `git-strategy`, including under Solo Mode (a formally documented exception in `rules/git.md`, same reasoning as `/helm:ship`'s release-commit exception): refactor sessions are multi-wave and resumable by design, and a branch is what makes leaving work between runs possible.
 - `/helm:legal` skips its document picker entirely in two cases: nothing about the project needs legal docs (asks to exit first, since a scan miss shouldn't silently skip a project that does need them), or every applicable document already exists and is unchanged since it was last generated. Neither case writes anything.
 
@@ -70,7 +70,7 @@ When consulting Claude for a review or discussion, use `claude --model claude-op
 
 ## Rules
 
-This project follows the rules shipped in claude-helm:
+This project follows the rules shipped in agent-helm:
 - rules/git.md
 - rules/safety.md
 

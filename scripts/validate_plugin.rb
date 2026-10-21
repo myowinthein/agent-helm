@@ -34,7 +34,7 @@ module HelmValidation
     root = Pathname(root).realpath
     manifest = JSON.parse(read(resource(root, ".claude-plugin/plugin.json")))
     marketplace = JSON.parse(read(resource(root, ".claude-plugin/marketplace.json")))
-    check(manifest.fetch("name") == "helm" && marketplace.fetch("name") == "claude-helm", "Existing plugin identities changed")
+    check(manifest.fetch("name") == "helm" && marketplace.fetch("name") == "agent-helm", "Expected plugin helm in marketplace agent-helm")
     check(manifest.fetch("skills") == "./skills/" && manifest.fetch("commands") == [], "Expose skills only; command auto-discovery creates duplicate entries")
     check(manifest.fetch("version").match?(/\A\d+\.\d+\.\d+\z/), "Invalid plugin version")
     entry = marketplace.fetch("plugins").find { |item| item["name"] == manifest["name"] }

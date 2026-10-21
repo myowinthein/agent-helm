@@ -10,8 +10,8 @@ permalink: /docs/setup/claude-terminal.html
 In Claude Code:
 
 ```text
-/plugin marketplace add myowinthein/claude-helm
-/plugin install helm@claude-helm
+/plugin marketplace add myowinthein/agent-helm
+/plugin install helm@agent-helm
 /reload-plugins
 ```
 
@@ -20,7 +20,7 @@ Start a fresh session in your project. Type `/helm:` and check that each of the 
 To update:
 
 ```text
-/plugin update helm@claude-helm
+/plugin update helm@agent-helm
 /reload-plugins
 ```
 
@@ -29,7 +29,7 @@ Start a fresh session and check the plugin version. If an older cache remains ac
 To remove:
 
 ```text
-/plugin uninstall helm@claude-helm
+/plugin uninstall helm@agent-helm
 /reload-plugins
 ```
 

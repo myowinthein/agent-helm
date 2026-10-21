@@ -63,12 +63,12 @@ Decide based on what is present:
 ## Step 2 — Scan existing rules
 
 First detect active read directives/imports in {adopt_file}, the resolved {memory_file}, and the explicit memory chains of both for each rule, even when {adopt_file} is absent. Resolve paths relative to their referring file and distinguish actual instructions from quoted examples. Record all effective targets; simultaneous different targets are a conflict to reconcile, not permission to pick the first substring. Classify each pointer as:
-- **marketplace ref** — points to the exact stable marketplace `rules/{name}` target
+- **marketplace ref** — points to the exact stable marketplace `rules/{name}` target under the current `agent-helm` checkout or the legacy `claude-helm` checkout; record the actual path and verify its plugin identity and readability before using it
 - **local ref** — points to the exact consumer `.claude/rules/{name}` target
 - **no ref** — neither is present
 
 Then classify each of `.claude/rules/git.md` and `.claude/rules/safety.md` as one of:
-- **Helm-marked** — file exists and starts with `<!-- helm-rule: claude-helm@v{X.Y.Z} -->`; record version
+- **Helm-marked** — file exists and starts with `<!-- helm-rule: agent-helm@v{X.Y.Z} -->` or the legacy `<!-- helm-rule: claude-helm@v{X.Y.Z} -->`; record version. Both identify Helm-managed copies. A rename alone never authorizes rewriting a preserved copy or its marker.
 - **Foreign** — file exists without a valid leading Helm version marker
 - **Referenced** — file does not exist and a marketplace ref is present
 - **Absent** — file does not exist and no marketplace ref is present (a stray local ref does not block this — Step 4 rewrites it)
@@ -77,8 +77,9 @@ Classification is driven by the file first; the reference type only disambiguate
 
 Resolve `{rule_source_root}` and `current_version` together before offering an update:
 
-- In Claude, prefer `~/.claude/plugins/marketplaces/claude-helm/`, preserving the existing copy and reference update behavior. Verify its manifest names plugin `helm` and both rule files exist. Read its version from `.claude-plugin/plugin.json`.
-- If that Claude marketplace installation has no manifest, use the loaded `{package_root}` only after verifying the same identity and files. Report why the fallback was needed, its path, and its version explicitly. If a marketplace manifest exists but is invalid, has the wrong identity, or references missing rules, report the inconsistent installation and stop instead of silently using another source. With a valid marketplace source, prefer it as before; if its version differs from the loaded package, show both versions and the selected copy source. Never silently downgrade newer project rules. Reference mode cannot be newly installed without the stable Claude marketplace source.
+- In Claude, prefer `~/.claude/plugins/marketplaces/agent-helm/`. If it has no manifest, check the legacy stable checkout at `~/.claude/plugins/marketplaces/claude-helm/`. For either source, verify its manifest names plugin `helm` and both rule files exist. Read its version from `.claude-plugin/plugin.json`. Record the actual selected stable root rather than substituting the new name into an old path.
+- If neither stable checkout has a manifest, use the loaded `{package_root}` only after verifying the same identity and files. Report any legacy or loaded-package fallback, its path, and its version explicitly. If a candidate marketplace manifest exists but is invalid, has the wrong identity, or references missing rules, report the inconsistent installation and stop instead of silently falling back. If the selected stable source's version differs from the loaded package, show both versions and the selected copy source. Never silently downgrade newer project rules. Reference mode cannot be newly installed without a verified stable Claude marketplace source.
+- Existing references keep their actual current or legacy targets during connection/no-change actions, even when a newer-named checkout is available. The rename never authorizes repointing instructions or deleting an old marketplace checkout. A reviewed mode switch may replace exact verified legacy pointers under the same dependency checks as current pointers.
 - In Codex, use the loaded `{package_root}` and its `.claude-plugin/plugin.json`, not a guessed Claude or Codex cache path. Verify identity and both rules. Codex installs copies; it does not create version-specific cache references.
 - If no valid source is available, report the missing or inconsistent paths and stop before writing. Source selection never grants permission to alter another installation.
 
@@ -226,7 +227,7 @@ Cancellation before mutation writes nothing. If a later write/read-back fails or
 
 The Copy or Update and Reference paths both update {adopt_file} the same way — only the snippet content differs. Wherever a path says "update the `## Rules` section with {snippet}", do this:
 
-- Identify Helm entries by their exact resolved rule targets: `.claude/rules/git.md`, `.claude/rules/safety.md`, or the verified stable marketplace's `rules/git.md` and `rules/safety.md`. A directory prefix, basename alone, quoted example, or mention of another plugin does not establish ownership. Preserve custom entries such as `.claude/rules/security.md` byte-for-byte. Change only the approved Helm pointer spans, preserving user prose, other imports, existing Skip pointers, and section order. If a line combines Helm and unrelated instructions and cannot be patched unambiguously, stop for a reviewed patch instead of replacing the line/section wholesale. Reuse effective pointers outside this section; a mode switch requiring a change there follows the entry-scope reconciliation gate above. Create a new `## Rules` section only when required and none exists, never add a second heading or duplicate pointer.
+- Identify Helm entries by their exact resolved rule targets: `.claude/rules/git.md`, `.claude/rules/safety.md`, or `rules/git.md` and `rules/safety.md` in a verified current or legacy stable marketplace checkout. A directory prefix, basename alone, quoted example, or mention of another plugin does not establish ownership. Preserve custom entries such as `.claude/rules/security.md` byte-for-byte. Change only the approved Helm pointer spans, preserving user prose, other imports, existing Skip pointers, and section order. If a line combines Helm and unrelated instructions and cannot be patched unambiguously, stop for a reviewed patch instead of replacing the line/section wholesale. Reuse effective pointers outside this section; a mode switch requiring a change there follows the entry-scope reconciliation gate above. Create a new `## Rules` section only when required and none exists, never add a second heading or duplicate pointer.
 - The snippets show a complete two-rule install. For per-file review, add entries only for successfully installed rules; preserve an existing entry for a skipped file, but never add a new one for it. If every file was skipped and no connection was selected, leave the entry untouched.
 - When an existing review marker is at end of file, insert any new Rules/directives before it so it stays at the end without changing its value. Preserve an existing non-final marker's placement during targeted adoption; do not relocate it as unrelated cleanup. New knowledge files produced by log put their review marker last.
 - If {adopt_file} exists: write silently — the install mode was already chosen in Step 3.
@@ -238,13 +239,13 @@ The Copy or Update and Reference paths both update {adopt_file} the same way —
 - Create `.claude/rules/` if it does not exist.
 - For each of `git.md`, `safety.md`:
   - Read the selected source from `{rule_source_root}/rules/{name}`. Write only the files approved by the chosen mode or per-file review; skipped files and preserved current/newer copies must remain byte-for-byte unchanged. Per-file rollback approval covers only that named file and version.
-  - Prepend a marker line: `<!-- helm-rule: claude-helm@v{current_version} -->`
+  - Prepend a marker line: `<!-- helm-rule: agent-helm@v{current_version} -->`
   - Write to `.claude/rules/{name}`.
 - Update {adopt_file}'s `## Rules` section (see *Updating {adopt_file}'s `## Rules` section* above) with this snippet, so the copied rules load as context:
   ```
   ## Rules
 
-  This project follows the rules shipped in claude-helm:
+  This project follows the rules shipped in agent-helm:
   - .claude/rules/git.md
   - .claude/rules/safety.md
 
@@ -297,9 +298,9 @@ If every foreign file was skipped, write nothing and create no entries; do not i
   ```
   ## Rules
 
-  This project follows the rules shipped in claude-helm:
-  - ~/.claude/plugins/marketplaces/claude-helm/rules/git.md
-  - ~/.claude/plugins/marketplaces/claude-helm/rules/safety.md
+  This project follows the rules shipped in agent-helm:
+  - {rule_source_root}/rules/git.md
+  - {rule_source_root}/rules/safety.md
 
   At the start of every session, read the rule files at the paths above and follow them.
   If either path is missing, inform the user: "helm rules are referenced in {adopt_file} but the
@@ -307,6 +308,8 @@ If every foreign file was skipped, write nothing and create no entries; do not i
   Claude's plugin setup, or use Claude's adopt workflow to switch the shared installation to copies.
   Do not create competing copies or assume a Claude plugin command is available in Codex."
   ```
+
+  Expand `{rule_source_root}` to the verified stable marketplace path selected in Step 2, normally `~/.claude/plugins/marketplaces/agent-helm`. Never write the placeholder literally or invent a renamed path that is not installed.
 
 ### No-change path
 
@@ -409,7 +412,7 @@ Include one written/updated line per file actually written, and one skipped line
 For Reference:
 ```
 ADOPT COMPLETE
-- {adopt_file} {created / updated}: ## Rules section references claude-helm rules at v{current_version}
+- {adopt_file} {created / updated}: ## Rules section references agent-helm rules at v{current_version}
 - Pushed:   {yes / no — push manually when ready / N/A, no remote}
 ```
 

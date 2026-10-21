@@ -1,15 +1,15 @@
-title: claude-helm
+title: agent-helm
 description: A workflow plugin for Claude and Codex, built for solo developers.
 url: "https://myowinthein.github.io"
-baseurl: "/claude-helm"
+baseurl: "/agent-helm"
 remote_theme: just-the-docs/just-the-docs@v0.12.0
 nav_sort: order
 nav_external_links:
   - title: GitHub
-    url: https://github.com/myowinthein/claude-helm
+    url: https://github.com/myowinthein/agent-helm
     hide_icon: false
 
-footer_content: "claude-helm &mdash; MIT License"
+footer_content: "agent-helm &mdash; MIT License"
 
 plugins:
   - jekyll-seo-tag

@@ -81,12 +81,14 @@ Project markers include `.git` (directory or worktree file), AGENTS.md, CLAUDE.m
 
 For each expected rule, record its local existence, marker/version, effective pointers and readability:
 
-- **Helm-marked:** a local file begins with `<!-- helm-rule: claude-helm@v{X.Y.Z} -->`.
+- **Helm-marked:** a local file begins with `<!-- helm-rule: agent-helm@v{X.Y.Z} -->` or the legacy `<!-- helm-rule: claude-helm@v{X.Y.Z} -->`. Both identify managed copies; the rename alone does not rewrite existing markers.
 - **Foreign:** a local file lacks that leading marker and remains protected until its overwrite/deletion is approved.
 - **Referenced:** no local file, but an existing marketplace pointer exists; its target must be readable before connection succeeds.
 - **Absent:** no local file or marketplace pointer. A dangling local pointer requires repair.
 
-Claude prefers the verified stable marketplace checkout at `~/.claude/plugins/marketplaces/claude-helm/`. Its manifest must identify plugin `helm` and both rules must exist. A missing marketplace manifest permits a reported, verified loaded-package fallback for copies; an invalid existing installation stops instead. Different loaded/marketplace versions are disclosed. New reference mode requires the stable source.
+Claude prefers the verified stable marketplace checkout at `~/.claude/plugins/marketplaces/agent-helm/`. If its manifest is absent, it checks the legacy `~/.claude/plugins/marketplaces/claude-helm/` checkout. Either manifest must identify plugin `helm` and both rules must exist. If neither stable manifest exists, copies may use a reported, verified loaded-package fallback. An invalid candidate installation stops instead of silently falling back. Different loaded/marketplace versions and any fallback are disclosed. New reference mode requires a verified stable source and writes its actual selected path.
+
+Connection and no-change actions preserve existing current or legacy references even when a renamed checkout is available. A reviewed mode switch can replace exact verified legacy pointers using the same dependency checks; the rename itself does not repoint instructions or remove an old marketplace.
 
 Codex uses its actual loaded package and matching manifest version, without guessing cache paths. It installs copies, or connects to existing readable Claude references without changing their mode. Unavailable references cannot be silently replaced with competing copies.
 
@@ -116,7 +118,7 @@ For a shared owner with both required readable rules and a missing Claude adapte
 
 Collect all per-file decisions before mutation. The plan shows exact rule writes/deletions, pointer patches, entry/adapter creation, and retained/missing rules. The selected action and per-file answers authorize those concrete changes, without redundant approval. Changed inputs, unsafe destinations or conflicting pointers block application.
 
-Only exact resolved Helm targets are managed: local `git.md`/`safety.md` and those two files in the verified stable marketplace source. A `.claude/rules/` prefix alone is insufficient. Custom pointers such as `.claude/rules/security.md`, unrelated prose and other imports remain unchanged. Ambiguous combined lines require a reviewed patch. There is no whole-section replacement or duplicate Rules heading. An existing final review marker stays last, with additions inserted before it and its value preserved. Targeted updates leave legacy non-final marker placement intact.
+Only exact resolved Helm targets are managed: local `git.md`/`safety.md` and those two files in a verified current or legacy stable marketplace checkout. A `.claude/rules/` prefix alone is insufficient. Custom pointers such as `.claude/rules/security.md`, unrelated prose and other imports remain unchanged. Ambiguous combined lines require a reviewed patch. There is no whole-section replacement or duplicate Rules heading. An existing final review marker stays last, with additions inserted before it and its value preserved. Targeted updates leave legacy non-final marker placement intact. Newly written rule copies use the `agent-helm` marker; preserved copies keep their original marker and version.
 
 - **Copy/update/repair:** writes only approved rule copies from the selected source with its version marker, and adds/patches only their approved explicit read directives. Current/newer preserved files and skipped files retain their bytes.
 - **Foreign-file review:** asks Overwrite/Skip per foreign file. A missing/outdated companion is included through its own explicit decision, never silently bundled into another file's overwrite. All foreign files skipped means no entry/adapter creation or rule writes. Partial installation is disclosed; Skip never adds a foreign pointer just to imitate Claude's native loading.
