@@ -89,11 +89,13 @@ manifests, folder structure, and any other available signals to decide:
 
   If the scan finds multiple independent web packages or apps (e.g. a workspace layout with several `package.json` files each defining their own framework, under `apps/`, `packages/`, or similar): ask which one the legal documents belong to, since a monorepo usually has one public-facing surface — then apply the scenarios below scoped to that package only.
 
+  For 2–4 detected packages, use the single-select question below. For more than 4, do not build an oversized picker or truncate the package list: present every package in a numbered list in ordinary conversation, including its framework and project-relative path, then ask the developer to reply with one number or exact package path. Wait for a reply and resolve it to exactly one detected package before proceeding; re-ask for an ambiguous or unknown selection. This same fallback applies on both hosts.
+
     AskUserQuestion:
       question: "Multiple web packages found: {list}. Which one should receive the legal documents?"
       header:   "Monorepo target"
       multiSelect: false
-      options: one entry per detected package, e.g.:
+      options: one entry per detected package (2–4 total), e.g.:
         - label: "{package name}"
           description: "{detected framework and path, e.g. \"Next.js app in apps/web\"}"
 
@@ -172,7 +174,14 @@ Infer candidates from the project:
 - Repo issues URL — from the git remote, `package.json`, or `composer.json`.
 - Support/contact email — from `package.json` (`bugs.email`, `author.email`), `composer.json` (`authors.email`), or a `SECURITY.md` / `CONTACT` file.
 
-Ask which to use. Build the option list from the candidates found (include one option per candidate, in the order above), keeping the question at 2–4 options; if fewer than two candidates were found, add an "Enter a contact manually" option so there are at least two:
+Deduplicate candidates by contact value, then choose the question shape by the number found:
+
+- **No candidates:** do not show a picker. Ask in ordinary conversation: "No contact point was found. Enter the email address, URL, or postal address to use in these documents." Wait for the actual contact before continuing; do not invent a candidate or treat an unanswered question as a contact.
+- **One candidate:** use the question below with that candidate and an "Enter a contact manually" option, making exactly two options.
+- **Two to four candidates:** use the question below with one option per candidate, in the order above, making two to four options.
+- **More than four candidates:** list every candidate in a numbered list in ordinary conversation and ask for one number or a manually entered contact. Do not truncate the list. Wait for a reply and resolve it to one contact; re-ask for ambiguous or unknown selections.
+
+Use this picker only in the one-to-four-candidate cases above:
 
   AskUserQuestion:
     question: "How should users contact the owner in the legal documents? Required — a legal document needs a real contact."
@@ -185,8 +194,10 @@ Ask which to use. Build the option list from the candidates found (include one o
         description: "Users open an issue at {issues URL}"
       - label: "Email"                        ← include only if an email was found; show it in the description
         description: "Users email {email}"
+      - label: "Enter a contact manually"      ← include only when exactly one candidate was found
+        description: "Type a different email address, URL, or postal address"
 
-  The built-in Other option also lets the developer type any contact. Whatever is chosen or typed must be a valid contact — an email address, a URL, or a postal address. If the response is empty or not a recognisable contact, re-ask; do not proceed without one.
+Use distinct labels/descriptions when multiple candidates have the same type. The built-in Other response, or the shared runtime's free-text equivalent, also lets the developer type a contact. If "Enter a contact manually" is selected, ask for the actual value and wait; the option label itself is not a contact. On every path, whatever is chosen or typed must be a valid contact — an email address, a URL, or a postal address. If the response is empty or not a recognisable contact, re-ask; do not proceed without one.
 
 Record the resolved contact and its type (email / issue URL / page / postal) for the Contact section in Step 3.
 
