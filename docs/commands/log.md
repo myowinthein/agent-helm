@@ -14,35 +14,25 @@ In Codex, select the log workflow from the skill picker. Both hosts follow the s
 
 ```mermaid
 flowchart TD
-  Start([Run log]) --> Preflight[Read both entries and configuration<br/>Check overrides and uncommitted instruction edits]
-  Preflight --> Conflict{Unresolved configuration<br/>or shadowed shared entry?}
-  Conflict -->|yes| Resolve[Explain and resolve before Git changes]
-  Conflict -->|no| Git{Repository with HEAD?}
-  Git -->|no| Workspace[Use workspace<br/>No Git initialization or review hash]
-  Git -->|yes| Strategy{Recorded git strategy}
-  Strategy -->|Solo| Solo{On main/master?}
-  Solo -->|no| Stop[/Stop: switch branches first/]
-  Solo -->|yes| Snapshot
-  Strategy -->|GitHub Flow| Branch[Branch from updated main<br/>Recheck configuration]
-  Branch --> Snapshot[Pin review_head before layout commits]
-  Snapshot --> Layout
-  Workspace --> Layout
-  Layout{Instruction layout}
-  Layout -->|Neither| Fresh[Defer both files until full scan]
-  Layout -->|Already connected| Assess
-  Layout -->|Missing adapter or migration| Proposal[Show adapter or migration diff<br/>Preserve unique instructions and resolve conflicts]
-  Proposal --> Approval{Apply / revise / cancel}
-  Approval -->|revise| Proposal
-  Approval -->|cancel| Cleanup[/No writes; clean up empty branch/]
-  Approval -->|apply| Verify[Apply and verify both files<br/>Separate layout commit when authorized]
-  Verify --> Assess
-  Fresh --> Assess[Assess knowledge and review point]
-  Assess -->|Current or scan Skip| Finalize
-  Assess -->|Full scan| Full[Investigate all packages and topics<br/>Preserve baseline knowledge<br/>Review existing-file diff]
-  Assess -->|Gap update| Gap[Inspect every commit and changed path<br/>Propose targeted changes]
-  Full --> Finalize[Verify and finalize actual changes<br/>Use invocation's recorded Git policy]
-  Gap --> Finalize
-  Finalize --> Report([Report layout, knowledge, commits and push status])
+  Start([Run log]) --> Prepare[Resolve owner, policy and main/master base]
+  Prepare --> Branch[Solo on base; GitHub Flow on unique branch]
+  Prepare -->|log without repo or HEAD| Work
+  Branch --> Work[Workflow assessment, choices and approved edits]
+  Work --> Changed{Any workflow changes or commits?}
+  Changed -->|no| Noop[Safe empty-branch cleanup and report]
+  Changed -->|log without Git| Uncommitted[Report verified files as uncommitted]
+  Changed -->|with Git and changes| Verify[Verify outputs and required commit approvals]
+  Verify --> Mode{Git strategy?}
+  Mode -->|GitHub Flow| Review[Confirmed branch push and PR handoff; required review and CI]
+  Review -->|pending| Pending[Retain work and report pending state]
+  Review -->|satisfied| Merge[Configured integration strategy]
+  Mode -->|Solo| Push
+  Merge --> Push[Separately confirm publication]
+  Push -->|declined or failed| Pending
+  Push -->|verified published SHA| CI[Required promotion CI passed or not applicable]
+  CI -->|blocked| Pending
+  CI -->|ready| Promote[Optional confirmed fan-out]
+  Promote --> Cleanup[Safe eligible cleanup and report]
 ```
 
 ## Shared layout setup
@@ -74,15 +64,9 @@ Setup runs before the up-to-date check. A later scan Skip or an already-current 
 
 ## Git and scope
 
-Resolve the existing effective strategy and auto-commit policy before Git changes. Invalid or conflicting Helm values require explicit resolution. Check instruction files for uncommitted work, including untracked existing entries; stop instead of incorporating those edits into migration. Do not reset or stash them.
+Use the [shared Git and CI flow](../setup/git-and-ci.html): resolve the actual main/master base and invocation policy, require a clean setup, use a unique GitHub Flow branch (unused suffix on collisions), and revalidate destination ownership/configuration after checkout. Solo stays on the base without a temporary branch. Preserve real drafts/commits on failure; only a genuine no-write/no-commit exit safely returns before deleting its empty branch.
 
-- **Solo Mode:** run only on main/master.
-- **GitHub Flow:** record the original branch and branch from updated main as `docs/log-{date}`. Re-read the actual files before computing a migration diff. If configuration differs from preflight, stop before writing and clean up the empty branch.
-- **No repository or HEAD:** use the workspace, generate no review marker, and make no Git initialization, commit, merge, push or promotion. A marker retained by layout-only or partial work is provenance, not evidence that knowledge is current.
-
-Finish the invocation under the Git policy recorded at its start. Project Config Check may save a different policy for the next run; it does not switch the current finalization path midway through the command.
-
-An unconnected root AGENTS.override.md stops shared setup on either host before branching. Do not edit or import it. Preserve personal CLAUDE.local.md, nested instructions and global files. Non-root owners, other Claude entries and symlinks need an explicit placement decision. Migration is limited to the agreed root layout; it does not make both tools' nested-file discovery identical.
+Log records invocation strategy/auto-commit before layout/configuration writes and keeps that policy through finalization; new saved values apply next run. Without a repository or HEAD, it supports approved layout/knowledge work without Git initialization, commits, publication or a newly generated review marker. Preserve overrides, personal/nested/global instructions and the reviewed layout limits described above.
 
 ## Knowledge assessment
 
@@ -104,7 +88,7 @@ After branch setup, pin the current commit as `review_head` before layout work. 
 
 Keep a working coverage summary by package/topic with inspected evidence paths, exclusions and unfinished or inaccessible areas. Gap reviews account for every commit and changed path in the validated range through `review_head`. Recheck source and instruction inputs before applying a proposal; changed inputs require refreshed investigation and approval of the new diff.
 
-Advance the review marker only after complete investigation and acceptance and successful application of every proposed substantive knowledge change. Rejection, cancellation, partial acceptance or incomplete coverage leaves the old marker unchanged and reports what remains. Saving settings alone does not count as a review. A fully inspected source range with no durable change may receive a marker-only update alongside confirmed setting choices; no source changes or layout-only work does not justify one. Later commits and merges never replace the marker with their own hash.
+Advance the review marker only after complete investigation and acceptance and successful application of every proposed substantive knowledge change. Rejection, cancellation, partial acceptance or incomplete coverage leaves the old marker unchanged and reports what remains. Saving settings alone does not count as a review. A fully inspected source range with no durable change may receive a marker-only update alongside confirmed setting choices; no source changes or layout-only work does not justify one. Later commits and merges never replace the marker with their own hash. Fresh/standard generation puts an eligible marker last, after preserved Rules; targeted custom updates preserve existing marker placement and keep an already-final marker last.
 
 ## Full scan
 
@@ -139,15 +123,19 @@ Ask only about missing configuration, reusing any answers already collected. Ins
 
 Patch affected sections only, preserving custom structure and prior knowledge. Propose substantive changes as a diff and wait for approval. Apply accepted changes and an eligible snapshot marker together after rechecking inputs. If a fully inspected range introduces or invalidates nothing durable, apply any confirmed missing settings and advance only the eligible marker without another knowledge-diff question. Partial acceptance or rejection leaves the marker unchanged and reports unresolved findings. Moving files alone never advances it.
 
-## Finalization and verification
+## Commit and finalize
 
-Track layout and knowledge/configuration writes separately, including eligible marker-only changes. If none changed or was committed, skip commit/merge/promotion and clean up any empty log branch. If layout changed, finalize it even when knowledge was current or the scan was skipped. Declining a commit leaves actual files and branch for review, without merge or push.
+Read back retained knowledge, settings (including false), Rules/imports, approved layout and the eligible original review snapshot before any commit. Commit layout separately from remaining knowledge/configuration outputs under the recorded policy. A scan Skip/current result does not erase an earlier layout commit or confirmed setting/marker write.
 
-Commit under the invocation's recorded policy, with layout and knowledge changes kept separate. Push always requires confirmation. Existing environment promotion and GitHub Flow return/cleanup behavior remain. Cancelling push leaves the actual local commits/branch and reports that state.
+Follow the [shared Git and CI flow](../setup/git-and-ci.html) after the command's own output verification and commit approvals. GitHub Flow offers separately confirmed branch publication and PR creation, or a local/manual handoff, until required review/checks pass. Integration uses the configured squash/rebase/merge strategy and actual main/master base. Solo requires no PR unless explicit project policy says otherwise. Base publication always has its own confirmation.
 
-Before a knowledge/configuration commit, read files back and check retained entries, approved changes, confirmed settings including `false`, Rules/imports and the exact eligible snapshot marker. Recheck relevant source inputs and stage only approved instruction changes. Verify essential ownership/output checks again after finalization. A failed check reports the actual changed files rather than claiming complete setup. An incomplete knowledge review can still finalize already-approved layout/config changes; preserve unapproved drafts and report the actual branch if local edits prevent cleanup.
+Before fan-out promotion, verify configured/applicable CI for the exact published source SHA with complete provider-aware coverage. Missing/failed/pending/unknown results stop or defer promotion; target selection cannot waive the gate. Use at most four target options or Yes/Skip for one, explicitly describing merge and push. Verify each operation and report completed/pending targets separately.
 
-Report shared setup status and paths, knowledge outcome (including configuration-only, partial or incomplete review), inspected snapshot/range, coverage and exclusions, review point with the reason if unchanged, unresolved/unaccepted findings and uncertain retained knowledge, sections changed, layout/knowledge commits, push status, environments promoted, relevant override/nested limitations, and any adopted rules worth revisiting.
+Declined/failed commits, unsafe local edits or incomplete checkpoints preserve actual work and stop dependent operations. Safe cleanup uses ancestry checks and `git branch -d`; squash/rebase branches outside ancestry are retained, never force-deleted. Remote deletion needs its own push confirmation. Report PR URL/review status, actual branch, commits, integration/publication, CI, and promotions separately. Summarize output verification captured before publication, not a different original checkout after cleanup.
+
+## Completion report
+
+Report shared-layout and knowledge/configuration outcomes separately, actual reviewed snapshot/coverage and marker eligibility, preserved/unaccepted findings, commits, PR or manual handoff, publication/CI and promotions. Layout-only, partial review and pending Git finalization remain explicit; do not report a branch push as publication of the base. Use verification captured on the workflow/integration branch before returning to another checkout.
 
 ## See also
 

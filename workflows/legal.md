@@ -5,16 +5,9 @@ project actually does. Only generate documents that apply.
 
 ## Before starting
 
-`/helm:legal` generates canonical, public-facing legal documents from the project's data profile, so it needs the full merged state and a clean landing path to main. Behavior depends on `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
+`/helm:legal` generates canonical, public-facing legal documents from the project's data profile, so it needs the full merged state and a clean landing path to the resolved base branch. Behavior depends on `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
 
-**Solo Mode** (`git-strategy: solo`):
-- Only proceed if on `main` or `master`. If on any other branch, stop: "legal must be run on main or master in Solo Mode. Current branch is {branch} — switch and re-run."
-
-**GitHub Flow** (`git-strategy: github-flow`, or absent):
-- Record the current branch as `{original_branch}` — the workflow returns here at the end, whatever it was.
-- Checkout a fresh branch from main's current tip: update local main (`git pull` if a remote exists), then `git checkout -b docs/legal-{YYYYMMDD}` from it. This happens unconditionally, regardless of what `{original_branch}` was — the generated documents are always scanned from main's own content, never from whatever the starting branch happened to contain, so there is nothing to check or reject about the starting branch itself.
-- Call this branch `{branch}` for the rest of this command.
-- If this command exits without writing anything at all (Step 1's "No legal need detected" exit, Step 2's "all candidates up to date" exit, or Step 2's "nothing selected" case), delete `{branch}` and return to `{original_branch}` before exiting — never leave the user stranded on an empty temporary branch it created. This does **not** apply once documents have been written but left uncommitted (Step 4's Cancel option) — that branch is deliberately preserved so the user can review or finish committing later; do not delete real drafted work.
+Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = docs/legal-{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
 
 ## Step 1 — Project scan
 
@@ -205,7 +198,11 @@ Record the resolved contact and its type (email / issue URL / page / postal) for
 - Check whether the resolved output path exists.
 - List which documents are already present using the resolved file extension.
 - Read `{package_root}/prompts/shared/project-state.md` and apply it to `legal-manifest.json`. Resolve `.helm/legal-manifest.json` and both legacy paths, `.claude/helm/legal-manifest.json` and `.claude/legal-manifest.json`. Validate and compare every existing candidate before classifying documents; resolve differing manifests explicitly. Load without moving files during scanning. The resolved manifest records which documents a previous run generated and the commit each was generated at. Classify each present document:
-  - **Helm-generated** — its path is listed in the manifest. Safe to regenerate. Check whether it is stale: run `git log {generated_at_commit}..HEAD` and look for changes that could shift the legal profile scanned above in this step — new analytics, payment processors, auth providers, third-party integrations, or data collection (dependency manifests, config, integration code). If any are found, mark it **may be outdated**; otherwise mark it **up to date** — this is a real classification used by Step 2's recommendation logic below, not just a label. Do not edit it in place — regeneration is always a full rewrite.
+  - **Helm-generated** — its path is listed in the manifest. Regeneration still follows this workflow's document review/commit gates; it is always a full replacement, never an in-place edit. Before checking staleness, treat `generated_at_commit` as untrusted data: accept only a hexadecimal commit ID (a uniquely resolvable abbreviation or full ID), never an arbitrary revision expression, option or shell fragment. Resolve it to an existing commit object and successfully verify it is an ancestor of the pinned current project HEAD. Run the validated commit range through safe structured arguments/quoting and check command success. Inspect the relevant changes for legal-profile effects (analytics, processors, auth, integrations, data collection, manifests/config/code).
+    - Meaningful profile changes: **may be outdated**.
+    - Only a valid, successfully inspected range with no relevant changes: **up to date**.
+    - Missing/malformed/unavailable/non-ancestor ID, unavailable history, failed Git command, or incomplete inspection: **unknown / may be outdated**, with a non-secret reason. Never turn an error or missing output into up to date or allow the all-up-to-date no-op exit. Keep it in Step 2's regeneration/review candidates; no automatic regeneration is authorized by uncertainty.
+    Missing/unusable historical IDs affect staleness, not ownership of an otherwise recognizable generated-document record; malformed JSON, unsupported schemas or invalid manifest structure still follow the shared state stop rules. Recheck HEAD and manifest inputs before using the result. A changed snapshot requires renewed assessment. Do not rewrite stored IDs or migrate a manifest just to repair read-only classification; only normal approved regeneration records a new inspected baseline.
   - **Foreign** — present on disk but not in the manifest. Likely hand-written or lawyer-reviewed; must not be overwritten without explicit confirmation.
 - The published legal documents carry no marker of their own — this manifest is the only record of what helm generated, so end-user-facing files stay clean.
 
@@ -227,11 +224,11 @@ First determine the candidate set: privacy-policy.md and terms.md are always can
 
 **Recommended** (whether to nudge the user toward selecting it) is not the same as applicable — an applicable document that's already generated and current doesn't need touching:
 - Doesn't exist yet, and applies → Recommended (needs generating for the first time).
-- Exists, Helm-generated, and flagged **may be outdated** in Step 1 → Recommended (regenerate to catch up).
+- Exists, Helm-generated, and flagged **may be outdated** or **unknown** in Step 1 → Recommended for review/regeneration, with the uncertainty/reason disclosed; selection is still required.
 - Exists, Helm-generated, and **up to date** → not Recommended, regardless of applicability — nothing changed since it was last generated.
 - Exists, Foreign → not Recommended either way; the user opts in explicitly if they want it replaced (see Step 3's overwrite confirmation).
 
-**All candidates up to date — skip this step entirely:** if every candidate document exists, is Helm-generated, and was classified up to date in Step 1 (none missing, none Foreign, none flagged may be outdated), there's nothing to regenerate. Inform the user: "Legal documents are up to date — no meaningful changes since last generation." Do not present either AskUserQuestion below. Proceed to Step 4, which writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created.
+**All candidates up to date — skip this step entirely:** if every candidate document exists, is Helm-generated, and was classified up to date in Step 1 (none missing, none Foreign, none stale or unknown), there's nothing to regenerate. Inform the user: "Legal documents are up to date — no meaningful changes since last generation." Do not present either AskUserQuestion below. Proceed to Step 4, which writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created.
 
 Otherwise, present the two questions below.
 
@@ -239,7 +236,7 @@ AskUserQuestion supports a maximum of 4 options. Split into two questions.
 
 Labeling applies to both questions below:
 - Append `(Recommended)` per the Recommended rule above (not the Applicability rule alone — an applicable-but-current document is not Recommended).
-- For an existing document, append its classification suffix from Step 1: `(exists — up to date)` for a current Helm-generated file, `(exists — may be outdated)` for a Helm-generated file flagged stale, or `(exists — not helm-generated)` for a Foreign file. This lets the user tell an auto-generated file from a hand-edited one, and a current file from a stale one.
+- For an existing document, append its classification suffix from Step 1: `(exists — up to date)` for a current Helm-generated file, `(exists — may be outdated)` for a stale Helm-generated file, `(exists — history unknown: {reason})` for an uncertain one, or `(exists — not helm-generated)` for a Foreign file. This lets the user tell an auto-generated file from a hand-edited one, and a current file from a stale one.
 
 Question 1 — core documents:
   AskUserQuestion:
@@ -484,121 +481,19 @@ Required sections in order:
 
 ## Step 4 — Commit and finalize
 
-If Step 1's "No legal need detected" check exited here, Step 2's "all candidates up to date" check exited here, or Step 2 selected nothing (no documents to generate): skip the commit confirmation and environment promotion below — there is nothing to act on. Under GitHub Flow, still delete `{branch}` and return to `{original_branch}` (per Before starting's cleanup rule) — do not skip that part. Under Solo Mode there is nothing further to do, since no branch was created.
+If no document was actually written (including no legal need, all verified current, no selection, or all foreign files skipped), do not commit or write/migrate state. Only a genuine no-write/no-commit run may use the shared empty-branch cleanup. If a write/read-back failed, preserve the actual drafts and legacy sources and report incomplete work instead.
 
-Otherwise, always confirm before committing, even when `git-auto-commit: true` is set — these are public, legally-binding documents, so this is a deliberate exception to the normal auto-commit flow (same category as the boundaries in safety.md's Agent Execution Boundaries: never skip review just because autonomy is high).
+Read back every generated document before finalization, verifying its required content, date and real resolved contact, plus the canonical manifest under the project-state procedure. Show the actual documents/diff and always ask `Commit reviewed legal documents` or `Leave uncommitted`, regardless of auto-commit. This review covers exact output paths and any manifest migration/removals, never push or PR publication. On decline preserve remaining legacy sources, any canonical draft and documents on the actual branch; no integration, deletion or checkout.
 
-**Environment promotion** — shared by both modes below. If environment branches exist (discover via `git branch -r`, filter for known environment names, same detection as ship.md), ask which should also receive these documents. (This block is intentionally duplicated across every content-sync command — see rules/git.md's Environment Branches section for the canonical shape; keep all copies in sync if it changes.)
+On approval, recheck inputs and retire only verified same-file legacy manifest sources under the shared state procedure. Stage exact reviewed documents, `.helm/legal-manifest.json` if changed, and tracked approved legacy removals with literal pathspecs. Inspect the complete staged diff and commit `docs(legal): generate legal documents`, including resolved output path/format in the body when nondefault. A failed staging/commit stops with actual pending state and remaining sources preserved. Verify the commit and all intended outputs before proceeding.
 
-  AskUserQuestion:
-    question: "main will be updated. Which environment branches should also receive these documents?"
-    header:   "Promote to environments"
-    multiSelect: true
-    options: one entry per discovered environment branch, e.g.:
-      - label: "staging"
-        description: "Merge main into staging"
-      - label: "production"
-        description: "Merge main into production"
-
-  AskUserQuestion caps at 4 options. If more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
-
-  If exactly one environment branch qualifies, a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead:
-
-    AskUserQuestion:
-      question: "main will be updated. Promote to {branch} as well?"
-      header:   "Promote to environment"
-      multiSelect: false
-      options:
-        - label: "Yes — promote to {branch} (Recommended)"
-          description: "Merge main into {branch}"
-        - label: "Skip"
-          description: "Leave {branch} as-is for now"
-
-    "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
-
-  For each selected environment:
-  - git checkout {environment}
-  - git merge main --no-ff -m "chore(deploy): promote main to {environment} for legal document updates"
-  - git push origin {environment}
-  - git checkout main
-
-  If no environment branches exist, or the user selects none, skip silently.
-
-**Solo Mode:**
-
-Present the list of documents written and ask for confirmation to commit:
-
-  AskUserQuestion:
-    question: "The following documents were written to {resolved-path}: {list}. Commit them now?"
-    header:   "Commit"
-    multiSelect: false
-    options:
-      - label: "Commit (Recommended)"
-        description: "docs(legal): generate legal documents"
-      - label: "Cancel"
-        description: "Leave documents written but uncommitted — commit manually when ready"
-
-If Cancel selected → preserve legacy manifest sources, report any canonical draft as a pending migration, and leave the documents written but uncommitted, then proceed to Step 5 (records that nothing was committed; skip environment promotion).
-
-If Commit selected:
-- Stage only the generated documents and, if updated, `.helm/legal-manifest.json`; do not use `git add -A`. Apply the shared project-state procedure to retire verified same-file legacy sources and stage their tracked removals in this commit, now that approval is available.
-- Commit: `docs(legal): generate legal documents` (include the resolved output path and format in the body if they differ from the default).
-- Before pushing, confirm — push is a separate gate from the commit above, per git.md's Auto-Commit exception: never skipped, regardless of settings:
-
-  AskUserQuestion:
-    question: "Push main now? This publishes these legal documents to origin."
-    header:   "Push"
-    multiSelect: false
-    options:
-      - label: "Push (Recommended)"
-        description: "git push origin main"
-      - label: "Cancel"
-        description: "Leave main committed locally but unpushed — push manually when ready"
-
-  If Cancel selected → stop here. Do not push or promote. Proceed to Step 5 to report the outcome, noting main is committed locally but unpushed.
-
-  If Push selected: `git push origin main`, then run Environment promotion above.
-
-**GitHub Flow:**
-
-Present the list of documents written and ask for confirmation to commit — the push and any environment promotion get their own separate confirmations below, not folded into this one:
-
-  AskUserQuestion:
-    question: "The following documents were written to {resolved-path}: {list}. Commit them on {branch} now?"
-    header:   "Commit"
-    multiSelect: false
-    options:
-      - label: "Commit (Recommended)"
-        description: "docs(legal): generate legal documents"
-      - label: "Cancel"
-        description: "Leave documents written but uncommitted on {branch} — finish manually when ready"
-
-If Cancel selected → preserve legacy manifest sources, report any canonical draft as a pending migration, and leave the documents written but uncommitted on `{branch}`. Do not merge, delete, or switch branches. Proceed to Step 5 (records that nothing was committed and that `{branch}` was left in place).
-
-If Commit selected:
-1. Stage only the generated documents and, if updated, `.helm/legal-manifest.json` on `{branch}`; do not use `git add -A`. Apply the shared project-state procedure to retire verified same-file legacy sources and stage their tracked removals in this commit, now that approval is available. Commit: `docs(legal): generate legal documents` (include the resolved output path and format in the body if they differ from the default).
-2. Merge into main: `git checkout main`, `git merge {branch} --no-ff -m "docs(legal): generate legal documents"`. Before pushing, confirm:
-
-   AskUserQuestion:
-     question: "Push main now? This publishes these legal documents to origin."
-     header:   "Push"
-     multiSelect: false
-     options:
-       - label: "Push (Recommended)"
-         description: "git push origin main"
-       - label: "Cancel"
-         description: "Leave main merged locally but unpushed — push manually when ready"
-
-   If Cancel selected → stop here. Do not push, promote, or clean up. Proceed to Step 5 to report the outcome, noting main is merged locally but unpushed.
-
-   If Push selected: `git push origin main`.
-3. Run Environment promotion above.
-4. Delete `{branch}`: `git branch -d {branch}` locally, and `git push origin --delete {branch}` if it was ever pushed.
-5. Return to where you started: `git checkout {original_branch}`.
+Read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = legal`. Its PR/push, configured integration, `{base_branch}`, exact-SHA CI and fan-out gates apply, with legal's stronger approval requirement retained for every integration commit. A branch-push/PR choice never replaces legal content review. Do not claim published legal documents merely because their local commit or PR exists.
 
 ---
 
 ## Step 5 — Confirm completion
+
+If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
 
 If Step 1's "No legal need detected" check exited early: report just that outcome — output location and contact point were never resolved, so the full report below doesn't apply.
 
@@ -620,7 +515,7 @@ GitHub Flow only:
 Branch:       {branch} — deleted
 Returned to:  {original_branch}
 
-Otherwise, verify the written files before reporting: for each generated document, read it back and confirm it exists, begins with a `**Last updated:** {date}` line, and ends with a `## Contact` section that does not contain a placeholder (an unfilled `{...}` or `[...]` token) in place of the real contact resolved in Step 1. If any document fails this check, report the error for that specific file instead of folding it into LEGAL COMPLETE below — this is public, legally-binding text, so a silently incomplete document is worse than a loud one.
+Otherwise, summarize the pre-commit/integration read-back on the actual workflow branch (not a different checkout after cleanup). For each generated document, confirm it exists, begins with a `**Last updated:** {date}` line, and ends with a `## Contact` section that does not contain a placeholder (an unfilled `{...}` or `[...]` token) in place of the real contact resolved in Step 1. If any document fails this check, report the error for that specific file instead of folding it into LEGAL COMPLETE below — this is public, legally-binding text, so a silently incomplete document is worse than a loud one.
 
 Report:
 
@@ -637,7 +532,7 @@ Pushed:       yes / no — push manually when ready / N/A (not committed)
 Environments promoted: {list or none}
 
 GitHub Flow only:
-Branch:       {branch} — merged to main and deleted / merged locally but unpushed / left in place, uncommitted (if cancelled)
+Branch:       {branch} — PR pending / integrated to {base_branch}, deleted or retained / local only / pending drafts
 Returned to:  {original_branch}
 
 Note: These documents are AI-generated starting points.

@@ -6,14 +6,7 @@ Resolve `{memory_file}` through the shared runtime before any Git mutation or fi
 
 `/helm:manifest` rewrites README.md from the project's state, so it needs the full merged, stable state — never an in-progress feature branch. Behavior depends on `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
 
-**Solo Mode** (`git-strategy: solo`):
-- Only proceed if on `main` or `master`. If on any other branch, stop: "manifest must be run on main or master in Solo Mode. Current branch is {branch} — switch and re-run."
-
-**GitHub Flow** (`git-strategy: github-flow`, or absent):
-- Record the current branch as `{original_branch}` — the workflow returns here at the end, whatever it was.
-- Checkout a fresh branch from main's current tip: update local main (`git pull` if a remote exists), then `git checkout -b docs/manifest-{YYYYMMDD}` from it. This happens unconditionally — README.md is always scanned from main's own state, never from a feature branch's unmerged work. If a feature branch changes something README.md should reflect, re-run `/helm:manifest` after that branch merges to main.
-- Call this branch `{branch}` for the rest of this command.
-- If this command exits at any point without writing anything — the user selects Skip at any prompt, README.md is already up to date, or custom mode finds nothing to preserve — delete `{branch}` and return to `{original_branch}` before exiting. This applies everywhere in this command, not just at the specific cases called out later: never leave the user stranded on an empty temporary branch it created.
+Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = docs/manifest-{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
 
 ---
 
@@ -101,7 +94,7 @@ If README.md exists but has no saved commit hash:
         description: "No update needed"
 
 If README.md exists with a saved commit hash and (structure is intact or `readme-style: custom`), and there are no meaningful commits since the hash (`git log {hash}..HEAD` is empty, or only noise commits):
-  README.md is already current. Inform the user: "README.md is up to date — no meaningful commits since last review." Do not present any prompt. Proceed to Step 4 — it writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created.
+  README.md is already current. Inform the user: "README.md is up to date — no meaningful commits since last review." Do not present any prompt. Proceed to Step 4 to account for any earlier approved configuration write; only a genuine no-write/no-commit outcome uses shared safe empty-branch cleanup.
 
 If README.md exists with a saved commit hash, and either structure is broken or there are meaningful commits since the hash:
   Determine recommendation:
@@ -125,7 +118,7 @@ If README.md exists with a saved commit hash, and either structure is broken or 
 
 ## Step 2 — Full Project Scan
 
-If `readme-style: custom` and README.md is absent or empty: skip investigation entirely — there is nothing to write. Do not write anything — custom mode preserves structure, it does not author it. Report that there is no README.md yet, so there is nothing to be "custom" relative to, and ask the developer to write one in whatever structure they prefer. A future run will then preserve that structure. Skip the rest of Step 2 and Step 3, but proceed to Step 4 — it writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created.
+If `readme-style: custom` and README.md is absent or empty: skip investigation entirely — there is nothing to write. Do not write anything — custom mode preserves structure, it does not author it. Report that there is no README.md yet, so there is nothing to be "custom" relative to, and ask the developer to write one in whatever structure they prefer. A future run will then preserve that structure. Skip the rest of Step 2 and Step 3, but proceed to Step 4 to finalize any earlier approved configuration write or use safe genuine-no-op cleanup.
 
 Otherwise, before writing anything, investigate:
 - Business purpose and target audience
@@ -207,88 +200,19 @@ If significant changes were found: propose changes per affected section. Ask for
 
 ## Step 4 — Commit and finalize
 
-If Step 2 wrote nothing (the custom-mode, absent-README case): skip commit, merge, and environment promotion below — there is nothing to act on. Under GitHub Flow, still delete `{branch}` and return to `{original_branch}` (per Before starting's cleanup rule) — do not skip that part. Either way, proceed to Step 5 to report the outcome.
+Account for README writes **and** any approved `readme-style` write in the resolved owner. If neither changed, use the shared genuine-no-op cleanup. Custom mode with no README may still have a configuration write, which must not be discarded as no change.
 
-Commit per git.md's Auto-Commit rule: silent if `git-auto-commit: true`, otherwise ask for confirmation before committing, merging, and pushing together. Either way, push itself always requires its own confirmation regardless of `git-auto-commit` — git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions. Environment promotion's branch-selection prompt below already serves as that confirmation for environment-branch pushes; under GitHub Flow, confirm separately before step 2's `git push origin main`, even when the commit above was silent.
+Before committing, read back README and any changed owner, verify the approved sections/style and review marker, and preserve all unrelated instructions/settings/adapter content. Stage only the exact approved paths with literal pathspecs; inspect the diff and honor invocation auto-commit for `docs(manifest): update project README` (or configuration-only wording). A declined/failed commit or verification stops with actual drafts/branch retained, without integration, push or cleanup.
 
-**Environment promotion** — shared by both modes below. If environment branches exist (discover via `git branch -r`, filter for known environment names, same detection as ship.md), ask which should also receive this update. (This block is intentionally duplicated across every content-sync command — see rules/git.md's Environment Branches section for the canonical shape; keep all copies in sync if it changes.)
-
-  AskUserQuestion:
-    question: "main will be updated. Which environment branches should also receive this README.md update?"
-    header:   "Promote to environments"
-    multiSelect: true
-    options: one entry per discovered environment branch, e.g.:
-      - label: "staging"
-        description: "Merge main into staging"
-      - label: "production"
-        description: "Merge main into production"
-
-  AskUserQuestion caps at 4 options. If more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
-
-  If exactly one environment branch qualifies, a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead:
-
-    AskUserQuestion:
-      question: "main will be updated. Promote to {branch} as well?"
-      header:   "Promote to environment"
-      multiSelect: false
-      options:
-        - label: "Yes — promote to {branch} (Recommended)"
-          description: "Merge main into {branch}"
-        - label: "Skip"
-          description: "Leave {branch} as-is for now"
-
-    "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
-
-  For each selected environment:
-  - git checkout {environment}
-  - git merge main --no-ff -m "chore(deploy): promote main to {environment} for README.md update"
-  - git push origin {environment}
-  - git checkout main
-
-  If no environment branches exist, or the user selects none, skip silently.
-
-**Solo Mode:** commit directly to main. Before pushing, confirm:
-
-  AskUserQuestion:
-    question: "Push main now? This publishes the commit to origin."
-    header:   "Push"
-    multiSelect: false
-    options:
-      - label: "Push (Recommended)"
-        description: "git push origin main"
-      - label: "Cancel"
-        description: "Leave main committed locally but unpushed — push manually when ready"
-
-If Cancel selected → stop here. Do not push or promote. Proceed to Step 5 to report the outcome, noting main is committed locally but unpushed.
-
-If Push selected: `git push origin main`, then run Environment promotion above.
-
-**GitHub Flow:**
-1. Commit on `{branch}`.
-2. Merge into main: `git checkout main`, `git merge {branch} --no-ff -m "{same message as the commit above}"`. Before pushing, confirm:
-
-   AskUserQuestion:
-     question: "Push main now? This publishes the merged commit to origin."
-     header:   "Push"
-     multiSelect: false
-     options:
-       - label: "Push (Recommended)"
-         description: "git push origin main"
-       - label: "Cancel"
-         description: "Leave main merged locally but unpushed — push manually when ready"
-
-   If Cancel selected → stop here. Do not push, promote, or clean up. Proceed to Step 5 to report the outcome, noting main is merged locally but unpushed.
-
-   If Push selected: `git push origin main`.
-3. Run Environment promotion above.
-4. Delete `{branch}`: `git branch -d {branch}` locally, and `git push origin --delete {branch}` if it was ever pushed.
-5. Return to where you started: `git checkout {original_branch}`.
+After verifying the workflow commit, read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = manifest`. This supplies confirmed PR publication/review handoff, configured merge strategy, resolved main/master base, exact-SHA CI-gated fan-out and safe cleanup. It does not create or migrate an instruction owner.
 
 ---
 
 ## Step 5 — Confirm completion
 
-If a full scan or gap update was written this run, verify it before reporting: read README.md back and confirm it contains the `<!-- last-reviewed: {hash} --> ` comment with the hash just written, and that the sections claimed as updated actually reflect the intended content. If verification fails for any section, report the error for that section instead of folding it into a clean Outcome below — README.md is what contributors and new users rely on, so a silently incomplete write is worse than a loud one.
+If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
+
+Summarize pre-commit/integration verification on the actual workflow branch, not a different checkout after cleanup. For a full scan or gap update, confirm it contains the `<!-- last-reviewed: {hash} --> ` comment with the hash just written, and that the sections claimed as updated actually reflect the intended content. If verification fails for any section, report the error for that section instead of folding it into a clean Outcome below — README.md is what contributors and new users rely on, so a silently incomplete write is worse than a loud one.
 
 Report:
 
@@ -296,4 +220,4 @@ Report:
 - Style: {standard / custom}
 - Sections updated: {list, or none}
 - Environments promoted: {list or none}
-- If GitHub Flow: temporary branch's fate ({merged and deleted / left as-is}) and which branch you were returned to.
+- If GitHub Flow: temporary branch's fate ({PR pending / integrated and deleted / integrated with branch retained / left local / pending drafts}) and which branch you were returned to.

@@ -14,14 +14,9 @@ The eight-section schema below is the generation format for a fresh file or a fi
 
 **No repository or no HEAD:** skip branch setup, Solo branch restrictions, commit, merge, push and promotion. Do not initialize Git. Run the same layout approvals and knowledge assessment on the actual workspace; generate no review marker. A marker retained by layout-only or partial work is provenance, not evidence of currency. Report generated files as uncommitted. The next Git-backed run can perform a full review.
 
-**Solo Mode** (`git-strategy: solo`):
-- Only proceed if on `main` or `master`. If on any other branch, stop: "log must be run on main or master in Solo Mode. Current branch is {branch} — switch and re-run."
+Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = docs/log-{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
 
-**GitHub Flow** (`git-strategy: github-flow`, or absent):
-- Record the current branch as `{original_branch}` — the workflow returns here at the end, whatever it was.
-- Checkout a fresh branch from main's current tip: update local main (`git pull` if a remote exists), then `git checkout -b docs/log-{YYYYMMDD}` from it. This happens unconditionally — {memory_file} is always scanned from main's own state, never from a feature branch's unmerged work. If a feature branch changes something {memory_file} should reflect, re-run `/helm:log` after that branch merges to main.
-- Call this branch `{branch}` for the rest of this command.
-- If no layout, knowledge, configuration, or marker change was written or committed, delete the empty `{branch}` and return to `{original_branch}` before exiting. A scan Skip or current knowledge does not qualify when Step 0 changed layout. Never strand the user on an empty temporary branch, or delete one carrying a layout commit. A verified Outcome A marker update also needs normal finalization.
+The no-repository/no-HEAD case above skips that Git phase, preserving log's non-Git setup flow.
 
 After branch setup and before Step 0, record `{review_head}` as the exact current HEAD when available. This is the source snapshot to investigate, not the later layout, knowledge, or merge commit. Apply the snapshot and acceptance rules below to every knowledge path.
 
@@ -54,6 +49,8 @@ For a fresh or standard-format owner, use these eight sections in order. Standar
 8. **Known Traps** — gotchas; initially empty or inferred from README warnings.
 
 A `## Rules` section, if present, is **not** part of this schema — it is written and managed by `/helm:adopt` and points at the adopted rule files (`.claude/rules/git.md`, `safety.md`), distinct from the inline Domain / Behavior / Hard Safety Rules above. Preserve it exactly as-is: a full scan or gap update must never write, move, or remove it.
+
+For a fresh/standard generated file, place an eligible review marker last, after any preserved Rules section. Targeted custom updates preserve existing marker placement; when it is already final, insert approved additions before it. Do not move a legacy non-final marker merely for style or advance its value without the review acceptance conditions below.
 
 ## Change significance
 
@@ -272,96 +269,19 @@ Ask for confirmation before writing. After acceptance, recheck the snapshot and 
 
 ## Step 5 — Commit and finalize
 
-With no repository or no HEAD, skip all Git finalization and report the actual file changes as uncommitted.
+With no repository or no HEAD, skip Git and report actual file changes as uncommitted. Otherwise preserve `{run_git_strategy}` and `{run_auto_commit}` for this invocation, including after approved layout/configuration changes. An assessment Skip or current knowledge does not erase a separate layout commit or approved configuration/marker write.
 
-If no layout, knowledge, configuration, or marker change was written or committed: skip commit, merge, and environment promotion below. Under GitHub Flow, delete the empty `{branch}` and return to `{original_branch}`. An up-to-date assessment or scan Skip does not erase Step 0 changes: if layout changed, finalize it normally and report knowledge as unchanged/skipped. Do not delete a branch carrying a layout commit as though it were empty. Confirmed configuration and eligible marker-only writes count as workflow changes too.
+Before committing remaining outputs, read them back and verify preserved knowledge, configuration (including false), Rules/imports, adapter contents and marker eligibility at the exact `{review_head}`. Recheck source inputs against the reviewed snapshot and recorded expected layout outputs. Partial/incomplete reviews retain the old marker and report their limitations. Stage only the exact approved instruction paths using literal pathspecs; inspect the staged diff. Follow the recorded auto-commit policy for `docs(log): update project knowledge`, or an accurate configuration/marker-only message. Do not recommit an earlier layout commit. Declined/failed approval, write or commit leaves pending work on the current branch, without integration or cleanup.
 
-Use `{run_git_strategy}` and `{run_auto_commit}` throughout the existing finalization below. Commit only remaining uncommitted workflow changes; do not recommit the separate layout commit. If commit approval is declined, leave the actual files and branch for review and stop before merge/push.
-
-Before any knowledge/configuration commit, read the output back and verify retained baseline entries, approved changes, all confirmed settings (including `false`), Rules/imports, and the marker's eligibility and exact `{review_head}` value when eligible. A partial write or settings-only change without a completed review retains the previous marker. Recheck relevant source inputs; an unexpected change stops finalization and is reported rather than folded into a clean review. Stage only this run's approved instruction changes. The completion check below repeats the essential ownership/output checks after finalization; neither step rewrites the marker to the resulting commit or merge hash.
-
-If only a separately committed layout change remains under GitHub Flow and `{run_auto_commit}` is off, confirm its merge unless that action was already explicitly approved. Approval to commit the layout alone is not approval to merge or push it. Push always retains its own confirmation.
-
-Otherwise, commit per git.md's Auto-Commit rule: silent if `git-auto-commit: true`, otherwise ask for confirmation before committing, merging, and pushing together. Either way, push itself always requires its own confirmation regardless of `git-auto-commit` — git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions. Environment promotion's branch-selection prompt below already serves as that confirmation for environment-branch pushes; under GitHub Flow, confirm separately before step 2's `git push origin main`, even when the commit above was silent.
-
-**Environment promotion** — shared by both modes below. If environment branches exist (discover via `git branch -r`, filter for known environment names, same detection as ship.md), ask which should also receive this update. (This block is intentionally duplicated across every content-sync command — see rules/git.md's Environment Branches section for the canonical shape; keep all copies in sync if it changes.)
-
-  AskUserQuestion:
-    question: "main will be updated. Which environment branches should also receive this {memory_file} update?"
-    header:   "Promote to environments"
-    multiSelect: true
-    options: one entry per discovered environment branch, e.g.:
-      - label: "staging"
-        description: "Merge main into staging"
-      - label: "production"
-        description: "Merge main into production"
-
-  AskUserQuestion caps at 4 options. If more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
-
-  If exactly one environment branch qualifies, a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead:
-
-    AskUserQuestion:
-      question: "main will be updated. Promote to {branch} as well?"
-      header:   "Promote to environment"
-      multiSelect: false
-      options:
-        - label: "Yes — promote to {branch} (Recommended)"
-          description: "Merge main into {branch}"
-        - label: "Skip"
-          description: "Leave {branch} as-is for now"
-
-    "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
-
-  For each selected environment:
-  - git checkout {environment}
-  - git merge main --no-ff -m "chore(deploy): promote main to {environment} for {memory_file} update"
-  - git push origin {environment}
-  - git checkout main
-
-  If no environment branches exist, or the user selects none, skip silently.
-
-**Solo Mode:** commit directly to main. Before pushing, confirm:
-
-  AskUserQuestion:
-    question: "Push main now? This publishes the commit to origin."
-    header:   "Push"
-    multiSelect: false
-    options:
-      - label: "Push (Recommended)"
-        description: "git push origin main"
-      - label: "Cancel"
-        description: "Leave main committed locally but unpushed — push manually when ready"
-
-If Cancel selected → stop here. Do not push or promote. Proceed to Step 6 to report the outcome, noting main is committed locally but unpushed.
-
-If Push selected: `git push origin main`, then run Environment promotion above.
-
-**GitHub Flow:**
-1. Commit on `{branch}`.
-2. Merge into main: `git checkout main`, `git merge {branch} --no-ff -m "{same message as the commit above}"`. If only Step 0 produced a commit, use that layout commit's message; do not assume a knowledge commit exists. Before pushing, confirm:
-
-   AskUserQuestion:
-     question: "Push main now? This publishes the merged commit to origin."
-     header:   "Push"
-     multiSelect: false
-     options:
-       - label: "Push (Recommended)"
-         description: "git push origin main"
-       - label: "Cancel"
-         description: "Leave main merged locally but unpushed — push manually when ready"
-
-   If Cancel selected → stop here. Do not push, promote, or clean up. Proceed to Step 6 to report the outcome, noting main is merged locally but unpushed.
-
-   If Push selected: `git push origin main`.
-3. Run Environment promotion above.
-4. Delete `{branch}`: `git branch -d {branch}` locally, and `git push origin --delete {branch}` if it was ever pushed.
-5. Return to where you started: `git checkout {original_branch}`.
+After verifying all intended workflow commits, read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = log`. GitHub Flow uses its confirmed branch-push/PR handoff and configured integration strategy; Solo publishes only after its own push confirmation. Promotion uses the shared exact-SHA CI gate. A genuine no-op alone uses safe empty-branch cleanup.
 
 ---
 
 ## Step 6 — Confirm completion
 
-If knowledge, configuration, or a marker was written this run, verify it before reporting: read {memory_file} back and confirm the accepted changes, retained entries/settings, and the eligible `{review_head}` marker, unchanged previous marker, or intentional absence as appropriate. Verify the CLAUDE.md import and preserved Claude-specific additions too. If layout alone changed, verify against its approved diff and unchanged review point. Verify both host paths resolve the same shared owner/settings and report active override/nested limitations. If any check fails, report it and the actual files/commits left behind instead of a clean completion. A partial or incomplete review takes precedence over a generic full-scan/gap-update success label.
+If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
+
+Summarize the verification captured on the workflow/integration branch before commit/publication, not files from a different checkout after cleanup. For knowledge, configuration, or marker writes, confirm the accepted changes, retained entries/settings, and the eligible `{review_head}` marker, unchanged previous marker, or intentional absence as appropriate. Verify the CLAUDE.md import and preserved Claude-specific additions too. If layout alone changed, verify against its approved diff and unchanged review point. Verify both host paths resolve the same shared owner/settings and report active override/nested limitations. If any check fails, report it and the actual files/commits left behind instead of a clean completion. A partial or incomplete review takes precedence over a generic full-scan/gap-update success label.
 
 Report:
 
@@ -375,4 +295,4 @@ Report:
 - Sections updated: {list, or none}
 - Environments promoted: {list or none}
 - Rule files worth revisiting: {list any `.claude/rules` files whose content looks stale relative to what this scan found, or none}
-- If GitHub Flow: temporary branch's fate ({merged and deleted / left as-is}) and which branch you were returned to.
+- If GitHub Flow: temporary branch's fate ({PR pending / integrated and deleted / integrated with branch retained / left local / pending drafts}) and which branch you were returned to.

@@ -78,7 +78,7 @@ Discover this project's API from source/specifications and generate Collection v
 
 ### [4. Documentation](archive/4-documentation.html)
 
-Approve a per-file recovery-document consolidation plan before edits. Preserve instructions, imports, rules and opaque Helm state in place. Write an archive-focused README, `docs/setup.md`, `docs/archive-metadata.md`, and historical notes when needed. Verify recovery-document navigation without treating protected agent/state files as orphaned cleanup candidates.
+Approve a per-file recovery-document consolidation plan before edits. Preserve instructions, imports, rules and opaque Helm state in place. Check protected imports before writing: preserve an imported README and approve an alternate archive index or stop for reconciliation. Otherwise write an archive-focused README, `docs/setup.md`, `docs/archive-metadata.md`, and historical notes when needed. Verify recovery-document navigation without treating protected agent/state files as orphaned cleanup candidates.
 
 ### [5. Finalize](archive/5-finalize.html)
 

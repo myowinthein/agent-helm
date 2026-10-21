@@ -21,8 +21,8 @@ Release: `/helm:ship` (handles version bump, tag, push, and GitHub Release creat
 
 ## Architecture Pointers
 
-- `skills/*/SKILL.md`: ten portable entry points, loaded by Claude and Codex. The manifest sets `commands: []` to avoid duplicate entries; `commands/*.md` remain thin compatibility adapters with the original names and descriptions.
-- `workflows/*.md`: canonical workflow bodies; `prompts/shared/runtime.md` resolves package/workspace paths and host capabilities.
+- `skills/*/SKILL.md`: ten portable entry points, loaded by Claude and Codex. The manifest sets `commands: []` to avoid duplicate entries; `commands/*.md` remain legacy/manual adapters with the original names and descriptions, outside current skill discovery. Their behavior in older clients is not established by source review.
+- `workflows/*.md`: canonical workflow bodies; `prompts/shared/runtime.md` resolves package/workspace paths and host capabilities. `prompts/shared/content-sync.md` and `ci.md` define shared content-sync Git phases and provider-aware integration/promotion gates.
 - `AGENTS.md`: shared contributor instructions and the single owner of project knowledge and Helm configuration; `CLAUDE.md` imports it and adds Claude-specific instructions.
 - `scripts/validate_plugin.rb`, `scripts/test_plugin.rb`: offline packaging checks; `scripts/check_clients.rb` optionally verifies native CLI discovery.
 - `rules/git.md`, `rules/safety.md`: shipped rule files, installed into adopting projects via `/helm:adopt`

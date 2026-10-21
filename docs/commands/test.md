@@ -14,51 +14,23 @@ Command names below use Claude notation. In Codex, select the same Helm workflow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:test]) --> Branch[Solo Mode: require main/master<br/>GitHub Flow: branch off main<br/>test/date, all commits land there]
-  Branch --> Framework{Test framework<br/>detected?}
-  Framework -->|no| AskFW[Ask: which framework<br/>to set up?]
-  AskFW -->|skip| FWStop[/Exit: set up framework<br/>manually then re-run/]
-  AskFW -->|chosen| FWSetup[Install as dev dependency]
-  FWSetup -->|fails| FWFail[/Stop: report install error/]
-  Framework -->|yes| Ledger
-  FWSetup -->|succeeds| Ledger
-
-  Ledger["Resolve .helm/test-log.json<br/>and both legacy locations<br/>Convert v1 decisions; validate saved commits"] --> Assess
-
-  Assess{Existing tests, recent changes,<br/>or ambiguous findings outstanding?}
-  Assess -->|no tests, no full scan, or unusable baseline| FullOrSkip["Ask: full scan or skip?"]
-  Assess -->|up to date, nothing outstanding| Report(["Report outcome<br/>(Step 8)"])
-  Assess -->|changes or ambiguous outstanding| Choice["Ask: Catch Up, Full, or Skip?"]
-
-  FullOrSkip -->|skip| Report
-  FullOrSkip -->|full| FullScan
-  Choice -->|skip| Report
-  Choice -->|Catch Up| CatchUp
-  Choice -->|Full| FullScan
-
-  CatchUp["Diff from validated baseline to inspected HEAD<br/>union in outstanding ambiguous entries<br/>drop unchanged skipped-by-user files<br/>group into clusters by module/domain"] --> CatchPlan["Show test plan · ask: write or cancel?"]
-  CatchPlan -->|cancel| Report
-  CatchPlan -->|write| CWrite["Behavior Clarity Check per test<br/>Write · run · commit, cluster by cluster"]
-  CWrite -->|commits verified| UpdateLedger
-
-  FullScan["Run coverage tool<br/>Priority judgment: available workers or sequential<br/>Reuse only validated unchanged judgments"] --> FullPlan["Show coverage report<br/>ask: which priorities?"]
-  FullPlan -->|none selected| UpdateLedger
-  FullPlan -->|priorities selected| FWrite["Behavior Clarity Check per test<br/>Group into clusters within each priority<br/>Write · run · commit, cluster by cluster"]
-  FWrite -->|commits verified| UpdateLedger
-
-  UpdateLedger["Update .helm/test-log.json<br/>verify and commit ledger"] --> Ready{All writes committed<br/>and working tree clean?}
-  CWrite -->|commit declined or failed| Pending[Preserve current branch and drafts]
-  FWrite -->|commit declined or failed| Pending
-  Ready -->|no| Pending
-  Pending --> Report
-  Ready -->|yes| Policy{GitHub Flow review requirements met?<br/>Solo needs no integration}
-  Policy -->|awaiting review| Handoff[Leave committed branch for review]
-  Handoff --> Report
-  Policy -->|ready| Merge[GitHub Flow: configured squash, rebase, or merge<br/>Ask separately before pushing]
-  Merge -->|push approved and succeeds| Promote[Ask: promote to<br/>environment branches?]
-  Merge -->|declined or failed| Report
-  Promote --> Cleanup[Safe branch cleanup<br/>Retain squash branch if not an ancestor]
-  Cleanup --> Report
+  Start([Run test]) --> Prepare[Resolve owner, policy and main/master base]
+  Prepare --> Branch[Solo on base; GitHub Flow on unique branch]
+  Branch --> Work[Workflow assessment, choices and approved edits]
+  Work --> Changed{Any workflow changes or commits?}
+  Changed -->|no| Noop[Safe empty-branch cleanup and report]
+  Changed -->|yes| Verify[Verify outputs and required commit approvals]
+  Verify --> Mode{Git strategy?}
+  Mode -->|GitHub Flow| Review[Confirmed branch push and PR handoff; required review and CI]
+  Review -->|pending| Pending[Retain work and report pending state]
+  Review -->|satisfied| Merge[Configured integration strategy]
+  Mode -->|Solo| Push
+  Merge --> Push[Separately confirm publication]
+  Push -->|declined or failed| Pending
+  Push -->|verified published SHA| CI[Required promotion CI passed or not applicable]
+  CI -->|blocked| Pending
+  CI -->|ready| Promote[Optional confirmed fan-out]
+  Promote --> Cleanup[Safe eligible cleanup and report]
 ```
 
 ## Steps
@@ -67,10 +39,9 @@ flowchart TD
 
 Resolve the existing configuration owner through the shared runtime before Git actions: normally `AGENTS.md`, reached through `CLAUDE.md`'s import on Claude or directly on Codex, with legacy owners, overrides, and recognized fenced configuration supported. Read `git-strategy` (default: GitHub Flow), `git-auto-commit` (default: false), and GitHub Flow's `git-merge-strategy` (default: squash) there. The command creates or edits neither instruction file nor Helm configuration.
 
-- **Solo Mode**: runs only on `main`/`master`. Halts on any other branch. No branch is created: every commit lands directly on main as it happens.
-- **GitHub Flow**: records the current branch, then checks out a fresh branch from main's current tip (`test/{date}`). Every commit (per cluster, per priority tier, the ledger) lands on this branch, mirroring `/helm:refactor`'s single-branch-per-run model, integrated under the configured merge strategy once review requirements are met (see Step 7) rather than pushing to main after each cluster. Returns to the original branch only when safe; pending work stays on its current branch.
+Use the [shared Git and CI flow](../setup/git-and-ci.html): resolve the actual main/master base and invocation policy, require a clean setup, use a unique GitHub Flow branch (unused suffix on collisions), and revalidate destination ownership/configuration after checkout. Solo stays on the base without a temporary branch. Preserve real drafts/commits on failure; only a genuine no-write/no-commit exit safely returns before deleting its empty branch.
 
-Only a genuine no-op with no writes, commits, or pending work cleans up the empty temporary branch and returns to the original branch. A declined or failed cluster, ledger, or integration commit stops later writes and finalization, preserves the current branch and drafts, and reports pending work. Earlier successful commits do not permit merging or publishing past that stop.
+Every cluster/framework/ledger commit follows invocation auto-commit. Declining/failing a commit or state checkpoint preserves actual work and stops subsequent writing/finalization.
 
 ### 1. Detect test framework
 
@@ -85,7 +56,7 @@ Uses `.helm/test-log.json` and checks both legacy locations, `.claude/helm/test-
 The ledger stores:
 - **`schema_version`**: bumped only if this structure changes in a future release. A ledger with `schema_version: 1` or none at all (the shape before this field existed: separate `findings`/`full_scan_findings` arrays and `last_test_run_commit`/`last_full_scan_commit` fields) is converted in memory on load and persisted only at an eligible authorized write. Explicitly map each legacy `findings[].status` to `files[].user_status`, preserving skipped/ambiguous decisions, notes, dates, and recorded commits alongside priority data. Conflicting or unsupported decision values require reconciliation; do not leave decisions only under the obsolete `status` key or discard unrelated fields. `full_scan_ever_run` is derived from whether `last_full_scan_commit` held an actual SHA, not merely whether the key was present: it could legitimately be `null` for a repo where a full scan had never run yet.
 - **`files`**: one entry per file, everything currently known about it. `priority` and `last_judged_commit` come from sub-agent scan judgment (Full Scan only); `user_status` (`skipped-by-user` or `ambiguous`), `note`, `recorded_commit`, and `recorded_date` come from an actual human decision (the Behavior Clarity Check, or a skip choice). These two sets of fields are independent: a file can have either, both, or neither, and updating one never clobbers the other.
-- **`last_run_commit`**: for scoping the next run's diff.
+- **`last_run_commit`**: the actual inspected source snapshot `{assessment_head}`, used for the next diff. It is not the later test/ledger branch tip, so normal squash/rebase/provider integration preserves its base ancestry. Capture before framework/test commits, keeping approved setup edits identified as outputs. Explicit per-file judgment and decision IDs record their actual assessed snapshot too.
 - **`full_scan_ever_run`** and **`consecutive_catchup_count`**: drive Step 3's scenario decision and Full Scan recommendation (see below).
 
 Before using saved references, require a usable repository HEAD and validate each comparison's commit ID: it must resolve to a commit object and be an ancestor of the inspected HEAD. Syntax alone does not prove usability, and stored values are never arbitrary revision expressions. Validation is read-only and applies after conversion and on either host.
@@ -148,8 +119,8 @@ Applies the **Behavior Clarity Check** before writing each test. Writes tests pr
 After the selected work completes and required commits are verified, or a complete Full Scan finishes with no priorities selected for writing. Incomplete work or a declined/failed commit does not advance a checkpoint:
 
 - Sets `schema_version` to `2` if not already present, including when converting an old-shaped ledger on load.
-- **Catch Up run**: sets `last_run_commit` to current HEAD and increments `consecutive_catchup_count` by 1.
-- **Full Scan run**: sets `last_run_commit` to current HEAD, sets `full_scan_ever_run` to `true`, resets `consecutive_catchup_count` to `0`. Persists all `priority`/`last_judged_commit` changes into `files` (new entries, updated priorities, entries removed for files that no longer exist).
+- **Catch Up run**: sets `last_run_commit` to the verified `{assessment_head}` actually inspected before test writes and increments `consecutive_catchup_count` by 1.
+- **Full Scan run**: sets `last_run_commit` to the verified `{assessment_head}` actually inspected before test writes, sets `full_scan_ever_run` to `true`, resets `consecutive_catchup_count` to `0`. Persists all `priority`/`last_judged_commit` changes into `files` (new entries, updated priorities, entries removed for files that no longer exist).
 - For files flagged during the Behavior Clarity Check: sets `user_status: "ambiguous"` on that file's entry, without touching any `priority` fields already there. `skipped-by-user` has no writer in the current flow: the plan confirmation and priority selection are all-or-nothing/tier-level, not per-file. But a pre-existing `skipped-by-user` entry (e.g. from a schema migration or manual edit) is still honored by the Catch Up path's drop-from-plan check.
 - For files resolved this run: clears `user_status`/`note`/`recorded_commit`/`recorded_date` from the entry, but keeps the entry (and its `priority` data) unless nothing is left on it at all.
 
@@ -157,19 +128,13 @@ Verifies and commits the ledger with `test(log): update test ledger after {catch
 
 ### 7. Merge and cleanup
 
-First check for pending drafts, declined/failed commits, incomplete state writes, and a clean working tree/index. Pending work stays on the current branch and goes directly to reporting. Do not reset, stash, silently commit, switch branches, merge, publish, promote, or delete branches to pass this gate. Empty-branch cleanup applies only to a genuine no-op with no writes or commits. Solo otherwise needs no integration merge.
+Require all intended test/framework commits and ledger checkpoint verified, without unresolved drafts or failed/declined commits. A full scan with no writing priorities may still have a ledger commit and is not a no-op. Preserve the actual inspected source baseline and per-file judgment/decision provenance through integration; never assign an uninspected merge SHA to make ancestry pass.
 
-Under GitHub Flow, recheck destination configuration and state the effective `git-merge-strategy` (default: squash). Honor the project's PR and CI requirements first. If review requirements are unmet or unavailable, retain the committed branch for review and report the handoff without integrating or publishing. When local integration is permitted, preview the branch diff and obtain required integration-commit approval before mutation:
+Follow the [shared Git and CI flow](../setup/git-and-ci.html) after the command's own output verification and commit approvals. GitHub Flow offers separately confirmed branch publication and PR creation, or a local/manual handoff, until required review/checks pass. Integration uses the configured squash/rebase/merge strategy and actual main/master base. Solo requires no PR unless explicit project policy says otherwise. Base publication always has its own confirmation.
 
-- **Squash:** `git merge --squash {branch}` on main, followed by the approved `test(project): write tests {catch-up / full-scan}` commit.
-- **Rebase:** rebase only this run's private, unpushed branch onto main, then integrate with `git merge --ff-only {branch}`. A shared/already-pushed branch needs an explicit reviewed plan; no implicit rewrite or force-push.
-- **Merge:** `git merge {branch} --no-ff -m "test(project): write tests {catch-up / full-scan}"` on main.
+Before fan-out promotion, verify configured/applicable CI for the exact published source SHA with complete provider-aware coverage. Missing/failed/pending/unknown results stop or defer promotion; target selection cannot waive the gate. Use at most four target options or Yes/Skip for one, explicitly describing merge and push. Verify each operation and report completed/pending targets separately.
 
-Stop on conflicts or failed commands. Verify integration includes the tests, canonical ledger, and tracked legacy removals. Squash/rebase may invalidate stored commit references; preserve their provenance and let the next run reassess, rather than assign an uninspected SHA to a saved judgment.
-
-Push always requires separate confirmation, regardless of `git-auto-commit`: directly in Solo, after successful integration in GitHub Flow. Cancelling leaves the actual commits/branch local, skips promotion and cleanup, and reports the outcome.
-
-Environment promotion retains its fan-out behavior on both hosts: at most four choices, a yes/no question for one environment, and explicit selection before merging/pushing. After successful integration/publication, delete the temporary branch only when its tip is an ancestor of main and `git branch -d` succeeds. Squash can leave its commits outside main's ancestry; retain that branch and report it instead of silently using `-D`. Remote branch deletion requires its own push confirmation. Return to the original branch only when safe and no work remains pending.
+Declined/failed commits, unsafe local edits or incomplete checkpoints preserve actual work and stop dependent operations. Safe cleanup uses ancestry checks and `git branch -d`; squash/rebase branches outside ancestry are retained, never force-deleted. Remote deletion needs its own push confirmation. Report PR URL/review status, actual branch, commits, integration/publication, CI, and promotions separately. Summarize output verification captured before publication, not a different original checkout after cleanup.
 
 ### 8. Confirm completion
 

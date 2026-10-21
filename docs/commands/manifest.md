@@ -14,65 +14,23 @@ Command names below use Claude notation. In Codex, select the same Helm workflow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:manifest]) --> Owner{Resolved memory<br/>owner exists?}
-  Owner -->|no| Setup[/Stop: run log first,<br/>then re-run manifest/]
-  Owner -->|yes| Strategy{git-strategy?}
-  Strategy -->|Solo| SoloCheck{On main/master?}
-  SoloCheck -->|no| StopSolo[/Stop: switch to main first/]
-  SoloCheck -->|yes| Exists
-  Strategy -->|GitHub Flow| Fresh[Record original branch<br/>Checkout fresh branch from main:<br/>docs/manifest-date]
-  Fresh --> Exists
-
-  Exists{README.md exists<br/>with content?}
-
-  Exists -->|no| Mode1[Ask: full scan or skip?]
-  Exists -->|yes| StyleFlag{readme-style<br/>in resolved owner?}
-
-  StyleFlag -->|no| AskStyle["Ask: standard or custom?\nSave in owner; add config section if absent"]
-  StyleFlag -->|yes| HashCheck
-  AskStyle --> HashCheck
-
-  HashCheck{Saved hash?}
-  HashCheck -->|no| Mode1
-  HashCheck -->|"yes + standard"| StructCheck{Mandatory sections<br/>present?}
-  HashCheck -->|"yes + custom"| Gap
-
-  StructCheck -->|broken| Mode3["Ask: full scan (default),<br/>gap update, or skip?"]
-  StructCheck -->|intact| Gap{Gap significance<br/>since last review?}
-
-  Gap -->|none: only noise| UpToDate[/Exit: README.md up to date<br/>still runs Step 5 cleanup/]
-  Gap -->|small or moderate| Mode2["Ask: gap update (default),<br/>full scan, or skip?"]
-  Gap -->|large or significant| Mode3
-
-  Mode1 -->|skip| Skip[/Exit: no update needed/]
-  Mode1 -->|full| Full
-  Mode2 -->|skip| Skip
-  Mode2 -->|full| Full
-  Mode2 -->|gap| GapPath
-  Mode3 -->|skip| Skip
-  Mode3 -->|full| Full
-  Mode3 -->|gap| GapPath
-
-  Full["Investigate project<br/>Write per readme-style<br/>Append last-reviewed hash"] --> Commit
-  GapPath["Identify affected sections<br/>Propose per-section changes<br/>Confirm, then write per style"] --> Commit
-
-  Commit["Commit: silent under<br/>git-auto-commit, or confirm"] --> SoloOrFlow{Which mode?}
-  SoloOrFlow -->|Solo| PushAsk[Ask: push main now?<br/>always confirmed, regardless<br/>of git-auto-commit]
-  SoloOrFlow -->|GitHub Flow| MergeMain[Merge branch into main] --> PushAsk
-  PushAsk -->|Cancel| Done2[/Report: committed but<br/>not pushed, branch left as-is/]
-  PushAsk -->|Push| Promote
-
-  Promote{Environment<br/>branches exist?}
-  Promote -->|yes| PromoteAsk[Ask: which to promote?<br/>Merge main into each selected]
-  Promote -->|no| Cleanup
-  PromoteAsk --> Cleanup
-
-  Cleanup{GitHub Flow?}
-  Cleanup -->|yes| DeleteBranch[Delete docs/manifest-date branch<br/>Return to original branch]
-  Cleanup -->|no| Done
-  DeleteBranch --> Done
-
-  Done([Updated README.md])
+  Start([Run manifest]) --> Prepare[Resolve owner, policy and main/master base]
+  Prepare --> Branch[Solo on base; GitHub Flow on unique branch]
+  Branch --> Work[Workflow assessment, choices and approved edits]
+  Work --> Changed{Any workflow changes or commits?}
+  Changed -->|no| Noop[Safe empty-branch cleanup and report]
+  Changed -->|yes| Verify[Verify outputs and required commit approvals]
+  Verify --> Mode{Git strategy?}
+  Mode -->|GitHub Flow| Review[Confirmed branch push and PR handoff; required review and CI]
+  Review -->|pending| Pending[Retain work and report pending state]
+  Review -->|satisfied| Merge[Configured integration strategy]
+  Mode -->|Solo| Push
+  Merge --> Push[Separately confirm publication]
+  Push -->|declined or failed| Pending
+  Push -->|verified published SHA| CI[Required promotion CI passed or not applicable]
+  CI -->|blocked| Pending
+  CI -->|ready| Promote[Optional confirmed fan-out]
+  Promote --> Cleanup[Safe eligible cleanup and report]
 ```
 
 ## Steps
@@ -81,12 +39,7 @@ flowchart TD
 
 Resolves the existing configuration and project-knowledge owner through the shared runtime first. If that file does not exist, including a project with neither `AGENTS.md` nor `CLAUDE.md`, stops before any Git mutation or file write and directs the developer to run `log`, then re-run `manifest`. It does not create instruction files or automatically invoke another workflow. Existing bridge, override, conflict, and missing-import rules still apply.
 
-Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in the resolved owner's configuration block (absence defaults to GitHub Flow, per git.html):
-
-- **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
-- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/manifest-{date}`), regardless of what the starting branch was. README.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something README.md should reflect, re-run `/helm:manifest` after that branch merges to main. Returns to the original branch at the end (see Step 5).
-
-If the command exits at any point without writing anything (Skip selected at any prompt, README.md already up to date, or custom mode finding nothing to preserve), this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command, not just the specific cases called out below, so the user is never left stranded on an empty temporary branch it created. (Gap Update's no-significant-changes outcome doesn't count as "nothing written" either; it still advances the saved hash, so it goes through the normal commit path in Step 4, same as log.md's Outcome A.)
+Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Use the [shared Git and CI flow](../setup/git-and-ci.html): resolve the actual main/master base and invocation policy, require a clean setup, use a unique GitHub Flow branch (unused suffix on collisions), and revalidate destination ownership/configuration after checkout. Solo stays on the base without a temporary branch. Preserve real drafts/commits on failure; only a genuine no-write/no-commit exit safely returns before deleting its empty branch.
 
 ## Scope
 
@@ -113,7 +66,7 @@ Four outcomes, default depending on assessment:
 
 ### 3. Full scan
 
-**Custom mode with no existing README exits immediately, before investigation runs.** Custom mode preserves structure, it doesn't author it; if there's nothing to preserve, there's nothing worth investigating the project for either. Reports that there's no README.md yet and asks the developer to write one in whatever structure they prefer; a future run then preserves it. No project scan, no write, no proceeding to Step 5.
+**Custom mode with no existing README exits immediately, before investigation runs.** Custom mode preserves structure, it doesn't author it; if there's nothing to preserve, there's nothing worth investigating the project for either. Reports that there's no README.md yet and asks the developer to write one in whatever structure they prefer; a future run then preserves it. No project scan or README write; any earlier approved style-setting write still reaches finalization.
 
 Otherwise, investigates: business purpose and target audience, stack and dependencies, installation steps, core usage patterns and CLI commands, public API surface, license, contributing model, maintainers, and project motivation/limitations worth surfacing.
 
@@ -144,13 +97,13 @@ Proposes the changes per section, asks for confirmation, then writes. Bumps the 
 
 ### 5. Commit and finalize
 
-If Full scan wrote nothing (the custom-mode, absent-README case): skips commit, merge, and environment promotion: nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
+Count both README edits and any approved owner `readme-style` change. Custom mode with no README may still have a configuration write; it is not automatically a no-op. Verify approved outputs and marker, stage exact paths and honor auto-commit. A failed/declined commit leaves drafts intact.
 
-Otherwise commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit`; git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
+Follow the [shared Git and CI flow](../setup/git-and-ci.html) after the command's own output verification and commit approvals. GitHub Flow offers separately confirmed branch publication and PR creation, or a local/manual handoff, until required review/checks pass. Integration uses the configured squash/rebase/merge strategy and actual main/master base. Solo requires no PR unless explicit project policy says otherwise. Base publication always has its own confirmation.
 
-If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update: that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
+Before fan-out promotion, verify configured/applicable CI for the exact published source SHA with complete provider-aware coverage. Missing/failed/pending/unknown results stop or defer promotion; target selection cannot waive the gate. Use at most four target options or Yes/Skip for one, explicitly describing merge and push. Verify each operation and report completed/pending targets separately.
 
-**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there (no promotion, no branch cleanup), leaving the commit (or merge) in place locally for a manual push later.
+Declined/failed commits, unsafe local edits or incomplete checkpoints preserve actual work and stop dependent operations. Safe cleanup uses ancestry checks and `git branch -d`; squash/rebase branches outside ancestry are retained, never force-deleted. Remote deletion needs its own push confirmation. Report PR URL/review status, actual branch, commits, integration/publication, CI, and promotions separately. Summarize output verification captured before publication, not a different original checkout after cleanup.
 
 ### 6. Confirm completion
 
@@ -165,7 +118,7 @@ If a scan or gap update wrote anything this run, first verifies it: reads README
 - **User cancels at the proposed-changes confirmation.** No write.
 - **No significant changes found during Gap Update.** Only the hash advances.
 
-Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; see Before starting.
+Only a genuine no-write/no-commit exit uses safe empty-branch cleanup. Drafted configuration or committed work instead follows finalization or its pending-work path.
 
 ## See also
 

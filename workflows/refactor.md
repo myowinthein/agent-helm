@@ -397,13 +397,9 @@ Wait for the user's choice. Resolve required CI access and project review policy
 
 ### Required CI gate
 
-Use this gate for the exact reviewed refactor tip before integration when CI is configured/required, and for the exact published `{base_branch}` SHA before environment promotion. Review project CI configuration and applicable remote checks; do not infer that CI is absent merely because GitHub Actions files are absent or the remote is not GitHub.
+Read `{package_root}/prompts/shared/ci.md` and apply its **integration** gate to the exact reviewed tip and **promotion** gate to the exact published source SHA. GitHub Flow retains its PR and configured pre-merge CI policy. In Solo, CI merely existing does not make unpublished-branch remote results mandatory: when no project/provider policy requires pre-integration remote CI, passing applicable local checks permits local integration. The published-base CI gate before promotion remains mandatory when CI applies.
 
-- No configured or required CI: record not applicable and proceed. Never manufacture a passing result.
-- On GitHub, verify access to an authenticated provider interface (or `gh` availability, authentication, repository access). Inspect all applicable workflow runs, required check runs, and commit status contexts for the exact SHA, with pagination where needed. A fixed recent-run limit such as 20 does not establish complete coverage. Do not accept results for a different branch tip or an earlier attempt when a current result supersedes it.
-- On another provider, verify the equivalent required pipeline/check results using an available authenticated interface. If unavailable, report that capability gap and leave the affected integration/promotion pending; do not skip configured CI.
-- Proceed only when every applicable required result is complete and successful. Failed, pending, cancelled, missing, truncated, or unknown results block the affected action. A skipped/not-applicable job is acceptable only when project policy explicitly establishes that it is not required for this change. A user selecting an environment is not a CI waiver. Waiting/rechecking may establish a later success, but a timeout never does.
-- Recheck the intended SHA immediately before the gated action. If the branch changed, invalidate the prior result and verify the new tip. A blocked post-push gate leaves the already-published base commit intact, performs no environment merge/push or branch deletion, and reports the exact remaining action in Step 8.
+If remote CI is explicitly required for this integration but the branch is unpublished, offer `Publish branch for required checks` or `Leave integration pending`, describing the exact push and preserving its own confirmation. Publishing solely for checks does not require creating a PR in Solo. Verify remote SHA and applicable results; pipeline trigger filters may still leave the gate unavailable. Required remote checks never become optional or satisfied by local tests. An unavailable/failed/pending gate leaves this branch intact for wait/recheck or manual review, without integration, promotion or cleanup.
 
 ### Option 1 — Integrate
 

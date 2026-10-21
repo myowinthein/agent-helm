@@ -6,136 +6,96 @@ nav_order: 1
 
 # /helm:ship
 
-The release command. Reads the commits since the last tag, calculates the next version using Conventional Commits, runs the test suite, tags the release, and optionally promotes `main` to one or more environment branches.
+The release command: inspect commits since the last tag, calculate a Conventional Commits version, run quality checks, commit/tag/publish the approved release, and optionally promote it. Both hosts resolve the same configuration owner and actual main/master base. Ship never creates or migrates AGENTS.md/CLAUDE.md ownership or operational Helm state.
 
-Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; ship does not create or modify Helm settings in `AGENTS.md` or `CLAUDE.md`. [Compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+In Codex, select the same workflow from the skill picker. See [compatibility](../setup/compatibility.html) and [Git and CI behavior](../setup/git-and-ci.html).
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:ship]) --> Preflight[Inspect branch and origin<br/>For release/promotion on GitHub:<br/>check gh availability and auth]
-  Preflight --> Branch{On which branch?}
-  Branch -->|feature / other| FeatStop[/Stop: merge to main first/]
-  Branch -->|main or master| Targets{Env branches on remote?<br/>filtered by environment-promotion mode}
-  Branch -->|env branch| EnvMode{environment-promotion<br/>mode?}
-
-  Targets -->|yes| Pick[Ask: which envs to promote?]
-  Targets -->|no| CC
-  Pick --> CC{Conventional Commits<br/>detected since last tag?}
-
-  CC -->|yes| Calc[Calculate bump from<br/>feat / fix / BREAKING]
-  CC -->|no| AskVersion[Ask human for version]
-  Calc --> Confirm[Ask: confirm proposed<br/>version or enter custom?]
-  Confirm -->|proposed approved| Tests
-  Confirm -->|custom| AskVersion
-  Confirm -->|v1.0.0 shortcut| ManualConfirm
-  AskVersion --> ManualConfirm[Validate version<br/>Confirm exact release and targets]
-  ManualConfirm -->|ship| Tests
-  ManualConfirm -->|cancel| ReleaseCancel[/Exit: no release actions/]
-
-  Tests[Run lint + tests] -->|fail| TestStop[/Stop: fix tests first/]
-  Tests -->|pass| Release[Bump version file<br/>Commit, tag, push]
-  Release --> HasTargets{Any selected<br/>environment targets?}
-  HasTargets -->|no| GHCheck
-  HasTargets -->|yes| CICheck{CI configured<br/>and not verified successful?}
-  CICheck -->|no, or CI passed| Promote[Promote to selected envs]
-  CICheck -->|yes| CIAsk[Ask: promote anyway<br/>or skip for now?]
-  CIAsk -->|skip for now| GHCheck
-  CIAsk -->|promote anyway| Promote
-  Promote --> GHCheck{Remote is<br/>github.com?}
-  GHCheck -->|no| MainDone
-  GHCheck -->|yes| GHCapability{gh available<br/>and authenticated?}
-  GHCapability -->|no| GHManual[Report reason and manual creation<br/>for the same version] --> MainDone
-  GHCapability -->|yes| GHConfirm[Ask: create GitHub Release?]
-  GHConfirm -->|skip| MainDone
-  GHConfirm -->|create| GHRelease[gh release create<br/>--notes extracted_notes]
-  GHRelease --> MainDone([Report actual release<br/>and promotion status])
-
-  EnvMode -->|fan-out| EnvPushAsk[Confirm: push current branch?<br/>May trigger deployment]
-  EnvPushAsk -->|push| EnvPushOnly[Push current branch]
-  EnvPushAsk -->|cancel| EnvCancelExit
-  EnvPushOnly --> EnvFanDone([Report: pushed])
-
-  EnvMode -->|chain| EnvNext{Next env in chain?}
-  EnvNext -->|pre-production tier| EnvConfirm[Ask: confirm promotion?<br/>Explicit override if configured CI<br/>is unavailable or not successful]
-  EnvNext -->|production tier| EnvStop[/Stop: nothing to promote/]
-  EnvNext -->|unrecognized name| EnvAsk[Ask: which branch<br/>to promote to?]
-  EnvAsk --> EnvConfirm
-  EnvConfirm -->|cancel| EnvCancelExit[/Exit: no changes/]
-  EnvConfirm -->|confirm| EnvMerge[Push current branch<br/>merge into next environment]
-  EnvMerge -->|conflict| EnvAbort[Abort merge<br/>return to current branch]
-  EnvAbort --> EnvConflictDone([Report: conflict,<br/>manual resolution needed])
-  EnvMerge -->|success| EnvPush2[Push next environment<br/>return to current branch]
-  EnvPush2 --> EnvDone([Report: promoted + pushed])
+  Start([Run ship]) --> Preflight[Resolve owner, base, branch and provider capabilities]
+  Preflight --> Branch{Current branch?}
+  Branch -->|feature or other| Stop[Stop for normal integration]
+  Branch -->|base| Dirty{Pending work?}
+  Dirty -->|protected or unsafe| Stop
+  Dirty -->|safe work, GitHub Flow| Stop
+  Dirty -->|safe work, Solo| Review[Review exact preparatory commit or stop]
+  Dirty -->|clean| Version
+  Review -->|verified clean| Version[Choose exact version and targets; confirm release]
+  Version --> Quality[Required release quality checks]
+  Quality --> Release[Verify release commit, tag and publication]
+  Release --> Targets{Selected environments?}
+  Targets -->|none| GH[Separate GitHub Release offer or manual handoff]
+  Targets -->|yes| CI[Complete provider-aware CI for published source SHA]
+  CI -->|blocked| Pending[Wait/recheck or leave promotion pending]
+  Pending --> GH
+  CI -->|passed or not applicable| Promote[Approved targets only; verify each push]
+  Promote --> GH
+  Branch -->|environment| Mode{Promotion model?}
+  Mode -->|fan-out| Push[Separately confirm current branch push]
+  Mode -->|chain| Hop[Resolve next tier; publish source only with confirmation]
+  Hop --> HopCI[CI for exact published source SHA]
+  HopCI -->|blocked| Report[Report actual completed and pending actions]
+  HopCI -->|ready| Confirm[Confirm target merge and push]
+  Confirm --> Report
+  GH --> Report
+  Push --> Report
 ```
 
-## Steps
+## Before starting
 
-### Before starting
+Resolve the configuration owner, invocation strategy, base branch and current checkout before mutation. For GitHub releases/promotion, check CLI/authentication/repository access and report missing capability without exposing credentials, installing tools or changing settings. Git transport access is separate from provider API access. Non-GitHub CI uses the applicable provider interface, never an automatic CI bypass.
 
-Refuses to release from a feature branch. For main/master and environment-branch paths, inspects origin before mutations. On GitHub, checks `gh --version` and authentication for the origin's host before committing pending work, editing release files, tagging, or pushing. Reports missing tools/authentication up front without exposing credentials or installing/logging in automatically. Git transport access is separate from GitHub API access. Non-GitHub repositories do not require gh.
+On the base, require a clean release baseline. If work is pending:
 
-On `main` or `master`, then checks for a clean working tree (`git status --porcelain`): Step 4 stages specific files by path (`git add README.md`, the version file, etc.), and staging a file picks up its entire current state, so unrelated pending edits already sitting in one of those exact files would otherwise ride silently into the release commit and get tagged and pushed along with it. If the tree isn't clean, asks whether to commit the pending changes separately first (Conventional Commits message, scope inferred from the touched files, same convention every other command in this plugin uses) or stop so it can be handled manually; proceeding as-is without committing is never offered, since that's exactly the silent-bundling failure mode this check exists to close. Once clean, runs the full release flow. On an environment branch (`staging`, `production`, or similar), skips the entire release flow (version bump, commit, tag, code quality checks, and GitHub Release all only run from main) and runs the promotion path (Step 5) instead.
+- Protected `.helm/`, `.claude/helm/` or flat legacy records block ship without reading or committing those records. Leave them for their owning workflow/developer.
+- Non-example env files, credential/private-key files, any secret-bearing pending content or unverifiable safety also block. An `.env.example` filename alone proves nothing. Report paths only; never emit values or raw secret-bearing diffs.
+- GitHub Flow sends unrelated pending work through normal branch/PR review. The release-commit exception covers release metadata only.
+- Solo may offer a preparatory commit only after locally verifying every pending change is safe and showing the exact safe diff/paths. Recheck the complete index and inputs, stage literal approved paths only, commit scoped logical units and verify a clean tree. Approval does not authorize tagging or pushing. Decline/failure stops, preserving actual work.
 
-A Git release can still proceed with explicit approval when GitHub API access is unavailable. Configured GitHub CI is then unverified, requiring the explicit skip/override handling below, and GitHub Release creation is skipped with a reason and manual instructions. Later network, permission, or authentication failures use the same handling even if preflight passed.
+Do not merely exclude unsafe paths and proceed with a dirty release, or automatically stash/reset/discard them. Feature/other branches stop for normal integration. Environment branches use their promotion path, with no new version/release commit.
 
-### 1. Select deployment targets
+## 1. Select targets
 
-Only on `main`. Discovers remote environment branches via `git branch -r`, filters for known environment names, then filters again by `environment-promotion` mode (git.md Environment Branches; default `fan-out`): fan-out offers every discovered branch, chain offers only pre-production-tier branches (`staging`, `stage`, `uat`, `preprod`); a production-tier branch is never a direct deploy target from main under chain mode, only reachable later via Step 5. Presents a multi-select so the user can pick which of the offered environments to promote alongside the main release, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run). If exactly one branch qualifies, asks a direct yes/no confirmation instead of a multi-select, since AskUserQuestion needs at least 2 options. Selecting none (or Skip) means a main-only release.
+On the base, discover qualifying remote environment branches. Fan-out offers all recognized targets; chain offers only first-tier staging/stage/uat/preprod, never a direct production hop. If only later tiers exist, report the missing first tier instead of guessing.
 
-### 2. Calculate version
+Use at most four options (recognized first tiers, then production/prod, then others alphabetically), disclosing any remainder for follow-up. One target uses Yes/Skip. Selection explicitly covers the described environment merges/pushes; it never waives CI. No targets means base release only.
 
-Only on `main`. Versions follow [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`). Scans every commit since the last tag (`git log {last_tag}..HEAD`, unbounded) for Conventional Commits patterns. If detected, the same commit list proposes the next version, covering every type in git.md's Conventional Commits list: `BREAKING CHANGE` or `feat!` bumps major, `feat` (no breaking change) bumps minor, `fix` or `perf` bumps patch (`perf` is a real improvement to shipped behavior, not treated as a no-op). `chore`, `docs`, `style`, `ci`, `build`, `refactor`, `test`, and `revert` are ignored for version calculation: no behavior change from the user's perspective. The user confirms or enters a custom version. If Conventional Commits are not in use, the command asks the human for the version directly.
+## 2. Calculate and approve the version
 
-If no tag exists, the base version is read from the version file: `.claude-plugin/plugin.json`, `package.json`, `composer.json`, or `VERSION`, checked in that priority order if more than one exists, since a `.claude-plugin/plugin.json` is a deliberate signal this repo's canonical version lives there. If no version is found there either, `0.1.0` is used as the starting point.
+Inspect the complete commit range since the last tag. Breaking changes (`!` or BREAKING CHANGE) bump major, feat bumps minor, fix/perf bump patch; other types are ignored for version calculation. Without a tag, use `.claude-plugin/plugin.json`, package.json, composer.json or VERSION in that priority, defaulting to 0.1.0 if absent. For a 0.x version, offer the existing v1.0.0 shortcut.
 
-When the current version is in the `0.x.x` range, the confirmation prompt includes a dedicated **Bump to v1.0.0** option. This is for releases that complete a usable set of features solving a real problem end-to-end, not about size or stability, just about being genuinely usable. Once the version reaches `1.0.0` or above, this option is no longer shown.
+The calculated-version Confirm choice authorizes the concrete release. Manual/custom versions and the shortcut require format validation followed by confirmation of the exact version, base, targets and capability limitations. Typing a version is not approval. Cancel stops before release mutation; changed targets/version need renewed approval. Preserve stricter project push gates without duplicating an approval already covering the same exact action.
 
-Any manually-entered version (a custom version typed after the auto-calculated proposal, or direct entry when Conventional Commits aren't detected) is validated against Semantic Versioning format before use, and re-asked for if it doesn't match. The auto-calculated proposal itself skips this check, since it's derived from a known-good base version and is always well-formed.
+## 3. Quality checks
 
-After manual/custom entry or the v1.0.0 shortcut, shows the exact version, current/base version, selected environments and any GitHub capability limitation, then asks for explicit approval to commit, tag, push and promote. Typing or validating a version does not authorize those actions. Cancel stops before release edits or mutations. The calculated-version Confirm option already supplies release approval; the same exact release is not confirmed twice. A changed version or target list requires renewed approval, and stricter project push-confirmation rules still apply.
+Apply Git rules' lint/format gates and the full test suite for the release. Configured checks that fail or cannot run block the release. If no test framework exists, the existing explicit release-untested question applies; absence is not a passing test result. These are workflow instructions for a future ship invocation, not evidence checks passed during source review.
 
-### 3. Run code quality checks
+## 4. Release and optional fan-out
 
-Only reached on the main-branch path: Step 1's redirect sends the environment-branch path straight to Step 5, skipping this entirely. Runs the git.md Code Quality gate (lint and tests) before releasing, rather than restating the procedure. Two release-specific overrides: it runs the full test suite (not just changed-file tests), and if no test framework is detected it asks for confirmation to release untested instead of skipping silently. Does not proceed until lint passes and tests are green.
+Update the detected version, changed README references, and the matching marketplace version when plugin.json is canonical. Stage only approved release paths and reviewed formatter changes, never broad additions. Verify the full index/content and source baseline. Commit `chore(release): bump version to {version}`, create the approved annotated tag, publish the base commit and exact tag, and verify both refs. Stop on a failed commit/tag/push and report any partial publication; never silently start another version to retry.
 
-### 4. Execute release
+Before selected-target promotion, require complete provider-aware CI for the exact published release SHA. Inspect all applicable runs, required checks and status contexts with pagination/current attempts. Missing GitHub Actions files or non-GitHub hosting does not prove no CI. Missing, failed, pending, inaccessible or unknown required results leave promotion pending; offer Wait/recheck versus Skip, with no Promote-anyway override. A published release remains published while promotion is pending.
 
-Only on `main`. Bumps the version in the detected version file, updates any inline version references in the README, and, if the detected file was `.claude-plugin/plugin.json`, also bumps the matching plugin entry's version in `.claude-plugin/marketplace.json` (matched by `name`), keeping marketplace metadata from drifting from the actual plugin version. Then stages the version file, the README (if changed), marketplace.json (if changed), and any files the linter/formatter touched in Step 3, folding formatting changes into the release commit per git.md, never `git add -A`. Commits as `chore(release): bump version to {version}`, creates an annotated tag `v{version}`, and pushes both the commit and tag.
+Only a passed/not-applicable gate reaches target mutation. Recheck source SHA/CI and destination policy, merge the resolved base into each approved destination with a deploy commit, push only after success and verify its SHA. Stop on failure and report completed/pending targets separately.
 
-Before promoting to any selected environment, checks CI status for the commit just pushed, per git.md's Environment Branches rule ("if CI is configured, it must pass before promoting"). If no targets were selected, skips the CI/promotion block. If the repo isn't on GitHub or no workflow files exist, this check is skipped silently. Otherwise, when gh is available/authenticated, matches `gh run list` results against the pushed commit's exact SHA (`headSha`) rather than just the single most recent run: a push can trigger several workflow runs, and checking only the latest one risks missing a still-failing run, or catching a stale run from before this commit was even registered. Missing CLI/authentication or a query failure means **CI unverified**, with a reason, rather than success or a successful empty result. Does not call a CLI already known to be unavailable. If every matching run succeeded, promotion proceeds silently; otherwise (still running, failed, none found yet, or unverified) explicitly asks whether to promote anyway or skip promotion for this run; main stays tagged and pushed either way. Once cleared, merges `main` into each selected environment branch with a `--no-ff` deploy commit and pushes.
+GitHub Release creation remains a separate explicit offer after Git publication. Missing auth/access or a failed API call yields manual instructions for the same version, with no false success claim. Notes retain the workflow's feat/fix selection from the release range. Creating/retrying a GitHub Release never requires rerunning ship and cutting another version.
 
-After pushing, checks whether the remote origin URL contains `github.com`. If not, this sub-step is skipped silently. If yes, uses the recorded CLI/authentication capability: if unavailable, skips the release offer and prints a reason and manual `gh release create` instructions for the same version. Otherwise asks whether to create a GitHub Release. On confirmation, extracts `feat` and `fix` commits from `git log v{last_tag}..HEAD` and runs `gh release create v{version} --title "v{version}" --notes "{extracted_notes}"`, which publishes a release on GitHub with the curated commit list; the printed release URL is captured for the final report. Runtime auth, permission, network or other failures are reported alongside the Git actions already completed, without claiming successful publication.
+## 5. Environment-branch path
 
-**Prerequisite:** GitHub Release creation requires the GitHub CLI to be installed and authenticated. Restore access manually if needed, then create/retry the same version's GitHub Release. Do not rerun the entire ship workflow just to retry publication, since that starts another version.
+**Fan-out:** there is no chain to advance. Separately confirm the exact current-branch push and its deployment consequences. Cancel changes nothing; verify any successful remote update and report only evidence-supported deployment behavior.
 
-### 5. Promotion path
+**Chain:** resolve the next existing tier, asking for an explicit choice for unrecognized environments instead of guessing. Already on the final tier means no further promotion. Check CI for the exact published source branch SHA. An unpublished source may first need a separately confirmed source-only push; no target mutation is authorized by that push, and trigger filters may still leave required checks unavailable.
 
-Only on an environment branch. Checks `environment-promotion` mode first (git.md Environment Branches; default `fan-out`):
+After the gate passes/not applicable, confirm the exact target merge/push. Recheck source SHA/CI, merge into the target and push only on success. Do not republish the already-verified source merely to continue the chain. Verify the target and safely return. Conflicts/failures stop and report actual state; no required CI waiver is offered.
 
-**Fan-out mode**: there's no chain to advance: environment branches only ever receive code directly from main (Step 1), never from each other. Explicitly asks whether to push the current branch to origin, explaining that it may trigger deployment. Push proceeds only with approval for that exact branch push; Cancel reports no push and exits without mutations. Invocation, auto-commit, and host tool permissions are not substitutes for this confirmation. Reuses an already explicit approval for the same push. Reports push failures without claiming deployment was triggered.
+## 6. Report
 
-**Chain mode**: matches the current branch against two tiers of git.md's recognized environment names: pre-production (`staging`, `stage`, `uat`, `preprod`) and production (`production`, `prod`), treating names within a tier as equivalent rather than requiring an exact match. From the pre-production tier, the next environment is whichever production-tier branch actually exists on the remote; stops if already on the production tier. If the current branch is a long-lived branch outside both recognized tiers, asks which branch to promote to instead of guessing.
-
-Then checks CI status for the current branch's tip commit the same way Step 4 does (matched by `headSha`, all matching runs must succeed; skipped silently if not on GitHub or no CI configured). Unavailable CLI/authentication or a query failure is explicitly **CI unverified**, with a reason. Folds the result into the promotion confirmation instead of asking twice; if configured CI is not verified successful, both the question and approval option explicitly identify the override and do not recommend promotion as though CI passed. Confirms before mutating anything (per safety.md: never push without confirmation). On confirm, pushes the current branch, merges it into the next environment branch with a `--no-ff` deploy commit. If the merge conflicts, aborts it, returns to the current branch, and reports that manual resolution is needed rather than leaving the repo mid-merge. On a clean merge, pushes the next environment branch and returns to the current branch.
-
-### 6. Report
-
-Closes with a summary. On `main`: the release commit's SHA, version tagged, README updated yes or no, environments promoted (or "none (skipped)" if CI hadn't passed or was unverified), the GitHub Release URL if created or a skip/failure reason, GitHub capability/CI status, and deployment triggered. If any environment was promoted via "Promote anyway" without verified passing CI, adds the explicit override and status/reason. If promotion was skipped for that reason, adds a note that re-running `/helm:ship` would cut a new version rather than retry the promotion, with the manual merge steps instead. On an environment branch: fan-out mode reports the branch pushed or none if cancelled/failed; chain mode reports which branch was promoted to which, both branches pushed, and the same CI-override note if the promotion went ahead without verified passing CI. Reports actual completed operations without claiming deployment on a cancelled or failed push.
-
-## Stop conditions
-
-The command stops in these cases:
-
-- **Release approval cancelled.** Manual/custom version entry alone never starts release actions.
-- **Environment push cancelled.** No branch push or deployment is triggered.
-- **On a feature branch.** Merge to `main` first via PR, then re-run.
-- **Tests fail.** Fix the failing tests before releasing.
-- **Already on the final environment (chain mode only).** No further promotion is available.
+Report actual preparatory/release commits, version/tag and branch publication, CI status/source SHA, completed/pending environments, current checkout and GitHub Release URL or manual handoff. Never claim deployment from a failed/cancelled push. A blocked promotion does not undo the published release; retry its promotion through the appropriate environment/manual path after checks pass, not a new ship version.
 
 ## See also
 
-- [`/helm:test`](test.html): the test framework setup and coverage flow that pairs with this command
-- [`/helm:log`](log.html): sync `AGENTS.md` to reflect the release
-- [`/helm:manifest`](manifest.html): sync `README.md` to reflect the release
+- [`/helm:test`](test.html): test framework and coverage workflow.
+- [`/helm:log`](log.html): shared project knowledge.
+- [`/helm:manifest`](manifest.html): README maintenance.

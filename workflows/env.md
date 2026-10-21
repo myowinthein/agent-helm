@@ -8,14 +8,7 @@ Check `git-strategy` in {memory_file}'s Project Config (absence defaults to GitH
 
 Before switching branches or writing files, check for pre-existing staged changes. If any exist, stop and ask the developer to commit or unstage them before re-running env. Do not commit, unstage, or overwrite their staged work as part of this workflow.
 
-**Solo Mode** (`git-strategy: solo`):
-- Only proceed if on `main` or `master`. If on any other branch, stop: "env must be run on main or master in Solo Mode. Current branch is {branch} — switch and re-run."
-
-**GitHub Flow** (`git-strategy: github-flow`, or absent):
-- Record the current branch as `{original_branch}` — the workflow returns here at the end, whatever it was.
-- Checkout a fresh branch from main's current tip: update local main (`git pull` if a remote exists), then `git checkout -b chore/env-{YYYYMMDD}` from it.
-- Call this branch `{branch}` for the rest of this command.
-- If this command exits at any point without writing anything, delete `{branch}` and return to `{original_branch}` before exiting — never leave the user stranded on an empty temporary branch it created.
+Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = chore/env-{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
 
 ---
 
@@ -55,7 +48,7 @@ Two complementary checks:
 
 **`.env.example` — no real secrets allowed**
 If no `.env.example` exists, skip this check silently.
-Flag any value that looks like a real credential. Redact flagged values in the report — show only the first 4 and last 4 characters (e.g. `sk-a...xyz9`).
+Flag suspected real credentials, but report only file path, key name and credential type, with values omitted entirely. Never emit prefixes, suffixes, hashes, raw secret-bearing snippets/diffs, or token-bearing URLs. Inspect/filter locally before tool output reaches the conversation; if the host cannot do that safely, mark the affected inspection blocked rather than exposing values. This applies to every scan, preview, replacement plan and completion report below.
 
 **All other env files — no placeholders allowed**
 Flag any key whose value looks like an unfilled placeholder. These would cause silent failures at runtime.
@@ -126,8 +119,8 @@ Keys in env files with no code reference (may be infrastructure-only):
 SECRET/PLACEHOLDER ISSUES        {X found}
 ─────────────────────────────────
 .env.example — real secrets found (should be placeholders):
-- KEY_NAME        sk-a...xyz9
-- KEY_NAME        ghp_A...B3k
+- KEY_NAME        .env.example    API credential (value omitted)
+- GITHUB_TOKEN    .env.example    access token (value omitted)
 
 .env, .env.staging — placeholders found (should be real values):
 - KEY_NAME        .env            your-key-here
@@ -138,12 +131,12 @@ HARDCODED VALUES  {X issues}
 ─────────────────────────────────
 [High] API key hardcoded as string literal
       File: src/api/stripe.js:23
-      Value: pk_live_A...xyz (redacted)
+      Type: API credential (value omitted)
       Suggested env var: STRIPE_PUBLISHABLE_KEY
 
 [Medium] Environment-specific URL hardcoded
       File: src/config.js:5
-      Value: https://api.production.com
+      Type: environment-specific URL (value omitted)
       Suggested env var: API_BASE_URL
 
 ─────────────────────────────────
@@ -245,8 +238,8 @@ Display the flagged keys with their planned replacement:
 ```
 .env.example — real secrets found. Planned replacements:
 
-KEY_NAME        sk-a...xyz9    →  <YOUR_KEY_NAME>
-GITHUB_TOKEN    ghp_A...B3k    →  <YOUR_GITHUB_TOKEN>
+KEY_NAME        API credential (value omitted) → <YOUR_KEY_NAME>
+GITHUB_TOKEN    access token (value omitted)   → <YOUR_GITHUB_TOKEN>
 ```
 
 Then ask:
@@ -366,11 +359,11 @@ Display all findings:
 Hardcoded values found — should be moved to env vars:
 
 [High] src/api/stripe.js:23
-  Value: pk_live_A...xyz (redacted)
+  Type: API credential (value omitted)
   Suggested env var: STRIPE_PUBLISHABLE_KEY
 
 [Medium] src/config.js:5
-  Value: https://api.production.com
+  Type: environment-specific URL (value omitted)
   Suggested env var: API_BASE_URL
 ```
 
@@ -549,89 +542,17 @@ After all fixes are applied, follow Step 3's Commit boundary for the remaining c
 
 Local-only env edits must remain on disk. If they block a checkout, merge, or cleanup, stop that affected operation and report the current branch and remaining work. Do not force checkout, discard, automatically stash, or commit those files to make Git operations succeed. Report local-only edits even when there is nothing safe to commit.
 
-If nothing is staged (only local-only env edits remain, or the Hardcoded values sub-flow already committed all safe changes per-file):
+Account for both remaining safe changes and earlier verified per-file commits. Nothing newly staged is not a no-op when the Hardcoded values flow already committed work; under either Git mode those commits remain eligible for the normal publication/review handoff. Track actual run commits rather than assuming main or a final-stage commit exists.
 
-- **Solo Mode**: skip commit and environment promotion below — there is nothing left to act on, since any Hardcoded values commits already landed directly on main. Proceed to Step 5 to report the outcome.
-- **GitHub Flow**: check whether `{branch}` has any commits ahead of main (`git rev-list --count main..{branch}`). If none, delete `{branch}`, return to `{original_branch}`, and proceed to Step 5 — truly nothing to act on. If it does have commits (the Hardcoded values sub-flow committed real work there, even though Step 4 itself has nothing new to stage), do not delete the branch — skip straight to step 2 of the GitHub Flow sequence below (merge). There's nothing to commit in step 1, but the branch's already-committed work still needs to reach main before cleanup.
+Commit remaining approved safe changes under the invocation's auto-commit policy, after the complete index check above, with an accurate scoped message. A decline or failed verification/commit stops with actual local-only edits, drafts and branch preserved. Never commit a local env file to unblock a checkout. If no workflow writes/commits exist, use the shared genuine-no-op cleanup only when local-only work does not block it; report local edits separately.
 
-Otherwise, commit per git.md's Auto-Commit rule: silent if `git-auto-commit: true`, otherwise ask for confirmation before committing, merging, and pushing together. Either way, push itself always requires its own confirmation regardless of `git-auto-commit` — git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions. Environment promotion's branch-selection prompt below already serves as that confirmation for environment-branch pushes; under GitHub Flow, confirm separately before step 2's `git push origin main`, even when the commit above was silent.
-
-**Environment promotion** — shared by both modes below. If environment branches exist (discover via `git branch -r`, filter for known environment names, same detection as ship.md), ask which should also receive this update. (This block is intentionally duplicated across every content-sync command — see rules/git.md's Environment Branches section for the canonical shape; keep all copies in sync if it changes.)
-
-  AskUserQuestion:
-    question: "main will be updated. Which environment branches should also receive this env configuration update?"
-    header:   "Promote to environments"
-    multiSelect: true
-    options: one entry per discovered environment branch, e.g.:
-      - label: "staging"
-        description: "Merge main into staging"
-      - label: "production"
-        description: "Merge main into production"
-
-  AskUserQuestion caps at 4 options. If more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
-
-  If exactly one environment branch qualifies, a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead:
-
-    AskUserQuestion:
-      question: "main will be updated. Promote to {branch} as well?"
-      header:   "Promote to environment"
-      multiSelect: false
-      options:
-        - label: "Yes — promote to {branch} (Recommended)"
-          description: "Merge main into {branch}"
-        - label: "Skip"
-          description: "Leave {branch} as-is for now"
-
-    "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
-
-  For each selected environment:
-  - git checkout {environment}
-  - git merge main --no-ff -m "chore(deploy): promote main to {environment} for env configuration update"
-  - git push origin {environment}
-  - git checkout main
-
-  If no environment branches exist, or the user selects none, skip silently.
-
-**Solo Mode:** commit directly to main. Before pushing, confirm:
-
-  AskUserQuestion:
-    question: "Push main now? This publishes the commit to origin."
-    header:   "Push"
-    multiSelect: false
-    options:
-      - label: "Push (Recommended)"
-        description: "git push origin main"
-      - label: "Cancel"
-        description: "Leave main committed locally but unpushed — push manually when ready"
-
-If Cancel selected → stop here. Do not push or promote. Proceed to Step 5 to report the outcome, noting main is committed locally but unpushed.
-
-If Push selected: `git push origin main`, then run Environment promotion above.
-
-**GitHub Flow:**
-1. Commit on `{branch}` (this also covers any per-file commits already made by the Hardcoded values sub-flow above, which run on whatever branch is currently checked out). Skip this step if nothing was staged — see the branch-check above.
-2. Merge into main: `git checkout main`, `git merge {branch} --no-ff -m "{same message as the commit above, or a generic 'chore(env): merge hardcoded-value fixes' if step 1 was skipped}"`. Before pushing, confirm:
-
-   AskUserQuestion:
-     question: "Push main now? This publishes the merged commit to origin."
-     header:   "Push"
-     multiSelect: false
-     options:
-       - label: "Push (Recommended)"
-         description: "git push origin main"
-       - label: "Cancel"
-         description: "Leave main merged locally but unpushed — push manually when ready"
-
-   If Cancel selected → stop here. Do not push, promote, or clean up. Proceed to Step 5 to report the outcome, noting main is merged locally but unpushed.
-
-   If Push selected: `git push origin main`.
-3. Run Environment promotion above.
-4. Delete `{branch}`: `git branch -d {branch}` locally, and `git push origin --delete {branch}` if it was ever pushed.
-5. Return to where you started: `git checkout {original_branch}`.
+After all intended safe commits are verified, read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = env`. This includes confirmed PR/push handoff, configured merge strategy, `{base_branch}`, exact-SHA CI-gated fan-out and safe cleanup. Local-only env edits that block checkout/integration stop that action without reset, stash, discard or publication of those files.
 
 ---
 
 ## Step 5 — Confirm completion
+
+If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
 
 Report:
 
