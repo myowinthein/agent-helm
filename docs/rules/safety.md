@@ -10,7 +10,32 @@ The operational safety reference for a project. Defines which actions always nee
 
 Loaded as context so that any agent acting in the project respects the same operational guardrails. It is not a checklist to execute top to bottom: the safety scan runs only when triggered (see When to run a safety scan).
 
-Resolve the existing memory owner using git.md before documenting findings. CLAUDE.md references below illustrate the original layout; an AGENTS.md owner receives the same protections and confirmation gates. Include active instruction overrides in the scan.
+Resolve `{memory_file}`, the existing memory owner, using git.md before documenting findings. In shared setup this is AGENTS.md and CLAUDE.md imports it; preserve legacy owners, bridges and active override precedence. Safety findings belong in the owner, not a host adapter.
+
+## Host capabilities
+
+Copied rules keep these boundaries without Helm's runtime. Verify the selected consumer workspace and required tools/access before acting. Folder access in Claude, Cowork, Codex or a remote sandbox does not establish access to the user's local Git checkout, credentials, Docker, test environment or deployment provider.
+
+Unavailable capabilities, denied permissions or required checks that cannot run stop the affected action and dependent steps. Preserve files/state, report actual completed and pending work, and never claim success or advance a checkpoint on failure.
+
+Tool/sandbox permission is separate from workflow confirmation. If no confirmation UI is available, ask in conversation and wait for an explicit answer. Silence, a timeout, a default or missing tool is not consent. Reuse valid approval for the same concrete action; do not change client settings or credentials automatically to bypass a block.
+
+## Operational Helm state
+
+Configuration and knowledge remain in `{memory_file}`. Operational state lives under root `.helm/` on both hosts, with `.claude/helm/` and the known flat `.claude/{refactor-log,test-log,normalize-log,legal-manifest}.json` paths retained as legacy locations. `.claude/rules/` is shared rule storage, not state to move.
+
+Exclude operational records from ordinary source/safety scans, feature edits and unrelated staging. Loading rules or switching agents never authorizes opening, rewriting, deleting, resetting, merging or migrating those records. Only an explicitly invoked owning Helm workflow may access/update its own filename:
+
+| Workflow | State filename |
+|---|---|
+| refactor | `refactor-log.json` |
+| test | `test-log.json` |
+| normalize | `normalize-log.json` |
+| legal | `legal-manifest.json` |
+
+Other commands trigger no migration. Archive may preserve state as opaque project files under its own authorized workflow, without interpreting/migrating it.
+
+The owner must load its packaged project-state procedure, validate all candidate locations for its filename, reconcile differing histories explicitly, and migrate only at its eligible authorized write. Verified canonical output and tracked same-file removals belong in one authorized commit. Never automatically prefer a path, dual-write, migrate all commands together or ignore the whole `.helm/` directory. Incomplete/failed migration preserves other commands' state and remaining legacy sources. Without the workflow/procedure available, leave state untouched and report the capability gap; copied rules do not authorize an improvised migration. Resume sequentially across hosts, without concurrent writers.
 
 ## Agent Execution Boundaries
 
@@ -32,17 +57,17 @@ Projects can extend the list, never shrink it. Document any project-specific add
 
 Run at project bootstrap, and re-run whenever the operational risk surface changes: when anything in the Scan Targets or Risk Categories below is added, removed, or reconfigured (e.g. a new production remote, a new background job, a new credential location).
 
-`/helm:log` Full scan mode may surface and propose safety findings for CLAUDE.md's Hard Safety Rules section, but it does not run this scan or write `.claude/rules` automatically: findings are proposed, never auto-written.
+`/helm:log` Full scan mode may surface and propose safety findings for `{memory_file}`'s Hard Safety Rules section, but it does not run this scan or write `.claude/rules` automatically: findings are proposed, never auto-written.
 
 Only document risks supported by evidence in the repository. No assumptions, no speculation.
 
-**Output:** Documented findings (the Risk/Instruction pairs, environment classifications, and any project-specific boundary additions) go into CLAUDE.md's `## Hard Safety Rules` section as the project's concrete never-do list. Propose the findings first and write them only on confirmation; never auto-write a safety rule without review. They belong in `## Hard Safety Rules` (written by `/helm:log`, loaded with CLAUDE.md), not the `## Rules` entries managed by adopt (only approved Helm pointers are patched) and not the shipped `git.md` / `safety.md` (overwritten on update).
+**Output:** Documented findings (the Risk/Instruction pairs, environment classifications, and any project-specific boundary additions) go into `{memory_file}`'s `## Hard Safety Rules` section as the project's concrete never-do list. Propose the findings first and write them only on confirmation; never auto-write a safety rule without review. They belong in `## Hard Safety Rules` (written by `/helm:log`, loaded through the owner), not the `## Rules` entries managed by adopt. Adopt patches only approved exact Helm pointers while preserving custom entries, unrelated instructions and Skip decisions; it does not replace the whole section every run. Project-specific findings also stay out of the shipped rules, whose approved managed copies adopt can overwrite on update.
 
 ## Scan Targets
 
 Bootstrap scan looks at:
 
-- `CLAUDE.md`, `.claude/rules`, README files, project documentation.
+- `AGENTS.md`, `CLAUDE.md`, active instruction overrides, `.claude/rules`, README files, project documentation.
 - CI/CD pipelines (GitHub Actions, GitLab CI), deployment scripts.
 - Composer scripts, package scripts, Makefiles, shell scripts.
 - Docker, Dev Containers, Podman, Lando, Laravel Sail configuration.
