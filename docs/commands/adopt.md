@@ -6,25 +6,29 @@ nav_order: 7
 
 # /helm:adopt
 
-Setup helper. Installs or updates the helm rule files into the current project, choosing between a copy-in or a reference-from-CLAUDE.md install. Detects whether existing rules came from helm (via a version marker) or were authored manually, and adapts the prompt accordingly.
+Setup helper. Installs or updates the helm rule files into the current project, choosing between a copy-in or a reference-from-owner install. Detects whether existing rules came from helm (via a version marker) or were authored manually, and adapts the prompt accordingly.
 
 Unlike the workflow commands, `/helm:adopt` configures how helm relates to a project. It does no product work, runs no tests, ships no release.
 
 Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
 
-## Host-specific setup
+## Shared owner and host-specific setup
 
-The flow and detailed steps below describe Claude's copy/reference choices with a CLAUDE.md-owned example. In Codex, adoption writes only the persistent root AGENTS.md entry and shared `.claude/rules/` copies. An existing CLAUDE.md owner is read through an explicit bridge and is not rewritten. Existing readable Claude reference installations can be connected without switching their mode; missing reference targets stop setup rather than causing competing copies. Codex never creates cache-path reference installations or deletes shared copies. If a root override shadows AGENTS.md without explicitly reading it, setup stops before branching; the override is never edited.
+After log setup, AGENTS.md owns shared instructions and Rules on either host; CLAUDE.md imports it. Adoption patches only the shared owner's Helm entries, preserves its configuration/knowledge and the existing Claude adapter, and creates a missing Claude adapter as part of an approved install/connection. A fresh adoption with neither entry creates minimal AGENTS.md rule instructions plus CLAUDE.md containing `@AGENTS.md`; log can fill in project knowledge later.
 
-Claude continues to prefer the stable marketplace source for versions, copies, and references. A missing marketplace source permits a reported loaded-package fallback for copies, with the existing ahead-version protection; it does not permit a new reference install. A Claude switch to reference mode stops before deleting copies that a separate Codex entry depends on; a switch to copies also stops if that entry directly references the old marketplace paths. Bridges through the owner follow either mode.
+Adoption does not migrate existing owners. Legacy Claude-owned projects keep the previous entry/bridge behavior and are directed to log for reviewed migration. Independent or partially connected entries needing reconciliation stop before branching/writing; an import alone is insufficient while shared settings, Rules or a review marker remain in the adapter. The flow below uses an AGENTS.md owner; legacy targets are resolved and reported explicitly.
 
-Both hosts preserve foreign-file Skip decisions, unrelated instructions, and imports. The target entry's name is reported explicitly. With an existing owner, a missing host entry alone does not trigger the fresh-bootstrap path.
+Claude retains its copy/reference choices and stable marketplace source. A missing marketplace manifest permits a reported loaded-package fallback for copies, with ahead-version protection; it does not permit new reference mode. Codex installs copies from its loaded package, or connects to an existing readable reference installation without switching modes or duplicating paths. Shared reference paths remain machine-local dependencies for both tools.
+
+Switching install modes checks any independent entry's direct rule dependencies before deleting/repointing files. A bridge through the one owner follows either mode. Foreign-file Skip decisions, unrelated instructions and imports remain protected. Cancel and all-foreign-files Skip create no entries or adapter. An in-sync AGENTS.md-owned install missing its adapter offers connection without rewriting rules.
+
+An unconnected root AGENTS.override.md stops shared setup on either host before branching. Adoption never edits/imports overrides or reconciles an independent Claude entry. A missing host entry alone does not imply fresh bootstrap when an owner already exists.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:adopt]) --> Bootstrap{No repo yet, or<br/>no CLAUDE.md?}
+  Start([User runs /helm:adopt]) --> Bootstrap{No repo yet, or<br/>no existing owner?}
   Bootstrap -->|yes| Sanity
   Bootstrap -->|no| Strategy{git-strategy?}
   Strategy -->|Solo| SoloCheck{On main/master?}
@@ -39,10 +43,10 @@ flowchart TD
   AskContinue -->|continue| Scan
   Sanity -->|project markers, or empty| Scan
 
-  Scan[Scan .claude/rules/ and CLAUDE.md<br/>read helm-rule markers and references<br/>resolve installed helm version] --> State{Existing<br/>state?}
+  Scan[Scan .claude/rules/ and AGENTS.md<br/>read helm-rule markers and references<br/>resolve installed helm version] --> State{Existing<br/>state?}
 
   State -->|all absent| Fresh[Ask: copy, reference, or cancel?]
-  State -->|referenced in CLAUDE.md| Referenced[Ask: keep references,<br/>switch to copy, or cancel?]
+  State -->|referenced in AGENTS.md| Referenced[Ask: keep references,<br/>switch to copy, or cancel?]
   State -->|helm-marked files| Update[Compare marker vs installed version:<br/>update if behind, keep if in sync,<br/>warn if ahead; or switch to reference]
   State -->|foreign content| Conflict[Ask: review per file,<br/>reference, or cancel?]
 
@@ -63,7 +67,7 @@ flowchart TD
 
   Copy[Copy from plugin install path<br/>prepend helm-rule version marker<br/>write to .claude/rules/] --> CommitWrite
   PerFile --> CommitWrite
-  Reference[Set the Rules section in CLAUDE.md<br/>to absolute plugin paths<br/>or print the snippet for paste] --> CommitWrite
+  Reference[Set the Rules section in AGENTS.md<br/>to absolute plugin paths<br/>create missing Claude adapter] --> CommitWrite
 
   CommitWrite{Fresh bootstrap?}
   CommitWrite -->|yes| BootstrapCommit["If anything was written,<br/>commit it (per git-auto-commit)<br/>no branch, no merge, no promotion"]
@@ -98,7 +102,7 @@ flowchart TD
 
 ### Before starting
 
-Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html), skipped entirely on a fresh bootstrap (no git repo yet, or no CLAUDE.md to read the flag from):
+Behavior depends on `git-strategy` in AGENTS.md's Project Config (absence defaults to GitHub Flow, per git.html), skipped entirely on a fresh bootstrap (no git repo yet, or no pre-existing resolved owner to read the flag from):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
 - **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`chore/adopt-{date}`), regardless of what the starting branch was. Returns to the original branch at the end (see Step 5).
@@ -107,15 +111,15 @@ If the command exits at any point without writing anything (Cancel at any prompt
 
 ### 1. Sanity check
 
-Looks for `.git/`, `CLAUDE.md`, or a recognised manifest (`package.json`, `composer.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`). Proceeds when markers are found, and also when the directory is empty (a plausible fresh-project setup with nothing to clobber). Only prompts to confirm or cancel when the directory is non-empty but has no project markers: the case that suggests a wrong directory. Cancelling here still proceeds to Step 5, which cleans up the GitHub Flow branch if one was created (or does nothing further on a fresh bootstrap).
+Looks for `.git` (directory or worktree file), `AGENTS.md`, `CLAUDE.md`, or a recognised manifest (`package.json`, `composer.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`). Proceeds when markers are found, and also when the directory is empty (a plausible fresh-project setup with nothing to clobber). Only prompts to confirm or cancel when the directory is non-empty but has no project markers: the case that suggests a wrong directory. Cancelling here still proceeds to Step 5, which cleans up the GitHub Flow branch if one was created (or does nothing further on a fresh bootstrap).
 
 ### 2. Scan existing rules
 
-Reads `.claude/rules/git.md` and `.claude/rules/safety.md`, and detects the `CLAUDE.md` reference type for each: a *marketplace ref* (`marketplaces/claude-helm/rules/{name}`), a *local ref* (`.claude/rules/{name}`, written by copy mode), or *no ref*. Classification is driven by the file first; the reference type only disambiguates the file-absent cases:
+Reads `.claude/rules/git.md` and `.claude/rules/safety.md`, and detects the `AGENTS.md` reference type for each: a *marketplace ref* (`marketplaces/claude-helm/rules/{name}`), a *local ref* (`.claude/rules/{name}`, written by copy mode), or *no ref*. Classification is driven by the file first; the reference type only disambiguates the file-absent cases:
 
 - **Helm-marked**: file exists and starts with `<!-- helm-rule: claude-helm@v{X.Y.Z} -->`. The version is recorded.
 - **Foreign**: file exists but does not carry the helm marker. Authored manually or by another tool.
-- **Referenced**: the file does not exist as a physical copy, but a marketplace ref is present in CLAUDE.md (reference-mode install).
+- **Referenced**: the file does not exist as a physical copy, but a marketplace ref is present in AGENTS.md (reference-mode install).
 - **Absent**: the file does not exist and no marketplace ref is present. A stray local ref (e.g. a copy-mode file that was later deleted) does not block this; the Execute step rewrites the reference.
 
 Then reads the installed helm version from `~/.claude/plugins/marketplaces/claude-helm/.claude-plugin/plugin.json` so the prompt can show users which version they would adopt.
@@ -124,14 +128,16 @@ Then reads the installed helm version from `~/.claude/plugins/marketplaces/claud
 
 First prints a small status table (per-file state plus the installed version) so the user sees what is on disk before deciding. Then the question and labels adapt to the detected state:
 
-- **FRESH** (no existing files, no CLAUDE.md references): Copy into `.claude/rules/` is the recommended option; Reference and Cancel are also available.
-- **REFERENCED** (rules referenced in CLAUDE.md, no physical files): Keep references is the recommended option; Switch to copy mode and Cancel are also available.
+- **FRESH** (no existing files, no AGENTS.md references): Copy into `.claude/rules/` is the recommended option; Reference and Cancel are also available.
+- **REFERENCED** (rules referenced in AGENTS.md, no physical files): Keep references is the recommended option; Switch to copy mode and Cancel are also available.
 - **UPDATE** (helm-marked physical files present): branches on a semver comparison of each file's marker version against the installed plugin version. **Behind** → offers to update from `v{marker}` to `v{current}`. **In sync** (marker equals installed) → reports "already up to date" and offers no overwrite. **Ahead** (marker newer than installed, e.g. the plugin was downgraded) → warns and defaults to keeping the project's newer rules rather than rolling back. Switch to reference and Cancel remain available throughout.
 - **CONFLICT** (foreign physical files present): Review per file is the recommended option; Reference and Cancel are also available.
 
 ### 4. Execute
 
-Both the Copy or Update and Reference paths update CLAUDE.md's `## Rules` section the same way: they set only the helm entries (detected by path), preserve any user-authored entries, and never add a second `## Rules` heading. If CLAUDE.md exists the section is written silently (the mode was already chosen in the previous step); if it does not exist, a minimal CLAUDE.md is created silently; there is no prompt or manual-placement path, since the pointer is required for the rules to load and skipping it would leave the install non-functional. The two paths differ only in the snippet they write.
+In the shared layout, rule pointers belong only to AGENTS.md; a missing CLAUDE.md adapter is created as part of the approved action. An existing correct adapter stays unchanged. Legacy ownership is preserved until log migration.
+
+Both the Copy or Update and Reference paths update AGENTS.md's `## Rules` section the same way: they set only the helm entries (detected by path), preserve any user-authored entries, and never add a second `## Rules` heading. If AGENTS.md exists the section is written silently (the mode was already chosen in the previous step); if it does not exist, a minimal AGENTS.md is created silently; there is no prompt or manual-placement path, since the pointer is required for the rules to load and skipping it would leave the install non-functional. The two paths differ only in the snippet they write.
 
 **Copy or Update**: ensures `.claude/rules/` exists, then writes `git.md` and `safety.md` from the installed plugin source, each with a leading `<!-- helm-rule: claude-helm@v{X.Y.Z} -->` marker so a future run detects them as helm-managed. The `## Rules` snippet lists the local `.claude/rules/` paths, so the rules load as context rather than relying on implicit auto-loading.
 
@@ -143,7 +149,9 @@ Both the Copy or Update and Reference paths update CLAUDE.md's `## Rules` sectio
 
 ### 5. Commit and finalize
 
-**Fresh bootstrap** (Before starting's branch-strategy setup was skipped: no repo, or no pre-existing CLAUDE.md): there's no branch to clean up, since none was created, and no merge or promotion applies. If Step 4 made no changes, there's nothing to do at all. If Step 4 wrote anything, commits it per [git.md's Auto-Commit rule](../rules/git.html#auto-commit), then checks whether an `origin` remote exists: if not, there's nothing to push to and the command stops; if one does, push gets its own confirmation ("Push main now?"), same as every other command; the fact that CLAUDE.md didn't exist yet doesn't mean this is a throwaway clone with no remote to push to.
+Without a repository or HEAD, do not initialize Git or attempt commit/push/promotion. Report installed files and entries as uncommitted.
+
+**Fresh bootstrap** (Before starting's branch-strategy setup was skipped: no repo, or no pre-existing resolved owner): there's no branch to clean up, since none was created, and no merge or promotion applies. If Step 4 made no changes, there's nothing to do at all. If Step 4 wrote anything, commits it per [git.md's Auto-Commit rule](../rules/git.html#auto-commit), then checks whether an `origin` remote exists: if not, there's nothing to push to and the command stops; if one does, push gets its own confirmation ("Push main now?"), same as every other command; the fact that AGENTS.md didn't exist yet doesn't mean this is a throwaway clone with no remote to push to.
 
 **Normal flow**: if Step 4 made no changes (No-change or Cancel path), skips commit, merge, and environment promotion: nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
 
@@ -177,5 +185,5 @@ Every exit above still runs GitHub Flow cleanup (delete the temporary branch, re
 
 - [`git.md`](../rules/git.html) - one of the two rule files this command installs
 - [`safety.md`](../rules/safety.html) - the other rule file
-- [`/helm:log`](log.html) - the related command that updates `CLAUDE.md` content; if you add a `## Rules` section via Reference mode, `/helm:log` will respect it
+- [`/helm:log`](log.html) - the related command that updates `AGENTS.md` content; if you add a `## Rules` section via Reference mode, `/helm:log` will respect it
 - [`/helm:ship`](ship.html) - environment-branch promotion in Step 5 uses the same detection and merge mechanics

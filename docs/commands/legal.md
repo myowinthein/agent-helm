@@ -81,7 +81,7 @@ flowchart TD
 
 ### Before starting
 
-Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
+Behavior depends on `git-strategy` in AGENTS.md's Project Config (absence defaults to GitHub Flow, per git.html):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
 - **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/legal-{date}`), regardless of what the starting branch was. The generated documents are always scanned from main's own content, never from whatever branch happened to be checked out, so there's nothing to validate about the starting branch itself. The command returns to the original branch at the end (see Step 4).
@@ -185,7 +185,7 @@ Otherwise presents the list of generated files for review and waits for confirma
 
 Single commit of the generated documents plus the updated `.claude/helm/legal-manifest.json`: `docs(legal): generate legal documents`. If the output path or format differs from the default (`legal/` Markdown), the commit body notes it for future runs. If the user cancels, the documents stay written but uncommitted; under GitHub Flow this also means no merge, no branch deletion, and no return to the original branch; the command still proceeds to the completion report either way.
 
-Push is always its own separate confirmation after the commit: never folded into the commit prompt, and never skipped regardless of `git-auto-commit`, matching every other write-capable command and CLAUDE.md's push rule. Under GitHub Flow this means: commit on the temporary branch, merge into main, *then* a dedicated "Push main now?" gate before anything reaches origin. Cancelling the push gate leaves main committed (Solo Mode) or merged (GitHub Flow) locally but unpushed, skips environment promotion and (under GitHub Flow) branch cleanup, and still proceeds to the completion report.
+Push is always its own separate confirmation after the commit: never folded into the commit prompt, and never skipped regardless of `git-auto-commit`, matching every other write-capable command and AGENTS.md's push rule. Under GitHub Flow this means: commit on the temporary branch, merge into main, *then* a dedicated "Push main now?" gate before anything reaches origin. Cancelling the push gate leaves main committed (Solo Mode) or merged (GitHub Flow) locally but unpushed, skips environment promotion and (under GitHub Flow) branch cleanup, and still proceeds to the completion report.
 
 **Environment promotion** (both modes, after a successful push): if environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the documents: capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options); then merges main into each selected branch and pushes, matching ship.md's promotion mechanics exactly, just with a commit message scoped to legal document updates.
 
@@ -204,5 +204,5 @@ If Step 1's "No legal need detected" check exited early, reports just that: no d
 
 ## See also
 
-- [`/helm:log`](log.html): reflect legal additions in `CLAUDE.md`
+- [`/helm:log`](log.html): reflect legal additions in `AGENTS.md`
 - [`/helm:manifest`](manifest.html): reference the legal pages from `README.md` if relevant

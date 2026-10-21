@@ -118,5 +118,5 @@ The command refuses to proceed in three cases:
 ## See also
 
 - [`/helm:test`](test.html): the test framework setup and coverage flow that pairs with this command
-- [`/helm:log`](log.html): sync `CLAUDE.md` to reflect the release
+- [`/helm:log`](log.html): sync `AGENTS.md` to reflect the release
 - [`/helm:manifest`](manifest.html): sync `README.md` to reflect the release

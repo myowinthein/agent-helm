@@ -117,5 +117,5 @@ The command stops and waits for explicit approval at eleven points:
 
 ## See also
 
-- [`/helm:log`](log.html): sync `CLAUDE.md` to the current codebase
+- [`/helm:log`](log.html): sync `AGENTS.md` to the current codebase
 - [`/helm:manifest`](manifest.html): sync `README.md` to the current codebase

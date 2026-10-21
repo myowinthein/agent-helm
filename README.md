@@ -37,7 +37,7 @@ Claude Code:
 /reload-plugins
 
 # Verify installation: type /helm in the Claude Code prompt.
-# Commands should appear in the picker. If not, see Known Traps in CLAUDE.md.
+# Commands should appear in the picker. If not, see Known Traps in AGENTS.md.
 ```
 
 Codex CLI:
@@ -61,12 +61,14 @@ Links below go to detail pages. Workflow logic lives in `workflows/*.md`; portab
 | [`/helm:test`](https://myowinthein.github.io/claude-helm/docs/commands/test.html) | Assess coverage and write missing tests. |
 | [`/helm:refactor`](https://myowinthein.github.io/claude-helm/docs/commands/refactor.html) | Run a project-wide refactor on a dedicated branch. |
 | [`/helm:env`](https://myowinthein.github.io/claude-helm/docs/commands/env.html) | Audit and fix `.env` files and `.gitignore`: sync, formatting, missing vars, hardcoded values. |
-| [`/helm:log`](https://myowinthein.github.io/claude-helm/docs/commands/log.html) | Sync the existing `CLAUDE.md` or `AGENTS.md` memory owner to the codebase. The captain's log. |
+| [`/helm:log`](https://myowinthein.github.io/claude-helm/docs/commands/log.html) | Set up shared `AGENTS.md` and its Claude adapter, then maintain project knowledge. The captain's log. |
 | [`/helm:manifest`](https://myowinthein.github.io/claude-helm/docs/commands/manifest.html) | Sync `README.md` to the current codebase. The vessel's manifest. |
 | [`/helm:legal`](https://myowinthein.github.io/claude-helm/docs/commands/legal.html) | Generate GDPR-aware legal documents from a project scan. |
 | [`/helm:normalize`](https://myowinthein.github.io/claude-helm/docs/commands/normalize.html) | Rewrite non-conventional commit messages across full repo history. |
 | [`/helm:archive`](https://myowinthein.github.io/claude-helm/docs/commands/archive.html) | Archive an old project for long-term storage and future recovery. |
 | [`/helm:adopt`](https://myowinthein.github.io/claude-helm/docs/commands/adopt.html) | Install or update the rule files into the current project. Setup helper, not a workflow command: see below. |
+
+Run `/helm:log` in a project to establish shared `AGENTS.md` instructions and a `CLAUDE.md` importing them. Existing projects receive a reviewed migration proposal; future Claude/Codex sessions then share the same knowledge without rerunning setup when switching agents.
 
 ### Rules
 
@@ -80,13 +82,13 @@ Links below go to detail pages. Workflow logic lives in `workflows/*.md`; portab
 Installing the plugin does not install project-wide rules in either host. Use [`/helm:adopt`](https://myowinthein.github.io/claude-helm/docs/commands/adopt.html) to install the rules into the current project. Claude supports two modes; Codex installs shared copies and explicitly reads them from its active project entry:
 
 - **Copy**: writes the rules into `.claude/rules/` for either host, preserving existing files unless their overwrite is approved. Self-contained and committed with the repo.
-- **Reference**: adds a `## Rules` section to `CLAUDE.md` pointing at the installed plugin path.
+- **Reference**: adds rule pointers to the shared owner (`AGENTS.md` after setup), pointing at the installed plugin path. Legacy owners remain supported.
 
 After updating the plugin, copy mode requires re-running `/helm:adopt` to pull the latest files. Claude reference mode follows its stable marketplace checkout automatically. Codex can connect to an existing readable Claude reference installation but does not create cache-based references. See [compatibility](https://myowinthein.github.io/claude-helm/docs/setup/compatibility.html) for memory ownership and cross-host setup.
 
 ## Contributing
 
-Run `ruby scripts/test_plugin.rb` for offline package checks, `ruby scripts/check_clients.rb` for native CLI discovery, and `bundle exec rake test` for the package and documentation checks. Native discovery checks do not install Helm or invoke a model.
+Run `ruby scripts/test_plugin.rb` for offline package checks, `ruby scripts/check_clients.rb` for native CLI discovery, and `bundle exec rake test` for the package and documentation checks. Native discovery checks do not install Helm or invoke a model. Optional `ruby scripts/smoke_layout.rb codex` and `ruby scripts/smoke_layout.rb claude` checks exercise migration, approvals and shared adoption in disposable projects using signed-in CLI accounts; pass case names to run a subset.
 
 Issues and pull requests are welcome at [github.com/myowinthein/claude-helm/issues](https://github.com/myowinthein/claude-helm/issues). The intent of this pack is opinionated solo workflows, so feature requests that conflict with that scope may be declined politely.
 

@@ -4,11 +4,17 @@ Install or update the helm rule files (`git.md`, `safety.md`) into the current p
 
 ## Entry files and host scope
 
-Resolve `{memory_file}` with the shared runtime before the branch checks below. `{adopt_file}` is the persistent root entry: `CLAUDE.md` in Claude, `AGENTS.md` in Codex. Only patch Helm's rule entries in that file; preserve its imports and every unrelated instruction. Do not edit an override or a different host's entry file. Treat an existing project-memory wrapper as an entry, not as a new configuration owner.
+Resolve `{memory_file}` with the shared runtime before the branch checks below. In the shared layout, `{adopt_file}` is the root AGENTS.md owner on either host, not the CLAUDE.md adapter. With neither file, bootstrap AGENTS.md plus a real CLAUDE.md containing only `@AGENTS.md`. With an AGENTS.md owner and no Claude entry, create that adapter as part of the chosen installation/connection. Only patch Helm's rule entries in the owner; preserve configuration, review markers and unrelated instructions. Never put a second Rules section into the Claude adapter.
 
-In Codex, check for a root AGENTS.override.md before branching. If it explicitly reads/imports AGENTS.md, adoption may update that persistent entry while preserving the override. Otherwise stop and explain that the override shadows AGENTS.md: the user must explicitly connect the persistent entry from the override or resolve the override before retrying. Do not write an inactive AGENTS.md and claim setup succeeded, and do not edit or commit the override on the user's behalf.
+Legacy layouts keep their existing ownership until a reviewed `log` migration. In those layouts, `{adopt_file}` remains the current host's persistent entry (CLAUDE.md in Claude, AGENTS.md in Codex), preserving existing adoption behavior. Do not move project knowledge or replace an independent entry here. If two independent roots or another Claude entry need reconciliation to claim shared setup, stop before branching/writing and direct the user to `log`. Outside shared-owner rule pointers and creation of a missing Claude adapter, do not edit the other host's entry.
 
-When creating a Codex entry for an existing Claude-owned project, include an explicit directive: `Project instructions and Helm configuration live in CLAUDE.md. Read and follow that file before any project work; do not duplicate or migrate its configuration here.` Do not copy the contents of CLAUDE.md or change it. A missing entry alone is not a fresh bootstrap when a configuration owner already exists.
+If CLAUDE.md imports AGENTS.md but still holds shared Helm settings, adopted Rules or a review marker, it is only partially connected. Stop before branching or writing and direct the user to log's reviewed reconciliation; do not add a second owner/pointer set and discover the mismatch only during final verification.
+
+On either host, check for a root AGENTS.override.md before branching. If it explicitly reads AGENTS.md, adoption may update that persistent entry while preserving the override and reporting host-specific policy. Otherwise stop and explain that the override shadows AGENTS.md: the user must explicitly connect the persistent entry from the override or resolve it before retrying. Do not write an inactive AGENTS.md and claim shared setup succeeded, and do not edit or commit the override on the user's behalf.
+
+Only for a legacy Claude-owned project, creating a Codex entry may retain the existing reverse-bridge behavior: `Project instructions and Helm configuration live in CLAUDE.md. Read and follow that file before any project work; do not duplicate or migrate its configuration here.` Preserve CLAUDE.md and recommend `log` for reviewed migration. Never create this reverse bridge when AGENTS.md owns the project. A missing entry alone is not a fresh bootstrap when an owner exists.
+
+A legacy CLAUDE.md owner with no AGENTS.md is not an independent-root conflict. Choosing `Connect Codex to existing Claude references` authorizes creation of its missing Codex bridge when the targets are readable; do not substitute a log-migration gate for that chosen connection. Report the legacy connection accurately, separately from canonical layout migration.
 
 Read `{adopt_file}`, the resolved `{memory_file}`, and the explicit chains of both when detecting existing rule references, including older references outside a `## Rules` section. This includes a CLAUDE.md owner even when AGENTS.md does not exist yet. Preserve user-authored references outside the managed section. Before writing a second pointer to the same rule, reuse the existing entry or explain any conflicting reference instead of silently activating two versions.
 
@@ -96,6 +102,8 @@ Installed helm version:  v{current_version}
 
 Then choose the question and labels based on state.
 
+For an AGENTS.md-owned installation with existing readable Helm rules and a missing CLAUDE.md adapter, include its exact `@AGENTS.md` contents in the proposed action. When the rules need no update, offer `Connect agents without changing rules` or `Cancel` on either host; run the connection path below. Connection adds only missing approved pointers/adapter, never rewrites in-sync/newer rules. A cancelled action, all-foreign-files Skip, or a choice explicitly promising no changes must not create either entry. Do not report both agents connected if the adapter is absent.
+
 ### Codex install choices
 
 In Codex, use these choices and then proceed directly to Step 4, skipping the Claude-only questions below:
@@ -105,11 +113,11 @@ In Codex, use these choices and then proceed directly to Step 4, skipping the Cl
 - **CONFLICT:** offer `Review each foreign file` or `Cancel`. Preserve each Skip decision. Skip leaves both that file and its existing entry unchanged; it does not authorize adding a new pointer to the foreign file. Add pointers only for rules actually installed or preserved Helm-managed copies. If all files are skipped, make no entry changes and use the no-change cleanup. Do not report skipped foreign files as Helm-managed.
 - **REFERENCED:** offer `Connect Codex to existing Claude references`, or `Cancel`. This preserves the existing installation, not a new Codex reference-mode install. Verify both referenced sources are readable before adding the Codex bridge. If unavailable, report the missing paths and stop; advise using Claude's adopt flow to switch the shared installation to copies. Do not create copies alongside Claude references, delete copies, repoint CLAUDE.md, or silently switch either host's install mode.
 
-`Connect Codex` runs only the entry-file update in Step 4, using existing readable copied paths or the already-loaded Claude memory entry. For the existing-reference case, the bridge points only at the existing owner, which loads its rule paths; never duplicate marketplace paths into AGENTS.md. A Cancel still follows the original branch cleanup path.
+`Connect Codex` runs only the entry-file update in Step 4, using existing readable copied paths or the already-loaded memory entry. For legacy existing references, the bridge points only at the owner; never duplicate its marketplace paths into AGENTS.md. For references already owned by AGENTS.md, preserve them and connect only the missing Claude adapter; never create a self-bridge or a second rule installation. A Cancel still follows the original branch cleanup path.
 
 ### Claude install choices
 
-Keep the original choices below on Claude. Omit every new/switch-to-reference choice when the stable marketplace source is unavailable; copy/update, keep, and cancel choices remain. Reference mode is a shared policy change: if a separate Codex entry explicitly reads local copies, report that dependency and stop before deleting them. Do not leave the other host with broken pointers; the user can reconcile those entries before retrying.
+The canonical missing-adapter connection-only choice above takes precedence when no rule update is needed. Otherwise keep the original choices below on Claude. Omit every new/switch-to-reference choice when the stable marketplace source is unavailable; copy/update, keep, and cancel choices remain. Reference mode is a shared policy change: if a separate Codex entry explicitly reads local copies, report that dependency and stop before deleting them. Do not leave the other host with broken pointers; the user can reconcile those entries before retrying.
 
 Apply the same dependency check before switching from reference mode to copies: a separate Codex entry with direct marketplace-rule pointers would keep reading a different version after the switch. Stop and have those entries connected through the owner first; do not silently modify them. A Codex bridge pointing only at the owner follows either mode without changes.
 
@@ -205,6 +213,7 @@ The Copy or Update and Reference paths both update {adopt_file} the same way —
 - The snippets show a complete two-rule install. For per-file review, add entries only for successfully installed rules; preserve an existing entry for a skipped file, but never add a new one for it. If every file was skipped and no connection was selected, leave the entry untouched.
 - If {adopt_file} exists: write silently — the install mode was already chosen in Step 3.
 - If {adopt_file} does not exist: create it silently with the `## Rules` section and the required memory-owner bridge when the owner is a different file. Do not prompt and do not offer a manual-placement path — the pointer is required for the rules to load, so anything short of writing it leaves the install non-functional. The Report step notes that {adopt_file} was created.
+- In a fresh or AGENTS.md-owned layout, the selected install/connection also creates a missing root CLAUDE.md containing the standalone `@AGENTS.md` import. Do this only after at least one rule was installed/preserved as Helm-managed or a valid connection was approved; never after all foreign files were skipped or an action was cancelled. If another Claude entry already exists, do not create an independent competing entry; direct the user to log's reviewed layout flow. Preserve an existing correct Claude adapter byte-for-byte.
 
 ### Copy or Update path
 
@@ -224,9 +233,9 @@ The Copy or Update and Reference paths both update {adopt_file} the same way —
   At the start of every session, read the rule files at the paths above and follow them.
   ```
 
-### Connect Codex without rewriting rules
+### Connect agents without rewriting rules
 
-This action adds or repairs only the current Codex entry's explicit read directives and, when needed, the memory-owner bridge. Use this path for in-sync copies, a choice to keep newer project copies, or existing readable Claude references. Verify the actual existing rule paths before writing the entry. When a bridge already loads the owner's references, use that bridge instead of adding competing rule pointers. Preserve the owner and the rule files byte-for-byte, including their existing marker versions. If the entry is already correct, make no changes and use the normal no-change cleanup.
+Use this path for in-sync copies, keeping newer project copies, existing readable Claude references, or a missing Claude adapter on a shared owner. Verify the actual rule paths first. In a canonical layout, preserve AGENTS.md byte-for-byte when its pointers are already correct; otherwise add only missing explicit Helm-rule directives to it, preserving its configuration and knowledge. Add a missing CLAUDE.md import adapter, never duplicate rule pointers into it. In a legacy layout, preserve the owner byte-for-byte and add or repair only the current Codex entry's directives/owner bridge. When a bridge already loads the owner's references, reuse it instead of adding competing pointers. Preserve all rule files and their actual marker versions byte-for-byte. If already connected, make no changes and use normal cleanup.
 
 Record the action as `connected` (or `already connected`), not as a rule copy/update. Do not run the Reference path, delete files, rewrite markers, or fall through into Copy or Update. Report the versions actually present; keeping newer copies must not be reported as a rollback to the loaded plugin version.
 
@@ -292,6 +301,8 @@ AskUserQuestion:
 ## Step 5 — Commit and finalize
 
 **Fresh bootstrap** (Before starting's branch-strategy setup was skipped — no repo, or no pre-existing {memory_file}): there is no branch to clean up, since none was created. If Step 4 made no changes, there is nothing to do at all — skip straight to Step 6 to report.
+
+If no repository or no HEAD exists, do not initialize Git or attempt commit/push/promotion. Report the actual installed files and entries as uncommitted. The remaining bootstrap finalization applies only when HEAD exists.
 
 If Step 4 wrote anything, commit it per git.md's Auto-Commit rule — no merge or promotion applies here, since there's no branch strategy to run them under. Then check whether a remote named `origin` exists (`git remote get-url origin`):
 - If none exists (the "no repo yet" sub-case, or a repo with no remote configured), stop here — there's nothing to push to.
@@ -394,7 +405,9 @@ If Push selected: `git push origin main`, then run Environment promotion above.
 
 For Copy/Update, verify only the rule files actually written: read each back and confirm it contains the `<!-- helm-rule: claude-helm@v{current_version} -->` marker. Report skipped foreign files separately, without requiring a Helm marker on them or claiming they were installed. If a written file is missing or its marker is absent, report the error instead of ADOPT COMPLETE.
 
-For a Codex connection, read the selected entry back and follow its explicit directives to the preserved owner and existing rule files. Verify those targets are readable and the owner/rules were not rewritten. Report `connected` or `already connected`, the actual entry and owner paths, the existing rule paths and marker versions (or existing references), and whether any files were written, committed, or pushed. Do not apply the copy/update marker check to this action. Do not report an unavailable reference or skipped foreign file as a successful Helm installation.
+For a connection, read the selected entry and any created Claude adapter back and follow their directives to the owner and rules. Verify targets are readable, rules and existing configuration/knowledge were preserved, and any owner edits are limited to approved missing Helm pointers. Report `connected` or `already connected`, actual entry/owner/adapter paths, actual rule versions/references, and files written, committed or pushed. Do not apply the copy/update marker check to this action. Do not report unavailable references or skipped foreign files as a successful Helm installation.
+
+For every shared-layout install/connection, verify CLAUDE.md imports AGENTS.md and has no duplicated Helm settings/Rules. Report any adapter creation and actual shared owner in addition to the outcome below. Existing reference-mode paths in the shared owner remain machine-local dependencies for both readers; do not claim cross-machine portability.
 
 Print outcome.
 
@@ -436,5 +449,5 @@ ADOPT COMPLETE — no changes
 ## Notes
 
 - The marker line at the top of each copied file is required for future `/helm:adopt` runs to detect helm-managed files vs. user-managed files. Do not strip it.
-- This command never writes outside `.claude/rules/` or the selected `{adopt_file}` in the current project.
+- This command writes only `.claude/rules/`, the selected `{adopt_file}`, and a missing root CLAUDE.md adapter for fresh/AGENTS.md-owned setup in the current project. It does not migrate existing owners; use log for that reviewed change.
 - This command never touches anything in the user's `~/.claude/` directory.

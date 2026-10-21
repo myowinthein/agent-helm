@@ -1,6 +1,6 @@
 ---
 name: log
-description: Update CLAUDE.md with a full scan or gap update since last review
+description: Maintain shared AGENTS.md and its Claude adapter with reviewed migration, a full scan, or a gap update
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the log workflow](../../workflows/log.md).

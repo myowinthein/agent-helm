@@ -6,170 +6,136 @@ nav_order: 2
 
 # /helm:log
 
-Keep `CLAUDE.md` in sync with the codebase. Acts as the captain's log of the project: durable, distilled knowledge about architecture, conventions, domain rules, and traps. Full scan on first run, gap update on subsequent runs.
+Set up shared `AGENTS.md` project instructions and a `CLAUDE.md` import adapter, then keep project knowledge current. The captain's log holds durable architecture, configuration, conventions, domain rules and traps. Developers can switch between Claude and Codex sessions without rerunning setup.
 
-Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
-
-## Memory ownership
-
-The eight-section flow below shows a standard CLAUDE.md-owned project. Helm also supports AGENTS.md owners and preserves explicit wrappers such as `CLAUDE.md` importing `AGENTS.md`. It follows the owner before assessment; the wrapper is never classified as a broken schema and overwritten.
-
-For a customized owner, including Compass's fenced project configuration, a full investigation produces a reviewed targeted patch in the existing structure. Imports, host-specific instructions, configuration, and the adopt-managed Rules section remain protected. The full-file generation path applies to fresh or already-standard files, carrying protected content forward. Moving or deleting custom instructions requires an approved diff.
+In Codex, select the log workflow from the skill picker. Both hosts follow the same migration and knowledge-update workflow. [Compatibility](../setup/compatibility.html) explains ownership, overrides and shared rules.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:log]) --> Strategy{git-strategy?}
-  Strategy -->|Solo| SoloCheck{On main/master?}
-  SoloCheck -->|no| StopSolo[/Stop: switch to main first/]
-  SoloCheck -->|yes| Exists
-  Strategy -->|GitHub Flow| Fresh[Record original branch<br/>Checkout fresh branch from main:<br/>docs/log-date]
-  Fresh --> Exists
-
-  Exists{CLAUDE.md exists<br/>with content?}
-
-  Exists -->|no| Mode1[Ask: full scan or skip?]
-  Exists -->|yes, no hash| Mode1
-  Exists -->|yes, with hash| Schema{All 8 sections<br/>present?}
-
-  Schema -->|no| Mode4["Ask: full scan (default),<br/>gap update, or skip?<br/>(names missing sections)"]
-  Schema -->|yes| Gap{Gap significance<br/>since last review?}
-
-  Gap -->|none: only noise| UpToDate[/Exit: CLAUDE.md up to date<br/>still runs Step 5 cleanup/]
-  Gap -->|small or moderate| Mode2["Ask: gap update (default),<br/>full scan, or skip?"]
-  Gap -->|large or significant| Mode3["Ask: full scan (default),<br/>gap update, or skip?"]
-
-  Mode1 -->|skip| Skip[/Exit: no update needed<br/>still runs Step 5 cleanup/]
-  Mode1 -->|full| Full
-  Mode2 -->|skip| Skip
-  Mode2 -->|full| Full
-  Mode2 -->|gap| GapPath
-  Mode3 -->|skip| Skip
-  Mode3 -->|full| Full
-  Mode3 -->|gap| GapPath
-  Mode4 -->|skip| Skip
-  Mode4 -->|full| Full
-  Mode4 -->|gap| GapPath
-
-  Full["Investigate project<br/>Q1: git-strategy?<br/>Q2: auto-commit yes or no?<br/>Q3: merge strategy? (GitHub Flow only)<br/>write 8-section CLAUDE.md<br/>append last-reviewed hash"] --> Commit
-  GapPath[Review commits since hash<br/>apply 3-question filter<br/>update sections or report<br/>no change, bump hash] --> Commit
-
-  Commit["Commit: silent under<br/>git-auto-commit, or confirm"] --> SoloOrFlow{Which mode?}
-  SoloOrFlow -->|Solo| PushAsk[Ask: push main now?<br/>always confirmed, regardless<br/>of git-auto-commit]
-  SoloOrFlow -->|GitHub Flow| MergeMain[Merge branch into main] --> PushAsk
-  PushAsk -->|Cancel| Done2[/Report: committed but<br/>not pushed, branch left as-is/]
-  PushAsk -->|Push| Promote
-
-  Promote{Environment<br/>branches exist?}
-  Promote -->|yes| PromoteAsk[Ask: which to promote?<br/>Merge main into each selected]
-  Promote -->|no| Cleanup
-  PromoteAsk --> Cleanup
-
-  Cleanup{GitHub Flow?}
-  Cleanup -->|yes| DeleteBranch[Delete docs/log-date branch<br/>Return to original branch]
-  Cleanup -->|no| Done
-  DeleteBranch --> Done
-
-  Done([Updated CLAUDE.md])
+  Start([Run log]) --> Preflight[Read both entries and configuration<br/>Check overrides and uncommitted instruction edits]
+  Preflight --> Conflict{Unresolved configuration<br/>or shadowed shared entry?}
+  Conflict -->|yes| Resolve[Explain and resolve before Git changes]
+  Conflict -->|no| Git{Repository with HEAD?}
+  Git -->|no| Workspace[Use workspace<br/>No Git initialization or review hash]
+  Git -->|yes| Strategy{Recorded git strategy}
+  Strategy -->|Solo| Solo{On main/master?}
+  Solo -->|no| Stop[/Stop: switch branches first/]
+  Solo -->|yes| Layout
+  Strategy -->|GitHub Flow| Branch[Branch from updated main<br/>Recheck configuration]
+  Branch --> Layout
+  Workspace --> Layout
+  Layout{Instruction layout}
+  Layout -->|Neither| Fresh[Defer both files until full scan]
+  Layout -->|Already connected| Assess
+  Layout -->|Missing adapter or migration| Proposal[Show adapter or migration diff<br/>Preserve unique instructions and resolve conflicts]
+  Proposal --> Approval{Apply / revise / cancel}
+  Approval -->|revise| Proposal
+  Approval -->|cancel| Cleanup[/No writes; clean up empty branch/]
+  Approval -->|apply| Verify[Apply and verify both files<br/>Separate layout commit when authorized]
+  Verify --> Assess
+  Fresh --> Assess[Assess knowledge and review point]
+  Assess -->|Current or scan Skip| Finalize
+  Assess -->|Full scan| Full[Investigate project and config<br/>Generate standard sections or propose custom edits]
+  Assess -->|Gap update| Gap[Review meaningful commits<br/>Propose targeted changes]
+  Full --> Finalize[Verify and finalize actual changes<br/>Use invocation's recorded Git policy]
+  Gap --> Finalize
+  Finalize --> Report([Report layout, knowledge, commits and push status])
 ```
 
-## Steps
+## Shared layout setup
 
-### Before starting
+The destination is always:
 
-Rewrites `CLAUDE.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in CLAUDE.md's Project Config (absence defaults to GitHub Flow, per git.html):
+- `AGENTS.md`: shared project knowledge, one Helm configuration block, adopted `## Rules`, and the review marker.
+- `CLAUDE.md`: a real file with a standalone `@AGENTS.md` import, followed by Claude-specific additions when needed.
 
-- **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
-- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/log-{date}`), regardless of what the starting branch was. CLAUDE.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something CLAUDE.md should reflect, re-run `/helm:log` after that branch merges to main. Returns to the original branch at the end (see Step 5).
+An actual import loads shared content automatically in Claude. Prose telling Claude to read AGENTS.md is not an equivalent adapter. Shared resource dependencies in AGENTS.md use explicit read-and-follow directives because Codex does not expand Claude import syntax.
 
-If the command exits at any point without writing anything (Skip selected at any prompt, or CLAUDE.md already up to date), this cleanup still runs: delete the temporary branch and return to the original branch. This applies everywhere in the command, not just the specific case called out below, so the user is never left stranded on an empty temporary branch it created. (Gap Update's Outcome A doesn't count as "nothing written"; it still bumps the last-reviewed hash, so it goes through the normal commit path in Step 5.)
+| Existing files | Setup action |
+|---|---|
+| Neither | After a full scan is selected, generate AGENTS.md and the adapter together. Skip writes neither. |
+| AGENTS.md only | Preserve it and show the proposed Claude adapter for approval. |
+| CLAUDE.md only | Propose moving shared content into AGENTS.md, retaining Claude-specific instructions in the adapter. |
+| Both connected correctly | Keep the layout and continue assessment. |
+| Both independent, partially connected or cyclic | Compare content and propose reconciliation. |
 
-## Scope
+An adapter that imports AGENTS.md but still owns shared settings, Rules or a review marker is partially connected and needs reconciliation. Log may propose repairing a cycle confined to the two readable root files; it reads each once and resolves configuration before Git actions. Other cycles or missing targets still stop.
 
-`CLAUDE.md` is descriptive project knowledge (orientation layer); `.claude/rules/` is prescriptive (architecture, safety, git, testing). Keep them consistent. Project-specific safety rules live in `CLAUDE.md`'s `## Hard Safety Rules` section (written here, loaded with CLAUDE.md), proposed, not auto-written. Never auto-edit the adopt-managed `.claude/rules` files (`git.md`, `safety.md`); they're overwritten by `/helm:adopt`, so propose any needed change to those instead. Whenever writing to CLAUDE.md, in any step: use em-dashes sparingly, only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
+For independent files, summarize agreements, unique durable instructions, conflicts and host-specific content before asking. Offer a reviewed merge, either source as the content baseline, or cancel. A baseline does not authorize silently discarding unique safety rules, preferences or conflicting configuration. Show the resulting combined diff before applying it. Existing approval suffices when it covers that exact transformation.
 
-### 1. Assessment
+Preserve custom headings, fenced configuration, confirmed settings and adopted rule paths. Convert shared imports explicitly rather than silently making them Claude-only. Remove an old reverse bridge only within the approved migration, preserving user-added instructions. Never leave AGENTS.md reading CLAUDE.md while CLAUDE.md imports AGENTS.md.
 
-Reads the current `CLAUDE.md`, checks for a saved `<!-- last-reviewed: {hash} -->` marker, and if found, runs `git log {hash}..HEAD --oneline` to measure the gap. Categorizes the gap as small/moderate or large/significant, ignoring noise commits (bug fixes, styling, dependency updates, routine CRUD).
+Moving content or creating an adapter does not constitute a knowledge review. Carry a valid review marker unchanged; disclose differing histories and propose a conservative review point or removal of an ambiguous marker for approval. A layout-only commit is separate from later knowledge edits and is treated as noise during gap assessment.
 
-For a standard-format owner, also checks whether all eight required sections are present (`## Project Identity`, `## Project Config`, `## Dev Commands`, `## Architecture Pointers`, `## Domain Rules`, `## Behavior Rules`, `## Hard Safety Rules`, `## Known Traps`). A missing section means the standard schema is broken, regardless of gap size. Customized owners skip this test and retain their existing structure.
+Setup runs before the up-to-date check. A later scan Skip or an already-current owner still finalizes any approved layout changes. Cancel at layout approval exits without a layout write or scan and cleans up an empty temporary branch.
 
-### 2. Pick mode
+## Git and scope
 
-Modes, with the default depending on assessment:
+Resolve the existing effective strategy and auto-commit policy before Git changes. Invalid or conflicting Helm values require explicit resolution. Check instruction files for uncommitted work, including untracked existing entries; stop instead of incorporating those edits into migration. Do not reset or stash them.
 
-- **No file or no hash**: Full scan or skip.
-- **Schema intact, no meaningful commits since the hash**: exits cleanly ("CLAUDE.md is up to date") with no prompt.
-- **Schema broken** (any required section missing): Full scan recommended regardless of gap size; names the missing sections.
-- **Small to moderate gap, schema intact**: Gap update (recommended), full scan, or skip.
-- **Large gap, schema intact**: Full scan (recommended), gap update, or skip.
+- **Solo Mode:** run only on main/master.
+- **GitHub Flow:** record the original branch and branch from updated main as `docs/log-{date}`. Re-read the actual files before computing a migration diff. If configuration differs from preflight, stop before writing and clean up the empty branch.
+- **No repository or HEAD:** use the workspace, omit the review marker, and make no Git initialization, commit, merge, push or promotion.
 
-### 3. Full scan
+Finish the invocation under the Git policy recorded at its start. Project Config Check may save a different policy for the next run; it does not switch the current finalization path midway through the command.
 
-For a customized owner, this means a full investigation followed by a targeted proposed diff in its existing sections, with approval before any write. It skips the standard-heading completeness test, preserves the fenced configuration block, and asks only about missing settings. The standard-format generation path below applies to fresh or already-standard memory files.
+An unconnected root AGENTS.override.md stops shared setup on either host before branching. Do not edit or import it. Preserve personal CLAUDE.local.md, nested instructions and global files. Non-root owners, other Claude entries and symlinks need an explicit placement decision. Migration is limited to the agreed root layout; it does not make both tools' nested-file discovery identical.
 
-Investigates the project from scratch: business purpose, modules and workflows, stack and versions, architectural patterns (from implementation, not folder names), conventions, domain rules, operational context. Reviews any existing docs and `.claude/rules`. Before writing, runs the Project Config Check, up to three single-select questions:
+## Knowledge assessment
 
-1. **Branching strategy**: Solo Mode (`git-strategy: solo`, commit directly to `main`, no PRs) or GitHub Flow (`git-strategy: github-flow`, branch per change, PR to merge).
-2. **Auto-commit**: yes (Claude commits after each task without prompting) or no (ask before every commit).
-3. **Merge strategy** (GitHub Flow only): Squash (default), Rebase, or Merge commit. Stored as `git-merge-strategy`.
+After layout setup, assess AGENTS.md:
 
-Then writes `CLAUDE.md` using an eight-section schema:
+- **Fresh file, Rules-only bootstrap, or no review marker:** offer a full scan/investigation or Skip.
+- **Standard schema intact and no meaningful commits since review:** knowledge is current; finalize any layout changes.
+- **Small/moderate meaningful gap:** recommend a gap update.
+- **Large meaningful gap or missing standard sections:** recommend a full scan.
+- **Customized owner:** preserve its structure. Investigate the same topics and propose targeted edits rather than replacing it with the standard schema.
+
+Invalid or unrelated review markers are reported and offer full investigation. Noise commits include routine fixes, styling, dependency updates, CRUD and pure layout moves.
+
+## Full scan
+
+Investigate business purpose, modules, implementation architecture, stack, conventions, domain constraints, operational context and existing documentation. Record durable knowledge a future session would struggle to discover quickly.
+
+For fresh or already-standard memory, use these eight sections:
 
 1. Project Identity
-2. Project Config (e.g. `git-strategy: solo`, `git-auto-commit: true`, `git-merge-strategy: squash`)
+2. Project Config
 3. Dev Commands
 4. Architecture Pointers
-5. Domain Rules (non-obvious business, lifecycle, and permission constraints; "None" if there are none)
+5. Domain Rules
 6. Behavior Rules
 7. Hard Safety Rules
 8. Known Traps
 
-Sections 5–7 are **inline** rules. A separate `## Rules` section, the pointer to the adopted rule files (`git.md`, `safety.md`), written by `/helm:adopt`, is not part of this schema; log preserves it untouched and never writes, moves, or removes it.
+Project Config Check asks about branching strategy, auto-commit and, under GitHub Flow, merge strategy. Existing standard-format full scans retain their regeneration tradeoff: generated knowledge not rederived is not carried forward. Protected imports, user-authored/host-specific instructions and the adopt-managed Rules section remain protected. Customized owners instead receive a reviewed targeted patch in their existing sections, asking only about missing settings.
 
-Appends the current HEAD hash as `<!-- last-reviewed: ... -->`. Writes directly. Target under 150 lines.
+Target under 150 lines without padding. Append the actual HEAD review marker only when HEAD exists. For a fresh setup, also create and verify the Claude adapter. Do not install or update `.claude/rules/` here; rule adoption belongs to adopt, and safety findings are proposed rather than silently installed.
 
-### 4. Gap update
+## Gap update
 
-A customized owner is patched within its own existing sections. It does not acquire the eight-section schema as a side effect of a gap update.
+Ask only about missing configuration. Review meaningful commit messages, then relevant changes. A proposed addition must satisfy all three questions:
 
-Before reviewing commits, runs the Project Config Check for any flags missing from the existing recognized configuration block, skipped silently if all applicable settings are already present. Each question is asked independently: branching strategy if `git-strategy` is absent, auto-commit if `git-auto-commit` is absent, merge strategy if `git-merge-strategy` is absent and GitHub Flow is active.
-
-Then reads commit messages to get the shape of what changed. Reads file changes only for significant commits. Focuses on architectural changes, new modules, new conventions, domain rule changes, new operational knowledge, and newly discovered traps.
-
-Applies a three-question filter to each candidate change:
-
-1. Will a future session struggle to find this from the codebase alone?
-2. Would knowing it improve future development decisions?
+1. Would a future session struggle to find it quickly?
+2. Would knowing it improve development decisions?
 3. Will it stay true for weeks or months?
 
-Only updates if all three answers are yes. For a standard-format owner, every change is bound to one of the eight schema sections: the schema defines what each holds, so each finding lands in its section and never in a new heading; a finding that fits no section is left out. Then either reports **Outcome A** (no durable knowledge introduced, just bump the hash) or **Outcome B** (proposes per-section changes and asks for confirmation before writing).
+Patch affected sections only, preserving custom structure. Propose substantive changes as a diff and wait for approval. If nothing durable changed, only the review hash advances. Moving files alone never advances that hash.
 
-### 5. Commit and finalize
+## Finalization and verification
 
-If nothing was written (the "CLAUDE.md is already up to date" case, or Skip selected anywhere): skips commit, merge, and environment promotion: nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
+Track layout and knowledge writes separately. If neither changed or was committed, skip commit/merge/promotion and clean up any empty log branch. If layout changed, finalize it even when knowledge was current or the scan was skipped. Declining a commit leaves actual files and branch for review, without merge or push.
 
-Otherwise commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms before committing, merging, and pushing together. Either way, push always requires its own separate confirmation regardless of `git-auto-commit`; git.md's Auto-Commit rule states this as an explicit exception, and rules/safety.md lists `git push` as always requiring confirmation with no exceptions.
+Commit under the invocation's recorded policy, with layout and knowledge changes kept separate. Push always requires confirmation. Existing environment promotion and GitHub Flow return/cleanup behavior remain. Cancelling push leaves the actual local commits/branch and reports that state.
 
-If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update: that branch-selection prompt is itself the confirmation for those pushes, capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options). Under GitHub Flow, the branch is merged into main first, then `git push origin main` gets its own separate "Push main now?" confirmation before proceeding to promotion and cleanup.
+Read files back before reporting success. Verify the Claude import, retained instructions, shared configuration, rule dependencies and the intended review point. A failed verification reports the actual changed files rather than claiming complete setup.
 
-**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from. If push is cancelled at either point, the command stops there (no promotion, no branch cleanup), leaving the commit (or merge) in place locally for a manual push later.
-
-### 6. Confirm completion
-
-If a scan or gap update wrote anything this run, first verifies it: reads CLAUDE.md back and confirms the `<!-- last-reviewed: {hash} -->` comment and the claimed section changes actually landed, reporting per-section errors instead of a false-clean outcome, mirroring adopt.md's and legal.md's own write-verification pattern. Then reports what was changed, what the new last-reviewed hash is, which environments were promoted, and whether any rule files in `.claude/rules` should also be revisited. Under GitHub Flow, also reports the temporary branch's fate and which branch you were returned to. Runs even when nothing was written, since that's still an outcome worth reporting.
-
-## Stop conditions
-
-- **Solo Mode, not on main/master.** Switch to main or master and re-run.
-- **CLAUDE.md is up to date.** Schema intact and no meaningful commits since the last-reviewed hash; clean exit, no prompt.
-- **User picks Skip.** Clean exit, no changes.
-- **Gap update finds no durable knowledge.** Outcome A: only the hash advances.
-
-Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; see Before starting.
+Report shared setup status and paths, knowledge outcome, review point, sections changed, layout/knowledge commits, push status, environments promoted, relevant override/nested limitations, and any adopted rules worth revisiting.
 
 ## See also
 
-- [`/helm:manifest`](manifest.html) - same lifecycle for `README.md` (the public-facing version)
-- [`/helm:ship`](ship.html) - typically run before shipping so the log reflects the release
+- [`/helm:adopt`](adopt.html): installs shared rule files and connects their pointers.
+- [`/helm:manifest`](manifest.html): maintains the public-facing README.
+- [Compatibility and project instructions](../setup/compatibility.html): legacy layouts and host boundaries.
