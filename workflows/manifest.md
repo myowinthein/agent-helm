@@ -2,6 +2,8 @@
 
 ## Before starting
 
+Resolve `{memory_file}` through the shared runtime before any Git mutation or file write. If the resolved owner does not exist (including a fresh project with neither AGENTS.md nor CLAUDE.md), stop: "Run the log workflow first to establish shared project instructions, then re-run manifest." Do not create instruction files or automatically invoke log. Existing bridges, overrides, conflicts, and missing import targets still follow the shared runtime's resolution rules.
+
 `/helm:manifest` rewrites README.md from the project's state, so it needs the full merged, stable state — never an in-progress feature branch. Behavior depends on `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
 
 **Solo Mode** (`git-strategy: solo`):
@@ -55,7 +57,7 @@ If `readme-style` is absent:
         - label: "Custom style"
           description: "No existing structure to follow yet — you write README.md yourself in whatever structure you prefer; once it exists, future runs preserve it rather than rewrite it."
 
-  Write the chosen value (`readme-style: standard` or `readme-style: custom`) into {memory_file}'s existing recognized configuration block before continuing, preserving its layout. Never put it in a wrapper or create a second owner.
+  Write the chosen value (`readme-style: standard` or `readme-style: custom`) into {memory_file}'s existing recognized configuration block before continuing, preserving its layout, including a recognized Compass-style fenced block. If the existing owner has no recognized configuration block, this step permits adding a `## Project Config` section containing only the chosen `readme-style` declaration to that same file. Insert it without rewriting existing content or moving an end-of-file review marker away from the end. Do not invent other settings. Never put configuration in a wrapper or create a second owner. In the shared layout, update AGENTS.md and leave CLAUDE.md's import and Claude-specific additions intact; preserve an existing legacy owner until log performs a reviewed migration.
 
 If `readme-style` is already set → use it as-is. Do not ask again.
 
