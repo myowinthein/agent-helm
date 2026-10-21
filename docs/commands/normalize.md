@@ -8,6 +8,8 @@ nav_order: 6
 
 Rewrites every non-conventional commit message in the repository's history to follow [Conventional Commits](https://www.conventionalcommits.org/) format. Three confirmation gates stand between the user and any destructive action: a plain-language risk warning, a full scan showing exactly how many commits will change and a sample of the rewrites before anything is touched, and a final force-push confirmation before the remote is touched.
 
+Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+
 ## Flow
 
 ```mermaid

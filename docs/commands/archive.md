@@ -15,6 +15,8 @@ The workflow is **resumable**. Progress and each step's report are persisted und
 
 **Before starting**, there is no branch-name requirement: run it from whatever branch you consider the real, complete state of the project. Archive candidates are often old or neglected, so `main` is not always the branch that was actually last worked on; Step 5 makes whichever branch you archived from the sole surviving branch, renamed to `main` if it isn't already. It also lists any unmerged local branches (`git branch --no-merged`) and warns that their work will not be captured, so you can merge what should be kept into the current branch before sealing. It never merges on your behalf.
 
+Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+
 ## Flow
 
 ```mermaid

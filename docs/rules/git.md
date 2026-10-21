@@ -8,6 +8,10 @@ nav_order: 1
 
 The git workflow rules for a project. Defines two strategies (Solo and GitHub Flow), the universal rules that apply in both, the Conventional Commits format used for every commit, code-quality gates before pushing, and optional environment-branch promotion.
 
+## Configuration owner
+
+Use the rule file's Project memory and configuration procedure before Git actions. Configuration may live in CLAUDE.md, AGENTS.md, or an explicit project's memory target. Both the standard Project Config section and Compass's fenced configuration block are recognized. Preserve wrappers and active override precedence, and resolve invalid values, conflicting declarations, missing targets, or cycles before branching. Copied rules carry this procedure themselves; no loaded plugin runtime is required. The examples below use CLAUDE.md as the original layout.
+
 ## Git Strategy
 
 ```mermaid
@@ -216,7 +220,7 @@ The [`/helm:ship`](../commands/ship.html) command detects environment branches a
 - [`safety.md`](safety.html) - the operational risks file that pairs with this one
 - [`/helm:ship`](../commands/ship.html) - reads Conventional Commits and promotes to env branches
 - [`/helm:legal`](../commands/legal.html) - promotes generated legal documents to env branches the same way
-- [`/helm:log`](../commands/log.html) - promotes `CLAUDE.md` updates to env branches the same way
+- [`/helm:log`](../commands/log.html) - promotes memory-owner updates to env branches the same way
 - [`/helm:manifest`](../commands/manifest.html) - promotes `README.md` updates to env branches the same way
 - [`/helm:adopt`](../commands/adopt.html) - promotes installed rule files to env branches the same way
 - [`/helm:env`](../commands/env.html) - promotes env/gitignore fixes to env branches the same way

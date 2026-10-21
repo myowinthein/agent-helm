@@ -8,6 +8,14 @@ nav_order: 2
 
 Keep `CLAUDE.md` in sync with the codebase. Acts as the captain's log of the project: durable, distilled knowledge about architecture, conventions, domain rules, and traps. Full scan on first run, gap update on subsequent runs.
 
+Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+
+## Memory ownership
+
+The eight-section flow below shows a standard CLAUDE.md-owned project. Helm also supports AGENTS.md owners and preserves explicit wrappers such as `CLAUDE.md` importing `AGENTS.md`. It follows the owner before assessment; the wrapper is never classified as a broken schema and overwritten.
+
+For a customized owner, including Compass's fenced project configuration, a full investigation produces a reviewed targeted patch in the existing structure. Imports, host-specific instructions, configuration, and the adopt-managed Rules section remain protected. The full-file generation path applies to fresh or already-standard files, carrying protected content forward. Moving or deleting custom instructions requires an approved diff.
+
 ## Flow
 
 ```mermaid
@@ -85,7 +93,7 @@ If the command exits at any point without writing anything (Skip selected at any
 
 Reads the current `CLAUDE.md`, checks for a saved `<!-- last-reviewed: {hash} -->` marker, and if found, runs `git log {hash}..HEAD --oneline` to measure the gap. Categorizes the gap as small/moderate or large/significant, ignoring noise commits (bug fixes, styling, dependency updates, routine CRUD).
 
-Also checks whether all eight required sections are present (`## Project Identity`, `## Project Config`, `## Dev Commands`, `## Architecture Pointers`, `## Domain Rules`, `## Behavior Rules`, `## Hard Safety Rules`, `## Known Traps`). A missing section means the schema is broken, regardless of gap size.
+For a standard-format owner, also checks whether all eight required sections are present (`## Project Identity`, `## Project Config`, `## Dev Commands`, `## Architecture Pointers`, `## Domain Rules`, `## Behavior Rules`, `## Hard Safety Rules`, `## Known Traps`). A missing section means the standard schema is broken, regardless of gap size. Customized owners skip this test and retain their existing structure.
 
 ### 2. Pick mode
 
@@ -98,6 +106,8 @@ Modes, with the default depending on assessment:
 - **Large gap, schema intact**: Full scan (recommended), gap update, or skip.
 
 ### 3. Full scan
+
+For a customized owner, this means a full investigation followed by a targeted proposed diff in its existing sections, with approval before any write. It skips the standard-heading completeness test, preserves the fenced configuration block, and asks only about missing settings. The standard-format generation path below applies to fresh or already-standard memory files.
 
 Investigates the project from scratch: business purpose, modules and workflows, stack and versions, architectural patterns (from implementation, not folder names), conventions, domain rules, operational context. Reviews any existing docs and `.claude/rules`. Before writing, runs the Project Config Check, up to three single-select questions:
 
@@ -122,7 +132,9 @@ Appends the current HEAD hash as `<!-- last-reviewed: ... -->`. Writes directly.
 
 ### 4. Gap update
 
-Before reviewing commits, runs the Project Config Check for any flags missing from the existing Project Config section, skipped silently if both are already present. Each question is asked independently: branching strategy if `git-strategy` is absent, auto-commit if `git-auto-commit` is absent, merge strategy if `git-merge-strategy` is absent and GitHub Flow is active.
+A customized owner is patched within its own existing sections. It does not acquire the eight-section schema as a side effect of a gap update.
+
+Before reviewing commits, runs the Project Config Check for any flags missing from the existing recognized configuration block, skipped silently if all applicable settings are already present. Each question is asked independently: branching strategy if `git-strategy` is absent, auto-commit if `git-auto-commit` is absent, merge strategy if `git-merge-strategy` is absent and GitHub Flow is active.
 
 Then reads commit messages to get the shape of what changed. Reads file changes only for significant commits. Focuses on architectural changes, new modules, new conventions, domain rule changes, new operational knowledge, and newly discovered traps.
 
@@ -132,7 +144,7 @@ Applies a three-question filter to each candidate change:
 2. Would knowing it improve future development decisions?
 3. Will it stay true for weeks or months?
 
-Only updates if all three answers are yes. Every change is bound to one of the eight schema sections: the schema defines what each holds, so each finding lands in its section and never in a new heading; a finding that fits no section is left out. Then either reports **Outcome A** (no durable knowledge introduced, just bump the hash) or **Outcome B** (proposes per-section changes and asks for confirmation before writing).
+Only updates if all three answers are yes. For a standard-format owner, every change is bound to one of the eight schema sections: the schema defines what each holds, so each finding lands in its section and never in a new heading; a finding that fits no section is left out. Then either reports **Outcome A** (no durable knowledge introduced, just bump the hash) or **Outcome B** (proposes per-section changes and asks for confirmation before writing).
 
 ### 5. Commit and finalize
 

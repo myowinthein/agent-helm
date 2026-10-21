@@ -4,8 +4,8 @@
 
 **Name:** claude-helm (plugin name: `helm`)
 **Stack:** Plugin is pure markdown (no runtime, no framework, no dependencies); a Jekyll + just-the-docs GitHub Pages site lives alongside it in the same repo
-**Purpose:** A Claude Code plugin pack for solo developers. Ten slash commands and two rule files covering shipping, refactoring, testing, documenting, legal-document generation, env auditing, commit-history normalization, rule adoption, and long-term archiving of your own work.
-**Blast radius:** Changes to `commands/*.md` affect every user who has the plugin installed. Changes to `rules/` affect every project that adopted them via `/helm:adopt`.
+**Purpose:** A Claude and Codex workflow plugin for solo developers. Ten slash commands and two rule files covering shipping, refactoring, testing, documenting, legal-document generation, env auditing, commit-history normalization, rule adoption, and long-term archiving of your own work.
+**Blast radius:** Changes to `workflows/*.md` affect every user who has the plugin installed. Changes to `rules/` affect every project that adopted them via `/helm:adopt`.
 
 ## Project Config
 
@@ -15,16 +15,19 @@ readme-style: custom
 
 ## Dev Commands
 
-No install/build step for the plugin itself: the commands are markdown files. The Jekyll docs site does have a local test step: `bundle install`, then `bundle exec jekyll build && bundle exec htmlproofer _site --disable-external` to catch broken links, missing images, and malformed HTML before shipping (see Known Traps for why this isn't automated).
+No install/build step for the plugin itself: its skills and workflows are Markdown files. Run `ruby scripts/test_plugin.rb` for offline package checks and `ruby scripts/check_clients.rb` for native CLI discovery. The Jekyll docs site does have a local test step: `bundle install`, then `bundle exec rake test` to catch broken links, missing images, and malformed HTML before shipping (see Known Traps for why this isn't automated).
 
 Release: `/helm:ship` (handles version bump, tag, push, and GitHub Release creation)
 Reload locally: `/reload-plugins` after any change
 
 ## Architecture Pointers
 
-- `commands/*.md`: slash command definitions (10: adopt, archive, env, legal, log, manifest, normalize, refactor, ship, test); YAML frontmatter `description:` powers the `/` picker tooltip
+- `skills/*/SKILL.md`: ten portable entry points, loaded by Claude and Codex. The manifest sets `commands: []` to avoid duplicate entries; `commands/*.md` remain thin compatibility adapters with the original names and descriptions.
+- `workflows/*.md`: canonical workflow bodies; `prompts/shared/runtime.md` resolves package/workspace paths and host capabilities.
+- `AGENTS.md`: Codex contributor bridge to this file; project configuration stays here.
+- `scripts/validate_plugin.rb`, `scripts/test_plugin.rb`: offline packaging checks; `scripts/check_clients.rb` optionally verifies native CLI discovery.
 - `rules/git.md`, `rules/safety.md`: shipped rule files, installed into adopting projects via `/helm:adopt`
-- `prompts/archive/step{1-5}-*.md`: sub-step files for `/helm:archive`; `commands/archive.md` is the orchestrator that reads and sequences them
+- `prompts/archive/step{1-5}-*.md`: sub-step files for `/helm:archive`; `workflows/archive.md` is the orchestrator that reads and sequences them
 - `docs/commands/*.md` (+ `docs/commands/archive/`): human-readable detail pages per command, published as Jekyll site content; not command source
 - `docs/rules/`: detail pages for the two rule files
 - `.claude/helm/*.json`: this plugin's own ledgers (`refactor-log.json`, `test-log.json`, `normalize-log.json`; `legal-manifest.json` only if `/helm:legal` has generated documents for this repo, currently absent since there's no `docs/legal/` in this repo). Namespaced under `helm/` rather than flat in `.claude/` to avoid colliding with another plugin's own generically-named files. Commands transparently migrate a legacy flat-path file on first run after update.
@@ -34,7 +37,7 @@ Reload locally: `/reload-plugins` after any change
 
 ## Domain Rules
 
-- `docs/commands/*.md` are detail pages, not command source: editing them never changes command behavior; the real definitions live in `commands/*.md`.
+- `docs/commands/*.md` are detail pages, not command source: editing them never changes command behavior; the real definitions live in `workflows/*.md`.
 - `prompts/archive/*.md` must never move into `commands/`: that would make each step appear as its own standalone slash command, breaking `/helm:archive`'s single-entry orchestration.
 - Ledger files (`.claude/helm/refactor-log.json`, and `.claude/helm/test-log.json` if a project runs `/helm:test`) are append-only audit trails: a scan appends new findings, it never overwrites the array. `normalize-log.json` is a different shape (one entry per branch, replaced/dropped as branches come and go), not append-only in the same sense.
 - Docs pages (`docs/commands/`, `docs/rules/`) must stay behaviorally consistent with the command/rule files they describe, but nothing enforces this automatically; drift is caught only by manual review or a `/helm:refactor` pass.
@@ -58,9 +61,9 @@ Reload locally: `/reload-plugins` after any change
 
 ## Known Traps
 
-- **Plugin cache is stale after releases.** `/plugin update` + `/reload-plugins` does not invalidate `~/.claude/plugins/cache/`. After each release, command files must be manually copied from `~/.claude/plugins/marketplaces/claude-helm/commands/` into the active cache version directory, then `/reload-plugins` must be run again. Workaround: `cp ~/.claude/plugins/marketplaces/claude-helm/commands/*.md "$(ls -d ~/.claude/plugins/cache/claude-helm/helm/*/commands/ | tail -1)"` then `/reload-plugins`.
+- **Refresh the whole plugin after an update.** Use the client's plugin update and start a fresh session. If a Claude cache remains stale, inspect the exact loaded path in `/plugin` and refresh the complete package from the matching marketplace checkout (`.claude-plugin/`, `commands/`, `skills/`, `workflows/`, `prompts/`, `rules/`, README and LICENSE), then reload. Never copy only `commands/`: adapters require the packaged skills and workflows. Never select a cache version by lexicographic `tail -1` or mix versions.
 - **Don't "fix" `prompts/` or `docs/commands/` by moving or redefining them.** See Domain Rules above: `prompts/archive/*.md` staying out of `commands/`, and `docs/commands/*.md` not being command source, are both easy mistakes to reach for when something there looks structurally odd.
-- **No CI to gate on.** `/helm:ship` and `/helm:refactor`'s environment-promotion CI-status checks both no-op silently here; there's no `.github/workflows/`. `bundle exec jekyll build && bundle exec htmlproofer` (see Dev Commands) verifies the site locally, but nothing runs it automatically before or after a release.
+- **No CI to gate on.** `/helm:ship` and `/helm:refactor`'s environment-promotion CI-status checks both no-op silently here; there's no `.github/workflows/`. `bundle exec rake test` (see Dev Commands) verifies the site locally, but nothing runs it automatically before or after a release.
 - **`git filter-repo` removes the `origin` remote by default** after rewriting history, since it assumes it's operating on a disposable clone. `/helm:normalize`'s preferred rewrite path captures `origin`'s URL beforehand and restores it after; if that logic is ever touched, this is why it's there.
 
 ## Rules

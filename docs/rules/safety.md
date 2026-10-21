@@ -10,6 +10,8 @@ The operational safety reference for a project. Defines which actions always nee
 
 Loaded as context so that any agent acting in the project respects the same operational guardrails. It is not a checklist to execute top to bottom: the safety scan runs only when triggered (see When to run a safety scan).
 
+Resolve the existing memory owner using git.md before documenting findings. CLAUDE.md references below illustrate the original layout; an AGENTS.md owner receives the same protections and confirmation gates. Include active instruction overrides in the scan.
+
 ## Agent Execution Boundaries
 
 These actions always require explicit confirmation, regardless of context or autonomy level:

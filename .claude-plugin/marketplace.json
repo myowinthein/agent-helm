@@ -13,11 +13,19 @@
         "commands/",
         "rules/",
         "prompts/",
+        "skills/",
+        "workflows/",
         ".claude-plugin/",
         "README.md",
         "LICENSE"
       ],
-      "description": "A Claude Code plugin pack for solo developers. Slash commands and rules to ship, refactor, test, document, generate legal docs, audit env config, normalize commit history, adopt rule files, and archive your own work."
+      "description": "A Claude and Codex workflow plugin for solo developers. Slash commands and rules to ship, refactor, test, document, generate legal docs, audit env config, normalize commit history, adopt rule files, and archive your own work.",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Developer tools"
     }
-  ]
+  ],
+  "description": "Install Helm workflows for Claude and Codex."
 }
