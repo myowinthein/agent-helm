@@ -6,6 +6,8 @@ Scan `.env` files, `.gitignore`, and source code to find and fix environment con
 
 Check `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
 
+Before switching branches or writing files, check for pre-existing staged changes. If any exist, stop and ask the developer to commit or unstage them before re-running env. Do not commit, unstage, or overwrite their staged work as part of this workflow.
+
 **Solo Mode** (`git-strategy: solo`):
 - Only proceed if on `main` or `master`. If on any other branch, stop: "env must be run on main or master in Solo Mode. Current branch is {branch} — switch and re-run."
 
@@ -218,6 +220,14 @@ Wait for response before proceeding.
 
 ## Step 3 — Apply fixes
 
+### Commit boundary — applies to every sub-flow and commit
+
+Environment edits and committable changes are separate. Keep `.env` and all other non-example `.env*` files local, even when already tracked; never stage their contents, use force-add to bypass ignore rules, or copy their real values into templates, reports, or commit messages. A reviewed `.env.example` may be committed only when its entire resulting content is free of real secrets. Source files and `.gitignore` must also be checked for credentials before staging.
+
+Track the exact files and changes made by this run. Stage only approved, safe changes using explicit paths (or task-specific hunks when a file also has unrelated edits), never a repository-wide `git add -u`, `git add -A`, or `git commit -a`. A developer-confirmed `git rm --cached` deletion is allowed: preserve that index deletion without re-adding the local file. This removes tracking; it does not erase secrets from existing history.
+
+Before every commit, including per-file commits below, verify the complete proposed index: only this run's approved changes may be present, no non-example env file may be added or modified, and all resulting staged file contents must be free of real credentials. Inspect locally without emitting credential values or raw secret-bearing diffs in tool output. If a check fails or cannot be completed, stop the commit/push path and report paths and key names only; do not silently unstage the developer's changes or claim a successful commit. A skipped secret cleanup is not permission to commit a template that still contains credentials.
+
 Run the sub-flows for each selected target: the **Env files** sub-flows if "Env files" was selected, the **.gitignore** sub-flows if ".gitignore" was selected. Within a selected target, run a sub-flow only if it has findings — each shows its findings and asks, with a Skip.
 
 Apply each sub-flow one at a time. Complete each fully before moving to the next. Never mark the command done if a sub-flow was only partially applied — partial fixes leave the project in an inconsistent state.
@@ -377,12 +387,12 @@ AskUserQuestion:
       description: "Leave all hardcoded values as-is"
 
 If Replace all selected:
-- If there are more than 10 findings, process one source file at a time: stage that source file plus any env files it touched (`git add {source file} .env .env.example` and any other env files updated), then commit `fix(env): move hardcoded values to env vars ({file})` before moving to the next file.
+- If there are more than 10 findings, process one source file at a time. After applying that file's fixes, stage only its approved, credential-free source changes and any updated, verified placeholder-only `.env.example`; exclude all non-example env contents. Apply the Commit boundary above and git.md's Auto-Commit rule, then commit `fix(env): move hardcoded values to env vars ({file})` before moving to the next file.
 - For each finding:
   - Replace the hardcoded value in source with the env var access pattern for the detected stack
   - Add the key + real value to `.env` and all other non-example env files if absent
   - Add the key + placeholder (`<YOUR_{KEY_NAME}>`) to `.env.example` if absent
-- Inform the dev which source files and env files were updated
+- Inform the dev which source files and env files were updated, distinguishing committable changes from local-only env edits
 
 If user selects Other and types instructions: follow their instructions exactly. Apply only what was explicitly requested.
 If Skip selected: no changes.
@@ -535,12 +545,11 @@ If Skip selected: no changes.
 
 ## Step 4 — Commit
 
-After all fixes are applied, stage what's left — do not use `git add -A` blindly:
-  git add -u                    # stage modified tracked files (env files, .gitignore, any source files not already committed per-file)
-  git add .env.example          # only if newly created this run
-  git add .gitignore             # only if newly created this run (e.g. the Missing entries sub-flow created a project's first .gitignore)
+After all fixes are applied, follow Step 3's Commit boundary for the remaining changes. Stage only the exact approved source changes, verified placeholder-only `.env.example` changes (new or existing), and `.gitignore` changes made by this run. Preserve any confirmed untracking deletions. Never stage non-example env contents, including modified tracked files. Verify the full proposed index before committing; do not use broad staging commands or commit unrelated pre-staged work.
 
-If nothing is staged (the Hardcoded values sub-flow already committed everything per-file above, and no other fixes were applied):
+Local-only env edits must remain on disk. If they block a checkout, merge, or cleanup, stop that affected operation and report the current branch and remaining work. Do not force checkout, discard, automatically stash, or commit those files to make Git operations succeed. Report local-only edits even when there is nothing safe to commit.
+
+If nothing is staged (only local-only env edits remain, or the Hardcoded values sub-flow already committed all safe changes per-file):
 
 - **Solo Mode**: skip commit and environment promotion below — there is nothing left to act on, since any Hardcoded values commits already landed directly on main. Proceed to Step 5 to report the outcome.
 - **GitHub Flow**: check whether `{branch}` has any commits ahead of main (`git rev-list --count main..{branch}`). If none, delete `{branch}`, return to `{original_branch}`, and proceed to Step 5 — truly nothing to act on. If it does have commits (the Hardcoded values sub-flow committed real work there, even though Step 4 itself has nothing new to stage), do not delete the branch — skip straight to step 2 of the GitHub Flow sequence below (merge). There's nothing to commit in step 1, but the branch's already-committed work still needs to reach main before cleanup.
@@ -646,6 +655,8 @@ Env files
 Needs manual action:
 - Secret cleanup skipped: real secrets remain in .env.example — replace with placeholders manually
 - Tracked files skipped: {list} — run git rm --cached to untrack manually
+- Local-only env edits: {paths or none} — kept on disk, excluded from commits
+- Commit blocked: {paths/key names and reason, or none} — no credential values
 ─────────────────────────────────
 Committed: yes / no
 Pushed: yes / no — push manually when ready / N/A (nothing to commit)
