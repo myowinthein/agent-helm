@@ -4,6 +4,20 @@ Loaded as context so agents respect the same operational guardrails throughout t
 
 Resolve `{memory_file}` using git.md's Project memory and configuration procedure, including when these rules were copied into a project without the plugin. It is the existing memory owner, not necessarily the current host's entry file.
 
+## Host capabilities
+
+Apply these boundaries even without Helm's runtime loaded. Verify the selected consumer workspace and the actual tools/access needed for the proposed action. Folder access in Claude, Cowork, Codex, or a remote sandbox is not proof of access to the user's local Git checkout, credentials, Docker daemon, test environment, or deployment provider. A missing capability, denied permission, or unavailable required check stops the affected action and its dependent steps; preserve existing files/state and report the precise pending work without claiming success or advancing a checkpoint.
+
+Tool/sandbox approval is a technical permission, separate from the workflow confirmations below; neither bypasses the other. If a confirmation interface is unavailable, ask in ordinary conversation and wait for an explicit answer. Silence, a timeout, a default selection, or unavailable tooling is not consent. Reuse valid approval for the same concrete action rather than asking again, and do not change credentials or client settings automatically to bypass a block.
+
+## Operational Helm state
+
+Helm configuration and project knowledge belong in `{memory_file}`. Operational records live in root `.helm/` on both hosts; `.claude/helm/` and the known flat `.claude/{refactor-log,test-log,normalize-log,legal-manifest}.json` files are legacy locations. `.claude/rules/` remains shared rule storage and is not a state directory to relocate.
+
+Exclude these operational records from ordinary source/safety scans, feature edits, and unrelated staging. Do not open, rewrite, reset, delete, merge, or migrate them just because these rules loaded or the coding agent changed. Only the explicitly invoked owning Helm workflow may read/update its own state: refactor owns `refactor-log.json`, test owns `test-log.json`, normalize owns `normalize-log.json`, and legal owns `legal-manifest.json`. Other commands do not trigger migration. Archive may preserve records as opaque project files under its own authorized workflow, without interpreting or migrating them.
+
+An owning workflow must load its packaged project-state procedure before state access: validate all candidate locations for that filename, explicitly reconcile differing histories, and migrate only at that workflow's eligible authorized write, with verified output and same-file tracked removals committed together. Never prefer a path automatically, dual-write, migrate every command at once, or ignore the entire `.helm/` directory. Preserve other commands' state and all remaining legacy sources on incomplete/failed migration. If the workflow or procedure is unavailable in a copied-rules-only session, leave state untouched and report that capability gap; these rules do not authorize an improvised migration. Resume sequentially across hosts, not with concurrent writers.
+
 ## Agent Execution Boundaries
 
 These actions always require explicit confirmation regardless of context:
@@ -40,9 +54,11 @@ classifications, and any project-specific boundary additions — go into {memory
 `## Hard Safety Rules` section as this project's concrete never-do list. Propose
 the findings first and write them only on confirmation — never auto-write a safety
 rule without review. Keep them in `## Hard Safety Rules` (project-owned, written by
-`/helm:log`, loaded with {memory_file}), not the adopt-managed `## Rules` section, which
-adopt rewrites on each run, and not the shipped `git.md` / `safety.md`, which adopt
-overwrites on update.
+`/helm:log`, loaded with {memory_file}), not the `## Rules` entries managed by adopt.
+Adopt patches only approved exact Helm rule pointers, preserving custom entries,
+unrelated instructions and Skip decisions; it does not replace that whole section
+on every run. Do not put project-specific findings in the shipped `git.md` /
+`safety.md`, whose approved managed copies adopt can overwrite on update.
 
 ## Scan Targets
 

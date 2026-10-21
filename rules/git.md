@@ -15,6 +15,14 @@ These instructions also apply to copied rules in a fresh session without the Hel
 - Use the defaults below only for genuinely absent settings. Save an authorized setting change in the owner's existing configuration block, preserving its layout; never duplicate it in a bridge. Resolving ownership does not authorize a full-file rewrite.
 - Only `log` offers reviewed migration/reconciliation of existing root layouts. Its read-only comparison may help resolve ambiguity before Git actions; all other workflows preserve legacy owners and recommend log when a layout change is needed. A layout migration preserves confirmed values. Log finishes Git operations under the strategy and auto-commit policy resolved at the start of that invocation; newly saved policy values apply next time.
 
+## Host capabilities and operational state
+
+These boundaries apply on Claude, Codex, and other hosts even when only copied rules are loaded. Before Git actions, verify the shell is operating on the selected consumer working tree. Folder access alone does not establish access to its Git checkout, remote credentials, local tools, Docker daemon, or required test environment. Check the capabilities needed for the planned action without exposing credentials or changing client settings.
+
+An unavailable required tool, permission, credential, quality check, or CI result blocks the affected action; it is not a passing check or an unconfigured project. Report what ran, what could not run, and the exact pending work. Never claim a commit, merge, push, promotion, or checkpoint succeeded without verifying its result, and do not continue dependent publication or cleanup after failure. Preserve existing work instead of resetting or stashing it to make a gate pass. Host/tool permission is separate from workflow approval and never bypasses the confirmation requirements below.
+
+Operational Helm records in `.helm/`, legacy `.claude/helm/`, and the known flat legacy ledger paths are not source code or configuration owners. Exclude them from ordinary source discovery, edits, and unrelated staging. Only an explicitly invoked owning Helm workflow may load/update its own state or perform its validated per-file migration; follow safety.md's operational-state boundary. Loading these rules or switching agents triggers no migration.
+
 ## Git Strategy
 
 Set the strategy with `git-strategy` in {memory_file} (Project Config section or the recognized fenced configuration block):
@@ -25,10 +33,12 @@ Absence defaults to GitHub Flow. Exactly one strategy is active at a time.
 
 After resolving {memory_file}, confirm which mode is active before taking any git action. State it explicitly: "Solo Mode active" or "GitHub Flow active."
 
+Before branch creation, commits, integration, publication, or promotion, resolve `{base_branch}` to the project's actual `main` or `master`, using project instructions, its default branch and existing refs. Stop if the identity is ambiguous or unavailable; do not guess, create, or rename a branch to make an instruction work. Without a repository or HEAD, follow only an explicitly authorized bootstrap plan rather than inventing a base. Missing memory files do not bypass the Git strategy in an existing repository. Use the resolved name consistently below, and recheck effective instructions/configuration after branch changes before continuing under the invocation's policy.
+
 ### Solo Mode
 
 When active:
-- Commit directly to main — no feature branches required
+- Commit directly to `{base_branch}` — no feature branches required
 - No PR required
 - Skip the GitHub Flow and Branch Naming subsections entirely
 - Environment Branches rules still apply if such branches exist
@@ -45,7 +55,7 @@ Exception: /helm:refactor's refactor/* branch and its "Open PR" option in Step 7
 Active when `git-strategy: github-flow` is declared, or when `git-strategy` is absent.
 
 **Branch structure:**
-  main
+  {base_branch} (main or master)
   feature/*  (or feat/*)
   fix/*
   chore/*
@@ -57,12 +67,12 @@ Active when `git-strategy: github-flow` is declared, or when `git-strategy` is a
   build/*
 
 **Rules:**
-- All branches base from main
-- main is always deployable
-- Open a PR before merging to main
+- All branches base from `{base_branch}`
+- `{base_branch}` is always deployable
+- Open a PR before merging to `{base_branch}`
 - Merge using the strategy declared as `git-merge-strategy` in {memory_file} (default: squash). Before merging, confirm which is active — same self-check as git-strategy above. State it explicitly: "Squash merge", "Rebase merge", or "Merge commit."
   - `squash` — squash all commits into one with a Conventional Commit message
-  - `rebase` — replay branch commits onto main without a merge commit
+  - `rebase` — replay branch commits onto `{base_branch}` without a merge commit
   - `merge` — create a merge commit preserving full branch topology
 - If CI is configured, it must pass before merge
 
@@ -121,12 +131,12 @@ These apply regardless of mode.
 - Never delete unmerged branches without explicit confirmation
 - Never delete main, master, or any environment branch
 - Never delete a published tag from a public repository
-- Delete feature branches immediately after merge
+- After verified integration and any required publication, safely leave the feature branch before cleanup. Delete locally only when its tip is an ancestor of `{base_branch}`, no work is pending, and `git branch -d` succeeds. Squash/rebase may leave the original tip outside ancestry: retain and report it rather than substituting `-D`. A separately reviewed destructive cleanup still requires explicit confirmation. Deleting a published remote branch is a push and needs its own confirmation. Failed/pending integration or publication never triggers cleanup.
 
-Exception: release commits made by /helm:ship (version bump + tag) may land directly on main in any mode — this is the sanctioned release path, not an ad-hoc direct commit.
+Exception: release commits made by /helm:ship (version bump + tag) may land directly on `{base_branch}` in any mode — this is the sanctioned release path, not an ad-hoc direct commit.
 
 **Commits**
-- Every commit on main must leave the codebase in a working state
+- Every commit on `{base_branch}` must leave the codebase in a working state
 - One commit per logical unit — if you need "and" to describe it, split it
 
 **Safety**
@@ -189,15 +199,19 @@ Run before pushing, regardless of mode:
 - Run tests covering changed files — full suite if touching shared/core code
 - Skip silently if not configured — never push with failing tests
 
+Only skip a check as unconfigured when repository evidence establishes it is absent. Configured checks that cannot run remain blocked, not passed. Required CI must succeed for the exact intended commit before integration/promotion; unavailable, missing, pending, failed, or unknown results do not satisfy the gate. Recheck after a tip changes and report capability failures under Host capabilities above.
+
 ---
 
 ## Deployment
 
 Independent of strategy. Applies under both Solo mode and GitHub Flow.
 
-- Push trigger: CI auto-deploys on merge to main
-- Tag trigger: CI deploys on SemVer tag via /helm:ship command
-- Both can be active simultaneously (push → staging, tag → production)
+Determine deployment triggers and targets from repository configuration and applicable provider settings. Do not assume a pipeline or deployment exists because a branch/tag exists or these rules are loaded. Unavailable evidence leaves deployment behavior unknown, not absent or safe.
+
+- A configured push trigger may deploy updates to `{base_branch}` or other explicitly configured branches.
+- A configured tag trigger may deploy a matching SemVer tag, including one created through /helm:ship.
+- Both may be configured (for example, push → staging and tag → production), or neither. Report only verified behavior and preserve project-specific deployment approvals.
 
 ---
 
@@ -216,9 +230,9 @@ If environment branches detected, these additional rules apply:
 
 **Rules:**
 - Environment branches are permanent — never delete
-- Nothing merges directly to environment branches
-- All changes flow through main first (upstream-first rule)
-- Hotfixes follow the same rule — main first, then promote
+- Feature work never merges directly to environment branches; use the approved promotion path
+- All changes flow through `{base_branch}` first (upstream-first rule); only the approved promotion path then merges into environments
+- Hotfixes follow the same rule — `{base_branch}` first, then promote
 - If CI is configured, it must pass before promoting
 
 **Promotion model**
@@ -226,13 +240,13 @@ If environment branches detected, these additional rules apply:
 Governs `/helm:ship`'s release promotion specifically. `/helm:legal`, `/helm:log`, `/helm:manifest`, `/helm:adopt`, `/helm:env`, and `/helm:test` always use fan-out for their own promotion of generated content or fixes ({memory_file}, README.md, legal documents, rule files, env/gitignore fixes, tests) regardless of this setting — those are content syncs, not a release pipeline, so there's no meaningful "tier" for the change to pass through.
 
 Set with `environment-promotion` in {memory_file} (Project Config section or the recognized fenced configuration block):
-  environment-promotion: fan-out  → main merges directly into every selected environment, independently
-  environment-promotion: chain    → environments form an ordered pipeline; only the first tier is reached directly from main
+  environment-promotion: fan-out  → {base_branch} merges directly into every selected environment, independently
+  environment-promotion: chain    → environments form an ordered pipeline; only the first tier is reached directly from {base_branch}
 
 Absence defaults to fan-out.
 
 Before promoting anything, confirm which model is active — same as the git-strategy self-check above. State it explicitly: "Fan-out promotion" or "Chain promotion."
 
-**Fan-out**: main promotes directly to any combination of environment branches — no ordering, no dependency between them. Simple parallel deploy targets (e.g. staging and production both receive the same release independently).
+**Fan-out**: `{base_branch}` promotes directly to any combination of environment branches — no ordering, no dependency between them. Simple parallel deploy targets (e.g. staging and production both receive the same release independently).
 
-**Chain**: environments form an ordered pipeline (e.g. main → staging → production). Only the first tier (staging, stage, uat, preprod) is ever merged into directly from main. A later tier (production, prod) is never selected as a direct deploy target — it's only reached by later merging the previous tier's branch forward into it (upstream-first rule, one tier at a time).
+**Chain**: environments form an ordered pipeline (e.g. `{base_branch}` → staging → production). Only the first tier (staging, stage, uat, preprod) is ever merged into directly from `{base_branch}`. A later tier (production, prod) is never selected as a direct deploy target — it's only reached by later merging the previous tier's branch forward into it (upstream-first rule, one tier at a time).
