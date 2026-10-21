@@ -30,14 +30,16 @@ flowchart TD
 
   WriteSetup --> WriteMeta["Write docs/archive-metadata.md:\nStructured snapshot for\nquick cross-project inventory"]
 
-  WriteMeta --> Verify[Verify every active doc\nis reachable from README.md]
+  WriteMeta --> Verify[Verify recovery docs\nare reachable; protected files stay in place]
 
   Verify --> Report[Output report] --> StopApprove([Stop: wait for approval])
 ```
 
 ## Consolidation plan
 
-Before making any changes, every existing documentation file is reviewed and assigned one action:
+First exclude protected root/nested `AGENTS.md`, overrides, `CLAUDE.md`, project-local instruction entries, in-project imports and adopted rules from consolidation. Preserve their original paths, contents and bridges, including Helm settings. Global/external instructions are documented dependencies, never silently copied. `.helm/`, `.claude/helm/` and known flat legacy state remain opaque and in place; do not parse, migrate, rewrite or move them as assets. A generic documentation-plan approval does not authorize modifying these protected inputs.
+
+Before changes, assign each remaining recovery-documentation file an action:
 
 | Existing doc type | Action |
 |---|---|
@@ -93,10 +95,10 @@ Structured snapshot for quick inventory across archived projects:
 
 ## Rules
 
-- Read all existing documentation before making any changes.
+- Validate approved archive context, output fingerprints and inventory first. Read recovery documentation before edits, and record every approved change with protected-file preservation reported separately.
 - Only document verified information. Label anything unverified explicitly.
 - Do not invent setup procedures, demo workflows, runtime requirements, or API behavior.
 - No secrets, credentials, API keys, or private/production URLs.
-- Every active document must be reachable from README.md.
+- Every active recovery document must be reachable from README.md. Protected instruction/rule/state files are exempt from recovery navigation, so they are not moved or removed as orphans.
 - Use em-dashes sparingly: only when no other punctuation works as well.
 - No commit or push.

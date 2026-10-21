@@ -6,9 +6,9 @@ Goal: Understand the project well enough to make an informed decision about arch
 
 ## Rules
 
-- Read-only only — do not modify, create, delete, or run anything.
+- Read-only inspection is allowed through native file tools or local shell commands for listing/searching/reading files and Git metadata (`status`, `log`, `show`, `branch`, remote configuration). Prevent optional Git index refresh writes where supported. Do not execute project code, scripts, tests, hooks, dependency installs, builds, containers, or network commands; do not create, modify, or delete files. No `.archive/` writes until report approval.
 - Do not contact external services.
-- Do not print full credential values. Redact — show only file path, variable name, and a short redacted preview (e.g. `API_KEY=abc...xyz`).
+- Report credential locations and variable names only, with values omitted entirely. Filter inspection output before exposing it to the conversation. Do not include credential fragments, token-bearing remote URLs, command-line passwords, or real user data in reports that will later be committed. Do not test credentials against services; liveness is unknown unless local evidence establishes it.
 
 ## Determine
 
@@ -20,7 +20,7 @@ Goal: Understand the project well enough to make an informed decision about arch
 - Environment variables required
 - Database situation — type, credentials location, and available restoration sources (dumps, seeders, migrations)
 - Demo accounts or demo data availability
-- Existing documentation files — what exists, what each covers, whether it appears current or outdated
+- Existing documentation files — what exists, what each covers, whether it appears current or outdated. Identify agent instruction entries, overrides, imported project instructions/rules, and opaque Helm state as protected preservation inputs, not consolidation candidates.
 - Existing Postman or API collection files
 - Archive-worthy assets — screenshots, videos, sample exports, demo files
 - Large or binary files that could affect Git storage
@@ -62,7 +62,8 @@ List documentation files found. For each: what it covers and whether it appears 
 
 ## Git & Repository Safety
 Archiving from: {current branch name}
-Remotes and their URLs. Branch list. Any safety concerns (production remotes, CI/CD that auto-deploys on push, sensitive history). Whether any other branch looks more recently active or complete than the current one — state "none" if the current branch is clearly the most current.
+Source commit: {full HEAD commit ID}
+Remotes and their credential-free identities. Branch list. Any safety concerns (production remotes, CI/CD that auto-deploys on push, sensitive history). Whether any other branch looks more recently active or complete than the current one — state "none" if the current branch is clearly the most current.
 
 ## Setup & Restoration Approach
 Runtime versions required. Package manager. Whether Docker is needed. Recommended restoration strategy and why.
@@ -71,7 +72,7 @@ Runtime versions required. Package manager. Whether Docker is needed. Recommende
 Postman files, screenshots, videos, sample exports, or other assets worth preserving. Large or binary files worth noting.
 
 ## Credentials Risk
-All env files scanned (.env, .env.staging, .env.production, config files, Docker files). For each credential found: file path, variable name, redacted value, and whether it appears still-active or likely expired. If none found, state that explicitly.
+All env files scanned (.env, .env.staging, .env.production, config files, Docker files). For each credential found: file path, variable name, and local evidence of risk, with values completely omitted and untested liveness labelled unknown. If none found, state that explicitly.
 
 ## Risks & Unknowns
 Blockers, missing dependencies, unclear areas. Be specific.
@@ -85,6 +86,8 @@ What to watch out for or resolve before proceeding to Step 2.
 ---
 
 The "Archiving from:" field is read directly by Step 5's branch cleanup, rather than inferred from the surrounding prose — a resumable, multi-session workflow could otherwise lose track of which branch was original. State it explicitly, on its own line, exactly as shown in the template above.
+
+The "Source commit:" field binds approved exploration to the selected history for later resume validation. Never infer or change the source branch from narrative prose during finalization.
 
 The "Project name:" field is read directly by Step 3 (Postman collection filenames) and Step 4 (README content), rather than extracted from the Overview prose. State it explicitly, on its own line.
 

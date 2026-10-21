@@ -27,8 +27,8 @@ If an existing Postman collection is found (from Step 1): use it as the starting
 - Discover endpoints from source code, route definitions, or OpenAPI/Swagger specs. Do not speculate.
 - Avoid deprecated, disabled, or commented-out endpoints.
 - Use demo accounts, local tokens, or placeholder values only. No real credentials, secrets, or production URLs.
-- If Step 2's report states "App running: yes": use it to verify requests.
-- If Step 2's report states "App running: no" (or the field is absent from an older report): fall back to source-code discovery only and mark all requests as unverified.
+- Treat Step 2's running status as historical. Before requests, verify on this host that the approved local endpoint maps to this project's current isolated runtime, using current process/container/project ownership and a safe health check. A reachable port alone is insufficient; do not send demo credentials to an unidentified service or follow redirects to an unapproved host.
+- If the app is not running, the host cannot reach it, ownership is uncertain, or the old report lacks enough identity: use source-code discovery only and mark requests unverified with the reason. Do not automatically restart/restage completed restoration or reuse another host's localhost assumption. A newly available runtime may be used only after current ownership/access checks and applicable approvals.
 - Do not commit or push.
 
 ## Verification
@@ -84,7 +84,7 @@ Auth method used. How it is configured in the collection.
 File paths and what changed if updating an existing collection.
 
 ## Verified Requests
-Requests that were tested against the running app and their results.
+Requests tested against the currently identified local app, ownership/access checks, and results. Distinguish previous reports from verification performed on this host.
 
 ## Unverified Requests
 Requests that could not be safely verified. Reason for each.
