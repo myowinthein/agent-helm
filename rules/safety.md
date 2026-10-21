@@ -2,6 +2,8 @@
 
 Loaded as context so agents respect the same operational guardrails throughout the project. It is not a checklist to execute top to bottom — the safety scan runs only when triggered (see When to Run a Safety Scan).
 
+Resolve `{memory_file}` using git.md's Project memory and configuration procedure, including when these rules were copied into a project without the plugin. It is the existing memory owner, not necessarily the current host's entry file.
+
 ## Agent Execution Boundaries
 
 These actions always require explicit confirmation regardless of context:
@@ -27,25 +29,25 @@ risk surface changes — when anything in the Scan Targets or Risk Categories be
 is added, removed, or reconfigured (e.g. a new production remote, a new
 background job, a new credential location).
 
-/helm:log Full scan mode may surface and propose safety findings for CLAUDE.md's
+/helm:log Full scan mode may surface and propose safety findings for {memory_file}'s
 Hard Safety Rules section, but it does not run this scan or write
 .claude/rules automatically — findings are proposed, never auto-written.
 
 Only document risks supported by evidence in the repository — not assumptions.
 
 **Output:** Documented findings — the Risk/Instruction pairs, environment
-classifications, and any project-specific boundary additions — go into CLAUDE.md's
+classifications, and any project-specific boundary additions — go into {memory_file}'s
 `## Hard Safety Rules` section as this project's concrete never-do list. Propose
 the findings first and write them only on confirmation — never auto-write a safety
 rule without review. Keep them in `## Hard Safety Rules` (project-owned, written by
-`/helm:log`, loaded with CLAUDE.md), not the adopt-managed `## Rules` section, which
+`/helm:log`, loaded with {memory_file}), not the adopt-managed `## Rules` section, which
 adopt rewrites on each run, and not the shipped `git.md` / `safety.md`, which adopt
 overwrites on update.
 
 ## Scan Targets
 
 Review for operational risks:
-- CLAUDE.md, .claude/rules, README files, project documentation
+- CLAUDE.md, AGENTS.md, active instruction overrides, .claude/rules, README files, project documentation
 - CI/CD pipelines, GitHub Actions, GitLab CI, deployment scripts
 - Composer scripts, package scripts, Makefiles, shell scripts
 - Docker, Dev Containers, Podman, Lando, Laravel Sail configuration

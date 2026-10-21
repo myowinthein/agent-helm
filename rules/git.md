@@ -2,15 +2,27 @@
 
 ---
 
+## Project memory and configuration
+
+These instructions also apply to copied rules in a fresh session without the Helm plugin loaded. Resolve the configuration before any Git action. Do not rename, convert, or overwrite instruction files to make them fit a preferred layout.
+
+- Start from the current host's project entry: `CLAUDE.md` in Claude, `AGENTS.md` in Codex. Respect active nested instructions and Codex's `AGENTS.override.md` precedence; do not bypass an override by reading only the root file.
+- Follow explicit project-memory bridges, such as `@AGENTS.md` or a directive to read `CLAUDE.md`. Resolve relative paths from the referring file. Track visited files and stop on a cycle or missing target before branching or writing. Never infer a bridge from a filename mentioned as an example, and never edit an imported file outside the consumer project.
+- If the host's entry is absent, read the other host's existing entry. The file that owns the actual Helm declarations and project knowledge is `{memory_file}`. A wrapper remains a wrapper. With no files, the proposed owner is the current host's root entry file; do not create it just to resolve configuration.
+- If both applicable root entries exist independently but only one contains recognized Helm declarations, that file is the configuration/memory owner; the setting-free entry is not a conflict. Read its instructions too and preserve it. If both declare identical settings, use their agreed values; before a memory write, resolve any remaining ambiguity about which file owns project knowledge rather than duplicating configuration. If neither declares settings, keep the current host's existing knowledge file unless a bridge selects another owner. Defaults concern missing settings, not a permission to ignore another file's explicit configuration.
+- Recognize standalone declarations under `## Project Config` and the existing Compass-style fenced `text` configuration block introduced as project configuration. Supported keys are `git-strategy` (`solo` or `github-flow`), `git-auto-commit` (`true` or `false`), `git-merge-strategy` (`squash`, `rebase`, or `merge`), `environment-promotion` (`fan-out` or `chain`), and `readme-style` (`standard` or `custom`). A declaration in a recognized block counts regardless of the file's heading scheme. Ignore quoted examples and narrative mentions, not actual declarations.
+- Apply the host's instruction precedence first. An explicit active override supersedes lower-priority guidance; an AGENTS.md replaced by AGENTS.override.md in the same directory is not an active competing owner. Then compare the applicable root entries and their explicit memory targets for conflicting independent declarations. If independent owners disagree, a declared value is invalid, or ownership remains ambiguous, show the conflict and resolve it before Git changes. Never silently choose a different strategy because a heading or host differs. Preserve override files and do not treat their host-specific settings as generated project knowledge.
+- Use the defaults below only for genuinely absent settings. Save an authorized setting change in the owner's existing configuration block, preserving its layout; never duplicate it in a bridge. Resolving ownership does not authorize a full-file rewrite.
+
 ## Git Strategy
 
-Set the strategy with `git-strategy` in CLAUDE.md (Project Config section):
+Set the strategy with `git-strategy` in {memory_file} (Project Config section or the recognized fenced configuration block):
   git-strategy: solo         → Solo Mode
   git-strategy: github-flow  → GitHub Flow
 
 Absence defaults to GitHub Flow. Exactly one strategy is active at a time.
 
-After reading CLAUDE.md, confirm which mode is active before taking any git action. State it explicitly: "Solo Mode active" or "GitHub Flow active."
+After resolving {memory_file}, confirm which mode is active before taking any git action. State it explicitly: "Solo Mode active" or "GitHub Flow active."
 
 ### Solo Mode
 
@@ -47,7 +59,7 @@ Active when `git-strategy: github-flow` is declared, or when `git-strategy` is a
 - All branches base from main
 - main is always deployable
 - Open a PR before merging to main
-- Merge using the strategy declared as `git-merge-strategy` in CLAUDE.md (default: squash). Before merging, confirm which is active — same self-check as git-strategy above. State it explicitly: "Squash merge", "Rebase merge", or "Merge commit."
+- Merge using the strategy declared as `git-merge-strategy` in {memory_file} (default: squash). Before merging, confirm which is active — same self-check as git-strategy above. State it explicitly: "Squash merge", "Rebase merge", or "Merge commit."
   - `squash` — squash all commits into one with a Conventional Commit message
   - `rebase` — replay branch commits onto main without a merge commit
   - `merge` — create a merge commit preserving full branch topology
@@ -79,7 +91,7 @@ Governs every commit made by any command in this plugin, by default — a
 command's own commit step never needs to restate this, only follow it. State
 an explicit exception only where one exists (see below).
 
-Set with `git-auto-commit` in CLAUDE.md (Project Config section):
+Set with `git-auto-commit` in {memory_file} (Project Config section or the recognized fenced configuration block):
   git-auto-commit: true   → commit automatically after each task
 
 Absence defaults to off — ask for confirmation before committing.
@@ -210,9 +222,9 @@ If environment branches detected, these additional rules apply:
 
 **Promotion model**
 
-Governs `/helm:ship`'s release promotion specifically. `/helm:legal`, `/helm:log`, `/helm:manifest`, `/helm:adopt`, `/helm:env`, and `/helm:test` always use fan-out for their own promotion of generated content or fixes (CLAUDE.md, README.md, legal documents, rule files, env/gitignore fixes, tests) regardless of this setting — those are content syncs, not a release pipeline, so there's no meaningful "tier" for the change to pass through.
+Governs `/helm:ship`'s release promotion specifically. `/helm:legal`, `/helm:log`, `/helm:manifest`, `/helm:adopt`, `/helm:env`, and `/helm:test` always use fan-out for their own promotion of generated content or fixes ({memory_file}, README.md, legal documents, rule files, env/gitignore fixes, tests) regardless of this setting — those are content syncs, not a release pipeline, so there's no meaningful "tier" for the change to pass through.
 
-Set with `environment-promotion` in CLAUDE.md (Project Config section):
+Set with `environment-promotion` in {memory_file} (Project Config section or the recognized fenced configuration block):
   environment-promotion: fan-out  → main merges directly into every selected environment, independently
   environment-promotion: chain    → environments form an ordered pipeline; only the first tier is reached directly from main
 

@@ -8,6 +8,8 @@ nav_order: 5
 
 Branch off `main`, scan the project for refactoring opportunities, apply selected categories one at a time with tests passing after each, then merge, open a PR, or leave the branch for review. A persistent ledger (`.claude/helm/refactor-log.json`) tracks findings across runs so the same issue never surfaces twice and progress is visible over time.
 
+Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+
 ## Flow
 
 ```mermaid

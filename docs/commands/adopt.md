@@ -10,6 +10,16 @@ Setup helper. Installs or updates the helm rule files into the current project, 
 
 Unlike the workflow commands, `/helm:adopt` configures how helm relates to a project. It does no product work, runs no tests, ships no release.
 
+Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+
+## Host-specific setup
+
+The flow and detailed steps below describe Claude's copy/reference choices with a CLAUDE.md-owned example. In Codex, adoption writes only the persistent root AGENTS.md entry and shared `.claude/rules/` copies. An existing CLAUDE.md owner is read through an explicit bridge and is not rewritten. Existing readable Claude reference installations can be connected without switching their mode; missing reference targets stop setup rather than causing competing copies. Codex never creates cache-path reference installations or deletes shared copies. If a root override shadows AGENTS.md without explicitly reading it, setup stops before branching; the override is never edited.
+
+Claude continues to prefer the stable marketplace source for versions, copies, and references. A missing marketplace source permits a reported loaded-package fallback for copies, with the existing ahead-version protection; it does not permit a new reference install. A Claude switch to reference mode stops before deleting copies that a separate Codex entry depends on; a switch to copies also stops if that entry directly references the old marketplace paths. Bridges through the owner follow either mode.
+
+Both hosts preserve foreign-file Skip decisions, unrelated instructions, and imports. The target entry's name is reported explicitly. With an existing owner, a missing host entry alone does not trigger the fresh-bootstrap path.
+
 ## Flow
 
 ```mermaid
@@ -154,14 +164,13 @@ Final summary line per file describing what was written, updated, skipped, or re
 - **Solo Mode, not on main/master (and not a fresh bootstrap).** Switch to main or master and re-run.
 - **Directory is non-empty without project markers and user cancels.**
 - **User picks Cancel at any of the install-mode prompts.**
-- **No `CLAUDE.md` and Reference mode chosen, user declines to create it**: the snippet is printed but nothing is written; user takes over.
 
 Every exit above still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; see Before starting. Not applicable to a fresh bootstrap, since no branch was ever created there.
 
 ## Notes
 
 - The version marker at the top of each copied file is required. Stripping it makes `/helm:adopt` treat the file as foreign on the next run.
-- `/helm:adopt` never writes outside `.claude/rules/` or `CLAUDE.md` in the current project.
+- `/helm:adopt` writes only shared `.claude/rules/` files and the selected active root entry in the current project; it does not rewrite the other host's entry.
 - `/helm:adopt` never touches anything in `~/.claude/`.
 
 ## See also

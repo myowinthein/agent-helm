@@ -1,0 +1,506 @@
+# refactor
+
+Full project scan to identify and apply refactoring opportunities.
+Run periodically on mature codebases to maintain code quality.
+
+---
+
+## Before starting
+
+Proceed if on main, master, or an existing refactor/* branch — resuming a session left via Step 7's "Leave branch" option happens directly from that branch, not via a manual switch back to main first.
+
+If on any other branch, stop and inform user:
+
+"refactor must be run on main, master, or an existing refactor branch.
+Current branch is {branch}. Please switch and re-run."
+
+---
+
+## Step 1 — Check for existing refactor branch
+
+Run `git branch --list 'refactor/*'` to check for any existing refactor branch.
+
+If one is found, record its name — it will be offered to the user after they choose a mode in Step 3. Do not create or switch branches here.
+
+---
+
+## Step 2 — Scan boundaries
+
+Scan all project files except:
+- vendor/
+- node_modules/
+- public/
+- storage/
+- __pycache__/, .venv/, dist/, build/  (Python)
+- tmp/, log/                            (Ruby)
+- bin/                                  (Go)
+- migration files
+- .env files
+- generated or compiled files
+- .claude/helm/ (this plugin's own ledger files, including the memory ledger itself — never treat them as source code)
+
+Include test files — test quality degrades fastest and matters most.
+
+---
+
+## Step 3 — Load history and choose mode
+
+### 3.1 Load the ledger
+
+Look for `.claude/helm/refactor-log.json`. This file is the command's memory across runs.
+
+If not found, check the legacy path `.claude/refactor-log.json` (this plugin's ledgers used to live flat in `.claude/`, which risks colliding with another plugin's own files of the same generic name). If a legacy file exists, load it from there — this is a one-time migration: the next time the ledger is written (Step 4A.7 or 4B.5), it moves to the new `.claude/helm/` path and the old file is removed as part of the same commit. If neither path has a file, this is the first run.
+
+Schema:
+```json
+{
+  "schema_version": 1,
+  "last_scanned_commit": "abc1234",
+  "last_mode": "deep",
+  "last_scan_date": "2026-06-01",
+  "consecutive_quick_count": 0,
+  "findings": [
+    {
+      "id": "f-0012",
+      "category": "architecture",
+      "priority": "high",
+      "risk": "needs-review",
+      "cluster_id": "c-004",
+      "depends_on": [],
+      "file": "app/Http/Controllers/OrderController.php",
+      "line": 42,
+      "related_files": [],
+      "description": "Business logic embedded in controller action",
+      "status": "open",
+      "first_found_commit": "9f1a2bc",
+      "first_found_date": "2026-05-01",
+      "resolved_commit": null,
+      "resolved_date": null
+    }
+  ]
+}
+```
+
+`schema_version` — bumped only if this ledger's structure changes in a future release. Lets a future version of this command detect an older-shaped file and handle it explicitly instead of misreading it. Treat a missing `schema_version` as `1` (every ledger written before this field existed). Always write it going forward.
+
+`status` values: `open`, `fixed`, `skipped-by-user`, `auto-resolved`.
+
+`risk` values:
+- `safe` — mechanical, low-ambiguity fix (rename, dead code removal, add missing index, deduplicate identical blocks). Safe to auto-apply.
+- `needs-review` — requires judgment about business intent (e.g. an N+1 fix that depends on what the query is actually for). Must be confirmed with the user before touching code. Every `consistency` finding (Step 4A.5) is always `needs-review`, never `safe` — deciding whether a missing connection is intentional or a real gap requires product judgment.
+
+`related_files` — other files implicated by this finding beyond the primary `file`/`line` anchor. Empty for the five per-file categories, which are single-file by construction. A `consistency` finding is inherently multi-file, so it always sets this: `file`/`line` anchors the primary site (e.g. where the state change happens), `related_files` lists the other implicated file(s) (e.g. the missing consumer, or the asymmetrically-handled counterpart) as plain path strings — no per-entry line, since only the primary anchor's line drifts and needs re-verification (see Quick Mode 4B.2). Treat a missing `related_files` as `[]` (every finding written before this field existed).
+
+`cluster_id` — findings that touch the same file, or files with a direct dependency (e.g. controller + its service), share a cluster id. All findings in a cluster are applied together by a single agent — never split across parallel sub-agents, to avoid conflicting edits.
+
+`depends_on` — list of finding ids that must be applied before this one (e.g. "extract shared helper" must land before "deduplicate the 3 call sites that use it").
+
+`consecutive_quick_count` — number of consecutive Quick Mode scans since the last Deep Mode scan. Increment by 1 each time Quick Mode runs; reset to 0 when Deep Mode runs.
+
+### 3.2 First run — no ledger found
+
+If neither ledger path from 3.1 has a file, this is the first run. Do not ask which mode to use.
+Inform user:
+
+"No refactor history found — running Deep Mode to build a baseline."
+
+Proceed to Step 3.4, then Step 4, Deep Mode.
+
+### 3.3 Later runs — ledger found
+
+Compute, since `last_scanned_commit`:
+- number of commits on the current branch
+- number of days since `last_scan_date`
+- `open_count` — number of findings in the ledger with `status: open`
+- changed files: `git diff --name-only {last_scanned_commit}..HEAD` (respecting Step 2 exclusions) — keep this list, Step 4B reuses it directly if Quick Mode is chosen instead of recomputing it
+
+Decide which mode to recommend using this logic:
+- If `open_count > 0` AND zero commits since `last_scanned_commit`: recommend **Fix Backlog** — there's nothing new to scan for.
+- Otherwise recommend **Deep Mode** if: 40+ commits since last scan, OR 60+ days since last scan, OR `consecutive_quick_count` is 2 or more, OR more than 50 files changed. Commit count is a weak proxy for diff size — a handful of commits can still touch hundreds of files (a dependency bump, a mass rename) — so the real changed-file count overrides it here.
+- Otherwise recommend **Quick Mode**.
+
+Ask with AskUserQuestion, filling in the reason in the description.
+Only include the Fix Backlog option if `open_count > 0`:
+
+  AskUserQuestion:
+    question: "Which scan mode would you like to run?"
+    header:   "Scan mode"
+    multiSelect: false
+    options:
+      - label: "Deep Mode{recommended tag if applicable}"
+        description: "Full codebase re-scan using multiple agents. {reason, e.g. '158 files changed since last scan — too broad for a focused check.'}"
+      - label: "Quick Mode{recommended tag if applicable}"
+        description: "Only checks files changed since the last scan, plus re-validates past findings. {reason, e.g. 'Only 8 commits and 12 files changed since last scan — a quick check should cover it.'}"
+      - label: "Fix Backlog{recommended tag if applicable}"  (only include if open_count > 0)
+        description: "Skip scanning — {open_count} known issues waiting to be fixed. {reason if recommended, e.g. 'No new commits since last scan.'}"
+
+The recommended tag is a suggestion, not a restriction — the user can still pick Quick Mode here even when Deep Mode was recommended for file-count reasons; nothing later re-checks or overrides that choice.
+
+After the user confirms a mode, proceed to Step 3.4, then Step 4.
+
+### 3.4 — Create the refactor branch
+
+Unlike other commands' `{type}/{desc}-{YYYYMMDD}` branches, refactor branches use `refactor/{YYYYMMDD-HHMMSS}` — day-only granularity isn't enough here, since "Create new branch" below can produce a second refactor branch on the same day an old one already exists.
+
+If an existing refactor/* branch was found in Step 1, ask:
+  AskUserQuestion:
+    question: "An existing refactor branch was found: {branch}. Continue on it or start fresh?"
+    header:   "Branch"
+    multiSelect: false
+    options:
+      - label: "Continue on {branch} (Recommended)"
+        description: "Switch to the existing branch and continue refactoring"
+      - label: "Create new branch"
+        description: "Start a new refactor/{YYYYMMDD-HHMMSS} branch from main"
+  "Continue on {branch}": switch to it — a no-op if it's already the current branch, e.g. a resumed session.
+  "Create new branch": switch to main or master first, even if the current branch is the old refactor/* branch, then create and switch to refactor/{YYYYMMDD-HHMMSS} from there. Never branch off the old refactor branch.
+
+If no existing refactor branch was found: switch to main or master first if not already there, then create and switch to refactor/{YYYYMMDD-HHMMSS}.
+
+---
+
+## Step 4 — Scan
+
+### 4A. Deep Mode
+
+1. List all project files within scan boundaries (Step 2). Group them by folder/module rather than raw line count, so related code (e.g. a controller and its service layer) stays in the same chunk — this avoids missing issues that span two files in different chunks.
+2. Estimate a comfortable read budget per sub-agent, and compute how many chunks/sub-agents are needed based on total project size. Cap at 8 sub-agents maximum — if more chunks are needed, merge the smallest adjacent folders until within the cap.
+3. Spawn one sub-agent per chunk. Each sub-agent reads its full chunk once and checks the five per-file categories in that single pass (architecture, code quality, performance, tests, dependencies) — do not run a second category-only pass over the same files; that doubles cost for no real benefit. Consistency is not part of this per-chunk pass — see step 5 below (Step 4A.5).
+   - **Tests** findings are about existing test *code quality*, never about missing coverage — detecting and writing tests for untested code is `/helm:test`'s job exclusively; never create a finding here just because a file lacks tests. Flag 3+ test cases in a file that share the same input → assertion shape (e.g. one expected output per entry in a dictionary or lookup table) and could collapse into a single parametrized test (`it.each`/table-driven, per the framework's convention) with zero coverage loss.
+4. Each sub-agent returns structured findings: category, priority, file, line, description.
+5. Consistency pass — run once, separately from the per-chunk scans above. This category looks for gaps *between* features rather than problems *within* one file, so a single chunk-scoped sub-agent can't see it by design — it only has visibility into its own folder.
+   - Build a short list of the codebase's key persisted or externally-synced state (anywhere data is written to local storage, a database, or pushed to an external service) and the features that conceptually depend on or should react to each — sync, cache invalidation, notifications, derived-data recomputation, audit logging.
+   - For each, trace every site that writes or changes that state, and check whether the reactions it should trigger are wired up consistently at *all* of them, not just the primary/obvious code path. A missing connection — state changes but nothing downstream reacts — is a finding.
+   - Separately, look for asymmetric treatment: two structurally similar or clearly-related pieces of data or features handled with meaningfully different rigor within the same flow (e.g. one gets conflict review before being overwritten, a directly related one is silently replaced wholesale).
+   - Record each finding with `file`/`line` anchored to the primary site (the state change, or the more-rigorously-handled counterpart in an asymmetry finding) and `related_files` listing the other implicated file(s) (the missing consumer, or the less-rigorously-handled counterpart) — see the `related_files` field note in Step 3.1.
+   - This needs codebase-wide visibility, not folder-chunk visibility. Scope any sub-agents used for this pass by feature or data flow instead ("everything that touches the user's saved profile"), sized within the same capacity budget as step 2 above. On a small-to-medium codebase the main agent can often do this pass itself instead of spawning sub-agents for it.
+   - Every finding from this pass is `category: consistency` and always `risk: needs-review` (see the risk values note in Step 3.1) — never auto-applied.
+6. Main agent consolidation:
+   - Merge all sub-agent reports, including the consistency pass's findings.
+   - Look across chunk boundaries for cross-cutting issues (e.g. the same duplicated pattern appearing in two different chunks) that individual sub-agents couldn't see on their own.
+   - Cross-check against the ledger's existing `open` findings — do not duplicate an entry that already exists; keep it as-is.
+   - Any `open` ledger entry whose file no longer exists, or has been rewritten enough that the finding no longer applies, gets marked `auto-resolved`.
+   - Any genuinely new issue gets added as a new `open` entry.
+   - Assign `risk` (`safe` or `needs-review`) to every new finding.
+   - Group findings that touch the same or directly-related files into a shared `cluster_id`.
+   - Where one finding's fix is a precondition for another (e.g. extract-before-dedupe), record it in `depends_on`.
+7. Update the ledger: set `schema_version` to `1` if not already present, set `last_scanned_commit` to current HEAD, `last_mode` to `deep`, `last_scan_date` to today, reset `consecutive_quick_count` to 0, and save the merged findings list.
+8. Write it to `.claude/helm/refactor-log.json` (creating `.claude/helm/` if it doesn't exist yet), then commit — if this run migrated a legacy `.claude/refactor-log.json` (3.1), remove it in the same commit:
+   ```
+   git add .claude/helm/refactor-log.json
+   git rm .claude/refactor-log.json   # only if migrating this run
+   git commit -m "chore(refactor): update ledger after deep scan"
+   ```
+
+### 4B. Quick Mode
+
+1. Reuse the changed-file list computed in Step 3.3 (`git diff --name-only {last_scanned_commit}..HEAD`, respecting Step 2 exclusions) — no need to recompute it. The mode decision in 3.3 already accounted for its size, so no further size check happens here.
+2. Re-validate every `open` ledger entry, `consistency` findings included. This step only ever looks at the primary `file`/`line` anchor and, for findings that have them, `related_files` — never at the fix content itself:
+   - Primary `file` deleted or heavily rewritten → mark `auto-resolved` (the finding's anchor is gone, regardless of what `related_files` says).
+   - Primary `file` untouched and, if present, every path in `related_files` also untouched (none in the changed-file list) → carry forward unchanged, still `open`.
+   - Primary `file` touched but not heavily rewritten (the common case — a few unrelated lines added or removed elsewhere in the file): re-verify the finding's pattern still exists near its recorded `line`, and update `line` to its current position before carrying the finding forward as `open`. A stale line number left unchecked here is a real risk, not just noise — `risk: safe` findings get auto-applied with no human review in Step 6.2, so an unverified line pointing at the wrong code could silently apply a fix to unrelated lines. (This does not apply to `consistency` findings, which are always `needs-review`, never `safe` — see Step 3.1 — so there is no auto-apply risk from a stale line on those, but still refresh it for report accuracy.)
+   - Primary `file` untouched but one or more `related_files` entries were touched: re-check that entry specifically — if that related file was deleted, drop it from `related_files` (auto-resolve the whole finding only if that was the last remaining related file); if it still exists, carry the finding forward unchanged. `related_files` entries don't carry a `line`, so there is nothing to refresh on them beyond existence.
+3. Scan only the changed files (single thread, no sub-agents needed) across the five per-chunk categories for new issues (architecture, code quality, performance, tests, dependencies). Before adding any finding, cross-check it against the ledger's existing `open` findings for that same file — if it matches one already there, do not create a duplicate, just leave the existing entry as-is. Only genuinely new issues get added. Assign `risk`, `cluster_id`, and `depends_on` to any new findings the same way Deep Mode does. Do not scan for *new* consistency findings here — that requires the whole-codebase, cross-feature visibility only Deep Mode's dedicated pass (Step 4A.5) provides; a changed-files-only scan structurally can't see a missing connection to a file that didn't change.
+4. Update the ledger: set `schema_version` to `1` if not already present. Add new findings as `open`, keep carried-forward entries as-is, mark auto-resolved ones. Set `last_scanned_commit` to current HEAD, `last_mode` to `quick`, `last_scan_date` to today, increment `consecutive_quick_count` by 1.
+5. Write it to `.claude/helm/refactor-log.json` (creating `.claude/helm/` if it doesn't exist yet), then commit — if this run migrated a legacy `.claude/refactor-log.json` (3.1), remove it in the same commit:
+   ```
+   git add .claude/helm/refactor-log.json
+   git rm .claude/refactor-log.json   # only if migrating this run
+   git commit -m "chore(refactor): update ledger after quick scan"
+   ```
+
+### 4C. Fix Backlog
+
+1. Skip scanning entirely — no file reads, no git diff, no sub-agents.
+2. Load every finding from the ledger with `status: open`. These are the only items in scope this run.
+3. Do not modify `last_scanned_commit`, `last_mode`, or `consecutive_quick_count` — no scan happened, so this run leaves scan metadata untouched.
+4. Proceed directly to Step 5 using only this open-findings list.
+
+---
+
+## Step 5 — Present findings
+
+If this run used Fix Backlog mode, no scan occurred, so the report only ever shows the Still Open section — omit New and Auto-Resolved from the summary counts and category breakdowns entirely, and label the report header `REFACTORING REPORT (mode: Fix Backlog — no scan performed)`.
+
+Otherwise, group by category, prioritize within each. Split into three sections so the user can see real progress instead of a flat repeated list:
+
+- **New** — found for the first time this run
+- **Still Open** — found in a previous run, not yet fixed, still valid
+- **Auto-Resolved** — found in a previous run, file since deleted/rewritten, no longer applicable
+
+Priority levels:
+- High   — architectural issues, security concerns, major code smells
+- Medium — redundant code, missing abstractions, inconsistent patterns
+- Low    — minor improvements, style inconsistencies, small optimizations
+
+Present in this format:
+
+─────────────────────────────────
+REFACTORING REPORT   (mode: {Deep/Quick})
+─────────────────────────────────
+NEW                    {X issues}
+STILL OPEN             {X issues carried over}
+AUTO-RESOLVED          {X issues closed automatically}
+─────────────────────────────────
+
+ARCHITECTURE          {X issues — High: N, Medium: N, Low: N}
+─────────────────────────────────
+[New][High][Safe] Brief description
+      File: path/to/file.php
+      Why: one sentence explanation
+
+[Still Open][Medium][Needs Review] ...
+
+CONSISTENCY           {X issues — High: N, Medium: N, Low: N}
+─────────────────────────────────
+[New][High][Needs Review] Brief description of the missing connection or asymmetry
+      Files: path/to/writer.php, path/to/expected-consumer.php
+      Why: one sentence explanation of what should happen and doesn't
+
+CODE QUALITY          {X issues — High: N, Medium: N, Low: N}
+─────────────────────────────────
+...
+
+PERFORMANCE           {X issues}
+─────────────────────────────────
+...
+
+TESTS                 {X issues}
+─────────────────────────────────
+...
+
+DEPENDENCIES          {X issues}
+─────────────────────────────────
+...
+
+─────────────────────────────────
+TOTAL: {N} issues found ({N} new, {N} still open)
+─────────────────────────────────
+
+Then present category selection. First determine how many of the 6 categories (Architecture, Consistency, Code Quality, Performance, Tests, Dependencies) have at least one `new` or `still open` finding:
+
+If zero categories qualify (TOTAL is 0): nothing to apply. Inform the user "No refactoring findings this run." and proceed directly to Step 7 (Merge and cleanup) — there is nothing to select or apply.
+
+If exactly one category qualifies, a multi-select with a single option isn't valid — AskUserQuestion requires at least 2. Ask directly instead:
+
+  AskUserQuestion:
+    question: "Apply the {N} {category} finding(s)?"
+    header:   "Apply category"
+    multiSelect: false
+    options:
+      - label: "Yes (Recommended)"
+        description: "{N} issues: {one-line summary}"
+      - label: "Skip"
+        description: "Leave these findings open, don't change this code"
+
+  "Yes" is equivalent to selecting that category in the multi-select below — proceed the same way.
+
+Otherwise (2 or more categories qualify), present multi-select category selection using the AskUserQuestion tool:
+
+  Question:    "Which categories to apply?"
+  multiSelect: true
+  Options: one entry per qualifying category — "{N} issues: {one-line summary}"
+
+  AskUserQuestion caps at 4 options. If more than 4 categories qualify, merge the smallest two into one option (e.g. "Tests & Dependencies") — repeat until at or under 4.
+
+  Selecting no options = skip. Do not add an explicit All or Skip option.
+
+Wait for response before proceeding.
+
+---
+
+## Step 6 — Apply refactoring
+
+Apply selected categories one at a time. Complete steps 6.1–6.4 fully for each category before starting the next. Do not batch changes from multiple categories into a single commit.
+
+### 6.1 Plan waves within capacity
+
+- Take all findings in this category, grouped into their clusters.
+- Estimate how many clusters one agent session can safely handle without running low on context (rough budget based on total diff size expected, similar to the capacity math used for Deep Mode chunking).
+- If the category's clusters fit within that budget, it's a single wave. If not, split into sequential waves — each wave a bounded batch of clusters, still processed one at a time, never in parallel.
+- Sort clusters by `depends_on` across the whole category first, then assign to waves in that order, so a cluster never lands in an earlier wave than something it depends on.
+
+### 6.2 Apply one cluster at a time
+
+Work through the current wave's clusters one at a time, in order. For each cluster:
+
+- Apply every finding tagged `risk: safe` in the cluster, in dependency order. No need to pause for user input on these.
+- For any `risk: needs-review` finding in the cluster, confirm with the user before touching code:
+
+  AskUserQuestion:
+    question: "This fix needs a judgment call: {finding description}. Apply it or skip it?"
+    header:   "Needs review"
+    multiSelect: false
+    options:
+      - label: "Apply as suggested"
+        description: "{brief description of the fix}"
+      - label: "Skip"
+        description: "Leave this finding open, don't change this code"
+
+  If skipped, this finding's ledger `status` becomes `skipped-by-user` (not `open`), so it stops resurfacing every run. Only re-surface it later if the surrounding code changes enough that the original suggestion may no longer apply.
+
+- Once the cluster's edits are complete: run tests — stop and inform if tests fail, do not move to the next cluster until resolved. Run lint and formatter.
+- Infer the commit scope from this cluster's files per git.md's Scope inference convention — not this command's six-category taxonomy (architecture/consistency/quality/performance/tests/dependencies), which is a report and selection grouping, not a commit scope.
+- Commit:
+  refactor({scope}): {brief summary of this cluster's changes}
+- Update the ledger immediately for every finding in this cluster: `status` to `fixed` or `skipped-by-user`, with `resolved_commit` and `resolved_date` set.
+
+This is the checkpoint: each cluster is fully tested, committed, and recorded in the ledger before moving to the next one. If the agent stops for any reason after this point, nothing already committed is lost or ambiguous.
+
+### 6.3 Wave handoff
+
+- When the current wave's clusters are all done, check whether clusters remain in this category.
+- If none remain, the category is complete — proceed to 6.4.
+- If clusters remain, report progress plainly: "Wave {N} complete: clusters {list} fixed. {N} clusters remaining in this category." In Claude, continue with a fresh agent session when the host supports it; that session reads the ledger to pick up the remaining work. In Codex, the parent continues the next wave sequentially and remains the only code/Git/ledger writer. If a fresh session is unavailable, continue from the ledger in the current session or report the exact resume point; never claim a handoff that did not happen.
+- If capacity runs out mid-wave, stop only at the nearest completed cluster boundary — never leave a cluster half-edited. Report the same way as above and hand the remainder to the next wave.
+
+This replaces "silently completes a few and reports the rest at the end" with "always commits what's done, always states clearly what's left, and always continues from an accurate ledger."
+
+For any finding in this category the user did not select at the category level (Step 5), leave its ledger `status` as `open`.
+
+Example commits:
+  refactor(orders): extract business logic from controller
+  refactor(auth): remove duplicate helper methods
+  refactor(checkout): update outdated assertions
+
+### 6.4 Scoped verification pass
+
+After all selected categories have been applied and committed, run one lightweight check — reusing the Quick Mode mechanics (Step 4B), but scoped only to the files touched during this Step 6, not the whole repo:
+
+- Re-check each `fixed` finding's file to confirm the issue is actually gone, not just that an edit was made.
+- Scan the same touched files once more for anything new the fixes themselves may have introduced.
+- Update the ledger accordingly: confirmed fixes stay `fixed`; anything not actually resolved reverts to `open` with a note; any newly introduced issue is added as a new `open` finding.
+
+This step is cheap — it only covers files already touched this session, not a fresh full scan — and it's what tells the user honestly whether this run's fixes fully landed or quietly created new small issues.
+
+---
+
+## Step 7 — Merge and cleanup
+
+Use AskUserQuestion:
+  AskUserQuestion:
+    question: "Refactoring applied. What would you like to do next?"
+    header:   "Next step"
+    multiSelect: false
+    options:
+      - label: "Merge to main (Recommended)"
+        description: "Merge refactor branch into main automatically, promote to environment branches if any exist, and delete the branch"
+      - label: "Open PR"
+        description: "Push branch and attempt to open a pull request via gh — falls back to manual instructions if gh is unavailable"
+      - label: "Leave branch"
+        description: "Leave the refactor branch as-is for now"
+
+Wait for response before proceeding.
+
+**Option 1 — Auto merge:**
+- Switch to main
+- Merge refactor/{timestamp} into main --no-ff
+  with message: refactor(project): apply refactoring {timestamp}
+- Before pushing, confirm — push always needs its own gate, separate from the merge above, regardless of `git-auto-commit`:
+
+  AskUserQuestion:
+    question: "Push main now? This publishes the merged refactor to origin."
+    header:   "Push"
+    multiSelect: false
+    options:
+      - label: "Push (Recommended)"
+        description: "git push origin main"
+      - label: "Cancel"
+        description: "Leave main merged locally but unpushed — push manually when ready"
+
+  If Cancel selected → stop here. Do not push, promote, or delete the refactor branch. Proceed to Step 8 to report the outcome, noting main is merged locally but unpushed and `refactor/{timestamp}` was left in place.
+
+  If Push selected: `git push origin main`, then continue below.
+- **Environment promotion** (this block is intentionally duplicated across every content-sync command — see rules/git.md's Environment Branches section for the canonical shape; keep all copies in sync if it changes): if environment branches exist (discover via `git branch -r`, filter for known environment names, same detection as ship.md), first check CI status for the commit just pushed to main — per git.md's Environment Branches rule ("if CI is configured, it must pass before promoting"), same mechanics as ship.md's Step 5:
+    - If this repo isn't hosted on GitHub, or no workflow files exist under `.github/workflows/`, skip this check — proceed to the confirmation below with no CI line in the question.
+    - Otherwise: capture the pushed commit's SHA, then run `gh run list --branch main --limit 20 --json headSha,status,conclusion` and filter to runs whose `headSha` matches — a single push can trigger multiple workflow runs, so checking only the most recent entry could miss one still failing or in progress. Fold the result (all matching runs succeeded / not yet / none found) into the confirmation question below rather than asking separately.
+
+  Ask which environments should also receive this refactor:
+
+    AskUserQuestion:
+      question: "main has been updated. Which environment branches should also receive this refactor? {CI: {conclusion}, if checked above}"
+      header:   "Promote to environments"
+      multiSelect: true
+      options: one entry per discovered environment branch, e.g.:
+        - label: "staging (Recommended if CI passed)"
+          description: "Merge main into staging"
+        - label: "production (Recommended if CI passed)"
+          description: "Merge main into production"
+
+  AskUserQuestion caps at 4 options. If more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
+
+  If exactly one environment branch qualifies, a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead, still folding in the CI line if checked above:
+
+    AskUserQuestion:
+      question: "main has been updated. Promote to {branch} as well? {CI: {conclusion}, if checked above}"
+      header:   "Promote to environment"
+      multiSelect: false
+      options:
+        - label: "Yes — promote to {branch} (Recommended if CI passed)"
+          description: "Merge main into {branch}"
+        - label: "Skip"
+          description: "Leave {branch} as-is for now"
+
+    "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
+
+  For each selected environment:
+  - git checkout {environment}
+  - git merge main --no-ff -m "chore(deploy): promote main to {environment} for refactor {timestamp}"
+  - git push origin {environment}
+  - git checkout main
+
+  If no environment branches exist, or the user selects none, skip silently.
+- Delete refactor branch: `git branch -d refactor/{timestamp}` locally always, and `git push origin --delete refactor/{timestamp}` only if it was ever pushed — Auto Merge never pushes the refactor branch itself (only `main`, after the merge), so the common case has nothing remote to delete; attempting it unconditionally errors for no reason and risks the local delete right next to it getting skipped too.
+
+**Option 2 — PR:**
+- Push refactor/{timestamp} to remote (including the updated ledger)
+- Check whether this repo is hosted on GitHub: `git remote get-url origin`. If the URL does not contain `github.com`, skip the `gh` attempt below and inform user:
+  "Branch pushed. Open a PR to merge into main when ready."
+- If hosted on GitHub, check whether `gh` is installed at all before attempting anything: `gh --version`. If it's not found, inform user:
+  "Branch pushed. gh is not installed — install it (https://cli.github.com) or open the PR manually: refactor/{timestamp} → main."
+- If `gh` is installed, attempt to open the PR:
+  ```
+  gh pr create --title "refactor(project): apply refactoring {timestamp}" --base main --head refactor/{timestamp} --body "Applied categories: {category_list}. See .claude/helm/refactor-log.json for the full ledger of findings, fixes, and skipped items."
+  ```
+  If this fails with an auth error, inform user:
+  "Branch pushed. gh is not authenticated — run `gh auth login`.
+  Then re-run /helm:refactor or create the PR manually."
+  If it succeeds, report the PR URL `gh` prints back to the user.
+
+**Option 3 — Leave as-is:**
+- Inform user:
+  "Branch refactor/{timestamp} left intact locally."
+
+---
+
+## Step 8 — Confirm completion
+
+Report:
+
+─────────────────────────────────
+REFACTORING COMPLETE
+─────────────────────────────────
+Branch:   refactor/{timestamp}
+Mode:     {Deep/Quick/Fix Backlog}
+Scanned:  {new_count} new findings, {still_open_count} carried over, {auto_resolved_count} auto-resolved this run
+Applied:
+- Architecture: {N} changes
+- Consistency:  {N} changes
+- Code Quality: {N} changes
+- Performance:  {N} changes
+- Tests:        {N} changes
+- Dependencies: {N} changes
+
+Ledger:         {N} still open, {N} auto-resolved, {N} newly fixed, {N} skipped by user
+Verification:   {N} fixes confirmed resolved, {N} newly introduced issues found
+Commits made:   {N}
+Tests passing:  yes/no
+Outcome:        {merged and pushed to main / merged locally but unpushed / PR pending / branch left intact}
+─────────────────────────────────
+
+Sample of fixes applied:
+- {description} — {file}
+- {description} — {file}
+- ... (up to 5 examples, drawn from findings marked `fixed` this run)
+
+For Fix Backlog mode, omit the Scanned line entirely — no scan occurred this run.

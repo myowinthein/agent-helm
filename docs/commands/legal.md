@@ -8,6 +8,8 @@ nav_order: 8
 
 Scan the project's legal profile, detect the output format based on the web framework (or ask if none is found), let the user choose which documents to generate, then write GDPR-compliant legal documents in plain English, commit them, and push after a separate confirmation.
 
+Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+
 ## Flow
 
 ```mermaid
