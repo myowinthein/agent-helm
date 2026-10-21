@@ -7,4 +7,4 @@ permalink: /docs/commands
 
 # Commands
 
-Slash commands for shipping, refactoring, testing, documentation, legal docs, env auditing, commit-history normalization, and archiving your own work.
+Shared workflows for Claude and Codex covering shipping, refactoring, testing, documentation, legal docs, env auditing, commit-history normalization, rule adoption, and archiving your own work. Pages use Claude's `/helm:<command>` notation; in Codex, select the same Helm workflow from the skill picker.

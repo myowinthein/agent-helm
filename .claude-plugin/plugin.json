@@ -1,14 +1,14 @@
 {
   "name": "helm",
   "version": "2.22.3",
-  "description": "A Claude and Codex workflow plugin for solo developers. Slash commands and rules to ship, refactor, test, document, generate legal docs, audit env config, normalize commit history, adopt rule files, and archive your own work.",
+  "description": "A Claude and Codex workflow plugin for solo developers. Shared workflows and rules to ship, refactor, test, document, generate legal docs, audit env config, normalize commit history, adopt rule files, and archive your own work.",
   "author": {
     "name": "Myo Win Thein",
     "email": "mwt.creative@gmail.com",
     "url": "https://github.com/myowinthein"
   },
-  "homepage": "https://github.com/myowinthein/claude-helm",
-  "repository": "https://github.com/myowinthein/claude-helm",
+  "homepage": "https://github.com/myowinthein/agent-helm",
+  "repository": "https://github.com/myowinthein/agent-helm",
   "license": "MIT",
   "keywords": [
     "claude-code",
@@ -22,6 +22,8 @@
     "workflow-automation",
     "release-automation",
     "codex",
+    "codex-cli",
+    "codex-plugin",
     "agent-skills"
   ],
   "skills": "./skills/",

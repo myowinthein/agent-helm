@@ -7,7 +7,7 @@ permalink: /docs/setup/claude-desktop.html
 
 # Claude desktop and Cowork
 
-Open the plugin controls in Claude's Customize area. Add a marketplace from the GitHub repository `myowinthein/claude-helm`, then add the `helm` plugin. Check its version and enabled state, start a fresh task, and select a Helm workflow from the `/` picker.
+Open the plugin controls in Claude's Customize area. Add a marketplace from the GitHub repository `myowinthein/agent-helm`, then add the `helm` plugin. Check its version and enabled state, start a fresh task, and select a Helm workflow from the `/` picker.
 
 For updates or removal, open the installed plugin's menu and use the available update or remove action. Menu labels can vary by app version and account. Check the workflow list in a new task after making a change.
 

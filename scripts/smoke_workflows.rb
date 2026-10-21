@@ -49,16 +49,18 @@ cases = {
              ".claude/rules/safety.md" => "# My safety rules\n\nThese are user-owned rules.\n" },
     command: "adopt", request: "Install the project rules. For foreign files choose Review each foreign file, then Skip both git.md and safety.md.", unchanged: true
   },
+  # Retain legacy-brand inputs to cover preserved copies and existing references.
   "codex-newer-copies" => {
     files: { "CLAUDE.md" => standard,
              ".claude/rules/git.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
              ".claude/rules/safety.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
-    command: "adopt", request: "Connect Codex and keep the newer project rules. Do not commit or push.", unchanged: false, rules_version: "9.9.9"
+    command: "adopt", request: "Connect Codex and keep the newer project rules. Do not commit or push.", unchanged: false, rules_version: "9.9.9", rule_brand: "claude-helm"
   },
   "codex-existing-references" => {
     files: { "CLAUDE.md" => standard + "\n## Rules\n\nRead and follow these rule files at the start of each session:\n- {fixture_root}/marketplaces/claude-helm/rules/git.md\n- {fixture_root}/marketplaces/claude-helm/rules/safety.md\n",
              "marketplaces/claude-helm/rules/git.md" => root.join("rules/git.md").read,
-             "marketplaces/claude-helm/rules/safety.md" => root.join("rules/safety.md").read },
+             "marketplaces/claude-helm/rules/safety.md" => root.join("rules/safety.md").read,
+             "marketplaces/claude-helm/.claude-plugin/plugin.json" => root.join(".claude-plugin/plugin.json").read },
     command: "adopt", request: "Connect Codex to the existing Claude references. Do not commit or push.", unchanged: false, reference_connection: true
   }
 }
@@ -133,7 +135,8 @@ cases.each do |name, scenario|
           path = workspace.join(".claude/rules", rule)
           raise "#{name}: missing copied #{rule}" unless path.file?
           version = scenario.fetch(:rules_version, JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version"))
-          raise "#{name}: copied different rules" unless path.read == "<!-- helm-rule: claude-helm@v#{version} -->\n" + root.join("rules", rule).read
+          brand = scenario.fetch(:rule_brand, "agent-helm")
+          raise "#{name}: copied different rules" unless path.read == "<!-- helm-rule: #{brand}@v#{version} -->\n" + root.join("rules", rule).read
         end
       end
       bridge = workspace.join("AGENTS.md")

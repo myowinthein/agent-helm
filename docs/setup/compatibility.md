@@ -9,6 +9,14 @@ permalink: /docs/setup/compatibility.html
 
 Helm has one workflow body per operation in `workflows/`. Portable entries in `skills/` load the shared runtime and that workflow. Legacy `commands/` files remain manual/legacy adapters, outside the current discovery path; older-client behavior is not established by source review. The manifest exposes skills and disables automatic command-directory discovery, preventing duplicate entries while preserving `/helm:<name>` in Claude. Claude's existing invocation policy is retained; Codex's new skill entries disable implicit invocation.
 
+## Renaming an existing installation
+
+The repository and marketplace are now `agent-helm`; the plugin is still `helm`. Use the current [setup guides](./) to register `myowinthein/agent-helm` and install `helm@agent-helm` in Claude and Codex. An installation registered as `helm@claude-helm` does not change its marketplace identity automatically. Disable the old plugin entry when enabling the renamed installation to avoid duplicate workflows, then start a fresh session.
+
+Existing copied rules with a `claude-helm` version marker remain Helm-managed. New or approved replacement copies use `agent-helm`; connection, keep and no-change actions preserve existing rule bytes. The rename does not move `.helm/` state, legacy operational files, or `.claude/rules/`, and does not change instruction ownership.
+
+Existing marketplace references retain their actual paths. Keep the old marketplace checkout while any project still references it. Claude's adopt workflow prefers the verified `agent-helm` checkout, can fall back to the verified legacy checkout when the new manifest is absent, and reports that choice. Codex can continue connecting to readable existing references. To retire the old checkout, first use Claude's reviewed adopt flow to switch dependent projects to shared copies or review their exact reference changes; installing the renamed plugin alone does not authorize rewriting project instructions.
+
 ## One shared owner and a Claude adapter
 
 Successful `log` setup uses root `AGENTS.md` for shared project knowledge, Helm configuration, adopted Rules, and one review marker. A real root `CLAUDE.md` imports it using a standalone `@AGENTS.md` line, followed by any Claude-specific additions. This import works without relying on Claude's conditional native AGENTS.md discovery. Normal agent switching between sessions needs no log rerun.

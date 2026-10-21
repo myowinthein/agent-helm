@@ -33,6 +33,7 @@ cases = {
   "fresh-no-git" => { files: {}, no_git: true, fresh: true, request: "Run log. I approve the full scan and creating both root entries. Choose Solo Mode and no automatic commits. No special safety risks apply to this fictional Markdown-only project. Do not initialize Git, invent a review hash, or create rules." },
   "fresh-skip" => { files: {}, no_git: true, request: "Run log, choosing Skip at the full-scan assessment. Do not create any entry files." },
   "canonical-adopt-copy" => { command: "adopt", copy: true, files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter + claude_only }, expected: { "CLAUDE.md" => adapter + claude_only }, request: "Run adopt. Choose Copy shared rules and connect Codex. I approve installing the two Helm copies and adding their explicit Rules pointers to the existing AGENTS.md owner. Keep all existing instructions, configuration and the review marker unchanged; preserve CLAUDE.md byte-for-byte." },
+  # Legacy brand markers must remain recognized and byte-for-byte intact on connection.
   "canonical-adopt-connect" => { command: "adopt", files: { "AGENTS.md" => shared + reference_rules,
     ".claude/rules/git.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
     ".claude/rules/safety.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
@@ -133,7 +134,7 @@ cases.each do |name, scenario|
           expected["AGENTS.md"] = owner
           version = JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version")
           %w[git.md safety.md].each do |rule|
-            contents = "<!-- helm-rule: claude-helm@v#{version} -->\n" + root.join("rules", rule).read
+            contents = "<!-- helm-rule: agent-helm@v#{version} -->\n" + root.join("rules", rule).read
             path = ".claude/rules/#{rule}"
             raise "#{name}: wrong copied #{rule}" unless workspace.join(path).read == contents
             expected[path] = contents

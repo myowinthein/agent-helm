@@ -14,7 +14,7 @@ Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the wor
 
 README.md = human-facing documentation (contributors, GitHub visitors, new users).
 Not a changelog. Not a technical spec. Not a deployment manual.
-Audience is humans, not future Claude sessions — keep it clear and scannable.
+Write for people reading the project, with clear, scannable explanations. Shared agent instructions for Claude and Codex belong in the resolved project-memory owner.
 Whenever writing to README.md, in any step: use em-dashes sparingly — only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
 
 ---

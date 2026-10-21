@@ -43,7 +43,7 @@ Rewrites `README.md` from the project's state, so it needs the full merged, stab
 
 ## Scope
 
-README.md is human-facing documentation for contributors, GitHub visitors, and new users; not a changelog, not a technical spec, not a deployment manual. Audience is humans, not future Claude sessions, so keep it clear and scannable. Whenever writing to README.md, in any step: use em-dashes sparingly, only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
+README.md is human-facing documentation for contributors, GitHub visitors, and new users; not a changelog, not a technical spec, not a deployment manual. Write clear, scannable explanations for people reading the project. Shared agent instructions for Claude and Codex belong in the resolved project-memory owner. Whenever writing to README.md, in any step: use em-dashes sparingly, only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
 
 ### 1. Assessment
 
