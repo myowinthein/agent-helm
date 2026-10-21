@@ -36,7 +36,11 @@ flowchart TD
 
 ### Before starting
 
-Behavior depends on `git-strategy` in AGENTS.md's Project Config (absence defaults to GitHub Flow, per git.html):
+Configuration is read from the resolved project-memory owner: normally `AGENTS.md` through `CLAUDE.md`'s import on Claude, or directly on Codex. Existing legacy owners, bridges, overrides, and recognized fenced configuration blocks follow the shared runtime. This command does not create or modify Helm settings in either instruction file.
+
+Before switching branches or writing files, stops if pre-existing staged changes are present so they cannot be accidentally included in an env commit. The developer must commit or unstage them before re-running; the command does neither automatically.
+
+Behavior depends on that owner's `git-strategy` (absence defaults to GitHub Flow, per git.html):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch. No branch is created; every commit lands directly on main.
 - **GitHub Flow**: records the current branch, then checks out a fresh branch from main's current tip (`chore/env-{date}`). Returns to the original branch at the end (see Step 4).
@@ -69,13 +73,15 @@ Findings presented as a single `ENV AUDIT REPORT` grouped by category. Includes 
 
 Run the selected target's sub-flows, one at a time, each completing fully before the next. Each sub-flow runs only if it has findings and offers a Skip.
 
+All commits, including per-file commits, exclude `.env` and other non-example `.env*` contents even when already tracked. Real values stay local. Only reviewed, credential-free source changes, placeholder-only `.env.example` changes, `.gitignore` changes, and confirmed untracking deletions may be staged. Untracking preserves the local file and does not erase existing Git history. A template with skipped secret cleanup remains ineligible for staging while it contains credentials.
+
 **Env files sub-flows** (if "Env files" selected):
 
 - **Secret cleanup (.env.example)**: shows each flagged real secret with its planned placeholder replacement. Single-select: Replace all, Skip, or Other (free-text). Does not touch any other env file.
 - **Placeholder cleanup (other env files)**: shows unfilled placeholders grouped by file. Dev fills in values manually, then marks done.
 - **Env sync**: per file. Shows which keys are missing and where they exist in other files. Dev adds them manually per file, marks done before moving to the next.
 - **Missing from env**: all at once. Keys referenced in code but absent from all env files, with file:line locations. Dev adds them manually, marks done.
-- **Hardcoded values**: shows all findings with severity, file:line, redacted value, and suggested env var name. Single-select: Replace all, Skip, or Other. If Replace all and more than 10 findings: processes one source file at a time, committing after each.
+- **Hardcoded values**: shows all findings with severity, file:line, redacted value, and suggested env var name. Single-select: Replace all, Skip, or Other. Real values go into local env files; templates receive placeholders. If Replace all and more than 10 findings: processes one source file at a time, committing only its safe source and template changes after each, subject to the same index checks and Auto-Commit rule.
 - **Never referenced**: lists keys with no code reference, with a hint on whether each looks infrastructure-only or stale. Dev responds in free text: delete some, keep some, or wire up to code.
 - **Env formatting**: single-select: Proceed or Skip. Fixes formatting, removes duplicate keys (keep last), adds category groupings consistently across all env files. Preserves existing group order.
 
@@ -88,7 +94,11 @@ Run the selected target's sub-flows, one at a time, each completing fully before
 
 ### 4. Commit, push, and promote
 
-After all fixes are applied, stages what's left (explicit paths, never `git add -A`) and commits, per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms first. Commit message: `chore(env): audit and fix env configuration`. If nothing was staged (e.g. the Hardcoded values sub-flow already committed everything per-file), there's nothing to commit here, but under GitHub Flow this doesn't automatically mean nothing to do: it checks whether the temporary branch has commits ahead of main (the Hardcoded values sub-flow's own commits, made directly on that branch), and if so still merges that work into main rather than discarding it by deleting the branch. Only when the branch has no commits ahead of main does it skip straight to cleanup. Solo Mode has no such case, since Hardcoded values commits there already land directly on main.
+After all fixes are applied, stages only the remaining approved, safe changes using explicit paths or task-specific hunks, preserving confirmed untracking deletions. Never uses repository-wide staging or includes non-example env contents. Before every commit, verifies the complete proposed index for unrelated changes, prohibited env additions/modifications, and credentials in resulting file contents without exposing values in tool output. If unsafe or unverifiable, stops the commit/push path and reports paths and key names only.
+
+Commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms first. Commit message: `chore(env): audit and fix env configuration`. If nothing was staged (e.g. only local env edits remain, or the Hardcoded values sub-flow already committed all safe changes per-file), there's nothing to commit here, but under GitHub Flow this doesn't automatically mean nothing to do: it checks whether the temporary branch has commits ahead of main (the Hardcoded values sub-flow's own commits, made directly on that branch), and if so still merges that work into main rather than discarding it by deleting the branch. Only when the branch has no commits ahead of main does it skip straight to cleanup. Solo Mode has no such case, since Hardcoded values commits there already land directly on main.
+
+Local env edits remain on disk and are reported separately. If they block checkout, merge, or cleanup, stops the affected operation and reports the current branch and remaining work; never forces checkout, discards, automatically stashes, or commits those files to proceed.
 
 Push always requires its own confirmation regardless of `git-auto-commit`, per git.md's Auto-Commit exception and rules/safety.md's unconditional push-confirmation rule. If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update: capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options); then merges main into each and pushes.
 
@@ -96,10 +106,13 @@ Push always requires its own confirmation regardless of `git-auto-commit`, per g
 
 ### 5. Completion report
 
-Summarises the outcome grouped by target (Env files, .gitignore): counts replaced, added, deleted, or fixed for each of the eleven sub-flows, including how many never-referenced keys were deleted vs kept. Lists anything needing manual follow-up: skipped secret cleanup (real secrets still in `.env.example`) and skipped tracked files. Also reports whether the commit was pushed (or is waiting locally for a manual push), which environment branches were promoted, and, under GitHub Flow, the temporary branch's fate and which branch the command returned to.
+Summarises the outcome grouped by target (Env files, .gitignore): counts replaced, added, deleted, or fixed for each of the eleven sub-flows, including how many never-referenced keys were deleted vs kept. Lists anything needing manual follow-up: skipped secret cleanup (real secrets still in `.env.example`), skipped tracked files, local-only env edits, and any blocked commit with paths/key names only. Also reports whether the commit was pushed (or is waiting locally for a manual push), which environment branches were promoted, and, under GitHub Flow, the temporary branch's fate and which branch the command returned to.
 
 ## Stop conditions
 
+- **Pre-existing staged changes.** Stops before branch switches or writes; leaves the developer's index intact.
+- **Unsafe or unverifiable proposed commit.** Stops the commit/push path and reports paths and key names without credential values.
+- **Local-only env edits block a Git operation.** Stops that operation, preserves the files, and reports the branch and remaining work.
 - **No findings at all.** Nothing to fix: the report shows a clean audit.
 - **User selects neither target, or Skips every sub-flow.** Clean exit, no changes written.
 
