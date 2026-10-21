@@ -14,7 +14,9 @@ Command names below use Claude notation. In Codex, select the same Helm workflow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:manifest]) --> Strategy{git-strategy?}
+  Start([User runs /helm:manifest]) --> Owner{Resolved memory<br/>owner exists?}
+  Owner -->|no| Setup[/Stop: run log first,<br/>then re-run manifest/]
+  Owner -->|yes| Strategy{git-strategy?}
   Strategy -->|Solo| SoloCheck{On main/master?}
   SoloCheck -->|no| StopSolo[/Stop: switch to main first/]
   SoloCheck -->|yes| Exists
@@ -24,9 +26,9 @@ flowchart TD
   Exists{README.md exists<br/>with content?}
 
   Exists -->|no| Mode1[Ask: full scan or skip?]
-  Exists -->|yes| StyleFlag{readme-style<br/>in AGENTS.md?}
+  Exists -->|yes| StyleFlag{readme-style<br/>in resolved owner?}
 
-  StyleFlag -->|no| AskStyle["Ask: standard or custom?\nSave to AGENTS.md Project Config"]
+  StyleFlag -->|no| AskStyle["Ask: standard or custom?\nSave in owner; add config section if absent"]
   StyleFlag -->|yes| HashCheck
   AskStyle --> HashCheck
 
@@ -77,7 +79,9 @@ flowchart TD
 
 ### Before starting
 
-Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in AGENTS.md's Project Config (absence defaults to GitHub Flow, per git.html):
+Resolves the existing configuration and project-knowledge owner through the shared runtime first. If that file does not exist, including a project with neither `AGENTS.md` nor `CLAUDE.md`, stops before any Git mutation or file write and directs the developer to run `log`, then re-run `manifest`. It does not create instruction files or automatically invoke another workflow. Existing bridge, override, conflict, and missing-import rules still apply.
+
+Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Behavior depends on `git-strategy` in the resolved owner's configuration block (absence defaults to GitHub Flow, per git.html):
 
 - **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
 - **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/manifest-{date}`), regardless of what the starting branch was. README.md is always scanned from main's own state, never from a feature branch's unmerged work; if a feature branch changes something README.md should reflect, re-run `/helm:manifest` after that branch merges to main. Returns to the original branch at the end (see Step 5).
@@ -90,7 +94,9 @@ README.md is human-facing documentation for contributors, GitHub visitors, and n
 
 ### 1. Assessment
 
-First determines the README style by reading `readme-style` from AGENTS.md Project Config. If the flag is absent, checks whether README.md already exists with content and asks accordingly: the question and the Custom option's description differ depending on whether there's an existing README to be "custom" relative to, since a brand-new project has nothing yet. Saves the choice (`readme-style: standard` or `readme-style: custom`) to AGENTS.md before continuing.
+First determines the README style by reading `readme-style` from the resolved owner's recognized configuration block. If the flag is absent, checks whether README.md already exists with content and asks accordingly: the question and the Custom option's description differ depending on whether there's an existing README to be "custom" relative to, since a brand-new project has nothing yet. Saves the choice (`readme-style: standard` or `readme-style: custom`) to that same owner before continuing, preserving the block's existing layout, including a recognized Compass-style fenced block.
+
+If the existing owner has no recognized configuration block, adds a `## Project Config` section containing only the chosen `readme-style` declaration. Preserves existing content and any end-of-file review marker, and does not invent other settings. In the shared layout, this updates `AGENTS.md` while leaving `CLAUDE.md`'s import and Claude-specific additions intact. An existing legacy owner remains the owner until a reviewed `log` migration; configuration is never duplicated in a wrapper or a second owner.
 
 Then reads the current `README.md`, checks for a saved `<!-- last-reviewed: {hash} -->` marker, and if found, runs `git log {hash}..HEAD --oneline` to measure the gap. Ignores noise commits.
 
@@ -152,6 +158,7 @@ If a scan or gap update wrote anything this run, first verifies it: reads README
 
 ## Stop conditions
 
+- **No existing instruction owner.** Run `log` first, then re-run `manifest`. Stops before Git mutations or file writes.
 - **Solo Mode, not on main/master.** Switch to main or master and re-run.
 - **README.md is up to date.** Structure intact and no meaningful commits since the last review; clean exit, no prompt.
 - **User picks Skip.** Clean exit, no changes.
