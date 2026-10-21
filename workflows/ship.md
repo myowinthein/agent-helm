@@ -4,6 +4,10 @@
 
 Check current branch.
 
+**GitHub capability preflight (main/master and environment branches):** before committing pending work, editing release files, tagging, or pushing, inspect origin to determine whether this is a GitHub repository. On GitHub, check `gh --version` and, only if installed, `gh auth status` for the origin's host. Record whether the CLI is available/authenticated and a non-secret reason if unavailable; do not expose credentials, install tools, or log in automatically. Inform the user up front if GitHub CI inspection or GitHub Release creation is unavailable on this host. Git transport credentials are separate; a successful Git push does not establish GitHub API access.
+
+Missing CLI/authentication does not imply CI passed or that no CI exists. A separately approved Git release may proceed, but any configured GitHub CI check must use the unavailable-status handling below, and GitHub Release creation must be skipped with manual instructions. Later API/network/permission failures receive the same unavailable handling even if preflight passed. Non-GitHub repositories do not require gh for this workflow.
+
 If on main or master:
   Check for a clean working tree: `git status --porcelain`.
 
@@ -139,7 +143,9 @@ If Conventional Commits detected:
       - label: "Enter custom version"
         description: "Specify a different version number"
 
-  If "Enter custom version" selected → ask human to type the version before proceeding.
+  If "Confirm v{proposed}" selected → set `{version}` and record explicit release approval for that exact version and the listed targets.
+  If "Bump to v1.0.0" selected → set `{version}` to `1.0.0` and use the final release confirmation below.
+  If "Enter custom version" selected → ask human to type the version, then validate it and use the final release confirmation below. Choosing custom entry is not release approval.
   Wait for response before proceeding.
 
 If Conventional Commits not detected:
@@ -153,6 +159,20 @@ If Conventional Commits not detected:
   Wait for human to input version before proceeding.
 
 Whichever path supplied {version} manually (custom version entry, or the no-CC direct-entry path), validate it matches Semantic Versioning format (MAJOR.MINOR.PATCH, optionally with a `-prerelease` or `+build` suffix, e.g. `2.1.0` or `2.1.0-beta.1`) before proceeding to Step 3. If it doesn't match, inform the human and ask again — this value gets written into the version file and baked into a permanent tag (git.md: tags are never rewritten), so it isn't safe to accept unchecked. {proposed} from the auto-calculated path doesn't need this check — it's derived from a known-good base version, always well-formed by construction.
+
+**Final release confirmation for manual/custom versions and the v1.0.0 shortcut:** after obtaining a valid version, present that exact version, the current/base version, selected environments, and any GitHub capability limitation from preflight, then ask:
+
+  AskUserQuestion:
+    question: "Ship v{version}? After quality checks, this commits the release, creates and pushes v{version}, pushes the release branch, and promotes to {selected environments or 'none'}."
+    header:   "Release approval"
+    multiSelect: false
+    options:
+      - label: "Ship v{version}"
+        description: "Approve this version's commit, tag, push, and selected promotions"
+      - label: "Cancel"
+        description: "Stop before release edits, tagging, pushing, or promotion"
+
+  If Cancel → stop without executing the release. If Ship selected → record approval for this exact version and target list. A typed version, successful validation, missing answer, or approval of a different version is not release approval. Reuse an explicit approval already given for the same exact release instead of asking twice. The calculated-version Confirm option above already supplies that approval.
 
 ---
 
@@ -171,6 +191,8 @@ Do not proceed until lint passes and tests are green.
 ## Step 4 — Execute release on main
 
 Only run this step if on main or master.
+
+Require the recorded release approval for `{version}` and the selected targets before release writes or mutations. If the version or targets changed after approval, return to the final release confirmation. Respect any stricter project-specific push confirmation requirements as well.
 
 Bump version in detected version file to {version}.
 
@@ -192,13 +214,15 @@ Commit, tag, and push:
 Capture the commit SHA (`git rev-parse HEAD`) as {commit_sha} for the Step 6 report.
 
 Before promoting to any selected environment, check CI status for the commit just pushed to main — per git.md's Environment Branches rule ("if CI is configured, it must pass before promoting"):
+- If no environments were selected, skip this CI/promotion block entirely.
 - If this repo isn't hosted on GitHub, or no workflow files exist under `.github/workflows/`, skip this check silently — proceed straight to the promotion loop below.
-- Otherwise: using {commit_sha} captured above, run `gh run list --branch main --limit 20 --json headSha,status,conclusion` and filter to runs whose `headSha` matches {commit_sha}. A single push can trigger multiple workflow runs, and querying only the single most recent run risks catching a stale run from a previous commit before GitHub has registered this one — matching on `headSha` avoids both problems.
+- If configured GitHub CI cannot be queried because preflight found gh unavailable/unauthenticated, do not run a known-unavailable command. Record CI as **unverified**, with the reason, and use the same Skip/Promote anyway question below. Never silently bypass the gate or interpret unavailability as success.
+- Otherwise: using {commit_sha} captured above, run `gh run list --branch main --limit 20 --json headSha,status,conclusion` and filter to runs whose `headSha` matches {commit_sha}. A single push can trigger multiple workflow runs, and querying only the single most recent run risks catching a stale run from a previous commit before GitHub has registered this one — matching on `headSha` avoids both problems. If this query fails, record CI as **unverified** with a non-secret reason and use the question below; distinguish query failure from a successful empty result.
   - If no matching runs found → treat as "none yet" (CI hasn't registered this commit).
   - If every matching run has conclusion "success" → proceed to the promotion loop below silently.
-  - Otherwise (any matching run queued, in progress, failed, or none found yet):
+  - Otherwise (any matching run queued, in progress, failed, none found yet, or CI unverified):
       AskUserQuestion:
-        question: "CI for this release hasn't reported success yet ({summary of matching run states, or 'no runs found yet' if none}). Promote to the selected environments anyway?"
+        question: "CI for this release has not been verified successful ({matching run states, 'no runs found yet', or unavailable reason}). Promote to the selected environments anyway?"
         header:   "CI status"
         multiSelect: false
         options:
@@ -218,11 +242,15 @@ Then check whether this repo is hosted on GitHub:
 - Run: git remote get-url origin
 - If the URL does not contain `github.com` → skip the rest of this step silently
 
-If hosted on GitHub, check whether `gh` is installed at all before offering the option: `gh --version`. If it's not found, skip the AskUserQuestion below and inform human:
-  "gh is not installed — skipping GitHub Release. Install it (https://cli.github.com) and create the release manually with:
-  gh release create v{version} --title \"v{version}\" --notes \"...\""
+If hosted on GitHub, use the recorded capability preflight. If gh is unavailable or unauthenticated, skip the AskUserQuestion below and inform human of the reason, the already-completed Git release actions, and how to create this same release manually once CLI access is available:
 
-If `gh` is installed, use AskUserQuestion:
+```sh
+gh release create v{version} --title "v{version}" --notes "..."
+```
+
+Do not rerun the whole ship workflow merely to retry GitHub Release creation; that would start another version. Do not claim a GitHub Release was created when this step was skipped or failed.
+
+If gh was available/authenticated, use AskUserQuestion:
   AskUserQuestion:
     question: "Create a GitHub Release for v{version}?"
     header:   "GitHub Release"
@@ -240,9 +268,7 @@ If `gh` is installed, use AskUserQuestion:
     git log v{last_tag}..HEAD --pretty=format:"- %s" | grep -E "^- (feat|fix)"
   - Run: gh release create v{version} --title "v{version}" --notes "{extracted_notes}"
   - On success, `gh release create` prints the release URL to stdout — capture it as {release_url} for the Step 6 report.
-  - If the command fails with an auth error, inform human:
-    "gh is not authenticated. Run: gh auth login
-    Then re-run /helm:ship or create the release manually."
+  - If the command fails with an auth, permission, network, or other error, report the failure and actual completed actions, with a non-secret reason. Offer manual creation/retry of the same `v{version}` GitHub Release after access is restored, not a fresh ship invocation. A previously successful preflight is not proof that this write succeeded.
 
 ---
 
@@ -254,10 +280,19 @@ Check `environment-promotion` in {memory_file} Project Config (see git.md's Envi
 
 ### Fan-out mode
 
-There is no chain to advance — environment branches only ever receive code directly from main (Step 1), never from each other. Just push the current branch:
-- git push origin {current_branch}
-- Inform human:
-  "Pushed {current_branch}. CI/CD will deploy to corresponding server."
+There is no chain to advance — environment branches only ever receive code directly from main (Step 1), never from each other. Before pushing, confirm:
+
+  AskUserQuestion:
+    question: "Push {current_branch} to origin now? This publishes the branch and may trigger its deployment."
+    header:   "Push environment"
+    multiSelect: false
+    options:
+      - label: "Push {current_branch}"
+        description: "Run git push origin {current_branch}"
+      - label: "Cancel"
+        description: "Exit without pushing or triggering deployment"
+
+If Cancel → report that no push was attempted and exit without mutations. If Push selected → run `git push origin {current_branch}`. Reuse approval if the user already explicitly authorized this same branch push; the workflow invocation, auto-commit setting, or host tool permission is not a substitute for explicit push approval. On success, report the actual branch pushed; on failure, report it without claiming deployment was triggered.
 
 ### Chain mode
 
@@ -271,7 +306,10 @@ If {current_branch} matches neither tier (a long-lived branch that still qualifi
 
 If next environment exists, first check CI status for {current_branch} — per git.md's Environment Branches rule ("if CI is configured, it must pass before promoting"):
 - If this repo isn't hosted on GitHub, or no workflow files exist under `.github/workflows/`, skip this check — proceed to the confirmation below with no CI line in the question.
-- Otherwise: capture the branch tip's SHA (`git rev-parse {current_branch}`), then run `gh run list --branch {current_branch} --limit 20 --json headSha,status,conclusion` and filter to runs whose `headSha` matches — a single commit can trigger multiple workflow runs, so checking only the most recent entry could miss one still failing or in progress. Fold the result (all matching runs succeeded / not yet / none found) into the confirmation question below rather than asking separately.
+- If configured GitHub CI is unavailable because gh is missing/unauthenticated, record **CI unverified** with the preflight reason and include that explicitly in the confirmation below. Do not call a known-unavailable CLI or silently treat the gate as passed.
+- Otherwise: capture the branch tip's SHA (`git rev-parse {current_branch}`), then run `gh run list --branch {current_branch} --limit 20 --json headSha,status,conclusion` and filter to runs whose `headSha` matches — a single commit can trigger multiple workflow runs, so checking only the most recent entry could miss one still failing or in progress. A query failure is **CI unverified** with a non-secret reason, not an empty successful result. Fold the result (all matching runs succeeded / not yet / none found / unverified with reason) into the confirmation question below rather than asking separately.
+
+If configured CI is not verified successful, the promotion question must explicitly say "CI is not verified successful: {reason/status}. Promote anyway?" and the Promote option must state that it overrides the unverified/unsuccessful CI gate; do not recommend it as though CI passed. The user's explicit promotion answer supplies that override, with no additional duplicate prompt.
 
 Confirm before mutating anything (per safety.md: never push without confirmation):
   AskUserQuestion:
@@ -311,15 +349,16 @@ If on main or master:
   - Tag pushed:            yes
   - README updated:        yes/no
   - Environments promoted: {list, or "none" if none selected, or "none — skipped" if skipped for CI reasons}
-  - GitHub Release:        {release_url, if created} / skipped / not GitHub
+  - GitHub Release:        {release_url, if created} / skipped with reason / failed with reason / not GitHub
+  - GitHub capability/CI:  {available / unavailable with reason; actual CI status if checked}
   - Deployment triggered:  yes/no (based on CI/CD presence)
 
-  If any environment was promoted after choosing "Promote anyway" despite CI not reporting success: add a line — "Note: promoted to {list of those environments} without a passing CI run (manually overridden)."
+  If any environment was promoted after choosing "Promote anyway" despite CI not reporting success or being unavailable: add a line — "Note: promoted to {list of those environments} without verified passing CI (manually overridden: {status/reason})."
   If promotion was skipped because CI hadn't passed: add a line — "To promote later: checkout the environment branch, merge main in manually, and push — re-running /helm:ship would cut a new version rather than retry this promotion."
 
 If on environment branch, fan-out mode:
   Report:
-  - Branch pushed:         {current_branch}
+  - Branch pushed:         {current_branch, or none if cancelled/failed}
   - Deployment triggered:  yes/no (based on CI/CD presence)
 
 If on environment branch, chain mode:
@@ -328,4 +367,4 @@ If on environment branch, chain mode:
   - Branches pushed:       {current_branch}, {next_environment}
   - Deployment triggered:  yes/no (based on CI/CD presence)
 
-  If the CI check ran and did not find success (regardless of which run states it was) before the user confirmed promotion: add a line — "Note: promoted without a passing CI run (manually confirmed anyway)."
+  If configured CI was not verified successful, including when the check was unavailable, before the user confirmed promotion: add a line — "Note: promoted without verified passing CI (manually confirmed anyway: {status/reason})."
