@@ -57,11 +57,9 @@ If framework selected:
 
 ## Step 2 — Load ledger
 
-Look for `.claude/helm/test-log.json`. If it exists, load it.
+Read `{package_root}/prompts/shared/project-state.md` and apply it to `test-log.json`. The canonical path is `.helm/test-log.json`; check both `.claude/helm/test-log.json` and `.claude/test-log.json` too. Validate every candidate, applying only the explicit v1 conversion below in memory before comparing them. Resolve differing histories before using state. Path migration waits for Step 6's successful authorized write and is distinct from schema conversion.
 
-If not found, check the legacy path `.claude/test-log.json` (this plugin's ledgers used to live flat in `.claude/`, which risks colliding with another plugin's own files of the same generic name). If a legacy file exists, load it from there — this is a one-time **path** migration, distinct from the schema-shape migration below: the next time the ledger is written (Step 6), it moves to the new `.claude/helm/` path and the old file is removed as part of the same commit.
-
-If neither path has a file, proceed as if the ledger is empty — a missing ledger is not an error.
+With no candidate file, proceed as if the ledger is empty; do not create state just by loading it.
 
 Schema:
 ```json
@@ -326,12 +324,7 @@ After tests are written, run, and committed:
 - For files recorded during the Behavior Clarity Check as ambiguous: set `user_status: "ambiguous"` (plus `note`, `recorded_commit`, `recorded_date`) on that file's `files` entry — creating one if it doesn't exist, without touching any `priority`/`last_judged_commit` fields already there. `skipped-by-user` has no writer in the current flow — Step 4's plan confirmation and Step 5's priority selection are both all-or-nothing/tier-level, not per-file — but Step 4 still checks for and honors any pre-existing `skipped-by-user` entries (e.g. from a schema migration or manual edit).
 - For files resolved this run (test written successfully, or ambiguity clarified): clear `user_status`/`note`/`recorded_commit`/`recorded_date` from that file's entry. Remove the entry entirely only if it has no `priority` left either — otherwise keep it for the scan-cache data.
 
-Write it to `.claude/helm/test-log.json` (creating `.claude/helm/` if it doesn't exist yet). Commit the ledger — if this run migrated a legacy `.claude/test-log.json` (Step 2), remove it in the same commit:
-```
-git add .claude/helm/test-log.json
-git rm .claude/test-log.json   # only if migrating this run
-git commit -m "test(log): update test ledger after {catch-up / full-scan}"
-```
+Write and read back `.helm/test-log.json` using the shared project-state procedure. Under the existing commit policy, retire only verified same-file legacy sources after commit authorization and stage the canonical file and tracked legacy removals together using explicit paths. Commit: `test(log): update test ledger after {catch-up / full-scan}`. If a commit is declined, preserve legacy sources and report any canonical draft as a pending migration.
 
 ---
 

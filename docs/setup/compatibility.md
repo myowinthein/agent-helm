@@ -49,7 +49,24 @@ Codex installs copies from its loaded package. It does not create references to 
 
 Existing foreign-file review, ahead-version protection, and version markers remain. After a released update changes the bundled rules, rerun `adopt` to update copies; review the shared change because both hosts may read them.
 
-Ledgers stay under `.claude/helm/` on both hosts. Archive checkpoints stay under `.archive/`. Existing schemas and legacy migrations remain. Resume work sequentially across hosts; concurrent writers in one working tree are unsupported.
+## Shared project state
+
+Both hosts write version-controlled project state under root `.helm/`. This is Helm's project directory, independent of client settings or plugin caches. Configuration and knowledge remain in the resolved instruction owner, normally `AGENTS.md`; the JSON files hold operational history.
+
+| Command | Owned state file |
+|---|---|
+| `refactor` | `.helm/refactor-log.json` |
+| `test` | `.helm/test-log.json` |
+| `normalize` | `.helm/normalize-log.json` |
+| `legal` | `.helm/legal-manifest.json` |
+
+Migration is per command and per file, at the next successful authorized state write. Running legal does not move refactor, test, or normalize history. Other commands trigger no state migration. New projects create only the state they need; do not add `.helm/` to `.gitignore`.
+
+For its own filename, the command checks `.helm/`, `.claude/helm/`, and the original flat `.claude/` location. All existing copies are validated and compared, including when canonical state already exists. Equivalent data can be deduplicated; different histories require explicit reconciliation. An invalid or unsupported file blocks the affected workflow with files preserved. Existing schemas remain, including test's explicit v1-to-v2 conversion; changing a directory never bumps a schema version.
+
+Read-only inspection, Skip, no-op exits, cancellation before writing, and failed/incomplete operations do not migrate files. A completed scan that normally records a checkpoint may migrate its own state. The canonical result is read back and verified before legacy removal. Commit approval follows the command's existing policy; legal still requires explicit review. If a commit is declined, legacy sources remain intact and any canonical draft is reported as pending. A later run must reconcile differing draft/source copies explicitly. An authorized commit includes the canonical result and tracked legacy removals together using exact paths. No dual writing or whole-directory cleanup occurs.
+
+Different filenames can temporarily remain across both directories until their owning commands run. `.claude/rules/` and native client settings are unchanged; archive checkpoints remain under `.archive/`. Update the complete Helm package in both clients and start fresh sessions before switching, because an older workflow can recreate legacy files. Resume sequentially across hosts; concurrent writers in one working tree are unsupported.
 
 ## Questions, tools, and approvals
 

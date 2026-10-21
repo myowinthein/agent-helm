@@ -204,7 +204,7 @@ Record the resolved contact and its type (email / issue URL / page / postal) for
 **Existing legal documents**
 - Check whether the resolved output path exists.
 - List which documents are already present using the resolved file extension.
-- Read `.claude/helm/legal-manifest.json` if it exists. If not, check the legacy path `.claude/legal-manifest.json` (this plugin's ledgers used to live flat in `.claude/`, which risks colliding with another plugin's own files of the same generic name) — if found there, load it and treat this as a one-time path migration: the next time the manifest is written (Step 3), it moves to the new `.claude/helm/` path and the old file is removed as part of the same commit. Either way, it records which documents a previous run generated and the commit each was generated at. Classify each present document:
+- Read `{package_root}/prompts/shared/project-state.md` and apply it to `legal-manifest.json`. Resolve `.helm/legal-manifest.json` and both legacy paths, `.claude/helm/legal-manifest.json` and `.claude/legal-manifest.json`. Validate and compare every existing candidate before classifying documents; resolve differing manifests explicitly. Load without moving files during scanning. The resolved manifest records which documents a previous run generated and the commit each was generated at. Classify each present document:
   - **Helm-generated** — its path is listed in the manifest. Safe to regenerate. Check whether it is stale: run `git log {generated_at_commit}..HEAD` and look for changes that could shift the legal profile scanned above in this step — new analytics, payment processors, auth providers, third-party integrations, or data collection (dependency manifests, config, integration code). If any are found, mark it **may be outdated**; otherwise mark it **up to date** — this is a real classification used by Step 2's recommendation logic below, not just a label. Do not edit it in place — regeneration is always a full rewrite.
   - **Foreign** — present on disk but not in the manifest. Likely hand-written or lawyer-reviewed; must not be overwritten without explicit confirmation.
 - The published legal documents carry no marker of their own — this manifest is the only record of what helm generated, so end-user-facing files stay clean.
@@ -317,7 +317,9 @@ Write to the resolved output path using the resolved format. When a document alr
 
 Do not write any marker into the documents themselves — they are published to end users and must stay clean.
 
-**After generating**, write/update `.claude/helm/legal-manifest.json` (creating `.claude/helm/` if it doesn't exist yet) so future runs can tell helm-generated documents from hand-edited ones and detect staleness. If this run migrated a legacy `.claude/legal-manifest.json` (Step 1), remove it in the same commit as this file (Step 4). Record each document actually written, with its path, the current date, and the current HEAD commit:
+Before updating or migrating the manifest, read back the generated documents using Step 5's completeness checks. A missing or incomplete document stops the manifest write and legacy cleanup; preserve the prior manifest candidates and report the incomplete output.
+
+**After generating at least one document**, write/update `.helm/legal-manifest.json` using the shared project-state procedure so future runs can recognize generated documents and detect staleness. Verify the canonical result now, but preserve legacy sources until Step 4's explicit commit approval; retire only verified same-file legacy sources in that same commit. If no document was actually written (including every foreign document being skipped), do not write or migrate a manifest. Record each document actually written, with its path, the current date, and the current HEAD commit:
 
 ```
 {
@@ -536,10 +538,10 @@ Present the list of documents written and ask for confirmation to commit:
       - label: "Cancel"
         description: "Leave documents written but uncommitted — commit manually when ready"
 
-If Cancel selected → leave the documents written but uncommitted, then proceed to Step 5 (records that nothing was committed; skip environment promotion).
+If Cancel selected → preserve legacy manifest sources, report any canonical draft as a pending migration, and leave the documents written but uncommitted, then proceed to Step 5 (records that nothing was committed; skip environment promotion).
 
 If Commit selected:
-- Stage the generated documents and the updated `.claude/helm/legal-manifest.json`; do not use `git add -A`. If this run migrated a legacy `.claude/legal-manifest.json`, also stage its removal (`git rm .claude/legal-manifest.json`).
+- Stage only the generated documents and, if updated, `.helm/legal-manifest.json`; do not use `git add -A`. Apply the shared project-state procedure to retire verified same-file legacy sources and stage their tracked removals in this commit, now that approval is available.
 - Commit: `docs(legal): generate legal documents` (include the resolved output path and format in the body if they differ from the default).
 - Before pushing, confirm — push is a separate gate from the commit above, per git.md's Auto-Commit exception: never skipped, regardless of settings:
 
@@ -571,10 +573,10 @@ Present the list of documents written and ask for confirmation to commit — the
       - label: "Cancel"
         description: "Leave documents written but uncommitted on {branch} — finish manually when ready"
 
-If Cancel selected → leave the documents written but uncommitted on `{branch}`. Do not merge, delete, or switch branches. Proceed to Step 5 (records that nothing was committed and that `{branch}` was left in place).
+If Cancel selected → preserve legacy manifest sources, report any canonical draft as a pending migration, and leave the documents written but uncommitted on `{branch}`. Do not merge, delete, or switch branches. Proceed to Step 5 (records that nothing was committed and that `{branch}` was left in place).
 
 If Commit selected:
-1. Stage the generated documents and the updated `.claude/helm/legal-manifest.json` on `{branch}`; do not use `git add -A`. If this run migrated a legacy `.claude/legal-manifest.json`, also stage its removal (`git rm .claude/legal-manifest.json`). Commit: `docs(legal): generate legal documents` (include the resolved output path and format in the body if they differ from the default).
+1. Stage only the generated documents and, if updated, `.helm/legal-manifest.json` on `{branch}`; do not use `git add -A`. Apply the shared project-state procedure to retire verified same-file legacy sources and stage their tracked removals in this commit, now that approval is available. Commit: `docs(legal): generate legal documents` (include the resolved output path and format in the body if they differ from the default).
 2. Merge into main: `git checkout main`, `git merge {branch} --no-ff -m "docs(legal): generate legal documents"`. Before pushing, confirm:
 
    AskUserQuestion:

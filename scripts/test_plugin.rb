@@ -45,10 +45,13 @@ Dir.mktmpdir("helm-package-") do |temp|
     workspace.join("outside.md").delete
   end
 
-  %w[refactor-log.json test-log.json normalize-log.json legal-manifest.json].each do |name|
-    file = installation.join(".claude/helm", name)
-    file.parent.mkpath
-    file.write('{"fictional":true}')
+  state_names = %w[refactor-log.json test-log.json normalize-log.json legal-manifest.json]
+  %w[.helm .claude/helm .claude].each do |directory|
+    state_names.each do |name|
+      file = installation.join(directory, name)
+      file.parent.mkpath
+      file.write('{"fictional":true}')
+    end
   end
   installation.join(".claude/settings.local.json").write('{"fictional":true}')
   [["git", "init", "--quiet", installation.to_s], ["git", "-C", installation.to_s, "add", "."]].each do |command|
@@ -71,7 +74,10 @@ Dir.mktmpdir("helm-package-") do |temp|
       file.binwrite(entry.read)
     end
   end
-  HelmValidation.check(names.none? { |name| name.start_with?(".claude/helm/") || name == ".claude/settings.local.json" }, "Operational data leaked into the Git archive")
+  flat_state_paths = state_names.map { |name| ".claude/#{name}" }
+  HelmValidation.check(names.none? { |name|
+    name.start_with?(".helm/", ".claude/helm/") || flat_state_paths.include?(name) || name == ".claude/settings.local.json"
+  }, "Operational data leaked into the Git archive")
   Dir.chdir(workspace) { HelmValidation.validate(exported) }
   HelmValidation.check(workspace.children.empty?, "Relocation tests left consumer files behind")
 end

@@ -29,7 +29,7 @@ Release: `/helm:ship` (handles version bump, tag, push, and GitHub Release creat
 - `prompts/archive/step{1-5}-*.md`: sub-step files for `/helm:archive`; `workflows/archive.md` is the orchestrator that reads and sequences them
 - `docs/commands/*.md` (+ `docs/commands/archive/`): human-readable detail pages per command, published as Jekyll site content; not command source
 - `docs/rules/`: detail pages for the two rule files
-- `.claude/helm/*.json`: this plugin's own ledgers (`refactor-log.json`, `test-log.json`, `normalize-log.json`; `legal-manifest.json` only if `/helm:legal` has generated documents for this repo, currently absent since there's no `docs/legal/` in this repo). Namespaced under `helm/` rather than flat in `.claude/` to avoid colliding with another plugin's own generically-named files. Commands transparently migrate a legacy flat-path file on first run after update.
+- `.helm/*.json`: canonical project state for `refactor-log.json`, `test-log.json`, `normalize-log.json`, and `legal-manifest.json` when used. `prompts/shared/project-state.md` defines validation, conflict resolution, and per-command migration from `.claude/helm/{filename}` or `.claude/{filename}` at the next eligible authorized write. This repository's existing live ledgers remain at their legacy paths until their owning workflows run; feature work must not move them.
 - `.claude-plugin/plugin.json`: the version file; bump this on every release
 - `.claude-plugin/marketplace.json`: marketplace registration metadata; `/helm:ship` keeps its `plugins[].version` in sync with `plugin.json` automatically
 - `_config.yml` + `Gemfile`: Jekyll/GitHub Pages site config; `docs/` files serve as site pages
@@ -38,7 +38,7 @@ Release: `/helm:ship` (handles version bump, tag, push, and GitHub Release creat
 
 - `docs/commands/*.md` are detail pages, not command source: editing them never changes command behavior; the real definitions live in `workflows/*.md`.
 - `prompts/archive/*.md` must never move into `commands/`: that would make each step appear as its own standalone slash command, breaking `/helm:archive`'s single-entry orchestration.
-- Ledger files (`.claude/helm/refactor-log.json`, and `.claude/helm/test-log.json` if a project runs `/helm:test`) are append-only audit trails: a scan appends new findings, it never overwrites the array. `normalize-log.json` is a different shape (one entry per branch, replaced/dropped as branches come and go), not append-only in the same sense.
+- Ledger files (`.helm/refactor-log.json`, and `.helm/test-log.json` if a project runs `/helm:test`, including their legacy copies) are append-only audit trails: a scan appends new findings, it never overwrites the array. `normalize-log.json` is a different shape (one entry per branch, replaced/dropped as branches come and go), not append-only in the same sense.
 - Docs pages (`docs/commands/`, `docs/rules/`) must stay behaviorally consistent with the command/rule files they describe, but nothing enforces this automatically; drift is caught only by manual review or a `/helm:refactor` pass.
 - AskUserQuestion caps at 4 options: any command building a picker from a dynamic list (environment branches, refactor categories, legal documents) must merge or truncate down to 4, never assume the list stays small.
 - `README.md` ships in three real contexts (Jekyll site homepage, GitHub.com's own renderer, the distributed plugin package via `marketplace.json`), only one of which resolves relative links to `docs/`. Its doc-page links and banner image use absolute `https://myowinthein.github.io/claude-helm/...` URLs for this reason: don't "simplify" them back to relative paths.
@@ -57,7 +57,7 @@ When consulting Claude for a review or discussion, use `claude --model claude-op
 
 ## Hard Safety Rules
 
-- Do not inspect or edit `.claude/helm/*-log.json` during feature work; these are operational ledgers, not source. The Helm workflows that own these ledgers may read and update them when explicitly invoked.
+- Do not inspect, edit, or migrate operational Helm state during feature work: `.helm/*.json`, `.claude/helm/*.json`, and the known flat legacy `.claude/{refactor-log,test-log,normalize-log,legal-manifest}.json` files. These are operational records, not source. The Helm workflows that own these ledgers may read and update them when explicitly invoked.
 - Never delete or rewrite published tags: users pin to specific versions
 - Never commit secrets, credentials, or real user data (none expected in this repo)
 

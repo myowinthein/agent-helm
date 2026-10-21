@@ -48,15 +48,15 @@ Resolve conflicts with the base branch's configuration or project-specific place
 
 ## 1. Risk warning
 
-The initial question authorizes inspection only. It explains changed SHAs, possible loss of commit signatures, preserved tags and excluded refs, and disruption to other clones if rewritten branches are later published. Cancel leaves history and both ledger paths untouched.
+The initial question authorizes inspection only. It explains changed SHAs, possible loss of commit signatures, preserved tags and excluded refs, and disruption to other clones if rewritten branches are later published. Cancel leaves history and all ledger paths untouched.
 
 Preserving tags means tagged releases deliberately retain their original history. The command never moves or force-pushes an existing tag, whether the repository is private or public.
 
 ## 2. Load ledger and scan
 
-Both agents use `.claude/helm/normalize-log.json`. If absent, load `.claude/normalize-log.json` and queue migration for the later authorized ledger write. Do not delete or migrate during inspection. If both files exist with identical data, the later migration can deduplicate them; conflicting data requires explicit resolution. Malformed or unsupported schemas stop with both files preserved. A missing schema version means version 1; the schema remains unchanged.
+Both agents use `.helm/normalize-log.json` and check both legacy locations, `.claude/helm/normalize-log.json` and `.claude/normalize-log.json`. Validate and compare every existing copy before using watermarks. Equivalent data can be deduplicated at the next eligible authorized ledger write; differing histories require explicit reconciliation. Do not write or delete during inspection. Malformed or unsupported schemas stop with all candidates preserved. A missing schema version means version 1; the schema remains unchanged. Only normalize's file migrates.
 
-The ledger stores `branches` keyed by local branch name, each with `last_checked_commit` and `last_checked_date`. With neither file, scan full history over the frozen local branches. Validate each watermark exists and is an ancestor of the corresponding branch tip; invalid entries cause a disclosed full re-scan. New branches are scanned, removed branches are dropped only in the eventual ledger update, and shared history is deduplicated.
+The ledger stores `branches` keyed by local branch name, each with `last_checked_commit` and `last_checked_date`. With no candidate file, scan full history over the frozen local branches. Validate each watermark exists and is an ancestor of the corresponding branch tip; invalid entries cause a disclosed full re-scan. New branches are scanned, removed branches are dropped only in the eventual ledger update, and shared history is deduplicated.
 
 Enumerate and freeze fully qualified `refs/heads/...` names and old tips. Use this same list for scanning, approval, rewriting and verification. Never use an unbounded `--all`, wildcard, or a newly enumerated list during execution. Materializing a remote-only branch requires a fresh scan and plan. Snapshot all existing tag/excluded ref object IDs and remote configuration, and record expected origin branch tips read-only for later push leases. Never delete stashes or backup refs as cleanup. Grafts or replace refs that change interpreted history require separate resolution first.
 
@@ -84,9 +84,9 @@ Compare every pre-existing tag name and exact object ID, including annotated/sig
 
 ## 6. Update or migrate the ledger
 
-Only a complete clean scan or verified rewrite advances the ledger. Capture inspected branch tips before a later ledger commit, using post-rewrite SHAs when applicable. Preserve schema version 1, add new scanned branches and drop removed ones. A newly created bookkeeping branch is not a scanned branch in this run. Skip serialization/commit when no data or migration change is needed.
+Only a complete clean scan or verified rewrite advances the ledger. Capture inspected branch tips before a later ledger commit, using post-rewrite SHAs when applicable. Preserve schema version 1, add new scanned branches and drop removed ones. A newly created bookkeeping branch is not a scanned branch in this run. Skip serialization/commit when no checkpoint data change is needed.
 
-Use the ledger destination planned before rewriting and recheck its inputs before overwriting. Write and read back the canonical ledger, then remove a queued legacy file only after canonical verification. Stage the canonical change and legacy removal together using explicit paths; never stage unrelated edits. Commit cancellation leaves both changes pending together and is reported accurately.
+Use the ledger destination planned before rewriting and re-resolve its candidate files after switching branches. Write and read back the canonical ledger. Only after verification and commit authorization, retire queued same-file legacy sources and stage the canonical change plus tracked removals together using explicit paths. Never stage unrelated edits. A declined commit preserves legacy sources and leaves any canonical draft pending; report migration as pending. A no-op exit does not perform a cleanup-only migration.
 
 Honor `git-auto-commit`: true permits the ledger commit automatically; false or absent asks explicitly. Earlier rewrite or publication approval does not answer that commit question. Use `chore(normalize): update ledger after {scan / rewrite}`. Under Solo, an authorized ledger commit can travel with an explicitly approved publication of that branch. Under GitHub Flow, leave the bookkeeping branch for a separately approved normal push/PR; no automatic merge or force-push. Return to the starting branch only when safe and report pending work otherwise.
 
