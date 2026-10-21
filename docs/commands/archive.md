@@ -7,115 +7,100 @@ has_children: true
 
 # /helm:archive
 
-The archival command. Runs a five-step workflow to restore an old project, freeze its environment with Docker, generate a Postman collection, write recovery documentation, and push everything to a private archive remote, so the project can be recovered years later from a clean machine.
+Restore an old project, freeze its environment, generate API recovery files, write recovery documentation, and seal the approved snapshot at a verified private remote. Five separately reviewed steps can resume across Claude/Codex sessions without relying on conversation memory.
 
-The workflow is **resumable**. Progress and each step's report are persisted under a `.archive/` directory: a `state.json` cursor tracks the last completed step, and each step writes its report to `.archive/step{N}-{name}.md`. Later steps read those reports by name rather than relying on conversation memory, so the workflow survives context compaction and can resume across the approval gates, even in a new session. On start it reads `state.json` and continues from the next step (or reports that the archive already completed). Step 1 stays read-only: nothing is written until after its approval.
+Command names use Claude notation. In Codex, select the same workflow from the skill picker. The [shared runtime](../setup/compatibility.html) resolves package resources and the project's existing instruction/configuration owner before Git operations. Archive does not create, migrate, or rewrite Helm settings or agent entries. Its explicitly approved archival branch/commit plan does not let auto-commit bypass review, publication, or destructive-action gates.
 
-`.archive/` is not gitignored: Step 5 commits it as part of the final seal, so the step reports become a permanent audit trail in the archive rather than being discarded once the local copy is cleaned up. This is safe because nothing commits before Step 5 already switches `origin` to the private archive remote (see Task 1), so it never risks landing anywhere else. As a secondary signal (for a repo archived before this, or where `.archive/` was deleted locally after cloning), the command also checks for `docs/archive-metadata.md`, the committed, permanent record Step 4 writes, before assuming a fresh run is genuine. If either file indicates a prior run, it confirms with you before restarting the whole workflow, rather than silently re-running everything from Step 1.
+Run from the branch containing the complete project, with a usable HEAD. Unmerged branches are reported so you can merge needed work yourself before restarting; archive never merges them on your behalf. The final archive branch is always `main`, including when the source was `master`. The actual source branch/commit is validated on resume, rather than inferred from prose.
 
-**Before starting**, there is no branch-name requirement: run it from whatever branch you consider the real, complete state of the project. Archive candidates are often old or neglected, so `main` is not always the branch that was actually last worked on; Step 5 makes whichever branch you archived from the sole surviving branch, renamed to `main` if it isn't already. It also lists any unmerged local branches (`git branch --no-merged`) and warns that their work will not be captured, so you can merge what should be kept into the current branch before sealing. It never merges on your behalf.
+## Preserved instructions and state
 
-Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+| Files | Archive behavior |
+|---|---|
+| Root/nested `AGENTS.md`, overrides, `CLAUDE.md`, project-local instructions, in-project imports and adopted rules | Read under active scope and preserve original contents, paths and bridges. Exempt from documentation/asset cleanup and recovery navigation requirements. |
+| `.helm/`, `.claude/helm/`, known flat legacy Helm JSON files | Preserve as opaque state at existing paths; no ledger parsing, reconciliation, migration or edits. Tracked files travel with history. Untracked preservation inputs need explicit inventory review. |
+| Global/external instructions and private client-local settings | Never copied automatically. Required external imports become documented recovery dependencies. Secret-bearing inputs block publication rather than being silently rewritten. |
+| `.archive/` | Archive's own progress, file inventory and verbatim approved reports, committed to the private archive. |
+
+Preservation does not authorize publishing credentials or absorbing another command's pending edits. Known secrets are omitted from report output entirely, including fragments and token-bearing URLs.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start(["/helm:archive"]) --> S1
-
-  S1["Step 1: Explore\nRead-only scan: stack, credentials\nrisk, DB sources, restoration complexity"]
-  S1 --> A1{Approve?}
-  A1 -->|no| Exit([Stop])
-  A1 -->|yes| S2
-
-  S2["Step 2: Restore and Freeze\nRestore locally · create Docker setup\nwith pinned versions · export tarballs\nto recovery/docker/"]
-  S2 --> Outcome{Restoration Outcome}
-  Outcome -->|Fully Restored| A2{Approve?}
-  Outcome -->|Blocked or Partial| Warn[/"Warn: resolve blockers\nbefore proceeding"/]
-  Warn --> A2
-  A2 -->|no| Exit
-  A2 -->|yes| S3
-
-  S3["Step 3: Postman Collection\nDiscover API endpoints · generate\ncollection to recovery/postman/"]
-  S3 --> HasAPI{Has API?}
-  HasAPI -->|no| SkipS3[Skip silently]
-  HasAPI -->|yes| GenPost[Generate collection]
-  SkipS3 --> A3{Approve?}
-  GenPost --> A3
-  A3 -->|no| Exit
-  A3 -->|yes| S4
-
-  S4["Step 4: Documentation\nConsolidation plan · fresh README\ndocs/setup.md · docs/archive-metadata.md"]
-  S4 --> Plan{Approve\nconsolidation plan?}
-  Plan -->|no| Exit
-  Plan -->|yes| WriteDocs[Write docs]
-  WriteDocs --> A4{Approve?}
-  A4 -->|no| Exit
-  A4 -->|yes| S5
-
-  S5["Step 5: Finalize\nSwitch remote · clean branches\nGit LFS · consolidate assets\nstop services · commit · push"]
-  S5 --> Done(["Archive complete"])
+  Start([Run archive]) --> Context[Resolve instructions and selected repository<br/>Validate saved context, reports and outputs]
+  Context --> Resume{Existing valid progress?}
+  Resume -->|fresh| Explore[1. Local read-only exploration]
+  Resume -->|in progress| Next[Continue first incomplete step or seal phase]
+  Resume -->|candidate completion| Proof[Verify receipt from Git and approved remote]
+  Proof -->|verified| Done([Report archive complete])
+  Proof -->|unavailable or inconsistent| Pending([Report unverified or pending; preserve files])
+  Explore --> Approve1{Approve report?}
+  Approve1 -->|yes| Restore[2. Restore isolated runtime and freeze recovery artifacts]
+  Approve1 -->|no| Pending
+  Restore --> Approve2{Approve report and any limitations?}
+  Approve2 -->|yes| API[3. Discover API; verify only a currently identified local runtime]
+  Approve2 -->|no| Pending
+  API --> Approve3{Approve report, including a documented skip?}
+  Approve3 -->|yes| Docs[4. Review consolidation plan<br/>Write recovery docs; preserve instruction/state paths]
+  Approve3 -->|no| Pending
+  Docs --> Approve4{Approve report?}
+  Approve4 -->|yes| Prepare[5. Private remote and bounded ref plan<br/>LFS, approved asset moves, identified service stops]
+  Approve4 -->|no| Pending
+  Next -->|step 2| Restore
+  Next -->|step 3| API
+  Next -->|step 4| Docs
+  Next -->|step 5 phase| Prepare
+  Prepare --> Seal{Approve exact inventory and two-phase seal?}
+  Seal -->|no| Pending
+  Seal -->|yes| Payload[Commit approved payload with cursor 4<br/>Push source HEAD to private main; verify payload and LFS]
+  Payload -->|failed or unverified| Pending
+  Payload -->|verified| Cleanup[Perform only approved remaining ref cleanup<br/>Keep payload history and tags]
+  Cleanup --> Receipt[Write final report and cursor 5<br/>Commit and push completion receipt]
+  Receipt --> Proof
 ```
+
+The resume node continues the applicable step; it never skips unfinished restoration/documentation to finalize. No completed destructive task is blindly replayed after interruption.
 
 ## Steps
 
 ### [1. Explore](archive/1-explore.html)
 
-Read-only reconnaissance. Scans the project structure, stack, runtime versions, database sources, external integrations, existing documentation, and Git remotes. Compares the current branch against every other local and remote branch and flags it (informational only, never blocking) if another branch looks more recently active or complete: a heads-up in case the wrong branch was checked out. Flags any active credentials found in env files. Produces a structured report and assigns a restoration complexity rating (Easy / Medium / Complex / Blocked) so the developer can decide whether to proceed before anything is touched.
+Local read-only inspection of source, configuration, manifests, Git metadata, data sources and risks. Native file tools or read-only shell inspection are allowed; project execution, installs, builds, containers and network access are not. Record explicit project name, source branch and full commit. Nothing is written before report approval.
 
 ### [2. Restore and Freeze](archive/2-restore-and-freeze.html)
 
-Gets the project running locally and freezes its environment for long-term recovery. Creates a `Dockerfile` and `docker-compose.yml` if none exist, with all base image versions specifically pinned. Determines the project's data layer first (database-backed, API-consuming frontend, local/file-based storage, or none) and restores accordingly: for database-backed projects, from the best source found (dumps → seeders → migrations), and for the others, the appropriate handling or a clean skip. After successful verification, exports all Docker images as gzipped tarballs to `recovery/docker/`. These are the freeze mechanism, so they are meant to travel with the archive (committed via Git LFS in Step 5) rather than being gitignored; otherwise a clean clone has no tarballs and would have to rebuild from registries that may no longer exist. Because a `docker save` captures the engine image but not the data (which lives in a volume), it also makes the restored data recoverable: either by wiring the recovery to re-init from the committed dump/seed on startup, or by exporting the data volume as its own tarball, so `docker-compose up` does not come back empty. Recovery then requires only Docker and the tarballs with no internet or registry dependency. For project types where Docker does not apply (mobile, browser extensions), documents exact SDK and toolchain versions in `docs/setup.md` as the freeze mechanism instead.
+Restore the approved isolated project using the best suitable data source, prefer pinned Docker environments, export validated image tarballs, and make database/file data recoverable separately from images. Where Docker does not apply, document exact toolchain versions. Record actual file changes, outputs, current-host runtime identity and verification results without credentials. Missing data/access and partial outcomes retain their explicit review paths.
 
 ### [3. Postman Collection](archive/3-postman.html)
 
-Generates a Postman collection if the project exposes an API it owns. Discovers endpoints from route definitions, source code, or OpenAPI specs. Verifies safe requests (GET, health endpoints, auth flows) against the running local app. Saves the collection and environment files to `recovery/postman/` using the project name. Skips silently for projects with no API surface.
+Discover this project's API from source/specifications and generate Collection v2.1 files under `recovery/postman/`, or report why the step is not applicable. A previous `App running: yes` is historical: verify current ownership/access before requests. An unavailable or unidentified runtime uses source-only discovery with requests marked unverified; do not automatically replay restoration after switching agents/hosts.
 
 ### [4. Documentation](archive/4-documentation.html)
 
-Writes fresh, archive-focused documentation using verified information from all previous steps. Reads all existing documentation first and presents a consolidation plan (Keep / Update / Merge / Archive / Remove per file) for explicit approval before touching anything. Always writes a fresh `README.md`: extracts any historically valuable content from the old one into `docs/historical-notes.md` first. Writes `docs/setup.md` as the single recovery reference: environment, Docker restore commands, recovery priority, demo workflow, API notes, and restoration fixes. Writes `docs/archive-metadata.md` as a structured snapshot for quick inventory across archived projects.
+Approve a per-file recovery-document consolidation plan before edits. Preserve instructions, imports, rules and opaque Helm state in place. Write an archive-focused README, `docs/setup.md`, `docs/archive-metadata.md`, and historical notes when needed. Verify recovery-document navigation without treating protected agent/state files as orphaned cleanup candidates.
 
 ### [5. Finalize](archive/5-finalize.html)
 
-Prepares and seals the archive. Verifies the Git remote and guides you through removing non-personal remotes and setting the private archive URL if origin still points to a company or client repository; this happens first, so every later action in this step, including branch deletion, only ever touches the private archive remote. Renames the branch you archived from to `main` (if it isn't already) and deletes every other branch locally and remotely after explicit approval: no merging, the archived branch simply becomes canonical. Handles the recovery tarballs: reports their size and asks whether to commit them to the remote via Git LFS (recommended: keeps the archive self-contained and clean-machine-recoverable) or keep them local only (with a separate-backup note); other files over 100 MB are LFS-tracked too. Consolidates archive-worthy assets scattered across the project into `recovery/assets/`, checking for code references before moving anything. Stops all running project services (Docker containers, dev servers). After a final confirmation, commits everything accumulated across the full workflow with a single `chore(archive): seal project archive` commit and pushes to the private remote.
+Confirm the private destination and exact ref plan; choose LFS or separate backups, review asset moves, and stop only currently identified/approved project services. Review exact files and staged changes before seal approval. First commit/push and verify the payload on canonical `main`, with cursor 4. Then execute bounded approved cleanup, persist the final report and cursor 5, and publish a separate completion receipt. Completion requires verified receipt publication, not just a local cursor.
 
-## Output
+## Progress and resume
 
-After the workflow completes, the project contains:
+`.archive/state.json` retains the last locally approved report and adds an archive ID, source/working context, report/output fingerprints and finalization journal. `.archive/files.json` records baseline paths/fingerprints, workflow changes, protected preservation inputs and approved exclusions. Reports keep their existing `.archive/step{N}-{name}.md` filenames and approved contents. Metadata does not recursively hash itself; Git commit/tree proof covers it.
 
-```
-recovery/
-  docker/         ← Docker image tarballs (committed via Git LFS, or gitignored if kept local only)
-  postman/        ← Postman collection and environment files
-  assets/         ← consolidated screenshots, exports, demo files
-docs/
-  setup.md        ← single recovery reference
-  archive-metadata.md  ← structured snapshot
-  historical-notes.md  ← historical content (if any)
-README.md         ← fresh archive-focused index
-```
+Validate JSON version/types/range, contained non-symlink paths, repository/branch/history identity, and required reports/outputs before resuming. Later completed steps and verified authorized in-progress changes supersede earlier output fingerprints, while unfinished outputs remain pending without rewriting historical reports. Unexplained changes or malformed/unsupported state stop for reconciliation. Another host/clone can resume after these checks, including canonical main at a proven payload/receipt when the old local source name is absent; absolute paths and old localhost/process assumptions are not identity proofs.
 
-## Stop conditions
+Legacy two-field state is read-only until the user confirms its project, source and remaining work. A legacy cursor of 5 without publication evidence is unverified. Existing metadata/reports without state require reconciliation before a restart; never delete the audit trail blindly. Stored reports do not grant new authorization.
 
-- **Approve declined at any gate.** The command halts cleanly with no further changes.
+A local cursor 5 with `receipt_prepared` is a candidate completion receipt. Verify its report/inventory tree, payload ancestry, LFS preservation evidence and containment in the approved remote's main. Missing proof/access reports unverified completion. A pending receipt resumes only its missing commit/push, without repeating restoration or ref cleanup. After verified receipt publication no files change again; the final user-facing summary supplies the receipt ID and publication proof separately from the committed report.
 
-Note: Step 1 complexity rated Blocked is a warning, not a stop condition: the user can still approve and proceed; it isn't listed above since, unlike the points below, declining isn't the only way past it.
+## Approvals and stop conditions
 
-The command stops and waits for explicit approval at eleven points:
+Each step report needs explicit approval; Step 4 also reviews its consolidation plan. Step 5 separately reviews local remote changes, tarball handling, referenced asset moves and identified service stops when applicable. Its final seal plan explicitly authorizes the reviewed payload and receipt commits/pushes plus bounded ref cleanup. Auto-commit, tool permission, a report flag or a missing answer does not replace those approvals.
 
-1. After Step 1: before anything is modified
-2. After Step 2: with a warning if restoration was not fully successful
-3. After Step 3: before proceeding to documentation
-4. Before Step 4 executes: consolidation plan review
-5. After Step 4: before proceeding to finalize
-6. Confirming the private archive remote URL in Step 5: nothing else in Step 5 proceeds until origin is set
-7. Before branch deletion in Step 5
-8. Before choosing how the recovery tarballs travel (Git LFS or local only) in Step 5
-9. Before stopping all running services (Docker containers, dev servers) in Step 5
-10. Before asset moves in Step 5 if referenced files are found
-11. Before the final commit and push in Step 5
+Any declined/failed operation preserves actual completed work and pending files/refs. Report limitations and the exact remaining action; do not claim rollback or completion. No payload verification means no branch cleanup; no receipt publication proof means no Archive complete claim. Partial restoration can proceed only through its explicit informed approval, without promoting unverified output to verified status.
 
 ## See also
 
-- [`/helm:log`](log.html): sync `AGENTS.md` to the current codebase
-- [`/helm:manifest`](manifest.html): sync `README.md` to the current codebase
+- [`/helm:log`](log.html): maintain shared project instructions
+- [`/helm:manifest`](manifest.html): maintain the project README

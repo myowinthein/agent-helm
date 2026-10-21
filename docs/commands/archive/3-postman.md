@@ -54,7 +54,7 @@ All requests use demo accounts, local tokens, or placeholder values. No real cre
 
 ## Verification
 
-Representative requests are verified against the running local app from Step 2:
+Step 2's `App running` status is historical. On this host, prove that the approved local endpoint belongs to the current isolated project using process/container identity and a safe health check before sending requests or demo credentials. A reachable port alone is insufficient; do not follow redirects to unapproved hosts. With a verified current runtime, representative requests include:
 
 - GET requests
 - Health endpoints
@@ -69,7 +69,7 @@ Requests that may cause side effects are not verified automatically and are mark
 - Payment processing endpoints
 - Bulk operation endpoints
 
-If the local application is not running (Step 2 did not fully restore), all requests are discovered from source code only and marked as unverified.
+If the application is absent, unreachable from this host, or ownership/identity cannot be established, use source-code discovery only and mark requests unverified with the reason. A report from an older session does not authorize automatically restarting or repeating completed restoration. A newly available runtime still needs current checks and applicable approvals.
 
 Coverage has a floor, not just a best-effort target: at minimum one GET request per functional area and the primary authentication flow must be verified. If fewer than half of all endpoints end up verified, the report's Known Limitations section must say so explicitly.
 

@@ -52,18 +52,20 @@ The step reads source code, configuration files, manifests, env files, and any e
 
 **Credentials risk**
 - Scans all env files: `.env`, `.env.staging`, `.env.production`, config files, Docker files
-- Redacts values: shows only file path, variable name, and a short preview (`API_KEY=abc...xyz`)
-- Flags anything that appears still-active
+- Shows file path and variable name only, with values and credential fragments omitted before tool/report output; credential liveness is unknown unless local evidence establishes it
+- Flags credential locations and locally evidenced risks without testing them against services
 - Before completing this section, confirms every file matching those env-file patterns was actually searched, and lists the files searched explicitly
 
 **Git and repository safety**
-- All remotes and their URLs
+- All remotes using credential-free identities
 - Branch list
-- Records the current branch explicitly as "Archiving from:" in its own field; Step 5's branch cleanup reads this directly rather than inferring it from prose, since a resumed multi-session archive could otherwise lose track of which branch was original
+- Records the full source commit as `Source commit:` to bind approved exploration to its repository/history
+- Records the current branch explicitly as "Archiving from:" in its own field; Step 5's branch cleanup reads this directly together with validated state context; ambiguous legacy reports require explicit reconciliation before destructive work
 - Compares the current branch against every other local and remote branch; flags it (informational only, never blocking) if another branch looks more recently active or complete: archive candidates are often neglected, so the checked-out branch isn't always the real latest state
 - CI/CD pipelines that could auto-deploy on push
 
 **Existing documentation**
+- Identify protected root/nested agent entries, overrides, project instruction imports and adopted rules. Preserve these and opaque Helm state at original paths; do not classify them as consolidation targets.
 - Documentation files found in the project, what each one covers, and whether it appears current or outdated
 
 **Archive assets**
@@ -84,9 +86,9 @@ The report closes with one of four ratings:
 
 ## Rules
 
-- Read-only only. No files created, modified, deleted, or executed.
+- Read-only inspection may use native file tools or local shell commands for file and Git metadata inspection, with optional Git index-refresh writes disabled where supported. No files are created, modified, or deleted. Do not execute project code, scripts, tests, hooks, installs, builds or containers.
 - No external service contact.
-- Credential values are always redacted.
+- Credential values/fragments and token-bearing URLs are omitted entirely. No report or `.archive/` write until approval.
 
 ## Output
 

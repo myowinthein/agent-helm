@@ -20,6 +20,12 @@ Goal: Get the project running locally, containerize it with pinned image version
 
 ---
 
+## Current-host runtime and change provenance
+
+Validate the archive context, prior report, and preservation inventory before work. Record each planned file change against the baseline; preserve agent instructions/configuration and opaque Helm state at their original paths. Use this host's verified project root and Docker context/daemon, not a previous session's absolute paths. Verify the target database/container/volume belongs to the approved isolated restoration before any import, migration, or start; reuse only approval covering that exact target. Missing tools/access stops the affected action without a completion claim.
+
+Record non-secret runtime identity in the report: host/context description, Compose project/container IDs and labels or process IDs with command/cwd/start identity, isolated data targets, local endpoints, and when ownership/health were verified. This is evidence to revalidate later, not a permanent authorization or guarantee that a PID/port still refers to this project. Do not include tokens or password-bearing commands in the report. On interruption or host change, revalidate existing artifacts and services; do not automatically rerun a completed restoration to recreate another host's services.
+
 ## Restoration Philosophy
 
 The primary goal is not just to run the project today — it is to freeze the environment so it can be recovered 5–10 years from now, regardless of what runtimes, package versions, or registries are available at that time.
@@ -180,12 +186,15 @@ Every file created, modified, or deleted: path, what changed (or why it was remo
 Any variables added or changed from the original.
 
 ## Commands Used
-Exact commands run in order.
+Exact commands run in order, with secret values omitted; preserve useful flags and refer to credential variable names without reproducing values.
 
 ## Access Points
 How to access or run the project locally (URLs and ports for web projects, commands for CLI tools, entry points for scripts or notebooks). State "not applicable" if the project type has no access point.
 
-App running: yes/no
+App running: yes/no/not applicable
+
+## Runtime Identity
+Non-secret host/Docker context, project/container labels or process identity, isolated data target, local endpoints, and verification time. Later steps must verify these again on their current host before use.
 
 ## Verification Results
 What was tested and what the results were. Any critical errors found.
@@ -198,7 +207,7 @@ Anything that prevented full restoration or needs attention before proceeding to
 
 ---
 
-The "App running:" field is read directly by Step 3 (Postman collection generation), rather than inferred from the prose above. State it explicitly, on its own line, even when "not applicable."
+The "App running:" field is historical status used by Step 3, not proof that the app is available or belongs to this project on a later host/session. State it explicitly, on its own line, even when "not applicable."
 
 Do not commit or push. Output the report and stop. Wait for explicit approval before proceeding to Step 3.
 

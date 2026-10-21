@@ -48,6 +48,12 @@ flowchart TD
   Outcome -->|Partial or Blocked| Warn[/Warn: resolve blockers\nbefore Step 3/] --> Stop
 ```
 
+## Current-host and preservation checks
+
+Validate saved archive context and prior approved reports/outputs before work. Keep agent instructions/configuration, rules and opaque `.helm/`/legacy state in place. Record all restoration changes against the baseline inventory; pre-existing user changes need reconciliation before alteration.
+
+Verify this host's project root, Docker context/daemon, and isolated data/container/volume ownership before any start/import/migration, using approval for the exact target. Record non-secret project/container labels or process ID/start identity/command/cwd, data targets, local endpoints and verification time in the report. A prior host's services or absolute paths are not proof of current access. On interruption, revalidate artifacts and services instead of automatically repeating completed restoration.
+
 ## Restoration strategy
 
 Docker is the preferred freeze mechanism for most project types. Base image tags and registries can disappear over time, so images are exported as tarballs after a successful build.
@@ -122,4 +128,4 @@ Whichever mechanism applies, the exact recovery step is documented in `docs/setu
 
 If the outcome is anything other than Fully Restored, the step warns the developer and waits for explicit approval before Step 3 begins.
 
-The report also records whether the project ended up running as an explicit "App running: yes/no" field (stated even when "not applicable"), rather than leaving it to be inferred from the Access Points prose; Step 3 (Postman collection generation) reads this field directly.
+The report also records whether the project ended up running as an explicit `App running: yes/no/not applicable` field and records current-host runtime identity. Step 3 treats these as historical evidence and revalidates ownership/access before requests. Reports include useful commands with secret values omitted, not password-bearing command lines.

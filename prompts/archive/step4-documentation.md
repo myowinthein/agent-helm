@@ -23,7 +23,9 @@ Goal: Make future me able to understand, restore, run, troubleshoot, and demonst
 
 ## Consolidation
 
-For every existing documentation file, decide: Keep, Update, Merge, Archive, or Remove. Provide a reason for each.
+Before classifying documentation, apply the orchestrator's preservation rules. Root/nested AGENTS.md, overrides, CLAUDE.md, project-local instruction entries, their project imports, and adopted rules stay at their original paths and contents, even if they resemble contributor guides, historical notes, or orphaned Markdown. Do not rewrite Helm settings, move knowledge owners, break imports, or generate another owner. External/global imports remain documented dependencies, not copied inputs. Preserve `.helm/`, `.claude/helm/`, and known flat legacy state opaquely; never classify them as assets or cleanup targets. A generic consolidation approval does not authorize changing these protected files.
+
+For every remaining documentation file, decide: Keep, Update, Merge, Archive, or Remove. Provide a reason for each.
 
 Use this to guide the decision:
 
@@ -39,7 +41,7 @@ Use this to guide the decision:
 | Auto-generated documentation | Remove — regenerate if needed |
 | Outdated and no recovery or historical value | Remove |
 
-Consolidate duplicates into a single authoritative source. Do not leave orphaned files — every active document must be reachable through README.md or another active document.
+Consolidate documentation duplicates without altering instruction ownership. Every active recovery document must be reachable through README.md or another recovery document. Protected instructions/rules and operational state are exempt from this navigation requirement; do not remove or move them to satisfy it.
 
 ---
 
@@ -109,21 +111,21 @@ Structured snapshot for quick inventory across archived projects:
 
 ## Tasks
 
-1. Read all existing documentation
+1. Validate the approved archive context/output inventory, identify protected files, and read existing recovery documentation
 2. Decide action for each file using the Consolidation table above
 3. Present the consolidation plan and wait for approval before making any changes
 4. Extract historically valuable content into docs/historical-notes.md
 5. Write fresh README.md
 6. Write or update docs/setup.md
 7. Write docs/archive-metadata.md
-8. Verify every active document is reachable from README.md: read README.md, list every link found, confirm each linked file exists, and report any active file that is not reachable via a link
+8. Verify every active recovery document is reachable from README.md (protected instructions/rules/state are exempt): read README.md, list every link found, confirm each linked file exists, and report any active recovery document that is not reachable via a link
 
 ---
 
 Output the report in this format:
 
 ## Consolidation Summary
-For every existing documentation file reviewed: action taken (Keep / Update / Merge / Archive / Remove) and reason.
+List protected instruction/state preservation separately. For every remaining documentation file reviewed: action taken (Keep / Update / Merge / Archive / Remove) and reason.
 
 ## Files Created
 New files written and what each covers.
@@ -135,7 +137,7 @@ Existing files updated and what changed.
 Files removed and why.
 
 ## Navigation
-Confirm every active file is reachable from README.md.
+Confirm every active recovery document is reachable from README.md; report protected instruction/rule/state files retained in place without imposing recovery navigation on them.
 
 ## Gaps
 Anything that could not be documented due to missing or unverified information from previous steps.
