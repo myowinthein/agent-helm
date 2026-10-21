@@ -43,11 +43,17 @@ Helm checks existing instruction files for uncommitted work before migration. It
 
 Both hosts use `.claude/rules/git.md` and `safety.md`. In the canonical layout, AGENTS.md explicitly tells either agent to read these files. The directory name is retained for compatibility; Codex reads these files through explicit entry-file directives. Copied rules include their own configuration-resolution guidance so they can work in a new session without loading a Helm skill.
 
-On Claude, copy and reference modes retain their existing behavior. The stable marketplace checkout remains the preferred adoption source and reference target. A fallback to the loaded package is reported explicitly, and new reference mode is unavailable when that stable source is missing.
+On Claude, copy and reference modes use the stable marketplace checkout as the preferred adoption source and reference target. A fallback to the loaded package is reported explicitly, and new reference mode is unavailable when that stable source is missing. If filtering leaves an in-sync picker with no available action, adopt reports no change instead of showing a one-option question.
 
 Codex installs copies from its loaded package. It does not create references to a versioned cache directory. If a project already uses readable Claude marketplace references, Codex can follow the existing shared owner or connect through a legacy bridge without duplicating marketplace paths or changing that installation. If those references are unavailable, stop and use Claude's adoption flow to switch the shared installation to copies; do not create competing copies alongside the old references. Claude reference mode must not delete copies that a separate Codex entry still depends on. Switching to copies also stops if a separate Codex entry directly references marketplace paths; reconnect it through the owner first.
 
-Existing foreign-file review, ahead-version protection, and version markers remain. After a released update changes the bundled rules, rerun `adopt` to update copies; review the shared change because both hosts may read them.
+Adopt manages only exact Helm rule targets, preserving custom pointers and unrelated instructions. Missing rules/directives and mixed installations require per-rule repair decisions; one current file cannot hide a missing companion. Ahead versions take precedence over behind versions, and every rollback requires explicit per-file approval. Codex does not create copies beside existing marketplace references, including when a foreign local file would otherwise disguise reference mode.
+
+Foreign-file Overwrite/Skip decisions are collected before mutation. In reference mode, keeping a conflicting local `git.md` or `safety.md` stops the entire switch without writes or deletions; Claude could load that file natively while Codex reads only the shared marketplace pointers. All-foreign-files Skip creates no entries or adapter. Partial coverage is reported explicitly. Custom local rules are preserved and are not automatically shared with another host without approval.
+
+Adopt rechecks ownership and effective policy after branch changes and verifies all approved rule/entry outputs before committing or publishing. A missing memory file does not bypass Git strategy in an existing repository with HEAD. GitHub Flow honors PR/review, merge-strategy and CI policy; blocked review leaves a branch/PR handoff. Main/master is resolved once and used consistently. Failed or declined finalization preserves pending work. See [adopt](../commands/adopt.html) for the full flow.
+
+Copied rules retain version markers. After a released update changes the bundled rules, rerun `adopt` to update copies; review the shared change because both hosts may read them. Adopt owns no ledger and never reads, stages or migrates `.helm/`, `.claude/helm/`, or flat legacy operational state.
 
 ## Shared project state
 
