@@ -1,40 +1,40 @@
 # normalize
 
-Rewrite all commit messages in this repository to follow Conventional Commits format.
-
----
+Normalize non-conventional commit messages on an explicitly approved set of local branches. Preserve every existing tag; exclude remote-tracking refs, stashes, notes, and unrelated backup refs from rewriting.
 
 ## Before starting
 
-No branch requirement — run from any branch. `git filter-repo` (and the `git filter-branch` fallback, invoked with `--all`) rewrite every local branch together in one consistent pass regardless of which one is checked out, so the starting branch has no effect on the result. See Step 2 and Step 3 for the actual scope (every local branch) and Step 1's risk warning for what that means.
+Read the shared runtime and resolve `{memory_file}` before Git actions. Record the effective `git-strategy` and `git-auto-commit` (absence means off). Both hosts use the same owner and ledger; this command never creates, migrates, or edits settings in AGENTS.md or CLAUDE.md.
 
----
+History inspection can start from any attached local branch, independently of the commit strategy. Require a repository with HEAD, a clean index/working tree including untracked project files, and no in-progress merge/rebase. Stop on detached HEAD or unavailable Git/filesystem capabilities. Never reset, stash, or commit pending user work to make normalization possible.
+
+Plan ledger placement before rewriting:
+- **Solo:** use main/master for a ledger commit. If starting elsewhere, plan to switch there only after rewrite verification.
+- **GitHub Flow:** plan a new, uniquely named `chore/normalize-ledger-{date}` branch from main/master after verification. Do not commit the ledger directly on main/master or an environment branch, auto-merge it, or include this new bookkeeping branch in the frozen rewrite set. Leave it for normal PR review.
+- Resolve the base branch and read its effective configuration before mutation. If it conflicts with the invocation's settings, or project-specific rules prohibit the planned placement, resolve the plan first; never silently bypass those rules. State the planned ledger destination. Commit approval remains separate from rewrite and push approval.
 
 ## Step 1 — Risk warning
 
-Before doing anything else, present this warning using AskUserQuestion:
+Before any writes, ask:
 
   AskUserQuestion:
-    question: "This command rewrites git history. Understand the consequences before continuing:\n\n- Every rewritten commit gets a new SHA — history is permanently altered\n- Only local branches are rewritten and force-pushed; anything remote-only (e.g. an environment branch) will diverge unless fetched and checked out first\n- Tags move to their rewritten commits automatically — verified, not manually reconstructed\n- Anyone else who has cloned this repo will have a broken history\n\nThis is safe for solo developers on private repos with no active collaborators."
+    question: "This command rewrites approved local branch history. Changed commits and their descendants get new SHAs, and commit signatures may be lost. Existing tags remain on their original objects; tagged releases retain their old history. Remote-only branches, stashes, notes, and unrelated refs are excluded. Publishing rewritten branches can disrupt other clones. Continue to inspect history?"
     header:   "Risk"
     multiSelect: false
     options:
-      - label: "I understand — continue"
-        description: "Proceed to scan commit history"
+      - label: "Continue to scan"
+        description: "Inspect history and prepare an exact plan without rewriting yet"
       - label: "Cancel"
-        description: "Exit without making any changes"
+        description: "Exit without changes"
 
-If Cancel → exit silently.
-
----
+Cancel leaves instruction files, history, and both ledger paths untouched. Continuing authorizes inspection only.
 
 ## Step 2 — Load ledger and scan history
 
-### 2.1 Load the ledger
+### 2.1 Load and validate the shared ledger
 
-Look for `.claude/helm/normalize-log.json`. This is the command's memory across runs — it lets each run scan only commits added since the last check, instead of the full history every time. This plugin's ledgers live under `.claude/helm/` rather than flat in `.claude/`, to avoid colliding with another plugin's own files of the same generic name.
+Look for `.claude/helm/normalize-log.json`, then the legacy `.claude/normalize-log.json`. Load a legacy-only ledger using the same schema and queue migration for Step 6; do not write or remove either path during scanning. If both exist, compare them: identical data can be deduplicated in the later authorized migration; conflicting data requires explicit resolution before proceeding, not silent replacement. Malformed or unsupported schemas stop the run with the files preserved. A missing `schema_version` means `1`.
 
-Schema:
 ```json
 {
   "schema_version": 1,
@@ -47,42 +47,29 @@ Schema:
 }
 ```
 
-`schema_version` — bumped only if this ledger's structure changes in a future release. Lets a future version of this command detect an older-shaped file and handle it explicitly instead of misreading it. Treat a missing `schema_version` as `1` (every ledger written before this field existed). Always write it going forward.
+With neither file, report first run and use an empty `branches` map. `branches` remains keyed by local branch name. A watermark is a fully inspected tip, using the post-rewrite SHA when rewriting occurred, captured before a later ledger commit.
 
-`branches` — one entry per local branch, keyed by branch name. `last_checked_commit` is that branch's tip SHA as of the end of the most recent run that updated the ledger (see Step 6 for when that is) — note this is the branch's **post-rewrite** SHA whenever that run performed a rewrite, since `git filter-repo`/`filter-branch` change every commit's SHA from the first rewritten commit onward, not just the ones whose message actually changed.
+### 2.2 Freeze exact refs and inputs
 
-If the file does not exist, this is the first run. Inform the user: "No normalize history found — scanning full history." Proceed with an empty `branches` map — equivalent to no exclusions in 2.3 below.
+Enumerate local branch refs using `git for-each-ref --format='%(refname) %(objectname)' refs/heads/`. Freeze these fully qualified `refs/heads/...` names and old tips as `{approved_branch_refs}` for the scan and proposed rewrite. Do not use an unbounded `--all`, wildcard, or fresh branch enumeration during execution. A remote-only branch must be materialized by the developer before a new scan/plan if they want it included.
 
-### 2.2 Collect branches
+Snapshot all existing ref names/object IDs, including exact tag object IDs and symbolic refs, plus remote configuration. Record origin's branch tips read-only when publication is possible; retain these expected remote SHAs for push leases. An inaccessible remote prevents publication, not an otherwise authorized local-only review. Do not fetch, prune, delete stashes/backups, or turn remote-tracking refs into local branches as cleanup. Stop if grafts or replace refs would alter the interpreted history unless a separate reviewed plan resolves them first.
 
-Run: git branch --list
-Collect every local branch — these are the only branches this rewrite will affect (git filter-repo rewrites all refs it can see, and only local ones are visible to it). List them in the Step 3 plan so the developer can fetch and check out any remote-only branch (e.g. an environment branch) that also needs the same treatment, before confirming.
+Check the selected rewrite backend and Python availability before proposing mutation. Prefer git filter-repo; use the filter-branch fallback only if unavailable and its prerequisites are supported. Inspect encoding declarations in the traversal; if non-UTF-8 messages cannot be preserved correctly by the chosen backend and replacement encoding, stop before rewriting and request a separate supported plan. Before execution recheck refs, configuration, ledger inputs, and working-tree cleanliness against the scan. Changed inputs invalidate the plan and require a fresh scan/approval.
 
-Diff the current branch list against the ledger's `branches` keys:
-- **In both**: scan incrementally in 2.3.
-- **In the current list only** (no ledger entry): a new branch — scan its full reachable history. Shared history with an already-tracked branch is still excluded naturally, since that branch's `last_checked_commit` is one of the exclusions in 2.3.
-- **In the ledger only** (no longer a local branch): dropped. Do not carry its entry forward when the ledger is next written (Step 6).
+Diff frozen local branches against ledger keys: new branches receive a full scan; removed branches are omitted from the next ledger; carried entries are usable only when the stored commit exists and is an ancestor of that branch's frozen tip. Otherwise re-scan that branch and report why. When combining exclusions, use only watermarks that still validly describe already-reviewed reachable history.
 
-### 2.3 Scan history
+### 2.3 Inspect the bounded history
 
-For each `branches` entry carried forward from 2.2, validate its `last_checked_commit` still exists in the repo: `git cat-file -e {sha}^{commit}`. If it doesn't (e.g. the repo was reset, or the ledger is stale in some other way), drop it from the exclusion list below and scan that branch's full history instead, same as a new branch — note it in the Step 8 report as re-scanned in full, with the reason.
+Use the frozen branch refs as positive revisions and valid watermarks as negative revisions:
 
-Run one combined query — the positive refs are every current local branch, the negative refs are every still-valid `last_checked_commit` surviving the checks above:
+```sh
+git log --oneline --no-decorate {approved_branch_refs} --not {valid_last_checked_commits}
 ```
-git log --oneline --no-decorate {every local branch} --not {every valid last_checked_commit}
-```
-This returns exactly the commits reachable from any current branch but not already covered by a previous run — automatically deduplicated (a commit reachable from two branches only appears once), and correctly scoped for both new branches (nothing excludes their history unless it overlaps an already-tracked branch) and existing branches (only new commits since their own last check). If the ledger is empty (first run, or every entry was dropped above), this scans every current local branch's full history — **not** the same as `git log --oneline --no-decorate --all`: `--all` also includes remotes, stashes, notes, and any stray backup refs (e.g. leftover `refs/original/*` from a previous `git filter-branch` run) that were never meant to be part of this scan.
 
-Before a first full scan (empty ledger), check for exactly that kind of debris and resolve it first — `git stash list` and `git for-each-ref | grep -E 'refs/(original|stash)'`. Drop an obsolete stash, delete stale backup refs. Left in place, it doesn't just risk polluting this scan (if the positive-refs list is ever built from `--all` instead of the actual branch list); Step 4's rewrite runs on `--all` regardless and will try to process it, and Step 4's own integrity check is thrown off by the same debris — see the note there.
+Omit `--not` entirely when there are no valid exclusions. Never substitute `--all`, `--branches`, or `--tags`. A full re-scan is not permission to include extra refs or delete recovery data.
 
-For each commit returned, classify as:
-- **Compliant** — message already matches `type(scope): description` format
-- **Non-compliant** — message does not match
-
-To classify each non-compliant commit:
-1. Run: git show {sha} --stat --format="%B"
-2. Read the commit message and the file diff summary. Record the raw message text exactly as `%B` printed it, before any trimming — the exact normalization applied here must match Step 4's lookup normalization (`.strip()`), see below.
-3. Infer the correct Conventional Commits type and scope from the diff
+Classify each returned commit as compliant (`type(scope): description`, including valid breaking-change forms) or non-compliant. For non-compliant commits, inspect `git show {sha} --stat --format="%B"` and relevant diffs to infer the message. Record the full original SHA and exact original message. Index replacements by **SHA**, not message text: identical messages can describe different changes, and unrelated messages must pass through unchanged.
 
 Use this inference logic:
 
@@ -108,189 +95,141 @@ Use this inference logic:
 - If the original message contains "breaking", "BREAKING", or "!" → flag as breaking change
 - Add `!` to the type and append `BREAKING CHANGE: {description}` footer
 
-Build a rewrite plan: a list of {sha, original_message, proposed_message} for every non-compliant commit.
-
----
+Build the plan as `{sha, original_message, proposed_message}` for each non-compliant commit. Show uncertain classifications explicitly and resolve them before applying the plan; do not rewrite uncertain guesses and merely flag them afterward.
 
 ## Step 3 — Show plan and confirm
 
-If non_compliant_count is 0 → inform user "All commits already follow Conventional Commits. Nothing to do." Do not present any prompt — there is nothing to confirm. The scan itself still found the current state accurately, so proceed to Step 6 to update the ledger (safe to advance the watermark — nothing was left pending), then Step 8 to report.
+If nothing needs rewriting, report a clean scan and proceed to Step 6 for an eligible ledger update. Skip Steps 4–5 and the rewrite-publication path in Step 7. A clean scan never authorizes force-pushing anything.
 
-Otherwise, present the plan using AskUserQuestion:
+Otherwise show the complete plan, with up to five examples in the question and the remaining exact changes available for review. Include frozen branch refs/tips, preserved tags/excluded refs, the chosen backend, recovery-backup location, and planned ledger placement. Then ask:
 
   AskUserQuestion:
-    question: "Scan complete.\n\nCommits scanned this run: {total}\nAlready compliant: {compliant_count}\nTo be rewritten: {non_compliant_count}\n\nSample rewrites:\n{show up to 5 examples in format: '{original}' → '{proposed}'}\n\nLocal branches that will be rewritten: {list from Step 2}\nIf an environment or teammate branch you need rewritten too isn't listed, cancel, fetch and check it out, then re-run.\n\nProceeding will rewrite {non_compliant_count} commits and force-push every listed branch to remote."
+    question: "Scanned {total} commits: {compliant_count} compliant, {non_compliant_count} message replacements proposed. Apply the reviewed plan to {frozen branch list}? All existing tags stay unchanged; remote history will not be pushed without a later separate confirmation."
     header:   "Confirm rewrite"
     multiSelect: false
     options:
-      - label: "Rewrite {non_compliant_count} commits (Recommended)"
-        description: "Apply all rewrites; tags move to their rewritten commits automatically"
+      - label: "Apply reviewed rewrite"
+        description: "Rewrite only the frozen local branch refs and approved commit messages"
       - label: "Cancel"
-        description: "Exit without making any changes"
+        description: "Exit with history and ledger untouched"
 
-If Cancel → exit silently. The ledger is not updated — these non-compliant commits are found again on the next run rather than silently skipped by an advanced watermark.
+Cancel does not advance or migrate the ledger. Approval applies only to the displayed inputs and transformation, not a changed plan or any tag movement.
 
----
+## Step 4 — Rewrite the approved branch history
 
-## Step 4 — Rewrite commit messages
+Recheck frozen inputs. Create a recoverable Git bundle of the approved branches and existing tag refs in a unique private location outside the checkout before running the filter. Retain it through verification/publication and report its path. If backup creation fails, stop before rewriting. Never prune old objects or delete recovery refs automatically.
 
-Before doing anything else, capture the current commit count for the post-rewrite integrity check below — this is independent of `{total}` from Step 2, which only reflects this run's incrementally-scanned commits, not the whole repo. Use `--branches --tags`, not `--all`: the rewrite's actual scope is every local branch (Step 2.2), and `--all` also counts remotes, stashes, notes, and any stray backup refs — including the `refs/original/*` backups the `git filter-branch` fallback below is about to create itself, which would inflate the post-rewrite count and make this check fail even on a fully correct rewrite:
-```
-git log --branches --tags --oneline | wc -l
-```
+Capture the unique commit count and branch-tip trees over `{approved_branch_refs}` only. Create a unique private temp directory outside the checkout. Write the SHA-to-proposed-message JSON map there and export its absolute path as `HELM_NORMALIZE_MAP`; values contain each complete approved message with its intended newline/footer formatting. Never interpolate message data into shell code or trim unchanged messages. Preserve unselected messages byte-for-byte. If a backend cannot preserve the source encoding/metadata needed for this plan, stop instead of claiming equivalent results.
 
-Also capture the `origin` remote's URL, if one exists — `git filter-repo` removes it by default after a rewrite (a safety measure that assumes it's operating on a disposable clone), and Step 7's force push needs it back:
-```
-git remote get-url origin
-```
+### Preferred: git filter-repo with explicit refs
 
-Build the rewrite map as a JSON object: `{ "original_message": "conventional_message", ... }`
-Include only non-compliant commits. Messages not in the map pass through unchanged.
-**Every key must be `.strip()`-equivalent** (leading/trailing whitespace and newlines removed) — the callbacks below strip the incoming message the same way before looking it up. If the map's keys aren't normalized identically, lookups silently miss and the commit passes through unrewritten with no error.
+Pass each frozen fully qualified branch ref as its own safely quoted argument. `--refs` implies partial mode: tags and remote-tracking refs are excluded, origin is retained, and automatic cleanup of unrelated refs/history is disabled. Do not add tags, `--all`, or a ref-renaming callback. Disable automatic message-hash substitution and commit pruning so changes stay within the approved plan:
 
-Write the rewrite map to an actual temp file (e.g. `/tmp/normalize-rewrite-map.json`) — do not embed the JSON inline in a shell-quoted script. Commit messages can contain quotes, newlines, or unicode that would break a string substituted directly into the callback; reading from a file avoids that entirely. Delete the temp file once the rewrite below completes.
-
-**Preferred: git filter-repo** (immutable, no backup refs left behind)
-
-First check if available:
-```
-git filter-repo --version
-```
-
-If available, use `--force` — filter-repo refuses to run on anything it doesn't recognize as a fresh clone, and this command runs on the developer's existing working repo, not a throwaway clone:
-```
-git filter-repo --force --message-callback '
-import json
-with open("/tmp/normalize-rewrite-map.json") as f:
+```sh
+git filter-repo --force --preserve-commit-hashes --preserve-commit-encoding \
+  --prune-empty never --prune-degenerate never --commit-callback '
+import json, os
+with open(os.environ["HELM_NORMALIZE_MAP"], encoding="utf-8") as f:
     rewrite_map = json.load(f)
-decoded = message.decode("utf-8").strip()
-return rewrite_map.get(decoded, decoded).encode("utf-8")
-'
+replacement = rewrite_map.get(commit.original_id.decode("ascii"))
+if replacement is not None:
+    commit.message = replacement.encode("utf-8")
+' --refs {approved_branch_refs}
 ```
 
-**Fallback: git filter-branch** (deprecated since Git 2.36, but still functional)
+`--force` bypasses the fresh-clone check only after the approved plan, clean-tree check, and backup above. It is not permission to expand scope or bypass host restrictions.
 
-Only use if `git filter-repo` is not installed. Includes `--tag-name-filter cat` — without it, filter-branch leaves every tag pointing at its old, pre-rewrite commit instead of moving it to the rewritten one, since (unlike filter-repo) it doesn't touch tags by default:
-```
-git filter-branch -f --msg-filter '
-python3 -c "
+### Fallback: git filter-branch with the same explicit refs
+
+Only when filter-repo is unavailable, create an absolute helper path exported as `HELM_NORMALIZE_FILTER`. Its contents are:
+
+```python
 import json
-with open(\"/tmp/normalize-rewrite-map.json\") as f:
-    rewrite_map = json.load(f)
+import os
 import sys
-msg = sys.stdin.read().strip()
-print(rewrite_map.get(msg, msg))
-"' --tag-name-filter cat -- --all
+
+with open(os.environ["HELM_NORMALIZE_MAP"], encoding="utf-8") as stream:
+    rewrite_map = json.load(stream)
+original = sys.stdin.buffer.read()
+replacement = rewrite_map.get(os.environ["GIT_COMMIT"])
+sys.stdout.buffer.write(original if replacement is None else replacement.encode("utf-8"))
 ```
 
-After rewrite completes, restore `origin` if `git filter-repo` removed it — idempotent, safe to run regardless of which rewrite path was used or whether a remote existed in the first place:
-```
-git remote get-url origin >/dev/null 2>&1 || { [ -n "{origin_url}" ] && git remote add origin {origin_url}; }
-```
+Choose a new, empty backup-ref namespace `{backup_namespace}` for this run, outside all existing refs; include it in the reviewed plan. Then run:
 
-If the `git filter-branch` fallback ran, it just created fresh `refs/original/*` backup refs — one per rewritten ref — as its own unavoidable safety mechanism. Clean those up now, before verifying, once you've confirmed there's no reason to keep them (Step 5's tag verification and the sample check below still catch a bad rewrite either way):
-```
-git for-each-ref --format='%(refname)' refs/original/ | xargs -n1 git update-ref -d
-```
-`git filter-repo` doesn't create these, so this is a no-op when the preferred path was used.
-
-Then verify a representative sample across the full history — use `--branches --tags` again, matching the rewrite's actual scope (every local branch) without the noise `--all` would include:
-```
-git log --branches --tags --oneline | head -20
-git log --branches --tags --oneline | tail -20
-git log --branches --tags --oneline | wc -l  # compare against the count captured at the start of this step — must match exactly
+```sh
+git filter-branch --original {backup_namespace} \
+  --msg-filter 'python3 "$HELM_NORMALIZE_FILTER"' -- {approved_branch_refs}
 ```
 
----
+Do not use `--all`, `--tag-name-filter`, or `-f` to overwrite existing backup refs. Preserve fallback-created backup refs; disclose that only this planned backup namespace may be added outside the frozen branch refs. If the fallback refuses the repository or fails, stop without retrying with broader/destructive flags.
 
-## Step 5 — Verify tags
+### Verify before advancing
 
-Both `git filter-repo` (by default) and the `git filter-branch` fallback (via `--tag-name-filter cat` in Step 4) move tags to their rewritten commits automatically as part of the rewrite itself — this step confirms that worked, rather than manually detecting and reconstructing orphaned tags.
+A backend error stops the run: no ledger advance or remote publication. Keep recovery data and report the actual state, never a generic success.
 
-Run: git tag
-Collect all tags.
+After a successful filter, verify the full approved replacement set, unchanged unselected messages, commit count, branch-tip trees, parent topology, and unaffected metadata (disclosing inherent signature effects). Compare all excluded refs and remote configuration against the snapshot; only approved branch updates and the fallback's declared new backup refs may differ. Derive the exact old-to-new mapping and changed branch list from verified results. A changed ref set, unintended message change, or failed invariant stops ledger writes and publication. A sample alone is insufficient verification.
 
-For each tag, confirm it resolves to a commit reachable from at least one local branch collected in Step 2:
-```
-git merge-base --is-ancestor {tag} {branch}
-```
-Check against each local branch until one succeeds (exit code 0). If none succeed for a given tag, the rewrite did not correctly move it — report it to the user as needing manual attention rather than guessing at a fix.
+Keep the recovery bundle and maps until verification succeeds; remove only this run's temporary helper/map files afterward. Do not reconstruct or silently restore origin, tags, or other refs if an unexpected change is detected.
 
-If every tag resolves correctly: skip silently.
+## Step 5 — Verify tags are unchanged
 
----
+Compare every pre-existing `refs/tags/...` name and exact object ID against the snapshot, with no additions, deletions, or replacements. This preserves annotated/signed tag objects as well as lightweight tags. A tag remaining on old history and no longer reachable from a rewritten branch is expected, not a failure to repair. Never move it to the new history, strip its signature, or force-push tags.
 
-## Step 6 — Update ledger
+Any mismatch stops ledger advance and publication. Report the unexpected change and recovery location; do not try to fix it by replacing a published tag. All existing tags are protected on private and public repositories alike, so publication detection is not required to protect them.
 
-Only reached when the ledger should actually advance: Step 3's "nothing to do" exit routes here directly (the scan found nothing pending, so it's safe to record), and completing Step 4's rewrite through Step 5 also routes here. Cancelling in Step 1 or Step 3 exits before this step — the ledger is left untouched in both cases (see those steps for why).
+## Step 6 — Update or migrate the ledger under project policy
 
-For every current local branch (from Step 2.2, including new ones — excluding any dropped in 2.2): capture its current tip SHA:
-```
-git rev-parse {branch}
-```
-If Step 4 ran, this is the post-rewrite tip; if Step 3 exited on "all compliant" without a rewrite, it's simply the branch's unchanged tip.
+Only a complete clean scan or fully verified rewrite reaches this step. Cancellation, unresolved classifications, changed scan inputs, or verification failure leaves the prior ledger unchanged and does not delete the legacy file.
 
-Set `schema_version` to `1` if not already present, and set `branches` to exactly the current local branch list from 2.2 — this naturally drops entries for branches removed since the last run and adds entries for new ones, each with `last_checked_commit` set to the SHA just captured and `last_checked_date` to today.
+For the frozen branch list, capture verified current tip SHAs before any ledger commit. Build schema version 1 with those tips/dates, adding new branches and dropping removed ones. Do not add a newly created bookkeeping branch to this run's watermark set or record a tip that was not inspected. If no serialized data or migration change is needed, skip the write/commit entirely.
 
-Write it to `.claude/helm/normalize-log.json` (creating `.claude/helm/` if it doesn't exist yet), then commit:
-```
-git add .claude/helm/normalize-log.json
-git commit -m "chore(normalize): update ledger after {scan / rewrite}"
-```
-This commit lands on whichever branch is currently checked out — it travels with that branch's force push in Step 7 like any other commit made during this run.
+Switch to the planned ledger destination only after verification. Under Solo, commit on main/master. Under GitHub Flow, create the planned unique `chore/normalize-ledger-{date}` branch from main/master and leave its ledger change for normal PR review; never auto-merge it or force-push it as part of rewritten history. Recheck destination instructions and any existing ledger for unexpected divergence from the reviewed inputs before overwriting. If placement is blocked, leave history intact and report the pending ledger update; do not force checkout or bypass project policy.
 
----
+Write `.claude/helm/normalize-log.json` and read it back to verify schema, every watermark, and branch coverage. For a queued legacy migration, remove `.claude/normalize-log.json` only after the canonical file has been verified. Stage both the canonical change and legacy removal together using exact paths. Never stage unrelated files. A cancelled commit leaves both changes pending together for review; do not claim the migration was committed.
 
-## Step 7 — Force push
+Follow the resolved `git-auto-commit` for **this ledger commit**: true permits an automatic commit; false or absent requires explicit commit confirmation, independent of rewrite/push approvals. A declined commit leaves verified files uncommitted, reports the actual branch, and never silently commits during publication. Commit message: `chore(normalize): update ledger after {scan / rewrite}`.
 
-Every local branch collected in Step 2 was rewritten, not just the one this command was run from — each needs pushing to stay in sync with its remote copy.
+A separately committed Solo ledger change can travel with a later explicitly approved branch publication. GitHub Flow leaves the bookkeeping branch local for a separately approved normal push/PR; it is not part of the force-push set. Return to the starting branch when safe; otherwise preserve files and report where work remains. No-rewrite runs finish with Step 8 after this ledger handling and never reach a force-push gate.
+
+## Step 7 — Publish only verified rewritten branches
+
+Run only after an actual verified rewrite. Compare frozen old tips with post-filter tips to identify exactly which approved branches changed. Freeze these verified results before any ledger commit; an extra ledger commit does not itself count as a history rewrite. No changed branches means skip this step. Missing origin or unavailable remote access leaves local changes/recovery data intact and reports publication as unavailable.
+
+Present only changed branch names, the intended new tip (including an authorized Solo ledger commit when applicable), and recorded expected remote tips. Ask separately:
 
   AskUserQuestion:
-    question: "Rewrite complete. Force push {branch_count} rewritten branch(es) ({branch_list}) and tags to remote now?\n\nThis overwrites remote history and can't be undone. Waiting doesn't make it safer: the local rewrite is already permanent, so delay only adds risk."
-    header:   "Force push"
+    question: "Publish the verified rewritten branches {changed branch list} to origin? This replaces those branch histories using explicit push leases. All tags and excluded refs remain untouched."
+    header:   "Publish rewrite"
     multiSelect: false
     options:
-      - label: "Force push to origin (Recommended)"
-        description: "Sync every rewritten branch and tag to remote"
-      - label: "Skip (push manually)"
-        description: "Risky to leave: don't fetch/pull this repo, and don't reset any branch to origin, until you've run the push commands below yourself."
+      - label: "Publish listed branches"
+        description: "Push only the reviewed branch refspecs with explicit expected remote SHAs"
+      - label: "Keep local only"
+        description: "Leave the rewrite and backup available without changing the remote"
 
-If force push selected, for each local branch collected in Step 2:
-```
-git push origin {branch} --force
-```
-Then:
-```
-git push origin --tags --force
+For each approved changed branch, use a fully qualified refspec and the remote tip recorded before rewriting:
+
+```sh
+git push origin --force-with-lease=refs/heads/{branch}:{expected_remote_sha} \
+  refs/heads/{branch}:refs/heads/{branch}
 ```
 
-If skip selected: print the manual commands for every branch (matching the loop above) plus the tags push, then proceed to Step 8 for the report.
+Use an explicit empty expected SHA only for a branch confirmed absent on the remote and explicitly approved for creation. Before pushing, verify the local ref still equals the intended new tip. If the remote advanced, the lease fails: stop, report any branches already pushed and those remaining, and obtain a new reviewed plan. Never retry with plain `--force`, refresh the lease merely to override others' work, push `--all`/`--mirror`, or push any tag ref. On Keep local only, provide these exact bounded commands and the backup path without executing them. Avoid coercive claims that immediate publication is safer.
 
----
+Normal local remote-tracking updates caused by an approved Git push are publication results, not authorization to rewrite excluded refs. Distinguish those expected tracking updates from Step 4's invariant that excluded refs stayed unchanged during filtering.
 
-## Step 8 — Report
+## Step 8 — Report actual state
 
-─────────────────────────────────
-NORMALIZE COMPLETE
-─────────────────────────────────
-Commits scanned this run: {total} (incremental — see ledger below; "full history" if this was the first run)
-Already compliant:       {compliant_count}
-Rewritten:               {non_compliant_count}
-Local branches rewritten: {branch_list from Step 2}
-Tags verified:           {tag_count} correctly moved (or "none" if no tags exist); {N} needing manual attention, if any
-Force pushed:            yes / no (manual) — {branch_list} + tags
-Ledger:                  {N} branches tracked, {N} added, {N} dropped, {N} re-scanned in full (stale or missing last_checked_commit)
-─────────────────────────────────
+Report:
+- Outcome: {clean scan / rewritten locally / published / partial publication / cancelled / blocked / verification failed}
+- Commits scanned, compliant, and actually rewritten, with uncertain items if blocked
+- Frozen branch scope and branches actually changed/pushed; excluded refs and tags verified unchanged
+- Ledger: {canonical / migrated / pending migration / unchanged}, branch counts, watermark validation, destination branch, committed/uncommitted status
+- Publication: {not applicable without rewrite / confirmed and completed / kept local / unavailable / failed}, by branch
+- Recovery bundle and retained fallback backup refs; any pending PR/normal ledger-branch push
+- Current branch and any unresolved manual work
 
-Other clones must run, per rewritten branch, before their next pull:
-  git fetch --all && git reset --hard origin/{branch}
-`git pull` will fail or silently diverge otherwise.
+Show up to five actual before/after message examples. Do not report planned rewrites or pushes as completed. Instruction files and Helm settings remain untouched.
 
-Sample of rewrites applied:
-- '{original}' → '{proposed}'
-- '{original}' → '{proposed}'
-- ... (up to 5 examples)
-
-If any commits could not be confidently classified, list them:
-Uncertain rewrites (review manually):
-- {sha} '{original}' → '{proposed}' (reason: {why uncertain})
+After a published rewrite, explain that other clones need deliberate reconciliation with the new branch history. Tell developers to preserve local work and coordinate with collaborators first; do not prescribe an unconditional `reset --hard` or delete/recreate branches as a generic recovery command. Unchanged release tags intentionally retain the original history. An unpublished local rewrite has its recovery bundle and has not altered other clones.
