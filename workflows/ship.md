@@ -2,47 +2,37 @@
 
 ## Before starting
 
-Check current branch.
+Resolve effective memory/configuration through the shared runtime and record invocation Git strategy. Resolve `{base_branch}` to the actual main/master branch and use it consistently. Check the actual current branch. Read `{package_root}/prompts/shared/ci.md` before any promotion; configured/applicable CI must pass for the exact published source SHA, with no implicit override.
 
-**GitHub capability preflight (main/master and environment branches):** before committing pending work, editing release files, tagging, or pushing, inspect origin to determine whether this is a GitHub repository. On GitHub, check `gh --version` and, only if installed, `gh auth status` for the origin's host. Record whether the CLI is available/authenticated and a non-secret reason if unavailable; do not expose credentials, install tools, or log in automatically. Inform the user up front if GitHub CI inspection or GitHub Release creation is unavailable on this host. Git transport credentials are separate; a successful Git push does not establish GitHub API access.
+**GitHub capability preflight ({base_branch} and environment branches):** before committing pending work, editing release files, tagging, or pushing, inspect origin to determine whether this is a GitHub repository. On GitHub, check `gh --version` and, only if installed, `gh auth status` for the origin's host. Record whether the CLI is available/authenticated and a non-secret reason if unavailable; do not expose credentials, install tools, or log in automatically. Inform the user up front if GitHub CI inspection or GitHub Release creation is unavailable on this host. Git transport credentials are separate; a successful Git push does not establish GitHub API access.
 
-Missing CLI/authentication does not imply CI passed or that no CI exists. A separately approved Git release may proceed, but any configured GitHub CI check must use the unavailable-status handling below, and GitHub Release creation must be skipped with manual instructions. Later API/network/permission failures receive the same unavailable handling even if preflight passed. Non-GitHub repositories do not require gh for this workflow.
+Missing CLI/authentication does not imply CI passed or that no CI exists. A separately approved Git release may proceed, but configured/applicable CI still blocks promotion when unverified, and GitHub Release creation must be skipped with manual instructions. Later API/network/permission failures receive the same unavailable handling even if preflight passed. Non-GitHub repositories do not require gh for this workflow.
 
-If on main or master:
+If on {base_branch}:
   Check for a clean working tree: `git status --porcelain`.
 
   If clean → proceed normally, full ship flow including version tagging.
 
-  If not clean: Step 4 stages specific files by path (`git add README.md`, `git add {version_file}`, etc.), and `git add` picks up a file's entire current state — so any unrelated pending edits already sitting in one of those exact files would silently ride into the `chore(release):` commit and get tagged and pushed as part of it. Never offer to proceed as-is; that's the failure mode this check exists to close. Ask:
+  If not clean, first inspect path/status metadata only, without opening operational state. Pending operational `.helm/`, `.claude/helm/`, or known flat legacy ledgers block ship; do not open/commit/migrate those records here. For remaining paths, locally screen contents without exposing values or raw secret-bearing diffs. Non-example `.env*`, credential/private-key files, or any pending content containing secrets (including `.env.example`, source, README or version files) also block the preparatory commit and release. Report paths only and leave everything intact for the owning workflow or developer. An inability to verify safety is a block, not permission to stage it. Do not just exclude protected paths and continue with a dirty release.
 
-    AskUserQuestion:
-      question: "Uncommitted changes are present ({short file list or count}) — if they touch README.md or the version file, they'd otherwise get folded into the release commit. Commit them separately first?"
-      header:   "Uncommitted changes"
-      multiSelect: false
-      options:
-        - label: "Commit now (Recommended)"
-          description: "Commit these changes as their own commit, then continue the release"
-        - label: "Stop here"
-          description: "Exit so you can commit, stash, or discard manually, then re-run /ship"
+  Under GitHub Flow, unrelated pending work cannot be committed directly to the base under the release-commit exception. Stop and direct it through the normal branch/PR path first. That exception covers only reviewed release version/metadata changes, never arbitrary pending work.
 
-    If "Stop here" selected → exit immediately. Nothing else is touched.
-
-    If "Commit now" selected → stage everything `git status --porcelain` reported (this is the one place staging everything is safe — it's exactly what was just shown to and confirmed by the human, not a blind `-A`), derive a Conventional Commits message the same way every other command in this plugin does (scope inferred from the touched files, per git.md's Scope inference convention), commit, then proceed normally into Step 1.
+  In Solo, if every pending path/change is verified safe, show the complete safe diff and exact proposed paths/commits, then offer `Commit reviewed safe changes` or `Stop here`. The answer covers only that concrete preparatory commit, not release tagging/push. Recheck inputs and index; stage only exact approved safe paths with literal pathspecs (including reviewed deletions), never everything from status or unrelated pre-staged changes. Inspect the complete proposed index, commit scoped logical units, verify each commit and require a clean tree before continuing. A declined/failed commit leaves actual work intact and stops the release. Never reset, stash or discard work to force a clean status.
 
 If on environment branch (staging, production, etc):
   Proceed with promotion only — Steps 1-4 (version bump, commit, tag, code quality checks, GitHub Release) are all skipped; only Step 5's promotion runs.
   Inform user:
-  "On {branch}. Promoting to next environment only — no version bump, commit, tag, code quality checks, or GitHub Release. Those only run from main or master."
+  "On {branch}. Promoting to next environment only — no version bump, commit, tag, code quality checks, or GitHub Release. Those only run from {base_branch}."
 
 If on feature or any other branch:
   Stop and inform user:
-  "Feature branches must be merged to main via PR before releasing.
-  Please merge your branch, switch to main or master, and run /ship
+  "Feature branches must be merged to {base_branch} via PR before releasing.
+  Please merge your branch, switch to {base_branch}, and run /ship
   from there."
 
 ---
 
-## Step 1 — Select deployment targets (main branch only)
+## Step 1 — Select deployment targets ({base_branch} branch only)
 
 Skip this step if on environment branch — proceed directly to Step 5.
 
@@ -51,42 +41,42 @@ Filter for known environment names (staging, production, or similar).
 
 Check `environment-promotion` in {memory_file} Project Config (see git.md's Environment Branches section; absence defaults to `fan-out`):
 - **fan-out**: offer every discovered environment branch below. AskUserQuestion caps at 4 options — if more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
-- **chain**: offer only first-tier branches (staging, stage, uat, preprod) — second-tier branches (production, prod) are never a direct deploy target from main in chain mode; they're only reached later via Step 5's promotion from the first tier. If only second-tier branches exist (no first tier to promote through), offer none and inform the human why: "production-tier branches require a pre-production tier to promote through in chain mode; none found."
+- **chain**: offer only first-tier branches (staging, stage, uat, preprod) — second-tier branches (production, prod) are never a direct deploy target from {base_branch} in chain mode; they're only reached later via Step 5's promotion from the first tier. If only second-tier branches exist (no first tier to promote through), offer none and inform the human why: "production-tier branches require a pre-production tier to promote through in chain mode; none found."
 
 If no environment branches exist (after filtering):
-  Skip this step. Tag and push main only.
+  Skip this step. Tag and push {base_branch} only.
 
 If environment branches exist (after filtering), use AskUserQuestion:
   AskUserQuestion:
-    question: "main/master will always be tagged and pushed. Which additional environments should be promoted?"
+    question: "{base_branch} will always be tagged and pushed. Which additional environments should be promoted?"
     header:   "Deploy targets"
     multiSelect: true
     options: one entry per offered environment branch, e.g.:
       - label: "staging"
-        description: "Merge and push main to the staging branch"
+        description: "Merge and push {base_branch} to the staging branch"
       - label: "production"
-        description: "Merge and push main to the production branch"  (fan-out mode only)
+        description: "Merge and push {base_branch} to the production branch"  (fan-out mode only)
 
   If exactly one environment branch qualifies (after fan-out/chain filtering), a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead:
 
     AskUserQuestion:
-      question: "main/master will always be tagged and pushed. Also promote to {branch}?"
+      question: "{base_branch} will always be tagged and pushed. Also promote to {branch}?"
       header:   "Deploy target"
       multiSelect: false
       options:
         - label: "Yes — promote to {branch} (Recommended)"
-          description: "Merge and push main to {branch}"
+          description: "Merge and push {base_branch} to {branch}"
         - label: "Skip"
-          description: "Deploy to main/master only"
+          description: "Deploy to {base_branch} only"
 
     "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
 
-  If user selects none → deploy to main/master only.
+  If user selects none → deploy to {base_branch} only.
   Wait for response before proceeding.
 
 ---
 
-## Step 2 — Calculate and propose version (main branch only)
+## Step 2 — Calculate and propose version ({base_branch} branch only)
 
 Skip this step if on environment branch — proceed directly to Step 5.
 
@@ -178,7 +168,7 @@ Whichever path supplied {version} manually (custom version entry, or the no-CC d
 
 ## Step 3 — Run code quality checks
 
-Only reached on the main-branch path — Step 1's redirect sends the environment-branch path straight to Step 5, skipping this step entirely.
+Only reached on the {base_branch}-branch path — Step 1's redirect sends the environment-branch path straight to Step 5, skipping this step entirely.
 
 Run the git.md Code Quality gate — lint + tests — before releasing. Two release-specific overrides:
 - Run the full test suite, not just changed-file tests — a release warrants it.
@@ -188,9 +178,9 @@ Do not proceed until lint passes and tests are green.
 
 ---
 
-## Step 4 — Execute release on main
+## Step 4 — Execute release on {base_branch}
 
-Only run this step if on main or master.
+Only run this step if on {base_branch}.
 
 Require the recorded release approval for `{version}` and the selected targets before release writes or mutations. If the version or targets changed after approval, return to the final release confirmation. Respect any stricter project-specific push confirmation requirements as well.
 
@@ -200,6 +190,8 @@ Scan README.md for version references (badges, inline mentions).
 If found, update to {version}. Skip silently if none found.
 
 If the detected version file is `.claude-plugin/plugin.json`, also check `.claude-plugin/marketplace.json` for a `plugins[]` entry whose `name` matches plugin.json's own `name` field, and bump that entry's `version` to {version} too — marketplace metadata drifting from the actual plugin version is exactly the kind of staleness this step exists to prevent. Skip silently if `marketplace.json` doesn't exist or has no matching entry.
+
+Commit, tag, and push only the reviewed release changes. Recheck the clean-tree baseline, source inputs and complete index for safe content before staging. Stop on a failed commit/tag/push, preserve actual results and never execute dependent publication as if it succeeded. Verify published branch/tag refs against the intended objects; report partial publication without creating a new version to retry.
 
 Commit, tag, and push:
 - git add {version_file}
@@ -213,34 +205,11 @@ Commit, tag, and push:
 
 Capture the commit SHA (`git rev-parse HEAD`) as {commit_sha} for the Step 6 report.
 
-Before promoting to any selected environment, check CI status for the commit just pushed to main — per git.md's Environment Branches rule ("if CI is configured, it must pass before promoting"):
-- If no environments were selected, skip this CI/promotion block entirely.
-- If this repo isn't hosted on GitHub, or no workflow files exist under `.github/workflows/`, skip this check silently — proceed straight to the promotion loop below.
-- If configured GitHub CI cannot be queried because preflight found gh unavailable/unauthenticated, do not run a known-unavailable command. Record CI as **unverified**, with the reason, and use the same Skip/Promote anyway question below. Never silently bypass the gate or interpret unavailability as success.
-- Otherwise: using {commit_sha} captured above, run `gh run list --branch main --limit 20 --json headSha,status,conclusion` and filter to runs whose `headSha` matches {commit_sha}. A single push can trigger multiple workflow runs, and querying only the single most recent run risks catching a stale run from a previous commit before GitHub has registered this one — matching on `headSha` avoids both problems. If this query fails, record CI as **unverified** with a non-secret reason and use the question below; distinguish query failure from a successful empty result.
-  - If no matching runs found → treat as "none yet" (CI hasn't registered this commit).
-  - If every matching run has conclusion "success" → proceed to the promotion loop below silently.
-  - Otherwise (any matching run queued, in progress, failed, none found yet, or CI unverified):
-      AskUserQuestion:
-        question: "CI for this release has not been verified successful ({matching run states, 'no runs found yet', or unavailable reason}). Promote to the selected environments anyway?"
-        header:   "CI status"
-        multiSelect: false
-        options:
-          - label: "Skip promotion for now"
-            description: "main stays tagged and pushed; no environment branches are touched this run"
-          - label: "Promote anyway"
-            description: "Proceed without waiting for CI"
-      If "Skip promotion for now" selected → skip the promotion loop below entirely, note it in the Step 6 report.
+Before promoting, verify the release source commit/ref was actually published. If no environments were selected, no promotion gate is needed. Otherwise apply the **promotion** gate in `{package_root}/prompts/shared/ci.md` to `{commit_sha}` on `{base_branch}`. Inspect all applicable provider checks, not only GitHub Actions or a fixed recent-run window. Unverified/pending/failed CI leaves promotion pending without environment mutations; offer Wait/recheck versus Skip promotion, never Promote anyway. The already-published release remains intact, and its separate GitHub Release creation may still be handled below without claiming environments were promoted.
 
-For each selected environment branch (unless skipped above):
-- git checkout {environment}
-- git merge main --no-ff -m "chore(deploy): promote main to {environment} for v{version}"
-- git push origin {environment}
-- git checkout main
+For each selected environment, only after the gate passes/not applicable, recheck source SHA/CI and destination policy, safely switch to the up-to-date destination, merge `{base_branch}` with `--no-ff` and `chore(deploy): promote {base_branch} to {environment} for v{version}`, then push only after successful merge and verify its remote SHA. Selection supplies approval only for the described target pushes, not a CI waiver. Stop on any failure with actual branch/index preserved; report completed and pending targets separately. Return safely to `{base_branch}` after a successful target.
 
-Then check whether this repo is hosted on GitHub:
-- Run: git remote get-url origin
-- If the URL does not contain `github.com` → skip the rest of this step silently
+Then use the provider identity established by origin's capability preflight. A non-GitHub provider skips GitHub Release creation, without skipping its applicable CI gates. For GitHub (including a supported configured enterprise host), use the recorded authenticated repository interface and host; do not infer provider identity solely from a github.com substring.
 
 If hosted on GitHub, use the recorded capability preflight. If gh is unavailable or unauthenticated, skip the AskUserQuestion below and inform human of the reason, the already-completed Git release actions, and how to create this same release manually once CLI access is available:
 
@@ -280,7 +249,7 @@ Check `environment-promotion` in {memory_file} Project Config (see git.md's Envi
 
 ### Fan-out mode
 
-There is no chain to advance — environment branches only ever receive code directly from main (Step 1), never from each other. Before pushing, confirm:
+There is no chain to advance — environment branches only ever receive code directly from {base_branch} (Step 1), never from each other. Before pushing, confirm:
 
   AskUserQuestion:
     question: "Push {current_branch} to origin now? This publishes the branch and may trigger its deployment."
@@ -304,20 +273,15 @@ If {current_branch} matches Tier 1: the next environment is whichever Tier 2 bra
 If {current_branch} matches Tier 2: no further promotion, inform human and exit.
 If {current_branch} matches neither tier (a long-lived branch that still qualifies as an environment branch per git.md, just outside the recognized name list): ask the human which branch it should promote to, rather than guessing.
 
-If next environment exists, first check CI status for {current_branch} — per git.md's Environment Branches rule ("if CI is configured, it must pass before promoting"):
-- If this repo isn't hosted on GitHub, or no workflow files exist under `.github/workflows/`, skip this check — proceed to the confirmation below with no CI line in the question.
-- If configured GitHub CI is unavailable because gh is missing/unauthenticated, record **CI unverified** with the preflight reason and include that explicitly in the confirmation below. Do not call a known-unavailable CLI or silently treat the gate as passed.
-- Otherwise: capture the branch tip's SHA (`git rev-parse {current_branch}`), then run `gh run list --branch {current_branch} --limit 20 --json headSha,status,conclusion` and filter to runs whose `headSha` matches — a single commit can trigger multiple workflow runs, so checking only the most recent entry could miss one still failing or in progress. A query failure is **CI unverified** with a non-secret reason, not an empty successful result. Fold the result (all matching runs succeeded / not yet / none found / unverified with reason) into the confirmation question below rather than asking separately.
-
-If configured CI is not verified successful, the promotion question must explicitly say "CI is not verified successful: {reason/status}. Promote anyway?" and the Promote option must state that it overrides the unverified/unsuccessful CI gate; do not recommend it as though CI passed. The user's explicit promotion answer supplies that override, with no additional duplicate prompt.
+If a next environment exists, apply the shared **promotion** CI gate to the exact source `{current_branch}` SHA, with provider-aware complete coverage. Required CI must pass before the next-environment merge/push. An unpublished source may need a separately confirmed source-branch push first so CI can run; that authorizes no target merge/push, and trigger filters may still leave checks unavailable. Freeze and verify the published source SHA, then wait/recheck or report promotion pending. No Promote-anyway override is offered, and no required check is replaced by local test success.
 
 Confirm before mutating anything (per safety.md: never push without confirmation):
   AskUserQuestion:
-    question: "Promote {current_branch} to {next_environment}? This merges {current_branch} into {next_environment} and pushes both branches. {CI: {conclusion}, if checked above}"
+    question: "Promote {current_branch} to {next_environment}? This merges {current_branch} into {next_environment} and pushes the target branch from the verified published source SHA. CI: {passed for exact SHA / not applicable}"
     header:   "Promote"
     multiSelect: false
     options:
-      - label: "Promote to {next_environment} (Recommended if CI passed)"
+      - label: "Promote to {next_environment}"
         description: "Merge {current_branch} into {next_environment} and push"
       - label: "Cancel"
         description: "Exit without promoting"
@@ -325,14 +289,14 @@ Confirm before mutating anything (per safety.md: never push without confirmation
   If Cancel → exit silently.
 
   If confirmed:
-  - git push origin {current_branch}
+  - Recheck the verified published source SHA/CI before the target mutation; do not push the already-approved source twice.
   - git checkout {next_environment}
   - git merge {current_branch} --no-ff -m "chore(deploy): promote {current_branch} to {next_environment}"
     - If the merge conflicts: run `git merge --abort` to restore a clean state, then `git checkout {current_branch}` to return to the starting branch. Inform the human: "Merge conflict promoting {current_branch} to {next_environment}. Aborted — {next_environment} is unchanged. Resolve the conflict manually (e.g. merge {current_branch} into {next_environment} in a local checkout, fix conflicts, push), then re-run." Stop here — do not proceed to the push/checkout below.
   - git push origin {next_environment}
   - git checkout {current_branch}
   - Inform human:
-    "Promoted {current_branch} → {next_environment}. CI/CD will deploy to corresponding server."
+    "Promoted {current_branch} → {next_environment}. Report only deployment behavior supported by repository/provider evidence."
 
 If no next environment (already on the last tier):
   Stop and inform human:
@@ -342,7 +306,7 @@ If no next environment (already on the last tier):
 
 ## Step 6 — Confirm completion
 
-If on main or master:
+If on {base_branch}:
   Report:
   - Commit:                {commit_sha} "chore(release): bump version to {version}"
   - Version tagged:        v{version}
@@ -351,20 +315,21 @@ If on main or master:
   - Environments promoted: {list, or "none" if none selected, or "none — skipped" if skipped for CI reasons}
   - GitHub Release:        {release_url, if created} / skipped with reason / failed with reason / not GitHub
   - GitHub capability/CI:  {available / unavailable with reason; actual CI status if checked}
-  - Deployment triggered:  yes/no (based on CI/CD presence)
+  - Deployment triggered:  verified triggered / not triggered / unknown (supported by actual deployment configuration/provider evidence, not CI presence alone)
 
-  If any environment was promoted after choosing "Promote anyway" despite CI not reporting success or being unavailable: add a line — "Note: promoted to {list of those environments} without verified passing CI (manually overridden: {status/reason})."
-  If promotion was skipped because CI hadn't passed: add a line — "To promote later: checkout the environment branch, merge main in manually, and push — re-running /helm:ship would cut a new version rather than retry this promotion."
+  Required CI overrides are not supported. Report blocked/pending promotion with its exact source SHA and reason; never claim it succeeded.
+  If promotion was skipped because CI hadn't passed: add a line — "To promote later: verify required CI for this same published source SHA, then use an approved environment promotion or reviewed manual merge/push — re-running /helm:ship would cut a new version rather than retry this promotion."
 
 If on environment branch, fan-out mode:
   Report:
   - Branch pushed:         {current_branch, or none if cancelled/failed}
-  - Deployment triggered:  yes/no (based on CI/CD presence)
+  - Deployment triggered:  verified triggered / not triggered / unknown (supported by actual deployment configuration/provider evidence, not CI presence alone)
 
 If on environment branch, chain mode:
   Report:
   - Promoted:              {current_branch} → {next_environment}
-  - Branches pushed:       {current_branch}, {next_environment}
-  - Deployment triggered:  yes/no (based on CI/CD presence)
+  - Source publication:     {pushed this run / already published / pending}
+  - Target publication:     {next_environment pushed and verified / not attempted / failed}
+  - Deployment triggered:  verified triggered / not triggered / unknown (supported by actual deployment configuration/provider evidence, not CI presence alone)
 
-  If configured CI was not verified successful, including when the check was unavailable, before the user confirmed promotion: add a line — "Note: promoted without verified passing CI (manually confirmed anyway: {status/reason})."
+  If CI blocked promotion, report no target mutation, the exact source SHA and pending reason. Source publication and target publication are reported separately, including whether the source was already published before this run.

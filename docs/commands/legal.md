@@ -14,67 +14,23 @@ Command names below use Claude notation. In Codex, select the same Helm workflow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:legal]) --> Strategy{git-strategy?}
-  Strategy -->|Solo| SoloCheck{On main/master?}
-  SoloCheck -->|no| StopSolo[/Stop: switch to main first/]
-  SoloCheck -->|yes| Scan
-  Strategy -->|GitHub Flow| Fresh[Record original branch<br/>Checkout fresh branch from main:<br/>docs/legal-date]
-  Fresh --> Scan
-
-  Scan[Scan project profile:<br/>app type, data, sensitive data, minors,<br/>third parties, email/marketing,<br/>monetization, content, AI features]
-
-  Scan --> NoNeed{No legal need<br/>detected?}
-  NoNeed -->|yes| NoNeedAsk[Ask: exit, or<br/>proceed anyway?]
-  NoNeedAsk -->|exit| NoNeedDone([Report: no legal need<br/>found, nothing written])
-  NoNeedAsk -->|proceed anyway| Monorepo
-  NoNeed -->|no| Monorepo
-
-  Monorepo{Multiple web<br/>packages found?}
-  Monorepo -->|yes| MonorepoAsk[Ask: which package<br/>gets the legal docs?] --> Framework
-  Monorepo -->|no| Framework
-
-  Framework[Detect framework and output format:<br/>SSG → .md<br/>SSR/SSG JS → .mdx<br/>SPA/plain HTML → .html<br/>no web project → ask user]
-
-  Framework --> CSS{HTML output?}
-  CSS -->|yes| CSSDetect[Detect CSS scope:<br/>global → bare HTML<br/>scoped/utility → wrap in site layout container<br/>unknown → wrap in main]
-  CSS -->|no| Confirm
-  CSSDetect --> Confirm[Confirm output location:<br/>show resolved path + format<br/>user confirms or overrides]
-
-  Confirm --> Existing[Check existing docs<br/>in resolved output path]
-  Existing --> UpToDate{All candidates<br/>up to date?}
-  UpToDate -->|yes| UpToDateDone([Report: already<br/>up to date, nothing written])
-  UpToDate -->|no| Q1
-
-  Q1["Question 1: Core documents (multi-select):<br/>privacy-policy, terms, eula, disclaimer"]
-  Q1 --> Q2{Cookie or refund<br/>applicable?}
-  Q2 -->|yes| Q2ask["Question 2: Conditional documents (multi-select):<br/>cookie-policy, refund-policy"]
-  Q2 -->|no| Generate
-  Q2ask --> Generate
-
-  Generate{Any docs selected?}
-  Generate -->|no| Cancel[/Exit: nothing generated<br/>still runs Step 4 cleanup/]
-  Generate -->|yes| Write[Write each selected doc<br/>to resolved output path<br/>plain English, GDPR compliant]
-  Write --> CommitAsk["Confirm (states full consequence<br/>under GitHub Flow)"]
-  CommitAsk -->|cancel| DoneUncommitted([Report: written, not committed])
-  CommitAsk -->|confirm| CommitDocs["Commit: docs(legal):<br/>generate legal documents"]
-
-  CommitDocs --> SoloOrFlow{Which mode?}
-  SoloOrFlow -->|Solo| PushAsk["Confirm: Push main now?"]
-  SoloOrFlow -->|GitHub Flow| MergeMain[Merge branch into main]
-  MergeMain --> PushAsk
-  PushAsk -->|cancel| DoneUnpushed([Report: committed, not pushed])
-  PushAsk -->|confirm| Push[Push main]
-  Push --> Promote
-
-  Promote{Environment<br/>branches exist?}
-  Promote -->|yes| PromoteAsk[Ask: which to promote?<br/>Merge main into each selected]
-  Promote -->|no| Cleanup
-  PromoteAsk --> Cleanup
-
-  Cleanup{GitHub Flow?}
-  Cleanup -->|yes| DeleteBranch[Delete docs/legal-date branch<br/>Return to original branch]
-  Cleanup -->|no| Done
-  DeleteBranch --> Done([Report: docs generated])
+  Start([Run legal]) --> Prepare[Resolve owner, policy and main/master base]
+  Prepare --> Branch[Solo on base; GitHub Flow on unique branch]
+  Branch --> Work[Workflow assessment, choices and approved edits]
+  Work --> Changed{Any workflow changes or commits?}
+  Changed -->|no| Noop[Safe empty-branch cleanup and report]
+  Changed -->|yes| Verify[Verify outputs and required commit approvals]
+  Verify --> Mode{Git strategy?}
+  Mode -->|GitHub Flow| Review[Confirmed branch push and PR handoff; required review and CI]
+  Review -->|pending| Pending[Retain work and report pending state]
+  Review -->|satisfied| Merge[Configured integration strategy]
+  Mode -->|Solo| Push
+  Merge --> Push[Separately confirm publication]
+  Push -->|declined or failed| Pending
+  Push -->|verified published SHA| CI[Required promotion CI passed or not applicable]
+  CI -->|blocked| Pending
+  CI -->|ready| Promote[Optional confirmed fan-out]
+  Promote --> Cleanup[Safe eligible cleanup and report]
 ```
 
 ## Steps
@@ -85,10 +41,7 @@ Configuration is read from the resolved project-memory owner: normally `AGENTS.m
 
 Behavior depends on that owner's `git-strategy` (absence defaults to GitHub Flow, per git.html):
 
-- **Solo Mode**: runs only on `main`/`master`. Halts on any other branch.
-- **GitHub Flow**: records the current branch, then unconditionally checks out a fresh branch from main's current tip (`docs/legal-{date}`), regardless of what the starting branch was. The generated documents are always scanned from main's own content, never from whatever branch happened to be checked out, so there's nothing to validate about the starting branch itself. The command returns to the original branch at the end (see Step 4).
-
-If the command exits having written nothing at all (Step 1's "No legal need detected" exit, Step 2's "all candidates up to date" exit, or Step 2's "nothing selected" case), this cleanup still runs: delete the temporary branch and return to the original branch. This does **not** apply once documents have actually been written but left uncommitted (Step 4's Cancel option): that branch is deliberately preserved so the user can review or finish committing later; real drafted work is never auto-deleted.
+Use the [shared Git and CI flow](../setup/git-and-ci.html): resolve the actual main/master base and invocation policy, require a clean setup, use a unique GitHub Flow branch (unused suffix on collisions), and revalidate destination ownership/configuration after checkout. Solo stays on the base without a temporary branch. Preserve real drafts/commits on failure; only a genuine no-write/no-commit exit safely returns before deleting its empty branch.
 
 ### 1. Project scan
 
@@ -124,13 +77,13 @@ Reads the codebase to build a legal profile:
 
 **Output location confirmation**: for the auto-detected scenarios (SSG, JS framework, SPA/plain HTML), the resolved path and format are shown to the user to confirm or override before anything is written. The no-web case is not asked twice: its "where and in what format?" question already served as the location choice, so the confirmation is skipped there.
 
-**Existing documents**: checks the resolved output path for already-present files and resolves `.helm/legal-manifest.json` (the record of what a previous run generated and at which commit; carries a `schema_version` field: a missing one is treated as `1`, since every manifest written before that field existed is implicitly version 1). Both `.claude/helm/legal-manifest.json` and `.claude/legal-manifest.json` are also checked. Validate and compare all copies before classification; differing manifests require explicit reconciliation rather than choosing a winner. Only a run that actually writes a document can migrate the manifest. Verify canonical state before retiring legacy sources after explicit commit approval, in the same commit. Inspection, Skip, and no-op exits leave paths intact. No other command's state moves. Each present file is classified: **Helm-generated** (in the manifest, safe to overwrite) or **Foreign** (not in the manifest, likely hand-written or lawyer-reviewed). For a Helm-generated file it also checks `git log {generated-commit}..HEAD` for changes that shift the legal profile (new analytics, payments, auth, integrations) and classifies it **up to date** or **may be outdated** accordingly: a real classification the selection step below acts on, not just a label. Regeneration is always a full rewrite, never a surgical clause edit. The published documents carry **no marker of their own**: the manifest is the sole record, so end-user-facing files stay completely clean.
+**Existing documents**: checks the resolved output path for already-present files and resolves `.helm/legal-manifest.json` (the record of what a previous run generated and at which commit; carries a `schema_version` field: a missing one is treated as `1`, since every manifest written before that field existed is implicitly version 1). Both `.claude/helm/legal-manifest.json` and `.claude/legal-manifest.json` are also checked. Validate and compare all copies before classification; differing manifests require explicit reconciliation rather than choosing a winner. Only a run that actually writes a document can migrate the manifest. Verify canonical state before retiring legacy sources after explicit commit approval, in the same commit. Inspection, Skip, and no-op exits leave paths intact. No other command's state moves. Each present file is classified: **Helm-generated** (in the manifest, safe to overwrite) or **Foreign** (not in the manifest, likely hand-written or lawyer-reviewed). For a Helm-generated file, validate `generated_at_commit` as a hexadecimal commit ID, resolve an existing commit object and verify ancestry to the inspected HEAD before safely running its Git range. Only a successful, complete relevant-profile review with no changes permits **up to date**. Relevant changes mean **may be outdated**. Invalid/missing/unavailable/non-ancestor IDs, command failures or incomplete review mean **unknown / may be outdated**, keeping the document in the review candidates and preventing an all-up-to-date exit. Recheck changed HEAD/manifest inputs and never rewrite stored IDs just to repair classification. This is a real classification the selection step below acts on, not just a label. Regeneration is always a full rewrite, never a surgical clause edit. The published documents carry **no marker of their own**: the manifest is the sole record, so end-user-facing files stay completely clean.
 
 ### 2. Select which documents to generate
 
-**Applicability** (does the document apply at all) is separate from **Recommended** (should the user be nudged to select it right now). privacy-policy.md and terms.md always apply; cookie-policy.md/refund-policy.md/eula.md/disclaimer.md apply per scan findings. A document is Recommended only if it's missing and applies, or it exists but was classified **may be outdated** above; an applicable document that already exists and is up to date is *not* Recommended, regardless of the applicability rule. This means privacy-policy.md/terms.md aren't unconditionally Recommended on every run the way they used to be: once generated and unchanged, they drop out of the nudge.
+**Applicability** (does the document apply at all) is separate from **Recommended** (should the user be nudged to select it right now). privacy-policy.md and terms.md always apply; cookie-policy.md/refund-policy.md/eula.md/disclaimer.md apply per scan findings. A document is Recommended only if it's missing and applies, or it exists but was classified **may be outdated** or **unknown** above (with the reason disclosed); an applicable document that already exists and is up to date is *not* Recommended, regardless of the applicability rule. This means privacy-policy.md/terms.md aren't unconditionally Recommended on every run the way they used to be: once generated and unchanged, they drop out of the nudge.
 
-**All candidates up to date**: if every applicable document already exists, is Helm-generated, and is up to date (nothing missing, nothing Foreign, nothing stale), the command skips this step's questions entirely: "Legal documents are up to date: no meaningful changes since last generation." Proceeds straight to Step 4's cleanup, same as if nothing had been selected.
+**All candidates up to date**: if every applicable document already exists, is Helm-generated, and is up to date (nothing missing, nothing Foreign, stale or unknown), the command skips this step's questions entirely: "Legal documents are up to date: no meaningful changes since last generation." Proceeds straight to Step 4's cleanup, same as if nothing had been selected.
 
 Otherwise, AskUserQuestion has a 4-option limit, so this step uses two questions.
 
@@ -138,8 +91,8 @@ Otherwise, AskUserQuestion has a 4-option limit, so this step uses two questions
 
 | Option | Recommended when |
 |---|---|
-| `privacy-policy.md` | missing, or exists and flagged may-be-outdated |
-| `terms.md` | missing, or exists and flagged may-be-outdated |
+| `privacy-policy.md` | missing, stale, or history unknown (reason shown) |
+| `terms.md` | missing, stale, or history unknown (reason shown) |
 | `eula.md` | same, gated on installable-software applicability |
 | `disclaimer.md` | same, gated on AI-content/advice applicability |
 
@@ -152,7 +105,7 @@ Otherwise, AskUserQuestion has a 4-option limit, so this step uses two questions
 
 Question 2 is skipped entirely if the scan found no analytics and no payment processing. If both apply, it's a multi-select as shown above; if only one applies, a multi-select with a single option isn't valid (AskUserQuestion needs at least 2), so it asks a direct yes/no confirmation for that one document instead.
 
-Each existing document's option also carries a status suffix: `(exists: up to date)`, `(exists: may be outdated)`, or `(exists: not helm-generated)` for a Foreign file, so the user can tell an auto-generated file from a hand-edited one, and a current file from a stale one, independent of whether it's Recommended.
+Each existing document's option also carries a status suffix: `(exists: up to date)`, `(exists: may be outdated)`, `(exists: history unknown: reason)`, or `(exists: not helm-generated)` for a Foreign file, so the user can tell an auto-generated file from a hand-edited one, and a current file from a stale one, independent of whether it's Recommended.
 
 All documents are opt-in: the user can deselect any recommended document or add ones the scan did not flag. If nothing is selected across both questions, the command exits without writing anything, proceeding to Step 4, which writes nothing but still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created. Selected documents that already exist are overwritten (Foreign ones confirmed individually first).
 
@@ -181,21 +134,19 @@ Each selected document is written in plain English, GDPR compliant, to the resol
 
 ### 4. Commit and finalize
 
-If Step 2 selected nothing: skips the commit confirmation and environment promotion, nothing to act on. Still runs GitHub Flow cleanup (delete the temporary branch, return to the original branch) if one was created; this step is never skipped wholesale, since the cleanup logic lives here.
+Always review actual generated documents/diff and confirm their exact commit, even with auto-commit enabled. Verify document content/date/contact and manifest before staging. Decline leaves documents, canonical drafts and remaining legacy sources intact on the actual branch, with no merge/deletion/checkout. Approval allows only exact generated outputs, the verified canonical manifest and tracked same-file removals in `docs(legal): generate legal documents`. Verify the commit. Legal also requires explicit approval for any integration commit; PR/push approval never substitutes for legal content review.
 
-Otherwise presents the list of generated files for review and waits for confirmation before committing: always, even under `git-auto-commit: true`. Generated documents are public, legally-binding text, so this is a deliberate exception to the normal auto-commit flow (see [`safety.md`](../rules/safety.html#agent-execution-boundaries)). Document completeness is checked before updating or migrating the manifest; incomplete outputs preserve the prior manifest candidates.
+No documents written means no manifest write/migration or commit; only a genuine no-op uses empty-branch cleanup.
 
-Single commit of the generated documents plus the updated `.helm/legal-manifest.json`: `docs(legal): generate legal documents`. If the output path or format differs from the default (`legal/` Markdown), the commit body notes it for future runs. If the user cancels, the documents and any canonical manifest draft stay uncommitted, legacy manifest sources remain intact, and migration is reported as pending; under GitHub Flow this also means no merge, no branch deletion, and no return to the original branch; the command still proceeds to the completion report either way.
+Follow the [shared Git and CI flow](../setup/git-and-ci.html) after the command's own output verification and commit approvals. GitHub Flow offers separately confirmed branch publication and PR creation, or a local/manual handoff, until required review/checks pass. Integration uses the configured squash/rebase/merge strategy and actual main/master base. Solo requires no PR unless explicit project policy says otherwise. Base publication always has its own confirmation.
 
-Push is always its own separate confirmation after the commit: never folded into the commit prompt, and never skipped regardless of `git-auto-commit`, matching the shared Git and safety rules. Under GitHub Flow this means: commit on the temporary branch, merge into main, *then* a dedicated "Push main now?" gate before anything reaches origin. Cancelling the push gate leaves main committed (Solo Mode) or merged (GitHub Flow) locally but unpushed, skips environment promotion and (under GitHub Flow) branch cleanup, and still proceeds to the completion report.
+Before fan-out promotion, verify configured/applicable CI for the exact published source SHA with complete provider-aware coverage. Missing/failed/pending/unknown results stop or defer promotion; target selection cannot waive the gate. Use at most four target options or Yes/Skip for one, explicitly describing merge and push. Verify each operation and report completed/pending targets separately.
 
-**Environment promotion** (both modes, after a successful push): if environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the documents: capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options); then merges main into each selected branch and pushes, matching ship.md's promotion mechanics exactly, just with a commit message scoped to legal document updates.
-
-**GitHub Flow only**, after the push gate: runs environment promotion, deletes the temporary branch (locally and remotely if it was pushed), and returns to whichever branch the command was originally run from. **Solo Mode** commits directly to main, so none of this branch dance is needed; it goes straight to environment promotion.
+Declined/failed commits, unsafe local edits or incomplete checkpoints preserve actual work and stop dependent operations. Safe cleanup uses ancestry checks and `git branch -d`; squash/rebase branches outside ancestry are retained, never force-deleted. Remote deletion needs its own push confirmation. Report PR URL/review status, actual branch, commits, integration/publication, CI, and promotions separately. Summarize output verification captured before publication, not a different original checkout after cleanup.
 
 ### 5. Confirm completion
 
-If Step 1's "No legal need detected" check exited early, reports just that: no documents generated, no legal need found, since output location and contact point were never resolved. If Step 2's "all candidates up to date" check exited early, reports that instead: output location was resolved, but nothing needed regenerating. Otherwise, before reporting success, reads each generated document back and confirms it exists, opens with the `**Last updated:**` line, and closes with a `## Contact` section containing no unfilled placeholder: a failed check is reported per-file instead of folded into a generic success message, since an incomplete legal document is worse silent than loud. Then reports which documents were generated, the output path, format, jurisdiction, tone, whether the changes were committed, whether they were pushed, and which environments were promoted. Under GitHub Flow, also reports the temporary branch's fate (merged and deleted, merged but left unpushed, or left in place if cancelled at the commit stage) and confirms which branch you were returned to. Reminds the user that these are AI-generated starting points: review before publishing and consult a lawyer for high-stakes products.
+If Step 1's "No legal need detected" check exited early, reports just that: no documents generated, no legal need found, since output location and contact point were never resolved. If Step 2's "all candidates up to date" check exited early, reports that instead: output location was resolved, but nothing needed regenerating. Otherwise, summarize the read-back already completed on the workflow/integration branch before commit/publication, not a different checkout after cleanup. Confirm it exists, opens with the `**Last updated:**` line, and closes with a `## Contact` section containing no unfilled placeholder: a failed check is reported per-file instead of folded into a generic success message, since an incomplete legal document is worse silent than loud. Then reports which documents were generated, the output path, format, jurisdiction, tone, whether the changes were committed, whether they were pushed, and which environments were promoted. Under GitHub Flow, also reports the temporary branch's actual fate (PR pending, integrated with deletion/retention, local only, or pending drafts) and confirms which branch you were returned to. Reminds the user that these are AI-generated starting points: review before publishing and consult a lawyer for high-stakes products.
 
 ## Stop conditions
 

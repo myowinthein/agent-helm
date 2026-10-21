@@ -14,22 +14,23 @@ Command names below use Claude notation. In Codex, select the same Helm workflow
 
 ```mermaid
 flowchart TD
-  Start([User runs /helm:env]) --> Branch[Solo Mode: require main/master<br/>GitHub Flow: branch off main]
-  Branch --> Scan[Scan all env files,<br/>source code, and .gitignore<br/>11 checks: read-only]
-
-  Scan --> Report[Present findings: ENV AUDIT REPORT]
-  Report --> Ask[Ask: which targets to work through?<br/>Env files and/or .gitignore]
-
-  Ask -->|Env files| EnvFlows[Env-file sub-flows, each with a Skip:<br/>Secret cleanup · Placeholder cleanup ·<br/>Env sync · Missing from env ·<br/>Hardcoded values · Never referenced ·<br/>Env formatting]
-  Ask -->|.gitignore| GitFlows[.gitignore sub-flows, each with a Skip:<br/>Missing entries · Tracked files ·<br/>Entries to remove · Formatting]
-  Ask -->|neither| SkipExit[/Exit: no changes,<br/>clean up branch if one was created/]
-
-  EnvFlows --> Commit[Commit: silent under<br/>git-auto-commit, or confirm]
-  GitFlows --> Commit
-  Commit --> Push[Ask: push main now?]
-  Push --> Promote[Ask: promote to<br/>environment branches?]
-  Promote --> Cleanup[GitHub Flow: merge to main,<br/>delete temp branch]
-  Cleanup --> Done([Report: ENV COMPLETE])
+  Start([Run env]) --> Prepare[Resolve owner, policy and main/master base]
+  Prepare --> Branch[Solo on base; GitHub Flow on unique branch]
+  Branch --> Work[Workflow assessment, choices and approved edits]
+  Work --> Changed{Any workflow changes or commits?}
+  Changed -->|no| Noop[Safe empty-branch cleanup and report]
+  Changed -->|yes| Verify[Verify outputs and required commit approvals]
+  Verify --> Mode{Git strategy?}
+  Mode -->|GitHub Flow| Review[Confirmed branch push and PR handoff; required review and CI]
+  Review -->|pending| Pending[Retain work and report pending state]
+  Review -->|satisfied| Merge[Configured integration strategy]
+  Mode -->|Solo| Push
+  Merge --> Push[Separately confirm publication]
+  Push -->|declined or failed| Pending
+  Push -->|verified published SHA| CI[Required promotion CI passed or not applicable]
+  CI -->|blocked| Pending
+  CI -->|ready| Promote[Optional confirmed fan-out]
+  Promote --> Cleanup[Safe eligible cleanup and report]
 ```
 
 ## Steps
@@ -42,12 +43,11 @@ Before switching branches or writing files, stops if pre-existing staged changes
 
 Behavior depends on that owner's `git-strategy` (absence defaults to GitHub Flow, per git.html):
 
-- **Solo Mode**: runs only on `main`/`master`. Halts on any other branch. No branch is created; every commit lands directly on main.
-- **GitHub Flow**: records the current branch, then checks out a fresh branch from main's current tip (`chore/env-{date}`). Returns to the original branch at the end (see Step 4).
-
-If the command exits at any point without writing anything, this cleanup still runs: delete the temporary branch and return to the original branch.
+Use the [shared Git and CI flow](../setup/git-and-ci.html): resolve the actual main/master base and invocation policy, require a clean setup, use a unique GitHub Flow branch (unused suffix on collisions), and revalidate destination ownership/configuration after checkout. Solo stays on the base without a temporary branch. Preserve real drafts/commits on failure; only a genuine no-write/no-commit exit safely returns before deleting its empty branch.
 
 ### 1. Scan
+
+Credential and hardcoded-value previews show only path, key name and type. Values, prefixes/suffixes and secret-bearing URLs/snippets are omitted in every scan, replacement plan and completion report. Unsafe/unverifiable filtering blocks the inspection instead of exposing values.
 
 Eleven read-only checks across all env files, source code, and `.gitignore`. Never stops early: a partial scan produces missed findings that silently persist.
 
@@ -81,7 +81,7 @@ All commits, including per-file commits, exclude `.env` and other non-example `.
 - **Placeholder cleanup (other env files)**: shows unfilled placeholders grouped by file. Dev fills in values manually, then marks done.
 - **Env sync**: per file. Shows which keys are missing and where they exist in other files. Dev adds them manually per file, marks done before moving to the next.
 - **Missing from env**: all at once. Keys referenced in code but absent from all env files, with file:line locations. Dev adds them manually, marks done.
-- **Hardcoded values**: shows all findings with severity, file:line, redacted value, and suggested env var name. Single-select: Replace all, Skip, or Other. Real values go into local env files; templates receive placeholders. If Replace all and more than 10 findings: processes one source file at a time, committing only its safe source and template changes after each, subject to the same index checks and Auto-Commit rule.
+- **Hardcoded values**: shows all findings with severity, file:line, credential/value type with the value omitted entirely, and suggested env var name. Single-select: Replace all, Skip, or Other. Real values go into local env files; templates receive placeholders. If Replace all and more than 10 findings: processes one source file at a time, committing only its safe source and template changes after each, subject to the same index checks and Auto-Commit rule.
 - **Never referenced**: lists keys with no code reference, with a hint on whether each looks infrastructure-only or stale. Dev responds in free text: delete some, keep some, or wire up to code.
 - **Env formatting**: single-select: Proceed or Skip. Fixes formatting, removes duplicate keys (keep last), adds category groupings consistently across all env files. Preserves existing group order.
 
@@ -94,15 +94,13 @@ All commits, including per-file commits, exclude `.env` and other non-example `.
 
 ### 4. Commit, push, and promote
 
-After all fixes are applied, stages only the remaining approved, safe changes using explicit paths or task-specific hunks, preserving confirmed untracking deletions. Never uses repository-wide staging or includes non-example env contents. Before every commit, verifies the complete proposed index for unrelated changes, prohibited env additions/modifications, and credentials in resulting file contents without exposing values in tool output. If unsafe or unverifiable, stops the commit/push path and reports paths and key names only.
+Verify the complete index, staging only approved safe source/template/gitignore changes and confirmed untracking deletions. No non-example env contents, credentials or unrelated work may enter a commit. Earlier per-file commits still count even when the final stage has nothing new to commit, in Solo as well as GitHub Flow. Local-only env edits remain on disk and are reported; if they block checkout/integration, stop without reset, stash, discard or committing them.
 
-Commits per [git.md's Auto-Commit rule](../rules/git.html#auto-commit): silent if `git-auto-commit: true`, otherwise confirms first. Commit message: `chore(env): audit and fix env configuration`. If nothing was staged (e.g. only local env edits remain, or the Hardcoded values sub-flow already committed all safe changes per-file), there's nothing to commit here, but under GitHub Flow this doesn't automatically mean nothing to do: it checks whether the temporary branch has commits ahead of main (the Hardcoded values sub-flow's own commits, made directly on that branch), and if so still merges that work into main rather than discarding it by deleting the branch. Only when the branch has no commits ahead of main does it skip straight to cleanup. Solo Mode has no such case, since Hardcoded values commits there already land directly on main.
+Follow the [shared Git and CI flow](../setup/git-and-ci.html) after the command's own output verification and commit approvals. GitHub Flow offers separately confirmed branch publication and PR creation, or a local/manual handoff, until required review/checks pass. Integration uses the configured squash/rebase/merge strategy and actual main/master base. Solo requires no PR unless explicit project policy says otherwise. Base publication always has its own confirmation.
 
-Local env edits remain on disk and are reported separately. If they block checkout, merge, or cleanup, stops the affected operation and reports the current branch and remaining work; never forces checkout, discards, automatically stashes, or commits those files to proceed.
+Before fan-out promotion, verify configured/applicable CI for the exact published source SHA with complete provider-aware coverage. Missing/failed/pending/unknown results stop or defer promotion; target selection cannot waive the gate. Use at most four target options or Yes/Skip for one, explicitly describing merge and push. Verify each operation and report completed/pending targets separately.
 
-Push always requires its own confirmation regardless of `git-auto-commit`, per git.md's Auto-Commit exception and rules/safety.md's unconditional push-confirmation rule. If environment branches exist (same detection [`/helm:ship`](ship.html) uses), asks which should also receive the update: capped at 4 options if more branches qualify (recognized tier names first, then alphabetical; the question notes any remainder needs a follow-up run), or a direct yes/no confirmation instead of a multi-select if exactly one branch qualifies (AskUserQuestion needs at least 2 options); then merges main into each and pushes.
-
-**Solo Mode** commits directly to main, confirms the push, then runs environment promotion. **GitHub Flow** commits on the temporary branch, merges it into main, confirms the push, runs environment promotion, deletes the temporary branch (locally and remotely if pushed), and returns to whichever branch the command was originally run from.
+Declined/failed commits, unsafe local edits or incomplete checkpoints preserve actual work and stop dependent operations. Safe cleanup uses ancestry checks and `git branch -d`; squash/rebase branches outside ancestry are retained, never force-deleted. Remote deletion needs its own push confirmation. Report PR URL/review status, actual branch, commits, integration/publication, CI, and promotions separately. Summarize output verification captured before publication, not a different original checkout after cleanup.
 
 ### 5. Completion report
 

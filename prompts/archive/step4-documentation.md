@@ -15,7 +15,7 @@ Goal: Make future me able to understand, restore, run, troubleshoot, and demonst
 - Only document verified information. Label anything unverified explicitly.
 - Do not invent setup procedures, demo workflows, runtime requirements, or API behavior.
 - Do not include secrets, credentials, API keys, or private/production URLs.
-- Keep README.md concise — link to docs/ rather than repeating content.
+- Keep the generated archive index concise — link to docs/ rather than repeating content; protected README content remains unchanged.
 - Use em-dashes sparingly — only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
 - Do not commit or push.
 
@@ -41,14 +41,18 @@ Use this to guide the decision:
 | Auto-generated documentation | Remove — regenerate if needed |
 | Outdated and no recovery or historical value | Remove |
 
-Consolidate documentation duplicates without altering instruction ownership. Every active recovery document must be reachable through README.md or another recovery document. Protected instructions/rules and operational state are exempt from this navigation requirement; do not remove or move them to satisfy it.
+Consolidate documentation duplicates without altering instruction ownership. Every active recovery document must be reachable through the approved archive index (normally README.md) or another recovery document. Protected instructions/rules and operational state are exempt from this navigation requirement; do not remove or move them to satisfy it.
 
 ---
 
 ## Required Files
 
 ### README.md
-Always write a fresh archive-focused README regardless of whether one already exists.
+Normally write a fresh archive-focused README, but first check the protected-import inventory. If AGENTS.md, CLAUDE.md or another active project instruction imports/reads README.md as instructions, it is protected content: do not rewrite, extract/move content from, or silently repoint that import.
+
+Show this conflict in the consolidation plan before any documentation write and offer `Keep protected README and create an archive index` or `Stop for instruction reconciliation`. The first choice requires a reviewed unused path such as `docs/archive-index.md`; do not overwrite an existing file there without its own reviewed plan. Preserve README and all instruction imports byte-for-byte, write the archive-focused index at the chosen path, and record that entry point in the report, inventory and archive metadata so later steps verify the correct navigation. The second choice leaves the conflicting files unchanged and pauses this step until the developer reconciles instructions outside archive. A generic consolidation approval never authorizes changing a protected import. Apply the same check to any other required output that is a protected instruction import.
+
+Only when README is not protected do the normal rewrite/extraction instructions below apply. For the alternate-index path, use the same index content and links without modifying/extracting the protected README.
 
 Before writing: read the existing README if present. Extract any historically valuable content — business context, domain knowledge, why the project was built — and move it to `docs/historical-notes.md`. Do not carry outdated instructions, contributor guides, or public-facing content into the new README.
 
@@ -115,10 +119,10 @@ Structured snapshot for quick inventory across archived projects:
 2. Decide action for each file using the Consolidation table above
 3. Present the consolidation plan and wait for approval before making any changes
 4. Extract historically valuable content into docs/historical-notes.md
-5. Write fresh README.md
+5. Write the approved archive index (fresh README.md only when unprotected; otherwise the separately approved alternate path)
 6. Write or update docs/setup.md
 7. Write docs/archive-metadata.md
-8. Verify every active recovery document is reachable from README.md (protected instructions/rules/state are exempt): read README.md, list every link found, confirm each linked file exists, and report any active recovery document that is not reachable via a link
+8. Verify every active recovery document is reachable from the approved archive index (protected instructions/rules/state are exempt): read the approved index, list every link found, confirm each linked file exists, and report any active recovery document that is not reachable via a link
 
 ---
 
@@ -137,7 +141,7 @@ Existing files updated and what changed.
 Files removed and why.
 
 ## Navigation
-Confirm every active recovery document is reachable from README.md; report protected instruction/rule/state files retained in place without imposing recovery navigation on them.
+Confirm every active recovery document is reachable from the approved archive index; report protected instruction/rule/state files retained in place without imposing recovery navigation on them.
 
 ## Gaps
 Anything that could not be documented due to missing or unverified information from previous steps.

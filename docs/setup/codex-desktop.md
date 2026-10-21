@@ -13,4 +13,4 @@ Start a fresh task in the consumer project. Open the skill picker and select the
 
 Use the plugin directory's marketplace update action to refresh Helm, then reopen its details and start a fresh task. Uninstall through the installed plugin's menu. A previous task can retain already-loaded instructions even after uninstalling.
 
-The package is tested through Codex's native marketplace reader. Desktop UI installation and full desktop workflow execution are separate checks, not implied by that result. Current official documentation lists desktop and CLI as plugin surfaces; the Codex IDE extension does not support plugins. See [Plugins](https://learn.chatgpt.com/docs/plugins).
+The optional `scripts/check_clients.rb` check targets Codex's native marketplace reader; its presence is not a passing result. Native discovery, desktop installation and full workflow execution remain separate checks, deferred during this review. Current official documentation lists desktop and CLI as plugin surfaces; the Codex IDE extension does not support plugins. See [Plugins](https://learn.chatgpt.com/docs/plugins).

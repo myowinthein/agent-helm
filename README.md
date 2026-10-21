@@ -62,7 +62,7 @@ Links below go to detail pages. Workflow logic lives in `workflows/*.md`; portab
 | [`/helm:refactor`](https://myowinthein.github.io/claude-helm/docs/commands/refactor.html) | Run a project-wide refactor on a dedicated branch. |
 | [`/helm:env`](https://myowinthein.github.io/claude-helm/docs/commands/env.html) | Audit and fix `.env` files and `.gitignore`: sync, formatting, missing vars, hardcoded values. |
 | [`/helm:log`](https://myowinthein.github.io/claude-helm/docs/commands/log.html) | Set up shared `AGENTS.md` and its Claude adapter, then maintain project knowledge. The captain's log. |
-| [`/helm:manifest`](https://myowinthein.github.io/claude-helm/docs/commands/manifest.html) | Sync `README.md` to the current codebase. The vessel's manifest. |
+| [`/helm:manifest`](https://myowinthein.github.io/claude-helm/docs/commands/manifest.html) | Sync `README.md` to the current codebase. Requires an existing instruction owner; run log first for fresh setup. |
 | [`/helm:legal`](https://myowinthein.github.io/claude-helm/docs/commands/legal.html) | Generate GDPR-aware legal documents from a project scan. |
 | [`/helm:normalize`](https://myowinthein.github.io/claude-helm/docs/commands/normalize.html) | Rewrite non-conventional commit messages across full repo history. |
 | [`/helm:archive`](https://myowinthein.github.io/claude-helm/docs/commands/archive.html) | Archive an old project for long-term storage and future recovery. |

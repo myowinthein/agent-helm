@@ -19,7 +19,12 @@ flowchart TD
 
   Plan --> Approval{Developer\napproves plan?}
   Approval -->|no| Stop([Stop])
-  Approval -->|yes| Historical{Historically valuable\ncontent in existing README?}
+  Approval -->|yes| Protected{README is a protected import?}
+  Protected -->|yes| IndexChoice[Review alternate index path or stop]
+  IndexChoice -->|stop| Stop
+  IndexChoice -->|approved alternate| WriteIndex[Write approved alternate archive index]
+  WriteIndex --> WriteSetup
+  Protected -->|no| Historical{Historically valuable\ncontent in existing README?}
 
   Historical -->|yes| Extract[Extract to\ndocs/historical-notes.md]
   Historical -->|no| WriteREADME
@@ -59,9 +64,9 @@ The plan is presented and must be explicitly approved before any file is touched
 
 ### README.md
 
-Always written fresh, regardless of whether one already exists. Historically valuable content from the old README (business context, domain knowledge, why the project was built) is extracted to `docs/historical-notes.md` first.
+Normally written fresh after preserving approved historical context. First inspect the protected-import inventory. If an active AGENTS.md/CLAUDE.md/project instruction imports README as instructions, preserve its path/content and show the conflict in the consolidation plan before any writes. Offer **Keep protected README and create an archive index** or **Stop for instruction reconciliation**. The first choice reviews an unused path such as `docs/archive-index.md`, records it in report/inventory/metadata, and uses it as the recovery entry point. It does not extract/rewrite the protected README or repoint imports. A generic consolidation approval never authorizes that change. Apply the same protection check to other required outputs.
 
-The new README contains: project name, one-paragraph purpose, tech stack summary, restoration complexity rating from Step 1, and links to `docs/setup.md` and `docs/archive-metadata.md`. It is a short index for future-you, not a public-facing document.
+The generated index contains project name, purpose, stack, restoration complexity and links to setup/archive metadata. Only an unprotected README follows the normal rewrite and historical-content extraction path. All recovery navigation uses the approved index; protected instruction/rule/state files remain exempt.
 
 ### docs/setup.md
 
@@ -99,6 +104,6 @@ Structured snapshot for quick inventory across archived projects:
 - Only document verified information. Label anything unverified explicitly.
 - Do not invent setup procedures, demo workflows, runtime requirements, or API behavior.
 - No secrets, credentials, API keys, or private/production URLs.
-- Every active recovery document must be reachable from README.md. Protected instruction/rule/state files are exempt from recovery navigation, so they are not moved or removed as orphans.
+- Every active recovery document must be reachable from the approved archive index. Protected instruction/rule/state files are exempt from recovery navigation, so they are not moved or removed as orphans.
 - Use em-dashes sparingly: only when no other punctuation works as well.
 - No commit or push.

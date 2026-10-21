@@ -12,6 +12,8 @@ Exclude `.helm/`, `.claude/helm/`, and the known flat legacy state files (`.clau
 
 Before Git operations, establish that the host's shell is operating on the selected working tree. Folder access in Cowork or a remote sandbox does not establish access to the user's local Git checkout, credentials, Docker daemon, or installed tools. If a required capability is unavailable, report it and stop the affected step without claiming completion or advancing state.
 
+When the selected workflow calls for it, use the [content-sync Git procedure](content-sync.md) for log/manifest/env/legal/test setup and finalization, and the [CI gates](ci.md) for integration/promotion policy. These helpers do not invoke another workflow or grant publication approval.
+
 ## Project instructions and configuration
 
 Read the consumer's active project instructions and the bundled [Git rules](../../rules/git.md) and [safety rules](../../rules/safety.md). Respect project-specific instructions and adopted rules; loading a workflow does not install, overwrite, or weaken them. Use the Git rules' **Project memory and configuration** procedure to resolve `{memory_file}`, the single owner of Helm configuration and project knowledge. Do this before a workflow creates or switches a branch. `{instruction_file}` is the current host's active root entry: `CLAUDE.md` in Claude; in Codex, root `AGENTS.override.md` when present, otherwise `AGENTS.md`.

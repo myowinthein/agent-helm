@@ -195,7 +195,7 @@ Run before pushing, regardless of strategy:
 - Run tests for changed files. Run the full suite if shared or core code is touched.
 - Skip silently if not configured. Never push with failing tests.
 
-Skipping as unconfigured requires repository evidence. A configured check that cannot run remains blocked, never passed. Required CI must succeed for the exact intended commit before integration/promotion; missing, unavailable, pending, failed or unknown results do not satisfy the gate. Recheck when the tip changes and report capability failures.
+Skipping as unconfigured requires repository evidence. A configured check that cannot run remains blocked, never passed. Before integration, CI must pass for the exact intended commit when required for that integration by GitHub Flow, explicit project policy or provider protection. Solo with no pre-integration remote requirement may integrate after applicable local checks; configured CI alone does not create that requirement. An explicit required remote gate in either mode needs separately confirmed branch publication/checks or a pending review handoff, never local-test substitution or a forced Solo PR. Before promotion, configured/applicable CI must pass for the exact published source SHA. Missing, unavailable, pending, failed, cancelled, incomplete or unknown required results do not satisfy either gate. Recheck changed tips and report capability failures. See [Git and CI behavior](../setup/git-and-ci.html).
 
 ## Deployment
 

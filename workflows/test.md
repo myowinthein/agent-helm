@@ -4,15 +4,9 @@
 
 Read the shared runtime and resolve `{memory_file}` before Git actions, including instruction bridges, overrides, and recognized fenced configuration. Read `git-strategy` (default: GitHub Flow), `git-auto-commit` (default: false), and, under GitHub Flow, `git-merge-strategy` (default: squash) from that owner. This command never creates, migrates, or edits AGENTS.md, CLAUDE.md, or their settings. State the effective Git mode; preserve the resolved commit policy throughout the run.
 
-**Solo Mode** (`git-strategy: solo`):
-- Only proceed if on `main` or `master`. If on any other branch, stop: "test must be run on main or master in Solo Mode. Current branch is {branch} — switch and re-run."
-- No branch is created — every commit in Steps 4–6 lands directly on main as it happens.
+Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = test/{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
 
-**GitHub Flow** (`git-strategy: github-flow`, or absent):
-- Record the current branch as `{original_branch}`. Return only when finalization or genuine no-op cleanup completes safely; pending work stays on its current branch.
-- Checkout a fresh branch from main's current tip: update local main (`git pull` if a remote exists), then `git checkout -b test/{YYYYMMDD}` from it.
-- Call this branch `{branch}` for the rest of this command. Every commit in Steps 4–6 lands on `{branch}`, mirroring `/helm:refactor`'s single-branch-per-run model — Step 7 handles integration once at the end under the configured merge strategy and project review requirements, rather than pushing each cluster individually.
-- A genuine no-op with no writes, commits, or pending work uses Step 7's safe empty-branch cleanup. Drafted or committed work is never an empty branch merely because a later action was cancelled.
+Immediately after preparation, pin the clean source HEAD as `{assessment_head}`, before framework setup or test/ledger commits. Keep that baseline for the entire assessed run; Step 2 validates it rather than replacing it with a later branch tip. Identify approved setup/test outputs separately and require renewed assessment for unrelated source drift.
 
 ## Pending work and commit cancellation
 
@@ -106,7 +100,7 @@ Each `files` entry represents everything currently known about one file. `priori
 
 ### Validate saved commit references
 
-Require a repository with a usable HEAD before assessment; otherwise stop without creating Git history or migrating state. Capture the inspected HEAD as `{assessment_head}` on the branch being assessed. For every stored commit ID used for a comparison, accept only a commit ID, resolve it to an existing commit object, and verify it is an ancestor of `{assessment_head}` before running the comparison. A syntactically plausible SHA alone is insufficient. Never interpret a saved value as an arbitrary revision expression or shell argument.
+Require a repository with a usable HEAD before assessment; otherwise stop without creating Git history or migrating state. Validate the source `{assessment_head}` pinned before framework setup and test writes. On a new GitHub Flow branch it is the verified base snapshot; do not recapture a later framework/test commit as that baseline. Keep approved setup edits identified as workflow outputs, not unreviewed source inputs. Verify assessed source inputs remain at that snapshot; unrelated source changes require a refreshed assessment. Under Solo, later test commits do not advance this source baseline either. For every stored commit ID used for a comparison, accept only a commit ID, resolve it to an existing commit object, and verify it is an ancestor of `{assessment_head}` before running the comparison. A syntactically plausible SHA alone is insufficient. Never interpret a saved value as an arbitrary revision expression or shell argument.
 
 - Missing, unavailable, or non-ancestor `last_run_commit`: mark the incremental baseline unusable in memory, explain why, and route Step 3 to Full Scan or Skip. Do not run an invalid diff, silently substitute `HEAD~1`, or declare the project up to date. Leave the stored baseline untouched until a complete successful Full Scan records a new one.
 - Missing, unavailable, or non-ancestor `last_judged_commit`: mark that priority judgment stale and include the file in Full Scan's new judgment scope. Keep its human decision fields and other history; never carry the priority forward as a verified cache hit.
@@ -266,7 +260,7 @@ Split the project into folder/module chunks (keeping related files together), ca
 
 Before priority judgment, cross-check each file against `files` in the ledger:
 - File has a `files` entry with `priority` set, a validated `last_judged_commit`, and a successful comparison proving it unchanged since that commit: carry the stored priority forward — do not re-run sub-agent judgment for this file.
-- File has no `priority` set yet, its judgment reference is unusable, or it's changed since `last_judged_commit`: include it in the sub-agent run; set its `priority` and `last_judged_commit` to the new judgment and current HEAD — creating a new `files` entry if none exists, or adding these fields to an existing entry without touching any `user_status`/`note`/`recorded_commit`/`recorded_date` fields already on it.
+- File has no `priority` set yet, its judgment reference is unusable, or it's changed since `last_judged_commit`: include it in the sub-agent run; set its `priority` and `last_judged_commit` to the new judgment and the verified `{assessment_head}` actually inspected — creating a new `files` entry if none exists, or adding these fields to an existing entry without touching any `user_status`/`note`/`recorded_commit`/`recorded_date` fields already on it.
 - File has a `files` entry (with `priority`, `user_status`, or both) but no longer exists in the repo: remove the entry entirely — neither the priority judgment nor any lingering user decision applies to a file that's gone.
 
 Present findings before writing:
@@ -331,9 +325,9 @@ For each priority, cluster by cluster:
 Only after the selected work completes successfully and every required test/framework commit is accepted and verified, or a complete Full Scan finished with no priorities selected for writing. A declined or failed commit follows Pending work and commit cancellation above; do not advance state for incomplete work:
 
 - Set `schema_version` to `2` if not already present — including when converting an old-shaped ledger per Step 2's migration note.
-- **Catch Up run**: set `last_run_commit` to current HEAD. Increment `consecutive_catchup_count` by 1.
-- **Full Scan run**: set `last_run_commit` to current HEAD, set `full_scan_ever_run` to `true`, reset `consecutive_catchup_count` to `0`. Persist all `priority`/`last_judged_commit` changes from Step 5 into `files` (new entries, updated priorities, entries removed for files that no longer exist).
-- For files recorded during the Behavior Clarity Check as ambiguous: set `user_status: "ambiguous"` (plus `note`, `recorded_commit`, `recorded_date`) on that file's `files` entry — creating one if it doesn't exist, without touching any `priority`/`last_judged_commit` fields already there. `skipped-by-user` has no writer in the current flow — Step 4's plan confirmation and Step 5's priority selection are both all-or-nothing/tier-level, not per-file — but Step 4 still checks for and honors any pre-existing `skipped-by-user` entries (e.g. from a schema migration or manual edit).
+- **Catch Up run**: set `last_run_commit` to the verified `{assessment_head}` actually inspected before test writes. Increment `consecutive_catchup_count` by 1.
+- **Full Scan run**: set `last_run_commit` to the verified `{assessment_head}` actually inspected before test writes, set `full_scan_ever_run` to `true`, reset `consecutive_catchup_count` to `0`. Persist all `priority`/`last_judged_commit` changes from Step 5 into `files` (new entries, updated priorities, entries removed for files that no longer exist).
+- For files recorded during the Behavior Clarity Check as ambiguous: set `user_status: "ambiguous"` (plus `note`, `recorded_commit` = the actual `{assessment_head}` inspected for this decision, and `recorded_date`) on that file's `files` entry — creating one if it doesn't exist, without touching any `priority`/`last_judged_commit` fields already there. `skipped-by-user` has no writer in the current flow — Step 4's plan confirmation and Step 5's priority selection are both all-or-nothing/tier-level, not per-file — but Step 4 still checks for and honors any pre-existing `skipped-by-user` entries (e.g. from a schema migration or manual edit).
 - For files resolved this run (test written successfully, or ambiguity clarified): clear `user_status`/`note`/`recorded_commit`/`recorded_date` from that file's entry. Remove the entry entirely only if it has no `priority` left either — otherwise keep it for the scan-cache data.
 
 Write and read back `.helm/test-log.json` using the shared project-state procedure. Under the existing commit policy, retire only verified same-file legacy sources after commit authorization and stage the canonical file and tracked legacy removals together using explicit paths. Commit: `test(log): update test ledger after {catch-up / full-scan}`. If this ledger commit is declined or fails, preserve any canonical draft and remaining legacy sources, report any staged legacy removals, stay on the current branch, and go directly to Step 8 with the migration/checkpoint pending. Declining approval leaves legacy sources intact under the shared procedure. Do not enter Step 7, even if test commits were made earlier.
@@ -342,90 +336,17 @@ Write and read back `.helm/test-log.json` using the shared project-state procedu
 
 ## Step 7 — Merge and cleanup
 
-Before any finalization, check for declined/failed commits, incomplete state writes, pending drafts, and a clean index/working tree. Pending work goes directly to Step 8 on the current branch: no merge, rebase, push, promotion, deletion, or checkout. Never reset, stash, or silently commit drafts to pass this gate.
+Require verified test/framework commits and the durable ledger checkpoint, no declined/failed writes or commits, no pending drafts and a clean index/working tree before finalization. Pending work stays on the actual branch with no merge, publication, promotion, cleanup or checkout. A completed scan with no writing priorities may still have committed its ledger and is not a no-op.
 
-Only a genuine no-op with no writes, no commits, and no pending work uses empty-branch cleanup: under GitHub Flow, switch safely to `{original_branch}` and delete this run's empty `{branch}` with `git branch -d`; under Solo, no cleanup is needed. Then report in Step 8. Solo otherwise has no integration merge, since its commits already landed on main/master.
+Read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = test`. GitHub Flow explicitly offers confirmed branch publication and PR creation (or local/manual handoff) when required review/CI is outstanding. Integration uses the configured strategy and `{base_branch}`, followed by separately confirmed base publication, exact-published-SHA CI before fan-out promotion, and ancestry-safe cleanup. Solo stays no-PR unless explicit policy requires one.
 
-**Solo Mode:** before pushing, confirm — push always requires its own confirmation regardless of `git-auto-commit`, per git.md's Auto-Commit rule and rules/safety.md's unconditional push-confirmation requirement:
-
-  AskUserQuestion:
-    question: "Push main now? This publishes {N} commit(s) made this run to origin."
-    header:   "Push"
-    multiSelect: false
-    options:
-      - label: "Push (Recommended)"
-        description: "git push origin main"
-      - label: "Cancel"
-        description: "Leave main committed locally but unpushed — push manually when ready"
-
-If Cancel selected → stop here. Do not push or promote. Proceed to Step 8 to report the outcome, noting main is committed locally but unpushed.
-
-If Push selected: `git push origin main`, then run Environment promotion below.
-
-**GitHub Flow:**
-1. Before integration, re-read the effective merge strategy and project review requirements on the destination. Resolve any configuration change before mutation. State "Squash merge", "Rebase merge", or "Merge commit". Honor required PR review and CI; if those requirements are unmet or unavailable, leave the committed branch for that review, report the exact handoff, and go to Step 8 without integrating, pushing, promoting, or deleting it. Do not treat command invocation or auto-commit as an exemption from project review rules.
-2. When the project's requirements permit local integration, preview the full branch diff and obtain any required integration-commit approval under `git-auto-commit` before mutation. A decline follows the pending-work rule above. Use the resolved strategy, stopping on any conflict or failed command without continuing publication:
-   - `merge`: `git checkout main`, then `git merge {branch} --no-ff -m "test(project): write tests {catch-up / full-scan}"`.
-   - `squash` (default): `git checkout main`, then `git merge --squash {branch}`, and commit the reviewed result as `test(project): write tests {catch-up / full-scan}`. A failed commit leaves the actual index/branch pending for review.
-   - `rebase`: only rebase this run's private, unpushed branch onto main, then integrate with `git checkout main` and `git merge --ff-only {branch}`. A shared/already-pushed branch requires an explicit reviewed plan instead of an implicit history rewrite; stop and report the handoff. Never force-push as cleanup.
-   Verify integration succeeded and includes the committed test changes, canonical ledger, and any tracked legacy removals. Stored ledger IDs from before squash/rebase may cease to be ancestors; preserve their provenance and let Step 2 reassess invalidated comparisons on the next run instead of assigning uninspected SHAs. Before pushing, confirm:
-
-   AskUserQuestion:
-     question: "Push main now? This publishes the merged commit to origin."
-     header:   "Push"
-     multiSelect: false
-     options:
-       - label: "Push (Recommended)"
-         description: "git push origin main"
-       - label: "Cancel"
-         description: "Leave main merged locally but unpushed — push manually when ready"
-
-   If Cancel selected → stop here. Do not push, promote, or clean up. Proceed to Step 8 to report the outcome, noting main is merged locally but unpushed.
-
-   If Push selected: `git push origin main`.
-3. Run Environment promotion below.
-4. Delete `{branch}` locally only after verifying its tip is an ancestor of main and `git branch -d {branch}` succeeds. Squash can leave its commits outside main's ancestry; in that case retain the branch and report it, never substitute `-D` without explicit deletion approval. Any remote branch deletion requires its own push confirmation.
-5. Return to `{original_branch}` only when safe and no work is pending; otherwise report the actual branch and retained work.
-
-**Environment promotion** — shared by both modes. If environment branches exist (discover via `git branch -r`, filter for known environment names, same detection as ship.md), ask which should also receive these tests. (This block is intentionally duplicated across every content-sync command — see rules/git.md's Environment Branches section for the canonical shape; keep all copies in sync if it changes.)
-
-  AskUserQuestion:
-    question: "main has been updated. Which environment branches should also receive these tests?"
-    header:   "Promote to environments"
-    multiSelect: true
-    options: one entry per discovered environment branch, e.g.:
-      - label: "staging"
-        description: "Merge main into staging"
-      - label: "production"
-        description: "Merge main into production"
-
-  AskUserQuestion caps at 4 options. If more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
-
-  If exactly one environment branch qualifies, a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead:
-
-    AskUserQuestion:
-      question: "main has been updated. Promote to {branch} as well?"
-      header:   "Promote to environment"
-      multiSelect: false
-      options:
-        - label: "Yes — promote to {branch} (Recommended)"
-          description: "Merge main into {branch}"
-        - label: "Skip"
-          description: "Leave {branch} as-is for now"
-
-    "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
-
-  For each selected environment:
-  - git checkout {environment}
-  - git merge main --no-ff -m "chore(deploy): promote main to {environment} for test updates"
-  - git push origin {environment}
-  - git checkout main
-
-  If no environment branches exist, or the user selects none, skip silently.
+Preserve `{assessment_head}` and actual per-file judgment/decision provenance through provider merges, squash and rebase. Never replace saved IDs with an uninspected integration tip. Test's stable assessed source baseline, not its new test/ledger commits, is what Step 6 records. A genuine no-op with no writes or commits uses only safe empty-branch cleanup.
 
 ---
 
 ## Step 8 — Confirm completion
+
+If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
 
 Report:
 

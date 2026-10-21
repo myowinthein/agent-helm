@@ -15,7 +15,7 @@ Read-only reconnaissance. Scans every corner of the project: stack, data sources
 flowchart TD
   Start([Begin Step 1]) --> ReadCode[Read source code, config,\nmanifests, docs, env files]
 
-  ReadCode --> Gather["Determine:\n- Stack and runtime versions\n- Architecture and key modules\n- Database type and data sources\n- External integrations\n- Existing documentation\n- Postman/API collection files\n- Archive-worthy assets\n- Large or binary files\n- CI/CD pipelines\n- Git remotes and branches\n- Active credentials (redacted)"]
+  ReadCode --> Gather["Determine:\n- Stack and runtime versions\n- Architecture and key modules\n- Database type and data sources\n- External integrations\n- Existing documentation\n- Postman/API collection files\n- Archive-worthy assets\n- Large or binary files\n- CI/CD pipelines\n- Git remotes and branches\n- Credential paths, keys and types; values omitted"]
 
   Gather --> Complexity{Restoration\ncomplexity?}
   Complexity -->|Easy| Report

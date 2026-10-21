@@ -7,7 +7,7 @@ permalink: /docs/setup/compatibility.html
 
 # Compatibility and project instructions
 
-Helm has one workflow body per operation in `workflows/`. Portable entries in `skills/` load the shared runtime and that workflow. Legacy `commands/` files remain small adapters. The manifest exposes skills and disables automatic command-directory discovery, preventing duplicate entries while preserving `/helm:<name>` in Claude. Claude's existing invocation policy is retained; Codex's new skill entries disable implicit invocation.
+Helm has one workflow body per operation in `workflows/`. Portable entries in `skills/` load the shared runtime and that workflow. Legacy `commands/` files remain manual/legacy adapters, outside the current discovery path; older-client behavior is not established by source review. The manifest exposes skills and disables automatic command-directory discovery, preventing duplicate entries while preserving `/helm:<name>` in Claude. Claude's existing invocation policy is retained; Codex's new skill entries disable implicit invocation.
 
 ## One shared owner and a Claude adapter
 
@@ -51,7 +51,7 @@ Adopt manages only exact Helm rule targets, preserving custom pointers and unrel
 
 Foreign-file Overwrite/Skip decisions are collected before mutation. In reference mode, keeping a conflicting local `git.md` or `safety.md` stops the entire switch without writes or deletions; Claude could load that file natively while Codex reads only the shared marketplace pointers. All-foreign-files Skip creates no entries or adapter. Partial coverage is reported explicitly. Custom local rules are preserved and are not automatically shared with another host without approval.
 
-Adopt rechecks ownership and effective policy after branch changes and verifies all approved rule/entry outputs before committing or publishing. A missing memory file does not bypass Git strategy in an existing repository with HEAD. GitHub Flow honors PR/review, merge-strategy and CI policy; blocked review leaves a branch/PR handoff. Main/master is resolved once and used consistently. Failed or declined finalization preserves pending work. See [adopt](../commands/adopt.html) for the full flow.
+Adopt rechecks ownership and effective policy after branch changes and verifies all approved rule/entry outputs before committing or publishing. A missing memory file does not bypass Git strategy in an existing repository with HEAD. GitHub Flow honors PR/review, merge-strategy and CI policy; blocked review leaves a branch/PR handoff. Log, manifest, env, legal and test share the same [Git and CI phases](git-and-ci.html), with legal review and each command's state ownership preserved. Solo requires only applicable pre-integration CI, while configured/applicable CI still gates promotion of the published source SHA; no ship override bypasses required results. Main/master is resolved once and used consistently. Failed or declined finalization preserves pending work. See [adopt](../commands/adopt.html) for the full flow.
 
 Copied rules retain version markers. After a released update changes the bundled rules, rerun `adopt` to update copies; review the shared change because both hosts may read them. Adopt owns no ledger and never reads, stages or migrates `.helm/`, `.claude/helm/`, or flat legacy operational state.
 

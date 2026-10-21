@@ -1,0 +1,49 @@
+# Shared content-sync Git procedure
+
+For log, manifest, env, legal and test. Apply only the named phase when the invoking workflow directs it. This is not a standalone workflow and never loads or writes another command's state. Read the [CI gates](ci.md) for integration and promotion.
+
+## Prepare the working branch
+
+Resolve effective configuration through the shared runtime before Git mutations. Record invocation strategy, auto-commit and merge strategy (defaults: GitHub Flow, false, squash), original branch and starting HEAD. Log's recorded `{run_git_strategy}` and `{run_auto_commit}` govern this run even if approved configuration changes are saved for future runs. Resolve `{base_branch}` to the actual main/master branch using project instructions, default branch and refs; stop if ambiguous. No repository/HEAD stops this phase, except log's explicitly supported non-Git bootstrap, which skips Git entirely.
+
+Require a clean index/working tree before setup. Do not reset, stash, commit or absorb unrelated work to proceed. Solo requires `{base_branch}` and creates no branch. GitHub Flow safely switches to `{base_branch}`, fast-forwards from its configured upstream when available, and creates the caller's `{branch_template}` (with today's date substituted) from that base. If occupied, choose an unused numeric suffix; never reuse/delete an existing branch. Record the actual `{branch}`, that this invocation created it, and its base SHA. Stop on any failed Git operation.
+
+The only setup exception is an explicitly reviewed, untracked **legacy state input owned by the invoked test/legal workflow**. That owner first applies its packaged project-state procedure read-only to validate ownership/candidates and record the preserved input; the helper itself never interprets it. It may stay untracked during a safe checkout, but never overwrite a tracked destination or count it as an approved commit/cleanup. Re-resolve it on the actual destination before use/write. Invalid/conflicting/unreviewed input, canonical pending drafts, tracked pending changes and other commands' state remain blocks for reconciliation, not exceptions to absorb user work.
+
+After every checkout/update and before proposing writes, re-read effective entries, owner, overrides, explicit chains and configuration. Changed ownership/policy/dependencies from preflight stop for reconciliation before writing. Do not carry stale approvals to another branch. Capture actual branch inputs for the selected workflow; approved log layout/configuration changes are tracked expected outputs, not permission to silently switch its invocation policy.
+
+## Finalize verified workflow commits
+
+The caller first completes its own output verification, state procedure, exact-path staging and commit approvals. Legal always requires explicit review/commit approval, including integration commits; this procedure never weakens that gate. Log may already have a separate layout commit. Env may already have safe per-file commits and local-only env edits. Test must have a verified ledger checkpoint. Do not recommit earlier commits or create a cleanup-only state write.
+
+A genuine no-op has no workflow writes, commits or pending drafts. Safely switch back before deleting only this invocation's empty branch with `git branch -d`. If work was drafted/committed, or a write/commit was declined/failed, retain the actual branch/index/files and report pending work. Local-only env edits remain on disk; if they block checkout/integration, stop without committing/stashing/discarding them. Do not call a run empty merely because its final stage has nothing new to commit.
+
+Before integration/publication, require all intended commits and outputs verified, a clean index, and no unresolved workflow drafts or input drift. Run applicable local quality checks before publication. Inspect destination policy read-only before mutation and compare with invocation policy. Preserve approved log owner/settings changes under their recorded diff, using its original run policy; unexpected differences still stop. Recheck output contents/instruction chains after integration, before publication. Failure preserves actual work and blocks dependent promotion/cleanup.
+
+### Solo
+
+The caller's commits are on `{base_branch}`. With no publication remote, report local commits and push N/A. Otherwise show the exact commits, remote/ref and diff, then ask `Push {base_branch}` or `Leave local`, explicitly describing that push. Verify the remote ref equals the intended SHA after success and freeze it as `{published_sha}`. Decline/failure stops without promotion or cleanup. No PR is required unless explicit project policy says otherwise.
+
+### GitHub Flow
+
+1. A PR is required by GitHub Flow even without provider enforcement. Apply additional project/provider reviews and the CI integration gate to the exact committed `{branch}` tip. When review/checks are outstanding, offer `Publish branch and open PR` or `Leave branch local`; describe the exact branch push so the answer is its explicit push confirmation. Push only on that approval and verify the remote SHA. Reuse an existing PR for that tip, otherwise use an authenticated supported provider to create one against `{base_branch}` with the actual change summary and configured merge strategy. Pass multiline bodies as structured input or a temporary `--body-file`. Attach a created PR when the host supports it. No remote/access, declined push, or PR failure yields an honest local/published manual handoff; never claim a PR exists without success. Stop here with no merge, promotion or deletion. A later provider merge follows the configured strategy and required checks, not an automatic command exemption.
+2. If the exact tip's PR/review/CI requirements are already satisfied, state the configured squash/rebase/merge strategy and preview the complete integration diff. Obtain any integration-commit approval required by the caller (always for legal, otherwise invocation auto-commit). Use provider-side PR merging when protection requires it; confirm the base publication separately **before** invoking that API, then safely update the local base and verify its result. Do not bypass protection with a local merge. Where local integration is permitted after the PR gate:
+   - `merge`: switch to `{base_branch}` and `git merge {branch} --no-ff` with the approved scoped message.
+   - `squash`: switch to `{base_branch}`, `git merge --squash {branch}`, then commit the reviewed result under the caller's approval policy.
+   - `rebase`: only rebase this invocation's private, unpushed branch onto `{base_branch}`, then integrate with `git merge --ff-only {branch}`. A shared/pushed branch needs a separately reviewed rewrite plan or permitted provider PR rebase, never an implicit rewrite/force-push.
+3. Stop on any failed operation/conflict with actual branch/index preserved. Verify integrated output and preserved history/state, including owned canonical state and tracked legacy removals when applicable. Never replace saved review/scan IDs with uninspected SHAs to make ancestry checks pass. Log retains its actual reviewed snapshot. Test retains its actual assessed source snapshot. Refactor's separate continuation/provenance procedure is unchanged.
+4. Local base publication needs its own explicit push confirmation for the exact commits/ref. Decline/failure leaves local integration and branch intact. A provider merge already confirmed as publishing the base needs no duplicate push. Verify remote base SHA/content and freeze `{published_sha}`. No publication remote leaves verified integration local, with no promotion/deletion.
+
+### Fan-out promotion
+
+Only a verified published base may reach promotion. Discover qualifying environments through the configured remote; no targets means no promotion action to gate. Apply the CI promotion gate to `{published_sha}` **before** offering targets. This content sync always fans out from `{base_branch}`, regardless of the release chain setting.
+
+For 2–4 qualifying targets use a multi-select, capped at four with staging/stage/uat/preprod first, production/prod next, then other names alphabetically; disclose any remainder for a follow-up selection. Each option explicitly says `Merge {base_branch} into {environment} and push`. One target uses Yes/Skip with the same explicit consequences; preserve an explicit none. Selection authorizes only those described merges/pushes, not a CI waiver.
+
+For each selected target, recheck source SHA/CI and destination policy, safely update/switch to that destination, merge `{base_branch}` with `--no-ff` and `chore(deploy): promote {base_branch} for {workflow} updates`, then push only after success and verify its remote SHA. Return safely to the base. Stop on any failure and report completed versus pending destinations separately; do not continue cleanup after a blocked/failed promotion.
+
+### Cleanup and report
+
+Only after successful authorized finalization with no pending work, leave `{branch}` safely. Delete this invocation's local branch only if its tip is an ancestor of `{base_branch}` and `git branch -d` succeeds. Squash/rebase may leave it outside ancestry; retain/report rather than force-delete it. A published remote branch needs its own explicit deletion-push confirmation. Never delete protected/existing/unverified branches. Return to `{original_branch}` only when safe.
+
+The caller's completion report distinguishes drafts, verified commits, local integration, published base, PR URL/review handoff, CI, retained branch/current checkout, and completed/pending promotions. Summarize verification captured on the workflow/integration branch; do not revalidate a different original branch as if it contained the new output. A review handoff or blocked gate is pending publication, not a completed merge/push.

@@ -27,7 +27,7 @@ Goal: Understand the project well enough to make an informed decision about arch
 - CI/CD configuration — any pipelines that could auto-deploy on push
 - Git remotes, branches, and repository safety concerns
 - Compare the current branch's last commit date and content against every other local and remote branch. If another branch has more recent activity, or otherwise looks more complete than the current branch, flag it — the developer may be archiving from the wrong branch. This is informational only; do not block on it.
-- Active credentials — API keys, tokens, secrets, and passwords across all env files (.env, .env.staging, .env.production, .env.*.local, config files, Docker files). Flag anything that appears still-active. Redact values. Before completing the Credentials Risk section, confirm you have searched every file matching these patterns and list the files searched explicitly.
+- Credential locations and risks — inspect all env files (.env, .env.staging, .env.production, .env.*.local), config files and Docker files. Report only paths, key names and credential types, omitting values/fragments entirely. Do not infer liveness from appearance or contact services; mark it unknown unless local evidence establishes it. Before completing the Credentials Risk section, confirm you have searched every file matching these patterns and list the files searched explicitly.
 - Restoration risks and unknowns
 - Recommended restoration approach — local or Docker
 
