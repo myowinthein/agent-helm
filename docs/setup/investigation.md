@@ -18,7 +18,7 @@ Claude and Codex use the same investigation contract. A completed scan describes
 | test | Full scan / Gap scan |
 | refactor | Full scan / Gap scan |
 
-Full scan covers the command's entire relevant scope at its required depth. Gap scan covers changes since a valid baseline and their evidenced affected surface, including unchanged consumers. Unsupported request terms need scope clarification; literal paths retain their existing syntax. Audit, Plan, Targeted and Fix Backlog remain independent concepts. The other six commands keep their specialized workflows, without artificial Full/Gap modes.
+Full scan covers the command's entire relevant scope at its required depth. Gap scan covers changes since a valid baseline and their evidenced affected surface, including unchanged consumers. Unsupported request terms need scope clarification; literal paths retain their existing syntax where supported. Refactor's Audit, Plan, Targeted and Fix Backlog paths remain separate from scan depth. The other six commands keep their specialized workflows, without artificial Full/Gap modes.
 
 The [scan-depth selector](compatibility.html#shared-scan-depth-selection) still applies only to the four commands above. It recommends from actual impact and valid provenance, not age, file counts, commit distance or numbers of Gap scans. An explicit Full scan remains Full even without changes. A plugin update alone triggers no scan, reset or retrospective checkpoint invalidation. Older checkpoints retain their historical meaning without certifying that the newer detail contract was satisfied; known coverage gaps can inform the existing recommendation.
 
