@@ -12,7 +12,7 @@ Use facts the caller was already permitted to obtain in the current mode:
 - Actual inspected source snapshot (or its unavailability), applicable review anchor and its validation result.
 - Cheap relevant impact evidence, known prior-coverage limits and retained requested/backlog work. Missing evidence stays unknown.
 
-This prompt grants no additional reads or writes. Never discover/load another command's state, perform deep history investigation beyond the caller's existing cheap preflight merely to populate a picker, create metadata/configuration, or fetch/hydrate missing objects. Focused Remember/Status/settings/layout, structure/style repair, targeted and backlog paths gain no baseline or helper prerequisite. Read-only recommendations use only that caller mode's permitted facts; in particular, refactor Audit/Plan do not load operational state.
+This prompt grants no additional reads or writes. Never discover/load another command's state, perform deep history investigation beyond the caller's existing cheap preflight merely to populate a picker, create metadata/configuration, or fetch/hydrate missing objects. Settings/layout preparation, structure/style repair, targeted and backlog paths gain no baseline or helper prerequisite. Read-only recommendations use only that caller mode's permitted facts; in particular, refactor Audit/Plan do not load operational state.
 
 ## Baseline-validity checklist
 

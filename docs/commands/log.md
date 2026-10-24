@@ -8,7 +8,7 @@ nav_order: 2
 
 Give fresh Claude and Codex sessions useful project context: essential commands, important boundaries, working agreements and lessons the developer has already taught the agent. Log sets up shared `AGENTS.md` and its `CLAUDE.md` import adapter, then maintains that knowledge without replacing task-specific code investigation.
 
-In Codex, select log from the skill picker and request the same mode in your message. Both hosts use the same owner, preservation rules and review-marker contract. [Compatibility](../setup/compatibility.html) explains overrides, imports and shared rules.
+Run `/helm:log` in Claude, or select log from the Helm skill picker in Codex, whenever you want the project instructions reviewed. It analyzes the project, reports findings and updates the instructions through a reviewed proposal. Both hosts use the same owner, preservation rules and review-marker contract. [Compatibility](../setup/compatibility.html) explains overrides, imports and shared rules.
 
 ## Investigation depth and coverage
 
@@ -16,35 +16,29 @@ Full scan covers every first-party package/topic through representative real wor
 
 Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
 
-## Modes
+## Usage
 
-| Request in Claude | Purpose |
-|---|---|
-| `/helm:log` | Assess cheaply, recommend a full scan or gap scan, and propose required shared-layout setup. |
-| `/helm:log status` | Report local layout, configuration, history availability and pending work without writes, prompts, fetches or branch changes. |
-| `/helm:log remember: <lesson>` | Propose a focused developer-confirmed lesson without a whole-project/history scan. |
+```text
+log
+```
 
-You can also explicitly request Full scan or Gap scan. Remember needs an existing owner or a reviewed migration of one. If neither entry exists, log offers Full scan or Cancel and carries the lesson into a chosen full scan; it does not invent a project description just to save one sentence. All modes respect existing instructions and protected files.
-
-Remember bypasses history indexing and marker validation, preserving even an old/unverifiable marker as provenance. An explicit settings-only request can produce a configuration-only diff without a source review. Layout-only setup remains available when knowledge needs no scan. Explicitly requested scans are not silently replaced by the no-op shortcut.
+The workflow recommends Full scan or Gap scan based on the current project and saved review point. You can request either depth. Findings and proposed instruction changes are reviewed before updating existing content; cancellation and genuine no-change results leave it intact.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Select mode and scope]) --> Inspect[Read-only inspection of current checkout]
-  Inspect --> Write{Selected local writes?}
-  Write -->|no| Report([Report scope, evidence and limits])
-  Write -->|yes| Ready{Clean permitted current branch?}
-  Ready -->|no| Block[Explain blocker; preserve work; no checkout]
-  Block --> Report
-  Ready -->|yes| Review[Review concrete changes and required approvals]
-  Review --> Apply[Apply selected work; verify outputs and source provenance]
-  Apply --> Commit[Exact-path local commits under applicable approval]
-  Commit --> Report
+  Start([Invoke log]) --> Inspect[Check project instructions and review prerequisites]
+  Inspect --> Analyze[Analyze the project at the chosen scan depth]
+  Analyze --> Review[Report findings and proposed instruction changes]
+  Review --> Decision{Apply changes?}
+  Decision -->|yes| Apply[Update instructions and verify outputs]
+  Decision -->|revise| Review
+  Decision -->|no| Finish([Finish locally])
+  Apply --> Finish
 ```
 
-Without a repository or HEAD, log skips Git and leaves verified files uncommitted; it never initializes a repository. With Git history, writes require the current actual main/master base and clean inputs. Other branches can receive read-only status, but writes stop with a reason instead of switching branches. Completion is local, with publication left to ship.
+Without a repository or HEAD, log skips Git and leaves verified files uncommitted; it never initializes a repository. With Git history, writes require the current actual main/master base and clean inputs. Ineligible checkouts receive an explanation of the blocker instead of an automatic branch switch. Completion is local, with publication left to ship.
 
 ## Shared layout and preservation
 
@@ -73,11 +67,11 @@ Before deep patch reading, collect the marker's availability/validity, commit co
 
 At the existing Full scan/Gap scan choice, use the [shared scan-depth selection](../setup/compatibility.html#shared-scan-depth-selection) with already permitted marker, snapshot and impact facts. Bounded changes normally favor Gap scan; added/removed first-party services/packages, major runtime/framework replacements or cross-area changes can favor Full. Age, counts and missing headings alone do not determine depth; unknown Full-scan history is not never-Full. Explicit Full remains available without a source gap, and an explicitly selected valid Gap must still cover every affected lesson under the per-commit patch contract.
 
-Fresh/Rules-only/no-marker or invalid-marker owners offer full investigation or Skip within otherwise valid inputs. Ownership conflicts still block dependent work. Custom owners receive targeted edits in either depth, without a new targeted-scan mode. Status, Remember, settings-only and layout-only work gain no helper/baseline prerequisite. Log retains its own no-op, acceptance and marker rules.
+Fresh/Rules-only/no-marker or invalid-marker owners offer full investigation or Skip within otherwise valid inputs. Ownership conflicts still block dependent work. Custom owners receive targeted edits in either depth, without a new targeted-scan mode. Layout preparation and no-op exits gain no scan/helper prerequisite. Log retains its own no-op, acceptance and marker rules.
 
-The read-only no-op requires a clean selected base, connected entries, complete applicable settings, no requested lessons/settings changes and a valid marker with no source gap. Inspect intervening instruction-maintenance patches before dismissing them; an output filename or log-like subject is insufficient. Report the exact local base SHA and that the remote was not fetched, leaving the marker untouched. Missing optional headings are informational.
+The read-only no-op requires a clean selected base, connected entries, complete applicable settings, no explicitly requested scan or lessons/settings changes and a valid marker with no source gap. Inspect intervening instruction-maintenance patches before dismissing them; an output filename or log-like subject is insufficient. Report the exact local base SHA and that the remote was not fetched, leaving the marker untouched. Missing optional headings are informational.
 
-Dirty/feature-branch Status results name the current checkout, known local base SHA, gaps and pending differences. They never claim that workspace or remote is current. A dirty tree blocks writes/reviews until the developer resolves it; no automatic commit, stash or discard. A normal selected write path still uses the stable-base setup and clean-tree requirements. Unexpected source/input changes require reassessment; setup never updates the base.
+Blocked preflight reports name the current checkout, known local base SHA, gaps and pending differences without claiming workspace or remote currency. A dirty tree blocks writes/reviews until the developer resolves it; no automatic commit, stash or discard. A selected write still uses the stable-base setup and clean-tree requirements. Unexpected source/input changes require reassessment; setup never updates the base.
 
 ## First-run settings and Git policy
 
@@ -120,15 +114,15 @@ Keep a working coverage summary with evidence paths and absent/excluded/unfinish
 
 Useful additions improve future decisions and remain relevant for weeks/months. Non-obvious knowledge deserves priority, but essential startup/test commands qualify even when discoverable in scripts. Completed task status alone is not durable memory. Keep detailed coverage in the review/report, not a new ledger or the always-loaded file.
 
-## Remember developer-confirmed lessons
+## Confirmed developer knowledge during review
 
-Remember accepts explicitly supplied lessons or developer corrections/agreements from the current visible conversation. Show candidate provenance in the proposal, without persisting transcripts, dates or a session changelog. Never mine hidden sessions, host-private auto-memory or personal files, and never turn an inferred preference into confirmed policy.
+The project review can include developer corrections/agreements from the current visible conversation alongside source findings. Show candidate provenance in the proposal, without persisting transcripts, dates or a session changelog. Never mine hidden sessions, host-private auto-memory or personal files, and never turn an inferred preference into confirmed policy.
 
 Propose a short actionable entry with a useful why. Shared lessons go in AGENTS.md; clearly Claude-only additions can go after the adapter's import, and Codex-only mechanics need an explicit condition. Configuration choices belong in the existing configuration block rather than duplicated prose.
 
 When desired policy contradicts observed code, show the discrepancy and ask whether to record the policy, a trap/known violation, or drop the candidate, unless the developer already made that choice explicitly. Do not assert that desired behavior is implemented or silently modify code. Resolve conflicting guidance through a reviewed diff. New safety instructions still need explicit approval.
 
-Remember uses only evidence checks needed for its patch, then the same quality/approval/read-back process. It does not require a whole-project/history scan and preserves the review marker's exact value, placement or absence, including after layout migration. Report lessons recorded and source coverage as not reviewed.
+Confirmed knowledge is part of the normal review and its consolidated proposal, with the same source-coverage, approval and marker rules as other findings.
 
 ## Quality audit, approval and size
 
@@ -148,9 +142,9 @@ Choosing Full scan for a genuinely fresh/Rules-only owner authorizes ordinary de
 
 Pin `review_head` after branch setup and before layout writes. Full-scan currency attests to the source snapshot, not every intermediate commit; gap currency requires complete per-commit coverage. Validate a literal hexadecimal saved commit object and its ancestry before using a range. Invalid/unrelated history offers full investigation, never an invalid range or a current claim.
 
-Recheck instruction/source inputs before applying and committing. Unrelated source changes or a moved HEAD require refreshed investigation and a new diff. Advance a marker only after complete coverage and acceptance/application of every substantive finding. Partial, rejected, skipped or incomplete work retains the prior marker and reports unresolved findings. Remember, configuration-only, layout-only and verified instruction maintenance never advance it. A fully inspected gap with no durable changes may write an eligible marker and accepted settings without another knowledge-diff prompt. No source gap means no marker churn.
+Recheck instruction/source inputs before applying and committing. Unrelated source changes or a moved HEAD require refreshed investigation and a new diff. Advance a marker only after complete coverage and acceptance/application of every substantive finding. Partial, rejected, skipped or incomplete work retains the prior marker and reports unresolved findings. Layout/configuration changes alone and verified instruction maintenance never advance it. A fully inspected gap with no durable changes may write an eligible marker and accepted settings without another knowledge-diff prompt. No source gap means no marker churn.
 
-Place an eligible marker last in fresh/default generation, after preserved Rules. Targeted updates preserve custom placement, keeping an already-final marker last. Without HEAD, do not initialize Git or invent a marker; a completed accepted full scan omits one, while retained provenance on layout/Remember/partial paths is reported honestly.
+Place an eligible marker last in fresh/default generation, after preserved Rules. Targeted updates preserve custom placement, keeping an already-final marker last. Without HEAD, do not initialize Git or invent a marker; a completed accepted full scan omits one, while retained provenance on layout/partial paths is reported honestly.
 
 Read accepted outputs back before local commits, verifying retained knowledge/settings including false, Rules/imports, both host paths and the actual marker. Commit layout separately before investigation and remaining outputs under frozen local policy with exact-path staging. Declined/failed commits and pending drafts stay intact; no reset/stash, automatic branch handling or publication follows. Finish on the same permitted branch after verifying local outputs and eligible commits. No push/PR question, branch creation/switch/update, integration, environment promotion, return checkout or branch cleanup follows. Remote/provider access and published source IDs are not prerequisites merely to finish locally. Invoke [ship](ship.html) separately when the whole selected work is ready to publish. See [Git and CI behavior](../setup/git-and-ci.html).
 
