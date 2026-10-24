@@ -18,17 +18,15 @@ Use this catalog for inventory, source validation, per-file decisions, copy/upda
 - Keep the existing Git/safety pair usable without writing. Writing introduces no Git/safety dependency, setting, persistent selection/decline record or required third file. Not now/omission preserves files and pointers; offer again on a later applicable run without treating absence as a defect. No rule removal is offered.
 - Carry each row's selection, established dependencies and actual installed/kept status through the plan. Verify connectivity only for the approved scope and existing dependencies; report unselected writing separately from skipped/broken selected rules. Never generate pointers from the catalog or directory contents alone: use verified managed copies or individually approved replacements and exact pointer patches. Presence or a basename alone is not ownership.
 
-## Modes and read-only preflight
+## Read-only preflight
 
-- **`adopt audit`:** report the current instruction owner, entry chains, each rule's content/marker/pointers, source availability, coverage and blockers. Stop at the report.
-- **`adopt plan`:** use the same static preflight and also show the changes/diffs that would be offered, dependencies, missing decisions and verification requirements. This is a proposal, never an approved or automatically applied plan. Stop at the report.
-- **`adopt` without a mode:** inspect first, then choose a local installation/update, copied-rule connection, repair, Keep or Cancel. Prepare Git only when the chosen action needs writes.
+Inspect first, then choose a local installation/update, copied-rule connection, repair, Keep or Cancel. Prepare Git only when the chosen action needs writes.
 
-Recognize `audit` or `plan` only as the initial mode token; pass other invocation arguments safely and unchanged, never as shell code. An explicit source location is evidence to validate under Step 2, not permission to install/update plugins or change client settings. Do not infer a new argument grammar or silently ignore an ambiguous request.
+Pass developer requests and answers safely and unchanged, never as shell code. An explicit source location is evidence to validate under Step 2, not permission to install/update plugins or change client settings. Clarify ambiguous requests before dependent work.
 
-Audit/Plan and the initial normal preview permit dirty/staged/untracked files, feature branches, detached checkouts and no repository/HEAD. Label the inspected working tree, branch/SHA when available, adoption root and limitations. They assess this checkout, not an unseen base/upstream. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where inspection might refresh the index; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. Unavailable reads are unknown, not empty results.
+The initial preview permits dirty/staged/untracked files, feature branches, detached checkouts and no repository/HEAD. Label the inspected working tree, branch/SHA when available, adoption root and limitations. Assess this checkout, not an unseen base/upstream. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where inspection might refresh the index; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. Unavailable reads are unknown, not empty results.
 
-Static preflight executes no project code, hooks, dynamic configuration, tests/discovery, linters, builds, installs or services. It performs no fetch, checkout, branch/index/ref/file/report-artifact write, publication or state access. Keep output in conversation. Audit/Plan report layout/source blockers and safe independent observations without forcing a migration/repair decision, following broken chains or escalating to writes. Normal Keep/Cancel/no-action exits also leave Git untouched. A later write requires the destination preparation and fresh plan in Step 4.
+Static preflight executes no project code, hooks, dynamic configuration, tests/discovery, linters, builds, installs or services. It performs no fetch, checkout, branch/index/ref/file/report-artifact write, publication or state access. Keep output in conversation. Report layout/source blockers and safe independent observations without following broken chains or escalating to writes. Keep/Cancel/no-action exits leave Git untouched. A later write requires the destination preparation and fresh plan in Step 4.
 
 ## Entry files and host scope
 
@@ -46,7 +44,7 @@ Adopt owns no operational state. Do not inspect, create, stage, or migrate `.hel
 
 ## Before starting: scope and policy, without Git preparation
 
-State the invocation directory, enclosing Git/workspace root if available, and `{adoption_root}`. Resolve entries and `.claude/rules/` relative to the selected adoption root, and Git operations in its verified enclosing working tree. Pointer text resolves from the referring owner: for an allowed in-project non-root owner compute/review the relative path to those same physical local copies, rather than creating another rule directory (for example `../.claude/rules/git.md`). An external owner requiring a write outside the selected project remains blocked for placement reconciliation; no outside write or implicit owner move. An existing unambiguous owner or explicit project selection may establish scope. Otherwise, if a nested package and repository root are both plausible, ask which project to adopt into before dependent work; never silently use the shell directory or Git root. Audit/Plan show unresolved scope and candidate effects without selecting it. Inspect relevant ancestor/nested entries, `.claude/CLAUDE.md`, `CLAUDE.local.md` and active overrides when they affect that scope. Do not scan global settings/instructions or claim all nested/custom rules are shared.
+State the invocation directory, enclosing Git/workspace root if available, and `{adoption_root}`. Resolve entries and `.claude/rules/` relative to the selected adoption root, and Git operations in its verified enclosing working tree. Pointer text resolves from the referring owner: for an allowed in-project non-root owner compute/review the relative path to those same physical local copies, rather than creating another rule directory (for example `../.claude/rules/git.md`). An external owner requiring a write outside the selected project remains blocked for placement reconciliation; no outside write or implicit owner move. An existing unambiguous owner or explicit project selection may establish scope. Otherwise, if a nested package and repository root are both plausible, ask which project to adopt into before dependent work; never silently use the shell directory or Git root. Inspect relevant ancestor/nested entries, `.claude/CLAUDE.md`, `CLAUDE.local.md` and active overrides when they affect that scope. Do not scan global settings/instructions or claim all nested/custom rules are shared.
 
 Resolve local `git-auto-commit` (default false), effective ownership/bridges/overrides and applicable project instructions before writes. Ship settings do not select an adoption branch or publication flow. Missing entries mean absent settings, not absent Git history; never create declarations merely to apply defaults.
 
@@ -74,11 +72,11 @@ Decide based on what is present:
       - label: "Cancel"
         description: "Exit without changes"
 
-  If Cancel → exit without writes or Git preparation. Audit/Plan report this uncertainty instead of asking Continue/Cancel. If a destination recheck later reveals a new sanity blocker, stop before writes and report unchanged/pending status without branch cleanup.
+  If Cancel → exit without writes or Git preparation. If a destination recheck later reveals a new sanity blocker, stop before writes and report unchanged/pending status without branch cleanup.
 
 ## Step 2 — Scan existing rules
 
-Inventory actual directives/imports for each catalog rule in the owner and applicable entries. Resolve local targets relative to the referring file; quoted examples are not pointers. Classify local, missing/dangling and custom/unknown targets separately. A known external installation pointer is unsupported and blocks dependent work, without fetching/loading its target. Audit/Plan can report that limitation.
+Inventory actual directives/imports for each catalog rule in the owner and applicable entries. Resolve local targets relative to the referring file; quoted examples are not pointers. Classify local, missing/dangling and custom/unknown targets separately. Report a known external installation pointer as unsupported and block dependent work, without fetching/loading its target.
 
 Establish managed local ownership from exact directives, a recognized leading agent-helm marker and actual body evidence, or explicit confirmation of the exact project-local span. Basenames, directory prefixes and another plugin's mention do not establish ownership. Unknown/custom files need individual review; unavailable local bodies block a claimed comparison.
 
@@ -115,11 +113,11 @@ Content-equivalent local bodies retain exact bytes/markers even when older or di
 
 ### Static destination checks
 
-For the exact paths in the per-rule proposal, inspect containment, symlinked ancestors/destinations, case-insensitive filename/directory collisions, non-file targets and existing tracked/untracked occupants. Unexpected occupants are protected, never automatically adopted or replaced. With Git available, inspect ignore/tracking evidence without refreshing the index: an ignored required output or a required untracked file omitted from the proposed commit is a publication blocker. Newly created untracked outputs explicitly included in the plan are normal. Never force-add or edit `.gitignore` to hide the problem. Audit/Plan report these blockers; without Git or resolved scope, report unavailable checks. Repeat these observations on the prepared destination and immediately before writes.
+For the exact paths in the per-rule proposal, inspect containment, symlinked ancestors/destinations, case-insensitive filename/directory collisions, non-file targets and existing tracked/untracked occupants. Unexpected occupants are protected, never automatically adopted or replaced. With Git available, inspect ignore/tracking evidence without refreshing the index: an ignored required output or a required untracked file omitted from the proposed commit is a publication blocker. Newly created untracked outputs explicitly included in the plan are normal. Never force-add or edit `.gitignore` to hide the problem. Report these blockers; without Git or resolved scope, report unavailable checks. Repeat these observations on the prepared destination and immediately before writes.
 
 ## Step 3 — Choose the local action
 
-Audit ends with Step 2's inventory; Plan adds exact proposed actions/diffs, selection, dependencies and missing decisions, then stops without questions or writes. Normal mode first shows every catalog row: local path/status/marker/body relation, actual effective target(s), loaded/selected copy source and comparison limitations. Distinguish existing/selected rules from optional unselected writing. Updating shared copies affects both clients using them.
+First show every catalog row: local path/status/marker/body relation, actual effective target(s), loaded/selected copy source and comparison limitations. Distinguish existing/selected rules from optional unselected writing. Updating shared copies affects both clients using them.
 
 Use only applicable choices, with no one-option picker and at most four independent options (conversation/paging if needed):
 
@@ -139,7 +137,7 @@ Keep/Cancel/no action exits without Git preparation or new entries. If all forei
 
 ### Prepare only the selected write, then replan
 
-Audit/Plan never enter this step. Keep/Cancel and an already-connected/content-equivalent no-action outcome stop without checkout/fetch/branch creation. For a selected write, check preliminary target containment, symlinks, collisions and ignore status before Git preparation; repeat on the actual destination below. These checks do not authorize changes.
+Keep/Cancel and an already-connected/content-equivalent no-action outcome stop without checkout/fetch/branch creation. For a selected write, check preliminary target containment, symlinks, collisions and ignore status before Git preparation; repeat on the actual destination below. These checks do not authorize changes.
 
 Only **no repository or no HEAD** skips Git preparation: freeze the selected project's snapshots and later leave files uncommitted, without initializing Git or inventing a base. Preserve existing originals; Git recovery may not exist. A repository with HEAD still requires current-base write eligibility even with no instruction files.
 
@@ -257,7 +255,7 @@ Finish on the current branch. Never offer a push/PR, integrate/promote, create/s
 
 ## Step 6 — Report
 
-Audit/Plan stop here with **ADOPT AUDIT / ADOPT PLAN — current-checkout snapshot**, inspected root/branch/SHA, inventory/content evidence, known blockers/unknowns and, for Plan, the exact changes that would be offered plus missing approvals/checks. Do not print ADOPT COMPLETE, ask a required migration question, create an artifact, or enter finalization. A normal current-checkout Keep/no-action report has the same snapshot scope and says no Git preparation occurred; it never certifies an uninspected base or upstream.
+A current-checkout Keep/Cancel/no-action report identifies the inspected root/branch/SHA, inventory/content evidence and known blockers/unknowns. State that no Git preparation occurred; never certify an uninspected base or upstream or print ADOPT COMPLETE for an incomplete installation.
 
 Summarize the verification already completed on the current adoption branch before local completion, including actual rule content/markers and instruction chains. Do not make reporting the first read-back gate, or validate a different original branch after cleanup as though it were the adoption result. Report skipped foreign files separately without requiring Helm markers on them or claiming they were installed.
 

@@ -6,9 +6,9 @@ nav_order: 7
 
 # /helm:adopt
 
-Audit, plan, install, update, repair or connect selected Helm rules as shared local copies in `.claude/rules/`. Both agents use those same project files; Claude need not be installed for Codex to read them. External-reference installation is no longer offered; existing references remain until an explicitly reviewed conversion. Adopt preserves project knowledge and configuration. It does no product work, owner migration or release, and owns no operational ledger.
+Install, update, repair or connect selected Helm rules as shared local copies in `.claude/rules/`. Both agents use those same project files; Claude need not be installed for Codex to read them. External-reference installation is no longer offered; existing references remain until an explicitly reviewed conversion. Adopt preserves project knowledge and configuration. It does no product work, owner migration or release, and owns no operational ledger.
 
-Command names use Claude notation. In Codex, choose adopt from the skill picker and supply the same mode or request. Questions use the available host interface, or conversation with an explicit reply when a picker cannot represent the choices faithfully. See [compatibility](../setup/compatibility.html).
+Command names use Claude notation. In Codex, choose adopt from the skill picker and supply your request. Questions use the available host interface, or conversation with an explicit reply when a picker cannot represent the choices faithfully. See [compatibility](../setup/compatibility.html).
 
 ## Rules and selection
 
@@ -28,17 +28,15 @@ An already adopted writing rule receives the same content/marker, replacement, r
 
 Writing is not a required companion to Git/safety. A healthy pair remains complete without it, and updating or reconnecting that pair never installs writing implicitly. Preserve existing pair dependencies. An explicitly approved writing-only result makes no Git/safety coverage claim. Selection is transient; no setting, selection ledger, deletion action or second client copy is added.
 
-## Modes
+## Usage and initial inspection
 
-| Invocation | Behavior |
-|---|---|
-| `/helm:adopt audit` | Static inventory of entries, owner, rules, pointers, content/marker evidence, sources, coverage and blockers. Report and stop. |
-| `/helm:adopt plan` | The same inventory plus proposed diffs/actions, dependencies, missing decisions and verification requirements. Report and stop. |
-| `/helm:adopt` | Inspect first, choose intent, then prepare the actual destination and review concrete changes before writing. |
+```text
+/helm:adopt
+```
 
-Audit and Plan are thin views over the same preflight, not separate planners. Only the initial `audit` or `plan` token selects a mode. Other arguments and explicit source requests are passed safely; ambiguous requests are clarified rather than interpreted as shell code or an invented option syntax.
+Inspect first, choose intent, then prepare the actual destination and review concrete changes before writing. Developer requests and explicit source requests are passed safely; ambiguous requests are clarified rather than interpreted as shell code.
 
-Read-only inspection works on dirty/staged/untracked inputs, feature branches, detached checkouts or without Git/HEAD. Output identifies the adoption root, inspected checkout/branch/SHA and unknowns. It does not certify an unseen base or upstream. Audit/Plan show unresolved scope or layout blockers without forcing a migration decision. A Plan lists what would be offered; it supplies no approval for later writes.
+Initial read-only inspection works on dirty/staged/untracked inputs, feature branches, detached checkouts or without Git/HEAD. Output identifies the adoption root, inspected checkout/branch/SHA and unknowns. It does not certify an unseen base or upstream. Proposed changes supply no approval for later writes.
 
 Static inspection runs no project code, hooks, dynamic configurations, tests or test discovery, linters, builds, installers or services. It does not fetch, check out, create branches, refresh/write the index, write files/report artifacts/state, or publish. Local Git reads suppress optional index locks and executable helpers where supported; unavailable reads remain limitations. Keep, Cancel and genuine no-action exits also happen before Git preparation.
 
@@ -50,7 +48,7 @@ Static inspection runs no project code, hooks, dynamic configurations, tests or 
 | CLAUDE.md adapter | Preserves a correct adapter byte-for-byte. An approved install/connection may create a missing adapter containing `@AGENTS.md`, with no duplicated Rules/settings. |
 | Neither root entry exists | An approved install creates minimal AGENTS.md rule instructions and the Claude adapter. Log can add project knowledge later. |
 | CLAUDE-only owner or noncanonical bridge | Preserve it and direct shared onboarding to log before adoption writes. No reverse bridge is installed. |
-| Independent or partially connected entries | Blocks writes and directs the developer to log's reviewed reconciliation. Audit/Plan report the blocker. |
+| Independent or partially connected entries | Reports the blocker, prevents writes and directs the developer to log's reviewed reconciliation. |
 | AGENTS.override.md | Preserved. Shared writes stop unless it explicitly reads AGENTS.md; an intentional connected host-specific policy remains intact. |
 | `.claude/rules/` | Shared rule storage, retained for Claude compatibility. AGENTS.md explicitly tells Codex to read and follow the selected files. |
 | `.helm/`, `.claude/helm/`, protected unsupported record paths | No reads, writes, staging or migration. |
@@ -61,7 +59,7 @@ Adopt reads applicable entries and local chains, reuses exact managed pointers w
 
 ```mermaid
 flowchart TD
-  Start([Select mode and scope]) --> Inspect[Read-only inspection of current checkout]
+  Start([Establish scope]) --> Inspect[Read-only inspection of current checkout]
   Inspect --> Write{Selected local writes?}
   Write -->|no| Report([Report scope, evidence and limits])
   Write -->|yes| Ready{Clean permitted current branch?}
@@ -79,7 +77,7 @@ Failures preserve actual work. No diagram edge bypasses ownership, quality, revi
 
 State the invocation directory, enclosing Git/workspace root and adoption root. Copy destinations resolve from that root; pointer text resolves from its referring owner. For a preserved in-project non-root owner, review the correct relative path to the same physical local copies, never duplicate the rules or write an external owner. Existing unambiguous ownership or an explicit project selection may establish the target. If a nested package and repository root are both plausible, ask before dependent work; never silently choose one. Relevant ancestor/nested instructions, `.claude/CLAUDE.md`, `CLAUDE.local.md` and overrides can affect that scope. This is not a global-settings scan or a claim that all custom rules are shared.
 
-Project markers include `.git` (directory or worktree file), AGENTS.md, CLAUDE.md and recognized manifests. An empty directory is valid. A populated directory without markers needs Continue/Cancel in normal mode; Audit/Plan report the uncertainty.
+Project markers include `.git` (directory or worktree file), AGENTS.md, CLAUDE.md and recognized manifests. An empty directory is valid. A populated directory without markers needs Continue/Cancel before writing.
 
 Resolve actual instruction/configuration ownership and local auto-commit policy (default false), including bridges/overrides/fenced blocks. Ship settings do not select adoption branching or completion. Missing entries do not bypass existing Git history; no declarations are written merely to apply defaults.
 
@@ -114,7 +112,7 @@ Keep/connection-only to readable managed local copies needs no unrelated source.
 
 ## 3. Select intent, then prepare the local write
 
-Normal mode offers applicable local install/update, connection, repair, Keep and Cancel choices, with no one-option picker. Content-equivalent bodies need no rule rewrite; different marked bodies take replacement review even when versions match. Ahead rules retain per-file rollback protection. Keeping preserves existing copies, including a companion with an older marker. Updating shared files can affect both clients. The writing offer is independent; its absence alone never turns a healthy pair into a repair.
+Offer applicable local install/update, connection, repair, Keep and Cancel choices, with no one-option picker. Content-equivalent bodies need no rule rewrite; different marked bodies take replacement review even when versions match. Ahead rules retain per-file rollback protection. Keeping preserves existing copies, including a companion with an older marker. Updating shared files can affect both clients. The writing offer is independent; its absence alone never turns a healthy pair into a repair.
 
 A missing Claude adapter can be added through an approved connection without rewriting readable rule bodies/markers, including preserved copies whose comparison source is unavailable. Foreign Overwrite/Skip, marked Replace/Keep, missing-companion Apply/Skip and rollback decisions remain independent. If all foreign files are skipped and no independent writing addition or valid connection was explicitly approved, create no entries/adapter and initiate no companion repair. An accepted writing-only addition does not authorise repairing the skipped pair or claiming its coverage. A skipped dependency that would leave broken pointers or two final versions blocks the whole affected plan.
 
@@ -172,7 +170,7 @@ Apply relevant configured local checks, report user-deferred/unavailable checks 
 
 ## 6. Report
 
-Audit/Plan report current-checkout evidence/proposals and stop, never ADOPT COMPLETE. Normal preflight Keep/no-action also states that Git was untouched and does not certify the unseen destination.
+Keep/Cancel/no-action reports identify the inspected root/branch/SHA, evidence and known blockers/unknowns. State that Git was untouched and do not certify an unseen destination or claim a complete installation when it remains incomplete.
 
 Applied reports reuse the per-rule assessment: actual marker, body relation, source paths/observations, selection/action and kept/skipped/missing coverage. Report writing as installed, retained, selected-but-pending or available/not selected. Unselected writing is not a failed installation and receives no copied-version claim. Distinguish verified local installation, drafts, commits and checks. Publication, PR, integration and promotion are not performed. Pending/partial/mixed results never receive an unqualified completion message. A connection is not a rule update, and retained old markers are not rewritten to claim the selected plugin version.
 
