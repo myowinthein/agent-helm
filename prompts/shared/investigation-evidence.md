@@ -1,6 +1,6 @@
 # Shared investigation evidence
 
-Load only when the invoking workflow reaches an actual source/history investigation. This contract defines investigation evidence, not scan selection, a new mode, execution permission or a state loader. The caller owns scope, depth, exclusions, instruction precedence, safety, approvals and checkpoint eligibility. Status/settings/layout/style-only, no-op and other no-scan paths gain no prerequisite. Audit/Plan retain their static-only and no-operational-state boundaries. Do not load this prompt automatically from shared runtime.
+Load only when the invoking workflow reaches an actual source/history investigation. This contract defines investigation evidence, not scan selection, a new mode, execution permission or a state loader. The caller owns scope, depth, exclusions, instruction precedence, safety, approvals and checkpoint eligibility. Preparation, no-op and other no-scan paths gain no prerequisite. Audit/Plan retain their static-only and no-operational-state boundaries. Do not load this prompt automatically from shared runtime.
 
 ## Scope and vocabulary
 

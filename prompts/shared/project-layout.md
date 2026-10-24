@@ -13,8 +13,6 @@ The import loads shared instructions in Claude without relying on its native AGE
 
 ## Read-only preflight, before Git changes
 
-For log's explicit Status mode, inspect only to report actual paths/configuration and blockers. Do not ask for conflict/placement decisions, require their resolution, or mutate anything; return the unresolved status to log. The write/setup gates below remain mandatory for every selected write path.
-
 Inspect both root entries and follow their explicit memory chains with visited-file tracking. Record original contents and resolved configuration. Compare independent or partially connected files even if general resolution found a conflict. A cycle confined to the readable root CLAUDE.md and AGENTS.md is a reconciliation case for log: read each once, identify the two links and propose removing the reverse bridge; do not follow the cycle indefinitely. Missing targets, external cycles and other unresolved chains still stop. Read-only comparison does not authorize choosing configuration values or changing branches. Invalid/conflicting local policy or ownership needs explicit resolution before dependent writes. Publication-only invalid values block migration/shipping, not independent knowledge edits; retired keys do not supply active policy. A content baseline is not implicit approval to change configuration values.
 
 Check root `AGENTS.override.md` on either host. If it does not explicitly read AGENTS.md, stop before branching or writing: shared setup cannot be claimed while Codex's persistent entry is shadowed. Never edit, migrate, or import the override. An override that reads AGENTS.md may remain, but report any intentional host-specific configuration difference; resolve incompatible effective Helm values before Git actions. Respect nested instructions too.
@@ -23,7 +21,7 @@ Do not fold personal `CLAUDE.local.md`, global files, or nested instruction file
 
 In a repository, check the instruction files and any migration targets for uncommitted changes, including untracked existing instruction files. Stop rather than absorb those edits into a migration commit. A missing destination is expected, not an untracked edit. Do not reset, stash, or overwrite the user's work. With no repository or no commits, preserve existing files through the normal proposed-diff approval instead.
 
-Record existing raw configuration, owner and overrides as `{run_config_baseline}`. Log completes read-only mode selection first; Status reports blockers without questions or mutations. A selected write may collect pending settings once, in the existing owner/block. Freeze `{run_auto_commit}` from effective policy plus an explicit absent-key answer. Publication settings do not gate local work or cause branching; a changed existing setting takes effect next invocation. Preserve confirmed unrelated settings, overrides and pending-diff approval; never duplicate a key/owner or switch policy mid-run.
+Record existing raw configuration, owner and overrides as `{run_config_baseline}`. Log completes read-only assessment and scan-depth selection first. A selected write may collect pending settings once, in the existing owner/block. Freeze `{run_auto_commit}` from effective policy plus an explicit absent-key answer. Publication settings do not gate local work or cause branching; a changed existing setting takes effect next invocation. Preserve confirmed unrelated settings, overrides and pending-diff approval; never duplicate a key/owner or switch policy mid-run.
 
 ## Plan on the actual working files
 
