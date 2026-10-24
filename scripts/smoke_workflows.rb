@@ -12,15 +12,15 @@ client = ARGV.fetch(0, "codex")
 abort "Usage: ruby scripts/smoke_workflows.rb [codex|claude] [case]" unless %w[codex claude].include?(client)
 selected = ARGV[1]
 root = Pathname(__dir__).parent.realpath
-standard = "# Fixture\n\n## Project Config\n\ngit-strategy: solo\ngit-auto-commit: false\nreadme-style: custom\n"
+standard = "# Fixture\n\n## Project Config\n\nship-method: direct\ngit-auto-commit: false\nreadme-style: custom\n"
 cases = {
   "conflicting-config" => {
-    files: { "CLAUDE.md" => standard, "AGENTS.md" => standard.sub("solo", "github-flow") },
+    files: { "CLAUDE.md" => standard, "AGENTS.md" => standard.sub("direct", "pr") },
     command: "env", request: "Audit the environment configuration.", unchanged: true
   },
   "custom-memory-wrapper" => {
     files: { "CLAUDE.md" => "# Claude entry\n\n@AGENTS.md\n\nKeep this Claude-specific sentence.\n",
-             "AGENTS.md" => "# Fixture\n\nProject configuration:\n\n```text\ngit-strategy: solo\ngit-auto-commit: false\nreadme-style: custom\n```\n\n## Team agreements\n\nPreserve this custom section and its heading.\n" },
+             "AGENTS.md" => "# Fixture\n\nProject configuration:\n\n```text\nship-method: direct\ngit-auto-commit: false\nreadme-style: custom\n```\n\n## Team agreements\n\nPreserve this custom section and its heading.\n" },
     command: "log", request: "Run a full project scan.", unchanged: true
   },
   "single-config-owner" => {
@@ -29,7 +29,7 @@ cases = {
   },
   "shadowed-adopt-entry" => {
     files: { "CLAUDE.md" => standard, "AGENTS.md" => "# Persistent Codex entry\n",
-             "AGENTS.override.md" => "# Temporary override\n\nProject configuration:\n\n```text\ngit-strategy: solo\n```\n" },
+             "AGENTS.override.md" => "# Temporary override\n\nProject configuration:\n\n```text\nship-method: direct\n```\n" },
     command: "adopt", request: "Install Helm's project rules.", unchanged: true
   },
   "archive-package-path" => {
@@ -40,29 +40,27 @@ cases = {
     files: { "CLAUDE.md" => standard }, command: "normalize",
     request: "Begin normalization. I have not accepted the risk warning or authorized a history rewrite.", unchanged: true
   },
-  "codex-adopt-bridge" => {
+  "codex-claude-owner-stop" => {
     files: { "CLAUDE.md" => standard }, command: "adopt",
-    request: "The install mode is already chosen: Copy shared rules and connect Codex. I approve writing the two shared rule copies and the Codex bridge for this fixture. Do not commit, push, or change CLAUDE.md.", unchanged: false
+    request: "Inspect adoption. Preserve the existing instruction owner; no layout change is approved.", unchanged: true
   },
   "codex-foreign-skip" => {
     files: { "CLAUDE.md" => standard, ".claude/rules/git.md" => "# My Git rules\n\nThese are user-owned rules.\n",
              ".claude/rules/safety.md" => "# My safety rules\n\nThese are user-owned rules.\n" },
     command: "adopt", request: "Install the project rules. For foreign files choose Review each foreign file, then Skip both git.md and safety.md.", unchanged: true
   },
-  # Retain legacy-brand inputs to cover preserved copies and existing references.
+  # Current managed copies retain their recorded marker on connection.
   "codex-newer-copies" => {
-    files: { "CLAUDE.md" => standard,
-             ".claude/rules/git.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
-             ".claude/rules/safety.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
-    command: "adopt", request: "Connect Codex and keep the newer project rules. Do not commit or push.", unchanged: false, rules_version: "9.9.9", rule_brand: "claude-helm"
+    files: { "AGENTS.md" => standard, "CLAUDE.md" => "@AGENTS.md\n",
+             ".claude/rules/git.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
+             ".claude/rules/safety.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
+    command: "adopt", request: "Connect Codex and keep the newer project rules. Do not commit or push.", unchanged: false, rules_version: "9.9.9", rule_brand: "agent-helm"
   },
-  "codex-existing-references" => {
-    files: { "CLAUDE.md" => standard + "\n## Rules\n\nRead and follow these rule files at the start of each session:\n- {fixture_root}/marketplaces/claude-helm/rules/git.md\n- {fixture_root}/marketplaces/claude-helm/rules/safety.md\n",
-             "marketplaces/claude-helm/rules/git.md" => root.join("rules/git.md").read,
-             "marketplaces/claude-helm/rules/safety.md" => root.join("rules/safety.md").read,
-             "marketplaces/claude-helm/.claude-plugin/plugin.json" => root.join(".claude-plugin/plugin.json").read },
-    command: "adopt", request: "Connect Codex to the existing Claude references. Do not commit or push.", unchanged: false, reference_connection: true
+  "codex-external-reference-stop" => {
+    files: { "AGENTS.md" => standard + "\n## Rules\n\nRead and follow {fixture_root}/marketplaces/unsupported-source/rules/git.md.\n", "CLAUDE.md" => "@AGENTS.md\n" },
+    command: "adopt", request: "Inspect adoption; no external-reference maintenance is approved.", unchanged: true
   }
+
 }
 cases.delete_if { |name, _| name.start_with?("codex-") } unless client == "codex"
 cases.delete("shadowed-adopt-entry") unless client == "codex"
@@ -128,40 +126,31 @@ cases.each do |name, scenario|
       raise "#{name}: modified files before the pending gate" unless snapshot.call(workspace) == before
     else
       raise "#{name}: changed the existing memory owner" unless Digest::SHA256.file(workspace.join("CLAUDE.md")).hexdigest == before.fetch("CLAUDE.md")
-      if scenario[:reference_connection]
-        raise "#{name}: created competing rule copies" if workspace.join(".claude/rules").exist?
-      else
-        %w[git.md safety.md].each do |rule|
-          path = workspace.join(".claude/rules", rule)
-          raise "#{name}: missing copied #{rule}" unless path.file?
-          version = scenario.fetch(:rules_version, JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version"))
-          brand = scenario.fetch(:rule_brand, "agent-helm")
-          raise "#{name}: copied different rules" unless path.read == "<!-- helm-rule: #{brand}@v#{version} -->\n" + root.join("rules", rule).read
-        end
+      %w[git.md safety.md].each do |rule|
+        path = workspace.join(".claude/rules", rule)
+        raise "#{name}: missing copied #{rule}" unless path.file?
+        version = scenario.fetch(:rules_version, JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version"))
+        raise "#{name}: copied different rules" unless path.read == "<!-- helm-rule: agent-helm@v#{version} -->\n" + root.join("rules", rule).read
       end
-      bridge = workspace.join("AGENTS.md")
-      raise "#{name}: missing explicit Codex memory bridge (#{bridge.file? ? bridge.read : 'absent'}). Response: #{answer}" unless bridge.file? && bridge.read.include?("CLAUDE.md")
-      if scenario[:reference_connection]
-        raise "#{name}: duplicated marketplace pointers" if bridge.read.include?("marketplaces/") || bridge.read.include?("rules/git.md") || bridge.read.include?("rules/safety.md")
-        before.each { |path, digest| raise "#{name}: changed preserved #{path}" unless Digest::SHA256.file(workspace.join(path)).hexdigest == digest }
-      else
-        raise "#{name}: missing explicit copied-rule pointers" unless bridge.read.include?(".claude/rules/git.md") && bridge.read.include?(".claude/rules/safety.md")
-      end
+      owner = workspace.join("AGENTS.md")
+      raise "#{name}: missing shared owner" unless owner.file?
+      raise "#{name}: missing explicit copied-rule pointers" unless owner.read.include?(".claude/rules/git.md") && owner.read.include?(".claude/rules/safety.md")
+      raise "#{name}: missing Claude import" unless workspace.join("CLAUDE.md").read.include?("@AGENTS.md")
     end
     head = Open3.capture2("git", "rev-parse", "HEAD", chdir: workspace).first.strip
     branches = Open3.capture2("git", "branch", "--format=%(refname:short)", chdir: workspace).first.lines.map(&:strip)
     raise "#{name}: unexpected commit or branch mutation" unless head == before_head && branches == ["main"]
     raise "#{name}: wrapper owner not identified" if name == "custom-memory-wrapper" && !answer.include?("AGENTS.md")
     if name == "conflicting-config"
-      raise "#{name}: configuration conflict not reported: #{answer}" unless %w[CLAUDE.md AGENTS.md solo github-flow].all? { |value| answer.include?(value) }
+      raise "#{name}: configuration conflict not reported: #{answer}" unless %w[CLAUDE.md AGENTS.md direct pr].all? { |value| answer.include?(value) }
     end
     if name == "single-config-owner"
-      raise "#{name}: did not use declared Solo Mode and reach the audit: #{answer}" unless answer.match?(/Solo Mode active/i) && answer.match?(/ENV (?:AUDIT REPORT|COMPLETE)/i)
+      raise "#{name}: did not reach the read-only audit: #{answer}" unless answer.match?(/ENV (?:AUDIT REPORT|COMPLETE)/i)
     end
     if name == "shadowed-adopt-entry"
       raise "#{name}: shadowing override not reported: #{answer}" unless answer.include?("AGENTS.override.md") && answer.include?("AGENTS.md")
     end
-    if %w[codex-adopt-bridge codex-newer-copies codex-existing-references].include?(name)
+    if %w[codex-newer-copies].include?(name)
       raise "#{name}: no verified adoption report: #{answer}" unless answer.match?(/ADOPT COMPLETE/i)
     end
     if name == "codex-foreign-skip"

@@ -7,103 +7,41 @@ nav_order: 4
 
 # Step 4: Documentation
 
-Writes fresh, archive-focused documentation using verified information from all previous steps. Reads every existing doc first and presents a consolidation plan for explicit approval before touching anything. Produces three required files and one optional file.
+Write current recovery instructions while retaining useful historical evidence. Reuse verified prior reports and targeted source reads; distinguish current facts, historical claims and unknowns. No invented commands, versions, demo results or future availability.
 
-## Flow
+Normal mode uses prior reports and records this step's approved report only in the [validated run directory](../archive.html#archive-directory-and-existing-projects): canonical `.helm/archive/` only. Current docs reference that actual directory where needed; historical reports remain verbatim. Recovery documentation stays at its approved paths below, outside state storage.
 
-```mermaid
-flowchart TD
-  Start([Begin Step 4]) --> ReadDocs[Read all existing\ndocumentation files]
+## Review before editing
 
-  ReadDocs --> Plan["Build consolidation plan:\nKeep / Update / Merge /\nArchive / Remove per file"]
+Inventory docs by purpose and show a coherent per-file Keep/Update/Merge/Archive/Remove plan. Keep/link useful content by default, including build/CI/deployment notes, runbooks, architectural decisions, changelogs, contributor context, LICENSE/NOTICE and generated docs that may not be regenerable. Being old or public-facing is not a removal reason by itself.
 
-  Plan --> Approval{Developer\napproves plan?}
-  Approval -->|no| Stop([Stop])
-  Approval -->|yes| Protected{README is a protected import?}
-  Protected -->|yes| IndexChoice[Review alternate index path or stop]
-  IndexChoice -->|stop| Stop
-  IndexChoice -->|approved alternate| WriteIndex[Write approved alternate archive index]
-  WriteIndex --> WriteSetup
-  Protected -->|no| Historical{Historically valuable\ncontent in existing README?}
+Only remove/merge/move through a specific reviewed value/reference decision. A tracked-file removal preserves Git history but may make evidence harder to discover; disclose it. Reuse exact unchanged approval, while preserving all protected files and imports. No secrets, private records, real credentials or production endpoints in generated docs.
 
-  Historical -->|yes| Extract[Extract to\ndocs/historical-notes.md]
-  Historical -->|no| WriteREADME
+## Recovery outputs
 
-  Extract --> WriteREADME[Write fresh README.md:\nname, purpose, stack summary,\ncomplexity rating, links to docs/]
-
-  WriteREADME --> WriteSetup["Write docs/setup.md:\nEnvironment, Restore & Run,\nRecovery Priority, Demo,\nAPI notes, Restoration Fixes,\nKnown Limitations"]
-
-  WriteSetup --> WriteMeta["Write docs/archive-metadata.md:\nStructured snapshot for\nquick cross-project inventory"]
-
-  WriteMeta --> Verify[Verify recovery docs\nare reachable; protected files stay in place]
-
-  Verify --> Report[Output report] --> StopApprove([Stop: wait for approval])
-```
-
-## Consolidation plan
-
-First exclude protected root/nested `AGENTS.md`, overrides, `CLAUDE.md`, project-local instruction entries, in-project imports and adopted rules from consolidation. Preserve their original paths, contents and bridges, including Helm settings. Global/external instructions are documented dependencies, never silently copied. `.helm/`, `.claude/helm/` and known flat legacy state remain opaque and in place; do not parse, migrate, rewrite or move them as assets. A generic documentation-plan approval does not authorize modifying these protected inputs.
-
-Before changes, assign each remaining recovery-documentation file an action:
-
-| Existing doc type | Action |
+| Output | Contents and restraint |
 |---|---|
-| Accurate, has recovery or demonstration value | Keep: link from README |
-| Accurate but duplicates `docs/setup.md` content | Merge into `docs/setup.md`, remove original |
-| Outdated instructions that affect restoration | Update |
-| Historical context, domain knowledge, business background | Archive: move to `docs/historical-notes.md` |
-| Contributor guides, PR templates, code of conduct | Remove: irrelevant for private archive |
-| Changelogs and release notes | Archive: move to `docs/historical-notes.md` if useful; otherwise remove |
-| CI/CD documentation, deployment runbooks | Remove: no recovery value |
-| Auto-generated documentation | Remove: regenerate if needed |
-| Outdated and no recovery or historical value | Remove |
+| Archive index, normally `README.md` | Orientation: source/snapshot/status, purpose/stack/goal, supported recovery entry, requirements/data/limits and links. Preserve useful content; a fresh rewrite needs its reviewed content/value plan. |
+| Setup reference, normally `docs/setup.md` | Ordered developer procedure: source/config/tools, load or native preparation, database-engine startup as needed, restore data before consumers, run/demo/API/stop and limits. Link full artifact identities in metadata while retaining executable command arguments. |
+| Inventory snapshot, normally `docs/archive-metadata.md` | Human-readable Markdown tables: source/snapshot, full artifact identities/platforms/checksums/byte sizes/provenance/storage, data classification, actual API outcome/paths, scoped verification dates/platforms and omissions. No new JSON schema or duplicate command manual. |
+| Optional `docs/historical-notes.md` | Useful separately labelled context when beneficial; no forced wholesale merge of every historical document. |
 
-The plan is presented and must be explicitly approved before any file is touched.
+Check protected imports before writing any required output. An imported README/setup/metadata target stays byte-for-byte at its path; choose an approved unused alternate output and update recovery references, or stop for instruction reconciliation. Do not extract content/repoint imports or edit AGENTS.md/CLAUDE.md ownership/settings. Opaque Helm state/rules stay in place and are exempt from recovery navigation.
 
-## Required files
+Archive uses its own README information contract, independent of manifest and `readme-style`, without invoking manifest or introducing a shared README helper. Adapt the useful existing structure to include the last working state, quickest supported recovery route, platform/runtime/artifact requirements, data presence/classification/missing inputs, verified versus unknown behavior and links to setup/metadata/API/retained supplementary docs. Preserve the licence and state maintenance/support intent only when confirmed.
 
-### README.md
+Separate snapshot date from actual verification dates/platforms. Step 4 precedes the payload and ship receipt: do not claim a published backup or insert an unqualified permanent publication status requiring a post-seal edit. Link the actual persistent run directory only when it is a valid tracked target; do not create a dangling link to a future Step 5 report. Use a plain path until a target exists.
 
-Normally written fresh after preserving approved historical context. First inspect the protected-import inventory. If an active AGENTS.md/CLAUDE.md/project instruction imports README as instructions, preserve its path/content and show the conflict in the consolidation plan before any writes. Offer **Keep protected README and create an archive index** or **Stop for instruction reconciliation**. The first choice reviews an unused path such as `docs/archive-index.md`, records it in report/inventory/metadata, and uses it as the recovery entry point. It does not extract/rewrite the protected README or repoint imports. A generic consolidation approval never authorizes that change. Apply the same protection check to other required outputs.
+Setup uses the actual paths chosen earlier and carries approved Step 2 commands unchanged where accurate. Legitimate later configuration/asset changes update current instructions and inventory/checkpoints, while old approved reports stay verbatim. Record missing native SDK/binary inputs explicitly; version documentation alone is not a working freeze.
 
-The generated index contains project name, purpose, stack, restoration complexity and links to setup/archive metadata. Only an unprotected README follows the normal rewrite and historical-content extraction path. All recovery navigation uses the approved index; protected instruction/rule/state files remain exempt.
+The metadata inventory owns full artifact identity tables; setup links them and keeps the ordered instructions useful for the selected container/native/static/library approach. Metadata reflects the checked recovery snapshot rather than duplicating raw AI reports. Record actual retained/repaired/created/skipped API files: `Postman collection generated: no` alone does not imply no API or useful collection.
 
-### docs/setup.md
+## Reference and navigation verification
 
-The single recovery reference. Sections written only when applicable:
+Read back the approved index and follow links to active recovery docs. Check actual image/data/config/build/script/spec references and restore ordering against preserved evidence, not only file existence. Later Step 5 asset moves must update that same dependency wiring before sealing. Protected instructions/rules/state never become orphan-cleanup targets.
 
-- **Environment**: original runtime requirements, verified restoration environment from Step 2
-- **Restore & Run**: exact commands to restore and start the project
-- **Recovery Priority**: each dependency classified as Required, Optional, or Not Required
-- **Demo**: demo accounts, happy path walkthrough, key screens; omitted for CLI tools and libraries
-- **API**: authentication method, collection location; included only if Step 3 generated a collection
-- **Restoration Fixes**: every fix applied in Step 2, why it was necessary, and whether it may need revisiting
-- **Known Limitations**: features that could not be restored or require unavailable services
+Document runtime tokens as local provisioning instructions/placeholders, never persisted values. Report actual static/build/run/data/cold-rehearsal/offline-rebuild evidence and unrun/deferred checks separately. No tests/builds/API execution is implied by documentation writing.
 
-### docs/archive-metadata.md
+## Report and approval
 
-Structured snapshot for quick inventory across archived projects:
-- Repository name and archive date
-- Project purpose (one line)
-- Technology stack
-- Restoration outcome from Step 2
-- Runtime versions used
-- Database source used
-- Docker images exported and tarball paths
-- Postman collection generated: yes / no
-- Recovery complexity rating from Step 1
-- Known limitations (brief)
-
-## Optional file
-
-**docs/historical-notes.md**: created only when significant historical content exists that has archival value but would clutter current docs. All content is clearly labelled as historical.
-
-## Rules
-
-- Validate approved archive context, output fingerprints and inventory first. Read recovery documentation before edits, and record every approved change with protected-file preservation reported separately.
-- Only document verified information. Label anything unverified explicitly.
-- Do not invent setup procedures, demo workflows, runtime requirements, or API behavior.
-- No secrets, credentials, API keys, or private/production URLs.
-- Every active recovery document must be reachable from the approved archive index. Protected instruction/rule/state files are exempt from recovery navigation, so they are not moved or removed as orphans.
-- Use em-dashes sparingly: only when no other punctuation works as well.
-- No commit or push.
+Report consolidation decisions and protected preservation, exact created/updated/removed paths/reasons, current navigation/reference checks, accepted missing inputs and remaining gaps. No commit or push. Stop for explicit approval before the separately reviewed local payload preparation. Later ship archive owns the private backup publication. See the [archive guide](../archive.html) for progress, partial outcomes and preservation rules.

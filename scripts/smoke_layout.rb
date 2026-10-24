@@ -12,7 +12,7 @@ client = ARGV.fetch(0, "codex")
 abort "Usage: ruby scripts/smoke_layout.rb [codex|claude] [case ...]" unless %w[codex claude].include?(client)
 $stdout.sync = true
 root = Pathname(__dir__).parent.realpath
-shared = "# Fictional project\n\nProject configuration:\n\n```text\ngit-strategy: solo\ngit-auto-commit: false\nreadme-style: custom\n```\n\n## Team agreements\n\nPreserve the backup before replacing the catalog.\n\n<!-- last-reviewed: {review_hash} -->\n"
+shared = "# Fictional project\n\nProject configuration:\n\n```text\nship-method: direct\ngit-auto-commit: false\nreadme-style: custom\n```\n\n## Team agreements\n\nPreserve the backup before replacing the catalog.\n\n<!-- last-reviewed: {review_hash} -->\n"
 claude_only = "\n## Claude-specific\n\nUse Claude plan mode for catalog changes.\n"
 adapter = "@AGENTS.md\n"
 reverse = "# Codex entry\n\nProject instructions and Helm configuration live in CLAUDE.md. Read and follow that file before any project work; do not duplicate or migrate its configuration here.\n\n## Extra agreement\n\nKeep the daily retention preference.\n"
@@ -30,13 +30,13 @@ cases = {
   "configuration-conflict" => { files: { "AGENTS.md" => shared, "CLAUDE.md" => shared.sub("solo", "github-flow") }, pending: %w[solo github-flow], request: "Run log. I have not chosen which conflicting configuration to keep." },
   "shadowed-entry" => { files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter, "AGENTS.override.md" => "# Local override\n\nDo not connect this override to the persistent project entry.\n" }, pending: %w[AGENTS.override.md], request: "Run log and establish shared project instructions." },
   "cancel-migration" => { files: { "CLAUDE.md" => shared }, request: "Run log. At the layout migration choice, choose Cancel. Do not run a knowledge scan." },
-  "fresh-no-git" => { files: {}, no_git: true, fresh: true, request: "Run log. I approve the full scan and creating both root entries. Choose Solo Mode and no automatic commits. No special safety risks apply to this fictional Markdown-only project. Do not initialize Git, invent a review hash, or create rules." },
+  "fresh-no-git" => { files: {}, no_git: true, fresh: true, request: "Run log. I approve the full scan and creating both root entries. Choose direct shipping and no automatic commits. No special safety risks apply to this fictional Markdown-only project. Do not initialize Git, invent a review hash, or create rules." },
   "fresh-skip" => { files: {}, no_git: true, request: "Run log, choosing Skip at the full-scan assessment. Do not create any entry files." },
   "canonical-adopt-copy" => { command: "adopt", copy: true, files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter + claude_only }, expected: { "CLAUDE.md" => adapter + claude_only }, request: "Run adopt. Choose Copy shared rules and connect Codex. I approve installing the two Helm copies and adding their explicit Rules pointers to the existing AGENTS.md owner. Keep all existing instructions, configuration and the review marker unchanged; preserve CLAUDE.md byte-for-byte." },
-  # Legacy brand markers must remain recognized and byte-for-byte intact on connection.
+  # Current managed markers remain byte-for-byte intact on connection.
   "canonical-adopt-connect" => { command: "adopt", files: { "AGENTS.md" => shared + reference_rules,
-    ".claude/rules/git.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
-    ".claude/rules/safety.md" => "<!-- helm-rule: claude-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
+    ".claude/rules/git.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
+    ".claude/rules/safety.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
     expected: { "AGENTS.md" => shared + reference_rules, "CLAUDE.md" => adapter },
     request: "Run adopt. Keep the newer project rules and choose Connect agents without changing rules. I approve creating CLAUDE.md with exactly @AGENTS.md followed by a newline. Preserve AGENTS.md and both rules byte-for-byte." }
 }
@@ -120,10 +120,9 @@ cases.each do |name, scenario|
         if scenario[:fresh]
           owner = workspace.join("AGENTS.md"); entry = workspace.join("CLAUDE.md")
           raise "#{name}: missing shared layout: #{answer}" unless owner.file? && entry.file? && entry.read.lines.map(&:strip).include?("@AGENTS.md")
-          headings = ["Project Identity", "Project Config", "Dev Commands", "Architecture Pointers", "Domain Rules", "Behavior Rules", "Hard Safety Rules", "Known Traps"]
-          raise "#{name}: missing generated schema" unless headings.all? { |h| owner.read.include?("## #{h}") }
+          raise "#{name}: missing project identity" unless owner.read.include?("## Project Identity")
           raise "#{name}: invented review marker" if owner.read.include?("last-reviewed:")
-          raise "#{name}: wrong config" unless owner.read.include?("git-strategy: solo")
+          raise "#{name}: wrong config" unless owner.read.include?("ship-method: direct")
           expected = %w[AGENTS.md CLAUDE.md].to_h { |p| [p, workspace.join(p).read] }
         end
         if scenario[:copy]

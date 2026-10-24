@@ -5,85 +5,42 @@ grand_parent: Commands
 nav_order: 5
 ---
 
-# Step 5: Finalize
+# Step 5: Prepare locally
 
-Seal the approved project snapshot at a verified private remote, then publish a separate completion receipt. Validate all four prior reports, output fingerprints, selected source and file inventory first. A cursor of 4 after interruption is not permission to replay every cleanup task.
+Finish and commit the reviewed local archive payload, then stop. No private destination, push/PR prompt, branch switching/creation, ref cleanup or remote receipt is required to finish this command. Later run `/helm:ship archive` when ready to publish/verify the private backup.
 
-## Flow
+## Local preparation
 
-```mermaid
-flowchart TD
-  Start([Begin or resume Step 5]) --> Validate[Validate context, outputs, inventory and journal]
-  Validate --> Destination[Confirm private archive destination<br/>Approve named local remote changes]
-  Destination --> Plan[Freeze canonical main and exact ref plan<br/>No publication or branch cleanup yet]
-  Plan --> Prepare[Choose LFS or separate backup<br/>Approve asset moves<br/>Identify and approve current service stops]
-  Prepare --> Manifest[Review exact files, staged changes, ref IDs,<br/>private destination and two-phase seal]
-  Manifest --> Approval{Approve seal?}
-  Approval -->|no| Pending([Preserve actual progress; report pending action])
-  Approval -->|yes| Payload[Commit approved payload with cursor 4<br/>Push source HEAD to private main]
-  Payload --> VerifyPayload{Exact payload and LFS<br/>publication verified?}
-  VerifyPayload -->|no| Pending
-  VerifyPayload -->|yes| Cleanup[Perform only remaining approved ref cleanup<br/>Rename kept branch to main, including master]
-  Cleanup -->|failed or changed refs| Pending
-  Cleanup -->|verified| Report[Persist actual final report and cursor 5<br/>Receipt phase: prepared]
-  Report --> Receipt[Commit and push completion receipt]
-  Receipt --> VerifyReceipt{Remote main contains exact receipt<br/>with expected tree and payload ancestry?}
-  VerifyReceipt -->|no or inaccessible| Pending
-  VerifyReceipt -->|yes| Done([Archive complete<br/>No further state-file writes])
-```
+Use only the validated canonical `.helm/archive/` directory. Unsupported old-bundle evidence stops this route without being read or moved. Preserve schema 1, source names/remotes/tags, protected imports/rules and opaque other-owner state. Revalidate the four prior reports, current inventory/output fingerprints, actual source and current host; do not replay completed restoration/imports/stops.
 
-A resumed phase skips only operations proven complete by validated journal/Git evidence. Reports and journal flags do not supply new approval for outstanding destructive actions or pushes.
+Before the payload commit, choose per artifact: regular Git, supported LFS with actual local objects, or an explicitly accepted separate/local-only exclusion. Review actual sizes/checksums/free space and known provider evidence; ask a provider preference only if it changes this storage choice. Unknown destination support does not make large regular blobs safe. Record compatibility limits or accepted incomplete preservation; Cancel preserves existing work.
 
-## Task 1: Private destination
+Exact private destination/account/plan/quota/retrieval checks belong to ship; unknown remote availability does not gate local completion. Provider limits vary: [GitHub blocks regular files larger than 100 MiB](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github), which is not a universal host limit. LFS pointers do not prove actual bytes are retrievable, and `.gitattributes` does not retroactively convert historical blobs. Record history/limit problems separately, with no implicit rewrite, installation or global hook/config change. Verified local storage is not a verified remote backup.
 
-Present credential-free remote identities, identify external/company/client remotes, and obtain the already-existing private archive destination. Verify identity, access and privacy through an available authenticated interface, or explicit informed confirmation when privacy cannot be inspected. A URL/name alone does not prove privacy.
+Consolidate only supplementary BA docs, diagrams, mockups, design/history material when useful; retain organized files in place by default. `recovery/assets/` is optional for approved scattered material. Application icons/backgrounds/fonts, fixtures/seeds, datasets and build/runtime/data inputs retain their native paths and wiring. Protected/checkpoint inputs are not generic assets. Older reports lacking this distinction get scoped source follow-up, not migration.
 
-Approve exact local remote changes, including differing fetch/push destinations. Remove only named remote configurations and set approved origin; do not touch another retained personal remote or change global credentials/settings. Snapshot approved-origin heads and access/LFS capabilities. This task publishes/deletes no refs. Revalidate this host's Docker/process access instead of assuming another session's runtime is available.
+Keep native originals. Useful existing portable views or conversions with available approved tools are optional; no installation, activation, payment or unapproved upload for conversion. External materials use supplied exact local paths, not personal-drive crawls/authenticated fetches. Review comments/tracked changes/customer information before inclusion without bulk redaction or rewriting originals.
 
-## Task 2: Explicit branch plan
+Approved moves must account for source/docs/Compose/Dockerfile/script/data/init/recovery references, update current navigation and preserve historical reports. Unknown external consumers favor keeping paths stable. Stop only currently identified owned project services after explicit target approval; no blanket shutdown, volumes or guessed process ownership.
 
-Use the validated source branch/full commit and journal, not a prose guess or the incidental current checkout. Canonical archive ref is always `refs/heads/main`, even for a `master` source. Freeze exact local/approved-origin ref IDs and proposed renames/deletions; preserve tags and unrelated remotes/worktrees. Active protected-branch prohibitions require resolution before mutation.
+## Review the payload
 
-Plan only here. The payload is committed on the kept source branch and pushed explicitly with `HEAD:refs/heads/main`, avoiding accidentally publishing an unrelated local main. An empty destination is valid. Existing archive main must accept a normal fast-forward; divergence requires a separate reviewed plan, never force-push or deleting main to bypass rejection.
+Show exact source/manifest/files, per-artifact storage choices/exclusions, retained/consolidated supplementary materials, secret-safety evidence, actual service/move results, recovery instructions and performed/deferred checks. The fifth report states **prepared locally; remote backup not published/verified**. No invented payload SHA, destination or recovery success. Real credentials/private records and unreviewed work are excluded; selected-history secrets block future publication for separate resolution.
 
-Cleanup occurs only after payload publication is verified and the seal plan authorizes those exact actions. Retire approved distinct local base/other branches, rename the kept branch to main, and delete only approved other remote heads. Preserve published main and payload history. Recheck expected IDs immediately before changes; new/changed refs invalidate the plan rather than broadening deletion. Record actual progress for safe resume. A planned deletion target already absent is reported as a satisfied postcondition, never replayed or claimed as deleted here. A clone already on canonical main at the proven payload needs no recreated source branch or rename.
+Offer **Commit reviewed local archive / Leave uncommitted**. Auto-commit does not replace this content/commit approval. Persist/read back the fifth report, checkpoint digest and inventory with cursor 4/phase prepared; remote and payload fields may be null. Stage literal approved paths/deletions only, inspect the complete index and verify the payload commit's actual parent/tree/archive identity. No directories, broad add or other-ledger drafts.
 
-## Task 3: Recovery tarballs and LFS
+Report the actual payload SHA and stop without a post-commit tracked journal update. Exact source-parent/archive-ID/report/manifest/committed-journal proof identifies this local payload later, never its subject or newest HEAD alone. A rerun with proven preparation replaces nothing. Failed/declined commits leave actual drafts pending rather than claiming complete preparation.
 
-Report `recovery/docker/` total size and other over-100 MB paths/types/sizes. Offer LFS storage at an LFS-capable private destination, local-only separate backup, or Cancel. Use repository-local LFS setup and approved patterns; no global configuration changes. Verify tool/remote support and required object availability.
+## Publish later through ship archive
 
-For local-only tarballs, add the ignore rule and document the separate backup and recovery placement. Ignoring an already tracked file does not untrack it: any required index removal must be explicit in the inventory/approval and must not delete the local recovery file. Other approved retained large files still use LFS. No large files is reported as not applicable. Record paths without staging whole directories.
+Ship archive narrowly validates this bundle and its already-prepared payload. Only it selects/verifies one private destination and separately obtains backup publication approval for the exact payload, recovery/LFS bytes, selected cleanup and receipt. Actual provider review/signing/checks/limits/triggers remain binding. A PR cannot substitute for payload/receipt ancestry. Canonical remote main uses normal fast-forward publication; no force or source-remote replacement.
 
-## Task 4: Asset preservation
+Publish/read back the pinned payload and verify required bytes before any selected cleanup or receipt. Keep names/remotes by default. Then replace the local-preparation fifth report with the explicitly reviewed factual completion receipt, retaining the prior report in Git history. Commit it with cursor 5/receipt_prepared as a child of the verified payload and publish/read back its exact SHA/tree/ancestry. The local cursor alone is no remote proof; no tracked write follows final receipt verification.
 
-Review source/template/style/documentation references before approved moves into `recovery/assets/`. Referenced assets require an explicit decision and link-change review. Agent entries/imports/rules, opaque Helm state, archive metadata/reports, private client settings and credential files are never generic asset-move targets. Record verified paths/fingerprints and legitimate supersession of prior outputs.
+An interrupted current-format run can continue only its identified missing phase. Proven own journal/receipt drafts have a narrow reviewed exception; unrelated pending source/index work still blocks. No repeated restoration, extra payload commits, new root, changed tags or reset/stash. Partial publication retains exact successes and pending actions.
 
-## Task 5: Current project services
+## Optional portable copy
 
-Prove current ownership using Docker context, Compose project/cwd labels and container IDs, or process PID/start identity/command/cwd. A reused PID, open port or old report is insufficient. Present exact verified targets, obtain stop approval, and recheck identity immediately before stopping. No blanket shutdown or volume deletion. Unknown/inaccessible services are reported separately; absence here does not imply another host's services stopped.
+After ship verifies the receipt, separately approve an unused external destination for a self-contained Git bundle and available required LFS/submodule/image/data/setup inputs, checksums and explicit omissions. Protect existing backups, inspect containment/size/privacy and verify source bundle prerequisites/objects and copied artifact hashes. A bundle alone excludes external recovery bytes. No repository/state amendment, scheduler or implicit upload. Copy failure preserves the verified seal and exact retry point.
 
-## Task 6: Two-phase seal
-
-### Review inventory and authorization
-
-Compare `.archive/files.json` with the actual index/working tree and approved source. List exact workflow-created/modified/deleted files, approved unchanged preservation inputs and explicit exclusions. Include restoration source/config files outside docs/recovery. Protected tracked instructions/rules/state travel through history at original paths; untracked preservation inputs need explicit review. Do not absorb pre-existing user edits or other workflows' pending ledgers.
-
-Exclude real credential files/values, secret-bearing reports/artifacts, private client-local settings and unrelated changes. Detected credentials in selected history block publication for a separate reviewed resolution; a private remote is not a waiver, and history/tags are not rewritten automatically. Preserve protected originals locally when publication is blocked. Reports expose names/locations, never secret values or fragments.
-
-The reviewed seal plan identifies exact file paths, staged changes, LFS pointers/objects, canonical ref and expected IDs, private destination, bounded cleanup, and both payload and receipt commits/pushes. Cancel produces no commit, ref cleanup or publication from this task; earlier approved preparation/stops are not rolled back. Auto-commit cannot bypass this approval. Changed inputs or material changes outside the plan require renewed review.
-
-### Publish the payload
-
-Prepare cursor-4 journal metadata before staging, then stage only approved literal created/modified paths and exact tracked deletion paths. No bare `git add -u`, `git add -A`, directory-wide additions or blindly staging `.archive/`. Reconcile unrelated index entries first; verify staged content and LFS pointers match the manifest. Internal metadata paths are explicit entries but do not recursively hash themselves; Git tree verification covers them.
-
-Commit `chore(archive): seal project archive` with cursor 4. Record its actual ID afterward in the local journal. Push that commit from the source branch to canonical main with `git push origin HEAD:refs/heads/main`, using the approved normal fast-forward plan. Verify the exact payload/tree and destination recovery/LFS object availability. A failed/unverified push stops cleanup and keeps cursor 4. Resume the verified existing payload publication, not another restoration commit.
-
-### Publish the completion receipt
-
-After verified payload publication, perform only approved remaining ref cleanup with expected-ID checks. A partial cleanup remains pending at cursor 4.
-
-Produce the factual final report with actual remote/ref changes, preservation, service results, payload ID/publication, recovery instructions and limitations. Persist it verbatim as `.archive/step5-finalize.md`, read it back, record its digest, and set local cursor 5 with `receipt_prepared` and the verified payload ID. The approved bounded seal plan covers this receipt unless material new changes require review. Local cursor 5 means the report is prepared, not proof of publication.
-
-Stage only that report, state and approved changed inventory/journal metadata. Commit `chore(archive): record completion receipt` as a child of the payload and push main. Verify the approved remote contains the exact receipt/tree and expected payload ancestry before reporting Archive complete. Its own commit ID and final publication proof are supplied by Git in the final user-facing summary, not embedded recursively in the committed report. No files change after this final push/verification.
-
-If receipt commit/push fails, preserve its draft/commit and report pending status. Resume only its missing operation after context/authorization checks, never payload or branch cleanup. Unavailable publication evidence means unverified completion, with no automatic mutation.
+See [ship](../ship.html), [archive](../archive.html) and [Git and CI behavior](../../setup/git-and-ci.html) for routing, safeguards and completion boundaries.

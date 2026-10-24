@@ -200,8 +200,9 @@ DEPENDENCIES
   html-proofer
   jekyll (~> 4.3)
   jekyll-include-cache
-  jekyll-remote-theme
+  jekyll-remote-theme (>= 0.5.2)
   jekyll-seo-tag
+  rexml (>= 3.4.4)
 
 CHECKSUMS
   Ascii85 (2.0.1) sha256=15cb5d941808543cbb9e7e6aea3c8ec3877f154c3461e8b3673e97f7ecedbe5a

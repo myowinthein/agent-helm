@@ -1,6 +1,6 @@
 ---
 name: log
-description: Maintain shared AGENTS.md and its Claude adapter with reviewed migration, a full scan, or a gap update
+description: Set up shared AGENTS.md and its Claude adapter, review project knowledge, check status, or remember confirmed lessons
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the log workflow](../../workflows/log.md).

@@ -7,100 +7,143 @@ has_children: true
 
 # /helm:archive
 
-Restore an old project, freeze its environment, generate API recovery files, write recovery documentation, and seal the approved snapshot at a verified private remote. Five separately reviewed steps can resume across Claude/Codex sessions without relying on conversation memory.
+Preserve an old project's source, useful working environment, data and recovery documentation, and prepare a reviewed local payload. Invoke ship archive separately to publish/verify the private backup. Five approved phases resume across Claude/Codex sessions. Preserved source, runnable artifacts, offline recovery, offline rebuilds, backups and remote publication have separate evidence and limits.
 
-Command names use Claude notation. In Codex, select the same workflow from the skill picker. The [shared runtime](../setup/compatibility.html) resolves package resources and the project's existing instruction/configuration owner before Git operations. Archive does not create, migrate, or rewrite Helm settings or agent entries. Its explicitly approved archival branch/commit plan does not let auto-commit bypass review, publication, or destructive-action gates.
+Claude uses the command names below. In Codex, select the same Helm skill and request the same mode. Both resolve the [existing instruction/configuration owner](../setup/compatibility.html) without rewriting AGENTS.md, CLAUDE.md or Helm settings.
 
-Run from the branch containing the complete project, with a usable HEAD. Unmerged branches are reported so you can merge needed work yourself before restarting; archive never merges them on your behalf. The final archive branch is always `main`, including when the source was `master`. The actual source branch/commit is validated on resume, rather than inferred from prose.
+## Investigation depth and coverage
 
-## Preserved instructions and state
+Step 1 covers each relevant recovery category/component and traces build/runtime/data/service/configuration/docs/asset relationships for the chosen goal. Read-only topic workers may help large independent investigations when permitted, returning inspected identities, evidence, unresolved dependencies and unread remainder. The parent reconciles coverage and keeps all execution/state actions. Static source coverage does not verify restoration, offline recovery or remote backup. Fixed reports, roots and resume/checkpoint semantics remain unchanged; no generic Full/Gap mode is added.
 
-| Files | Archive behavior |
+Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
+
+## Modes
+
+| Request | Result |
 |---|---|
-| Root/nested `AGENTS.md`, overrides, `CLAUDE.md`, project-local instructions, in-project imports and adopted rules | Read under active scope and preserve original contents, paths and bridges. Exempt from documentation/asset cleanup and recovery navigation requirements. |
-| `.helm/`, `.claude/helm/`, known flat legacy Helm JSON files | Preserve as opaque state at existing paths; no ledger parsing, reconciliation, migration or edits. Tracked files travel with history. Untracked preservation inputs need explicit inventory review. |
-| Global/external instructions and private client-local settings | Never copied automatically. Required external imports become documented recovery dependencies. Secret-bearing inputs block publication rather than being silently rewritten. |
-| `.archive/` | Archive's own progress, file inventory and verbatim approved reports, committed to the private archive. |
+| `archive audit` | Static project/recovery findings and inspected coverage, then stop. |
+| `archive plan` | Also propose restoration/data/docs/storage/check/seal actions, labelling unresolved execution facts. |
+| `archive` or an explicit resume | Follow the five approved report phases on the validated project source. |
 
-Preservation does not authorize publishing credentials or absorbing another command's pending edits. Known secrets are omitted from report output entirely, including fragments and token-bearing URLs.
+Audit/Plan are small exits through existing discovery/planning. They may review labelled dirty/staged/untracked/detached inputs or committed snapshots; without HEAD only advisory review is available. They make no network requests, execute no project code/configuration/checks/containers/dry-runs, access no operational state and write no files/index/refs/reports/cursor. Output stays in conversation. Normal archive work revalidates the actual source/policy and missing approvals.
+
+Only an initial `audit`/`plan` token selects the mode; literal paths in explicitly scoped advisory review use `./audit`, `./plan`, `-- audit` or `-- plan`, including quoted paths with spaces. Ambiguous scopes need resolution. A scoped advisory review never silently becomes a full-project seal.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Run archive]) --> Context[Resolve instructions and selected repository<br/>Validate saved context, reports and outputs]
-  Context --> Resume{Existing valid progress?}
-  Resume -->|fresh| Explore[1. Local read-only exploration]
-  Resume -->|in progress| Next[Continue first incomplete step or seal phase]
-  Resume -->|candidate completion| Proof[Verify receipt from Git and approved remote]
-  Proof -->|verified| Done([Report archive complete])
-  Proof -->|unavailable or inconsistent| Pending([Report unverified or pending; preserve files])
-  Explore --> Approve1{Approve report?}
-  Approve1 -->|yes| Restore[2. Restore isolated runtime and freeze recovery artifacts]
-  Approve1 -->|no| Pending
-  Restore --> Approve2{Approve report and any limitations?}
-  Approve2 -->|yes| API[3. Discover API; verify only a currently identified local runtime]
-  Approve2 -->|no| Pending
-  API --> Approve3{Approve report, including a documented skip?}
-  Approve3 -->|yes| Docs[4. Review consolidation plan<br/>Write recovery docs; preserve instruction/state paths]
-  Approve3 -->|no| Pending
-  Docs --> Approve4{Approve report?}
-  Approve4 -->|yes| Prepare[5. Private remote and bounded ref plan<br/>LFS, approved asset moves, identified service stops]
-  Approve4 -->|no| Pending
-  Next -->|step 2| Restore
-  Next -->|step 3| API
-  Next -->|step 4| Docs
-  Next -->|step 5 phase| Prepare
-  Prepare --> Seal{Approve exact inventory and two-phase seal?}
-  Seal -->|no| Pending
-  Seal -->|yes| Payload[Commit approved payload with cursor 4<br/>Push source HEAD to private main; verify payload and LFS]
-  Payload -->|failed or unverified| Pending
-  Payload -->|verified| Cleanup[Perform only approved remaining ref cleanup<br/>Keep payload history and tags]
-  Cleanup --> Receipt[Write final report and cursor 5<br/>Commit and push completion receipt]
-  Receipt --> Proof
+  Start([Run archive]) --> Mode{Audit or Plan?}
+  Mode -->|yes| Static([Static report; no execution, writes or state])
+  Mode -->|no| Root[Resolve fixed archive root and validate progress]
+  Root --> Existing{Proven local payload or existing receipt?}
+  Existing -->|yes| Report([Report existing result; no replay or replacement])
+  Existing -->|no| Confirm{Proceed on shown branch/HEAD and exclusions?}
+  Confirm -->|cancel| Cancel([Preserve work and progress; no checkout])
+  Confirm -->|proceed| Restore[Approved Explore, Restore, Postman and Documentation phases]
+  Restore --> Prepare[Review fifth report, source scope, artifacts and local payload]
+  Prepare --> Commit[Explicit local content/commit approval<br/>Verify payload; cursor 4 remains prepared]
+  Commit --> Local([Prepared locally; finish without publication prompt])
+  Later([Developer later invokes ship archive]) --> Publish[Review private destination and exact backup plan]
+  Publish --> Payload[Publish and verify pinned payload and required recovery bytes]
+  Payload --> Receipt[Only selected cleanup; commit/publish/verify receipt]
+  Receipt --> Sealed([Report verified backup; optional approved external copy])
 ```
 
-The resume node continues the applicable step; it never skips unfinished restoration/documentation to finalize. No completed destructive task is blindly replayed after interruption.
+Each normal phase stops for its report approval; the diagram does not grant blanket authorization. A resume continues its actual incomplete step/operation, and a proven completed receipt verifies publication without repeating restoration or cleanup. Failed/declined work preserves actual drafts, refs and earlier verified results.
 
-## Steps
+## Confirm the source branch
 
-### [1. Explore](archive/1-explore.html)
+Before a normal pending phase begins, archive shows the current attached branch and full HEAD, unmerged branches/work and other known exclusions from that snapshot, plus unknown coverage. It explains that approved edits/reports and the eventual local payload commit will happen on this branch. Choose **Proceed on this branch / Cancel**. A wrong branch requires a manual switch and rerun; archive never switches for you or absorbs pending work.
 
-Local read-only inspection of source, configuration, manifests, Git metadata, data sources and risks. Native file tools or read-only shell inspection are allowed; project execution, installs, builds, containers and network access are not. Record explicit project name, source branch and full commit. Nothing is written before report approval.
+Only prerequisite/ref inventory and read-only root/progress validation precede this gate. Reuse explicit human approval for the same repository, branch, inspected snapshot and preservation scope, including verified expected continuation; saved reports, auto-commit or the command alone are insufficient. Unexpected source/branch changes or material new exclusions require reconfirmation; expected approved archive outputs/commits do not cause repeated questions. This adds no confirmation file or schema field and does not replace later report, runtime/data or payload-commit approvals.
 
-### [2. Restore and Freeze](archive/2-restore-and-freeze.html)
+Audit/Plan require no branch confirmation. Proven already-prepared/completed report-only reruns also need no new Proceed question and never replay work or replace files.
 
-Restore the approved isolated project using the best suitable data source, prefer pinned Docker environments, export validated image tarballs, and make database/file data recoverable separately from images. Where Docker does not apply, document exact toolchain versions. Record actual file changes, outputs, current-host runtime identity and verification results without credentials. Missing data/access and partial outcomes retain their explicit review paths.
+## The five phases
 
-### [3. Postman Collection](archive/3-postman.html)
+1. [Explore](archive/1-explore.html): inspect relevant source/packages, versions, data, docs, assets and local Git metadata. Confirm the recovery goal and gaps, with a compact component handoff when useful. Separate supplementary docs from required runtime/build/data assets. Nothing is written before normal report approval.
+2. [Restore and Freeze](archive/2-restore-and-freeze.html): approve the restore plan, restore and record actual evidence, offer a developer check, then recommend/select and execute the approved freeze. Cross-check component-specific setup evidence; choose useful container/native/static/data/toolchain outputs for the actual goal. Preserve original safe inputs unless another dataset is explicitly chosen. Cold rehearsal remains optional.
+3. [Postman Collection](archive/3-postman.html): Retain/Repair/Create/Skip useful owned API recovery materials. Keep existing useful paths, cross-check current contracts against implementation and create an environment file only when valuable. Verify only approved appropriate requests against the identified isolated runtime; otherwise report unverified. No applicable API still gets its approved report.
+4. [Documentation](archive/4-documentation.html): preserve useful recovery/build/design/legal/history evidence. Use an archive-specific README for orientation, setup for ordered procedures and metadata for human-readable artifact identities/storage/verification. This does not invoke manifest or use its README style setting. Check protected imports and current references.
+5. [Finalize](archive/5-finalize.html): choose per-artifact regular Git/LFS/separate-local storage, retain or usefully consolidate supplementary docs, then review/approve and verify the local payload commit. Finish locally; later `ship archive` separately reviews private publication, verifies the backup and handles only selected cleanup, the completion receipt and optional external portable copying.
 
-Discover this project's API from source/specifications and generate Collection v2.1 files under `recovery/postman/`, or report why the step is not applicable. A previous `App running: yes` is historical: verify current ownership/access before requests. An unavailable or unidentified runtime uses source-only discovery with requests marked unverified; do not automatically replay restoration after switching agents/hosts.
+The developer check is feedback, not proof every runtime behavior passed. It can be declined/deferred or the pause omitted under an explicitly authorized unattended plan; silence is not consent. Reuse approval for unchanged concrete actions. Code/config/data changes invalidate only affected capture/verification evidence. These additions keep the five phases and schema 1, and do not invalidate older reports lacking optional handoff/check text.
 
-### [4. Documentation](archive/4-documentation.html)
+## Preservation and Git defaults
 
-Approve a per-file recovery-document consolidation plan before edits. Preserve instructions, imports, rules and opaque Helm state in place. Check protected imports before writing: preserve an imported README and approve an alternate archive index or stop for reconciliation. Otherwise write an archive-focused README, `docs/setup.md`, `docs/archive-metadata.md`, and historical notes when needed. Verify recovery-document navigation without treating protected agent/state files as orphaned cleanup candidates.
+Normal archive work needs an attached source branch and HEAD, with pre-existing changes reconciled before alteration and the source-branch confirmation above before pending phases. Recommend the intentional complete project snapshot, usually main/master after needed source work is integrated; another attached branch is allowed when it is the intended snapshot and project policy permits. No branch creation/switching during any archive phase. Unmerged source work is surfaced for developer action, never merged automatically. Other branches/tags/submodules/LFS/hosted resources are explicit captured or excluded inputs; one branch push is not a complete backup of all repository features.
 
-### [5. Finalize](archive/5-finalize.html)
+Source remotes/local names remain by default. Archive never offers push/PR or performs ref cleanup. Later explicit ship archive selects one existing private destination, publishes canonical remote main without renaming local master/custom source and preserves normal fast-forward/review/signing/protection/check requirements. Divergence blocks, never force-pushes. Optional cleanup belongs only to that separately reviewed publication protocol.
 
-Confirm the private destination and exact ref plan; choose LFS or separate backups, review asset moves, and stop only currently identified/approved project services. Review exact files and staged changes before seal approval. First commit/push and verify the payload on canonical `main`, with cursor 4. Then execute bounded approved cleanup, persist the final report and cursor 5, and publish a separate completion receipt. Completion requires verified receipt publication, not just a local cursor.
+Local payload approval authorizes only that reviewed commit, not a backup push. Ship archive separately reviews publication of the existing pinned payload, required artifacts and later completion receipt, using exact refs/no-follow-tags/readback. It alone performs selected post-backup cleanup and receipt updates in the narrow owning bundle. Tag/ref preservation and external copy actions retain separate scope; auto-commit/cursor never proves publication.
 
-## Progress and resume
+## Protected files and progress
 
-`.archive/state.json` retains the last locally approved report and adds an archive ID, source/working context, report/output fingerprints and finalization journal. `.archive/files.json` records baseline paths/fingerprints, workflow changes, protected preservation inputs and approved exclusions. Reports keep their existing `.archive/step{N}-{name}.md` filenames and approved contents. Metadata does not recursively hash itself; Git commit/tree proof covers it.
+Keep root/nested AGENTS.md, overrides, CLAUDE.md, adopted rules and in-project instruction imports at their original paths/content. Check every planned output, including setup/Compose/collection files, before any step writes. A protected target needs an approved alternate path with correct references or a stop for instruction reconciliation. Fixed progress/inventory/report filenames do not relocate: a protected/conflicting checkpoint path stops for reconciliation. Validate output containment and symlink/collision safety. External/global instruction dependencies are documented, not copied automatically.
 
-Validate JSON version/types/range, contained non-symlink paths, repository/branch/history identity, and required reports/outputs before resuming. Later completed steps and verified authorized in-progress changes supersede earlier output fingerprints, while unfinished outputs remain pending without rewriting historical reports. Unexplained changes or malformed/unsupported state stop for reconciliation. Another host/clone can resume after these checks, including canonical main at a proven payload/receipt when the old local source name is absent; absolute paths and old localhost/process assumptions are not identity proofs.
+Archive owns only its reserved progress, inventory and five report files. Preserve other `.helm/` content, including ordinary ledgers and unknown siblings, `.claude/helm/` and known unsupported old Helm records opaquely in place, without parsing, migration or cleanup. Unknown files inside an archive directory are not automatically archive-owned. Tracked history retains preserved inputs; untracked preservation inputs need explicit inventory approval. Secrets/private client inputs do not become publishable because the destination is private. Stage only exact approved files, never all `.helm/` or an archive directory.
 
-Legacy two-field state is read-only until the user confirms its project, source and remaining work. A legacy cursor of 5 without publication evidence is unverified. Existing metadata/reports without state require reconciliation before a restart; never delete the audit trail blindly. Stored reports do not grant new authorization.
+### Archive directory and existing projects
 
-A local cursor 5 with `receipt_prepared` is a candidate completion receipt. Verify its report/inventory tree, payload ancestry, LFS preservation evidence and containment in the approved remote's main. Missing proof/access reports unverified completion. A pending receipt resumes only its missing commit/push, without repeating restoration or ref cleanup. After verified receipt publication no files change again; the final user-facing summary supplies the receipt ID and publication proof separately from the committed report.
+Current runs keep their version-controlled schema-1 state and approved reports under `.helm/archive/`:
 
-## Approvals and stop conditions
+```text
+.helm/archive/
+├── state.json
+├── files.json
+├── step1-explore.md
+├── step2-restore-and-freeze.md
+├── step3-postman.md
+├── step4-documentation.md
+└── step5-finalize.md
+```
 
-Each step report needs explicit approval; Step 4 also reviews its consolidation plan. Step 5 separately reviews local remote changes, tarball handling, referenced asset moves and identified service stops when applicable. Its final seal plan explicitly authorizes the reviewed payload and receipt commits/pushes plus bounded ref cleanup. Auto-commit, tool permission, a report flag or a missing answer does not replace those approvals.
+Validate the canonical directory/parents, fixed files, schema/context and current fingerprints before continuation. Partial/reports-only/inventory-only evidence is prior work, never a fresh run. Reject symlinks, escaping paths and conflicting occupants. Audit/Plan and switching coding agents open no operational state.
 
-Any declined/failed operation preserves actual completed work and pending files/refs. Report limitations and the exact remaining action; do not claim rollback or completion. No payload verification means no branch cleanup; no receipt publication proof means no Archive complete claim. Partial restoration can proceed only through its explicit informed approval, without promoting unverified output to verified status.
+An exists-only check for reserved old-bundle names under `.archive/` stops this archive route with [upgrade guidance](../setup/upgrading.html). It never reads old state, chooses between roots, converts, moves, merges or restarts a run. Other commands preserve historical archives opaquely. An ordinary `archive/` asset folder is distinct and remains in place. Existing metadata, including known alternate paths, blocks a false fresh run even when the state bundle is absent.
+
+Keep current schema 1, fixed report names, unknown data and verbatim approved historical reports. Before every write, recheck source/branch, supported root, tripwire and latest legitimate output fingerprints. Authorized later outputs can supersede older fingerprints without rewriting reports; unexplained drift blocks work. Missing/unsupported versions are not upgraded automatically.
+
+Local preparation keeps cursor 4/phase prepared with nullable destination/payload fields. Exact committed parent/archive-ID/report/inventory proof identifies the reviewed payload, with no post-commit state-only write. Proven preparation reruns replace nothing or replay services. Only explicit ship archive verifies private payload publication and selected cleanup, then commits/publishes/reads back the completion receipt at cursor 5/receipt_prepared. A cursor alone is not publication proof, and no tracked update follows final receipt verification. Current-format interruptions resume only the proven missing operation; historical unsupported runs require separate maintenance. Portable copies remain separately approved external actions.
+
+## Output files and their purpose
+
+Outputs are conditional on useful recovery needs and exact approval; Audit/Plan create none. Developer docs should explain recovery without requiring the raw workflow reports.
+
+| Output or default path | Audience, format and purpose |
+|---|---|
+| `{archive_root}/state.json` | Agent workflow record, JSON schema 1: cursor/context/journal. Persists in version control. |
+| `{archive_root}/files.json` | Agent workflow record, JSON schema 1: baseline, changes, preservation inputs/exclusions and fingerprints. Persists in version control. |
+| Five fixed `step1-…` to `step5-…` reports listed above | Approved Markdown historical evidence for resume and human audit. Persistent; not the startup manual. |
+| `README.md` or approved alternate index | Developer orientation: source/snapshot/status, purpose/stack/goal, supported recovery route, requirements/data/limits and links. |
+| `docs/setup.md` or approved alternate | Ordered restore/data/run/demo/stop instructions. Link full artifact identities in metadata; retain explicit arguments needed by commands. |
+| `docs/archive-metadata.md` or approved alternate | Human-readable Markdown inventory: full identity/platform/byte size/SHA-256/provenance/storage and actual scoped verification dates/results. No new machine schema. |
+| Optional `docs/historical-notes.md` | Useful separate history only when retained existing documents do not suffice. |
+| `recovery/docker/` | Selected unique image exports, normally `.tar.gz`, with stable recoverable mapping. |
+| Existing data paths; `recovery/data/` only if useful | Necessary safe database/file/model inputs in engine-native formats, not automatically SQL or relocated. |
+| Existing distributable paths; `recovery/native/` only if useful | Useful native builds/firmware/approved inputs. Document lawful acquisition of unavailable/non-redistributable SDKs instead of copying them. |
+| Approved native configuration/template paths | Only needed safe recovery configuration with evidenced keys/placeholders/approved defaults; never copies of real `.env` values. |
+| Existing API paths or new `recovery/postman/{project-name}.postman_collection.json` | Retained/repaired collections/specs or a useful new Postman v2.1 collection; no forced extra formats. |
+| Optional `{project-name}.postman_environment.json` beside the collection | Separate environment selection only when useful beyond collection variables. |
+| Existing supplementary paths; optional `recovery/assets/` | Useful approved BA/design/history consolidation, keeping native originals and conditional portable views. Excludes required application/build/data assets. |
+| `.gitattributes` and actual local LFS objects | Only for selected LFS storage; a pointer is not the recovery bytes. |
+| Separately approved external portable copy | Ship-owned post-receipt Git bundle plus available recovery inputs, checksums and restore index; not a new archive-phase deliverable. |
+
+Use lower-case-kebab-case for new free-form names. Preserve conventional `README.md`, format suffixes such as `.postman_collection.json`, native extensions and existing referenced paths. Role/platform/version suffixes distinguish actual artifacts only. Do not create empty directories/companions, date-stamped duplicates, checksum sidecars or new profiles/ledgers for symmetry. No automatic renaming/migration; operational roots/names/schema stay fixed. No output is secret storage.
+
+The README has its own archive information contract, independent of manifest and `readme-style`. Separate snapshot date from verification date/platform, keep only confirmed licence/maintenance/support claims and never preclaim publication. Link existing recovery docs or the actual tracked run directory, not a future Step 5 receipt. Full artifact tables belong in metadata; setup owns ordered instructions, and reports remain historical evidence. Record actual Retain/Repair/Create/Skip API outcomes and paths alongside the unchanged generated flag.
+
+## Recovery and portable copies
+
+Record actual image IDs/upstream digests where available, stable recoverable tags, OS/architecture, toolchain/Engine/Compose requirements, native locks and required data/files. Documentation of an unavailable SDK is a gap, not a working freeze. Use appropriate consistent backups; synthetic/sanitized data is preferred, and localhost is not automatically safe. Approved acquisition is separate from runtime live-service contact.
+
+Static integrity, build, current run, cold rehearsal and offline rebuild results remain distinct. Honor verification deferral without running deferred checks or claiming Fully Restored. Partial preservation can continue only with its limitations approved. Local-only tarballs are not a verified backup; actual retrievable LFS objects or a verified separate copy are needed for the corresponding backup claim.
+
+In ship archive after verified receipt publication, optionally approve a portable copy to a specific unused external directory: a self-contained Git bundle plus separately available required LFS/submodule/image/data/setup inputs, checksums and omissions. It changes no tracked files/state and creates no scheduler or cloud upload. Missing inputs/copy failure retain the verified seal and an exact copy handoff. A second independent copy is advice unless separately authorized.
 
 ## See also
 
-- [`/helm:log`](log.html): maintain shared project instructions
-- [`/helm:manifest`](manifest.html): maintain the project README
+- [Git and CI behavior](../setup/git-and-ci.html): archive publication and protection boundaries.
+- [Compatibility](../setup/compatibility.html): shared instructions, capabilities and opaque state preservation.
+- [log](log.html) and [manifest](manifest.html): active-project knowledge and README maintenance outside archive.

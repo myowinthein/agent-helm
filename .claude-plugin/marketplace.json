@@ -9,17 +9,7 @@
       "name": "helm",
       "version": "2.22.3",
       "source": "./",
-      "files": [
-        "commands/",
-        "rules/",
-        "prompts/",
-        "skills/",
-        "workflows/",
-        ".claude-plugin/",
-        "README.md",
-        "LICENSE"
-      ],
-      "description": "A Claude and Codex workflow plugin for solo developers. Shared workflows and rules to ship, refactor, test, document, generate legal docs, audit env config, normalize commit history, adopt rule files, and archive your own work.",
+      "description": "A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.",
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_USE"
@@ -27,5 +17,5 @@
       "category": "Developer tools"
     }
   ],
-  "description": "Install Helm workflows for Claude and Codex."
+  "description": "Install Helm workflows and shared rules for developers using Claude and Codex."
 }

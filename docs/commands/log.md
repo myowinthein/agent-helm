@@ -6,139 +6,160 @@ nav_order: 2
 
 # /helm:log
 
-Set up shared `AGENTS.md` project instructions and a `CLAUDE.md` import adapter, then keep project knowledge current. The captain's log holds durable architecture, configuration, conventions, domain rules and traps. Developers can switch between Claude and Codex sessions without rerunning setup.
+Give fresh Claude and Codex sessions useful project context: essential commands, important boundaries, working agreements and lessons the developer has already taught the agent. Log sets up shared `AGENTS.md` and its `CLAUDE.md` import adapter, then maintains that knowledge without replacing task-specific code investigation.
 
-In Codex, select the log workflow from the skill picker. Both hosts follow the same migration and knowledge-update workflow. [Compatibility](../setup/compatibility.html) explains ownership, overrides and shared rules.
+In Codex, select log from the skill picker and request the same mode in your message. Both hosts use the same owner, preservation rules and review-marker contract. [Compatibility](../setup/compatibility.html) explains overrides, imports and shared rules.
+
+## Investigation depth and coverage
+
+Full scan covers every first-party package/topic through representative real workflow tracing, relevant setup/configuration/CI and tests, and review of all existing memory. It is not a line-by-line refactor audit. Gap scan accounts for the exact complete commit range and relevant patches, including merges/reverts/renames/deletions and affected unchanged surfaces; a net diff alone is insufficient. Large independent packages/commit batches may use permitted read-only workers, with parent reconciliation of exact coverage and cross-package knowledge.
+
+Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
+
+## Modes
+
+| Request in Claude | Purpose |
+|---|---|
+| `/helm:log` | Assess cheaply, recommend a full scan or gap scan, and propose required shared-layout setup. |
+| `/helm:log status` | Report local layout, configuration, history availability and pending work without writes, prompts, fetches or branch changes. |
+| `/helm:log remember: <lesson>` | Propose a focused developer-confirmed lesson without a whole-project/history scan. |
+
+You can also explicitly request Full scan or Gap scan. Remember needs an existing owner or a reviewed migration of one. If neither entry exists, log offers Full scan or Cancel and carries the lesson into a chosen full scan; it does not invent a project description just to save one sentence. All modes respect existing instructions and protected files.
+
+Remember bypasses history indexing and marker validation, preserving even an old/unverifiable marker as provenance. An explicit settings-only request can produce a configuration-only diff without a source review. Layout-only setup remains available when knowledge needs no scan. Explicitly requested scans are not silently replaced by the no-op shortcut.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Run log]) --> Prepare[Resolve owner, policy and main/master base]
-  Prepare --> Branch[Solo on base; GitHub Flow on unique branch]
-  Prepare -->|log without repo or HEAD| Work
-  Branch --> Work[Workflow assessment, choices and approved edits]
-  Work --> Changed{Any workflow changes or commits?}
-  Changed -->|no| Noop[Safe empty-branch cleanup and report]
-  Changed -->|log without Git| Uncommitted[Report verified files as uncommitted]
-  Changed -->|with Git and changes| Verify[Verify outputs and required commit approvals]
-  Verify --> Mode{Git strategy?}
-  Mode -->|GitHub Flow| Review[Confirmed branch push and PR handoff; required review and CI]
-  Review -->|pending| Pending[Retain work and report pending state]
-  Review -->|satisfied| Merge[Configured integration strategy]
-  Mode -->|Solo| Push
-  Merge --> Push[Separately confirm publication]
-  Push -->|declined or failed| Pending
-  Push -->|verified published SHA| CI[Required promotion CI passed or not applicable]
-  CI -->|blocked| Pending
-  CI -->|ready| Promote[Optional confirmed fan-out]
-  Promote --> Cleanup[Safe eligible cleanup and report]
+  Start([Select mode and scope]) --> Inspect[Read-only inspection of current checkout]
+  Inspect --> Write{Selected local writes?}
+  Write -->|no| Report([Report scope, evidence and limits])
+  Write -->|yes| Ready{Clean permitted current branch?}
+  Ready -->|no| Block[Explain blocker; preserve work; no checkout]
+  Block --> Report
+  Ready -->|yes| Review[Review concrete changes and required approvals]
+  Review --> Apply[Apply selected work; verify outputs and source provenance]
+  Apply --> Commit[Exact-path local commits under applicable approval]
+  Commit --> Report
 ```
 
-## Shared layout setup
+Without a repository or HEAD, log skips Git and leaves verified files uncommitted; it never initializes a repository. With Git history, writes require the current actual main/master base and clean inputs. Other branches can receive read-only status, but writes stop with a reason instead of switching branches. Completion is local, with publication left to ship.
 
-The destination is always:
+## Shared layout and preservation
 
-- `AGENTS.md`: shared project knowledge, one Helm configuration block, adopted `## Rules`, and the review marker.
-- `CLAUDE.md`: a real file with a standalone `@AGENTS.md` import, followed by Claude-specific additions when needed.
+Successful setup uses two real root files:
 
-An actual import loads shared content automatically in Claude. Prose telling Claude to read AGENTS.md is not an equivalent adapter. Shared resource dependencies in AGENTS.md use explicit read-and-follow directives because Codex does not expand Claude import syntax.
+- `AGENTS.md` owns shared knowledge, Helm configuration, adopted Rules and any review marker.
+- `CLAUDE.md` contains a standalone `@AGENTS.md` import and clearly Claude-specific additions when needed.
 
-| Existing files | Setup action |
+An actual import loads shared content in Claude. Shared dependencies in AGENTS.md use explicit read-and-follow directives because Codex does not expand Claude import syntax. Neither file duplicates the other's ownership.
+
+| Existing layout | Proposed action |
 |---|---|
-| Neither | After a full scan is selected, generate AGENTS.md and the adapter together. Skip writes neither. |
-| AGENTS.md only | Preserve it and show the proposed Claude adapter for approval. |
-| CLAUDE.md only | Propose moving shared content into AGENTS.md, retaining Claude-specific instructions in the adapter. |
-| Both connected correctly | Keep the layout and continue assessment. |
-| Both independent, partially connected or cyclic | Compare content and propose reconciliation. |
+| Neither root file | A selected full scan creates both together. Skip creates neither. |
+| AGENTS.md only | Preserve it and propose the missing adapter. |
+| CLAUDE.md only | Propose moving shared content to AGENTS.md, keeping Claude-only additions in the adapter. |
+| Both correctly connected | Preserve layout and continue assessment. |
+| Independent, partially connected or a root two-file cycle | Compare agreements, unique instructions, conflicts and host scope; propose reconciliation. |
 
-An adapter that imports AGENTS.md but still owns shared settings, Rules or a review marker is partially connected and needs reconciliation. Log may propose repairing a cycle confined to the two readable root files; it reads each once and resolves configuration before Git actions. Other cycles or missing targets still stop.
+Independent files offer reviewed merge, either source as baseline, or Cancel, followed by approval of the exact resulting diff. A baseline does not discard unique instructions. A partially connected adapter still owning shared settings/Rules/marker needs reconciliation. Only the readable root two-file cycle has log's limited read-once reconciliation exception; other cycles/missing targets stop. Preserve overrides, personal/global/nested files, fenced configuration and adopted rule paths. An unconnected root override blocks shared setup on either host.
 
-For independent files, summarize agreements, unique durable instructions, conflicts and host-specific content before asking. Offer a reviewed merge, either source as the content baseline, or cancel. A baseline does not authorize silently discarding unique safety rules, preferences or conflicting configuration. Show the resulting combined diff before applying it. Existing approval suffices when it covers that exact transformation.
+Layout changes are reviewed from actual destination files and rechecked before writing. Keep prior marker provenance; moving text is not a review. A layout commit is separate from later knowledge commits. Historical layout commits count as noise only after their patches establish unchanged instruction meaning/settings or knowledge already represented. Later Skip/current knowledge still finalizes approved layout changes; layout Cancel ends the invocation without a scan.
 
-Preserve custom headings, fenced configuration, confirmed settings and adopted rule paths. Convert shared imports explicitly rather than silently making them Claude-only. Remove an old reverse bridge only within the approved migration, preserving user-added instructions. Never leave AGENTS.md reading CLAUDE.md while CLAUDE.md imports AGENTS.md.
+## Cheap assessment and true no-op
 
-Moving content or creating an adapter does not constitute a knowledge review. Carry a valid review marker unchanged; disclose differing histories and propose a conservative review point or removal of an ambiguous marker for approval. A layout-only commit is separate from later knowledge edits and is treated as noise during gap assessment.
+Before deep patch reading, collect the marker's availability/validity, commit count, changed/renamed paths, approximate churn and affected packages. These are navigation data, not completed review. Never exclude instruction changes or a commit category automatically.
 
-Setup runs before the up-to-date check. A later scan Skip or an already-current owner still finalizes any approved layout changes. Cancel at layout approval exits without a layout write or scan and cleans up an empty temporary branch.
+At the existing Full scan/Gap scan choice, use the [shared scan-depth selection](../setup/compatibility.html#shared-scan-depth-selection) with already permitted marker, snapshot and impact facts. Bounded changes normally favor Gap scan; added/removed first-party services/packages, major runtime/framework replacements or cross-area changes can favor Full. Age, counts and missing headings alone do not determine depth; unknown Full-scan history is not never-Full. Explicit Full remains available without a source gap, and an explicitly selected valid Gap must still cover every affected lesson under the per-commit patch contract.
 
-## Git and scope
+Fresh/Rules-only/no-marker or invalid-marker owners offer full investigation or Skip within otherwise valid inputs. Ownership conflicts still block dependent work. Custom owners receive targeted edits in either depth, without a new targeted-scan mode. Status, Remember, settings-only and layout-only work gain no helper/baseline prerequisite. Log retains its own no-op, acceptance and marker rules.
 
-Use the [shared Git and CI flow](../setup/git-and-ci.html): resolve the actual main/master base and invocation policy, require a clean setup, use a unique GitHub Flow branch (unused suffix on collisions), and revalidate destination ownership/configuration after checkout. Solo stays on the base without a temporary branch. Preserve real drafts/commits on failure; only a genuine no-write/no-commit exit safely returns before deleting its empty branch.
+The read-only no-op requires a clean selected base, connected entries, complete applicable settings, no requested lessons/settings changes and a valid marker with no source gap. Inspect intervening instruction-maintenance patches before dismissing them; an output filename or log-like subject is insufficient. Report the exact local base SHA and that the remote was not fetched, leaving the marker untouched. Missing optional headings are informational.
 
-Log records invocation strategy/auto-commit before layout/configuration writes and keeps that policy through finalization; new saved values apply next run. Without a repository or HEAD, it supports approved layout/knowledge work without Git initialization, commits, publication or a newly generated review marker. Preserve overrides, personal/nested/global instructions and the reviewed layout limits described above.
+Dirty/feature-branch Status results name the current checkout, known local base SHA, gaps and pending differences. They never claim that workspace or remote is current. A dirty tree blocks writes/reviews until the developer resolves it; no automatic commit, stash or discard. A normal selected write path still uses the stable-base setup and clean-tree requirements. Unexpected source/input changes require reassessment; setup never updates the base.
 
-## Knowledge assessment
+## First-run settings and Git policy
 
-After layout setup, assess AGENTS.md:
+On a selected write path, ask once about absent applicable settings before Git mutations. Batch questions when the host can represent them faithfully, preserving existing values and explicit false:
 
-- **Fresh file, Rules-only bootstrap, or no review marker:** offer a full scan/investigation or Skip.
-- **Standard schema intact and no meaningful commits since review:** knowledge is current; finalize any layout changes.
-- **Small/moderate meaningful gap:** recommend a gap update.
-- **Large meaningful gap or missing standard sections:** recommend a full scan.
-- **Customized owner:** preserve its structure. Investigate the same topics and propose targeted edits rather than replacing it with the standard schema.
+- Future shipping: `ship-method: direct|pr` (default pr), independent of team size/branch layout.
+- Local commits: explicit `git-auto-commit: true|false` (default false).
+- Future eligible ship integrations: `git-merge-strategy: squash|rebase|merge` (default squash), independent of ship method.
 
-Invalid or unrelated review markers are reported and offer full investigation. Commit types and subjects never determine what is skipped: fixes, styling, dependency updates, CRUD and refactors can all reveal durable constraints or traps. Inspect every commit's changed paths and relevant patches, including merge results, then follow affected code, tests, config and docs. Only changes shown to add, invalidate or alter no durable knowledge are noise. Pure layout moves require checking that their meaning and settings stayed the same.
+Record raw owner/configuration/overrides and freeze this run's local commit policy, including explicit answers for previously absent auto-commit. Changes to an existing setting apply next run. Publication preferences do not gate local branching; log can collect active choices during setup without requiring them for knowledge edits. There is no retired-key mapping or cleanup prompt: use the one-time upgrade guide for unsupported declarations. Preserve other settings/overrides and show the exact owner diff before saving.
 
-If source commits were fully inspected and nothing durable changed, use the gap update's no-change outcome instead of dismissing the range by label. If only verified instruction maintenance remains and current memory already represents its durable content, keep the marker unchanged; do not create repeated marker-only commits for log's own output.
+Answers are pending values, not approval to write an unseen diff. Persist accepted values in the existing recognized block, retaining all unrelated settings and fenced wrappers. If no block exists, review a minimal addition. Never reask during generation or put shared settings in an adapter. Before local writes, unexpected raw declarations or ownership changes stop; an approved pending value is overlaid only while the key remains absent. Other commands retain their existing policy resolution.
 
-## Review snapshot and coverage
+## Eight useful topics, flexible structure
 
-After branch setup, pin the current commit as `review_head` before layout work. Investigation covers that source snapshot, not the later layout, knowledge or merge commit. In a repository with HEAD, relevant uncommitted or visible untracked source/config/test/doc inputs stop the knowledge scan until the developer commits or resolves them; do not automatically commit, stash or discard them. Approved layout edits are expected outputs; use the post-layout memory as the preservation baseline. Without HEAD, investigate and recheck the workspace inputs directly and omit a marker on a completed scan.
+Use these topics as the default order for new memory and a checklist for investigation:
 
-Keep a working coverage summary by package/topic with inspected evidence paths, exclusions and unfinished or inaccessible areas. Gap reviews account for every commit and changed path in the validated range through `review_head`. Recheck source and instruction inputs before applying a proposal; changed inputs require refreshed investigation and approval of the new diff.
+| Topic | Intended content |
+|---|---|
+| Project Identity | Short purpose, stack and blast radius. |
+| Project Config | Confirmed Helm settings in one recognized block. |
+| Dev Commands | Essential evidenced setup/run/build, focused-test, migration and diagnostic commands with prerequisites. |
+| Architecture Pointers | Important entry points and boundaries with a short why; conditional references for occasional detail. |
+| Domain Rules | Non-obvious application business, permission and lifecycle constraints. |
+| Behavior Rules | Project-specific development agreements beyond loaded rules/configuration. |
+| Hard Safety Rules | Concrete project hazards and restrictions, with explicit approval for new safety instructions. |
+| Known Traps | Evidence-backed gotchas, historical rationale and developer-confirmed recurring corrections. |
 
-Advance the review marker only after complete investigation and acceptance and successful application of every proposed substantive knowledge change. Rejection, cancellation, partial acceptance or incomplete coverage leaves the old marker unchanged and reports what remains. Saving settings alone does not count as a review. A fully inspected source range with no durable change may receive a marker-only update alongside confirmed setting choices; no source changes or layout-only work does not justify one. Later commits and merges never replace the marker with their own hash. Fresh/standard generation puts an eligible marker last, after preserved Rules; targeted custom updates preserve existing marker placement and keep an already-final marker last.
+A standard-format owner can use any useful subset of these headings plus `## Rules`. Custom/fenced layouts stay customized and keep their structure. Empty optional topics need no heading or `None` placeholder in new generation. Existing empty sections are preserved unless their exact removal is approved. Missing headings never make a file broken or force a full scan. Add useful missing content within an approved write.
 
-## Full scan
+Adopt's Rules section is outside this checklist and remains verbatim in place. Domain Rules describe application constraints, Behavior Rules describe development practices, and Hard Safety Rules describe hazardous operations. Avoid restating configuration or already-loaded Git/safety rules, while preserving necessary standalone safeguards.
 
-Inventory first-party packages and entry points, then investigate each applicable topic across them. Inspect purpose/docs and metadata; dependency/runtime/config and install/run/build scripts; primary workflows through business logic, persistence and integrations; schemas, validation, permissions and lifecycle tests; development conventions, hooks and CI; deployment, jobs and destructive scripts; and prior memory, warnings and failure paths. Read operational commands without executing them. Record durable knowledge a future session would struggle to discover quickly.
+## Full scan and gap review
 
-Coverage summaries identify the evidence inspected and distinguish absent topics from blocked or unfinished investigation. Exclude vendor/build/cache artifacts and unrelated data with reasons. Respect credential and ledger restrictions. A restricted relevant area leaves the review incomplete rather than silently counting as reviewed.
+A full scan investigates the current source snapshot across every first-party package/service. Inspect purpose and exposed entry points; manifests/runtime/config/scripts; major workflows through business logic, persistence and integrations; schema/validation/permissions/lifecycle tests; contributor conventions/hooks/CI; operations/jobs/destructive scripts; and prior knowledge/traps. Representative implementations are appropriate across all major areas, not a sample of one package standing for a monorepo. Consult history where specific rationale needs clarification. Read operational commands without executing them.
 
-For fresh or already-standard memory, use these eight sections:
+A gap review accounts for every commit's changed paths and relevant patches through the pinned snapshot, including merges, renames, deletions and reverted work. Messages and the net diff organize that review; they cannot replace it. Fixes, styling, dependency updates, CRUD and refactors may all reveal durable constraints. Reuse already-inspected evidence while inputs remain unchanged.
 
-1. Project Identity
-2. Project Config
-3. Dev Commands
-4. Architecture Pointers
-5. Domain Rules
-6. Behavior Rules
-7. Hard Safety Rules
-8. Known Traps
+Keep a working coverage summary with evidence paths and absent/excluded/unfinished areas. Exclude vendor/build/cache artifacts, unrelated data, credentials and operational ledgers as required. Restricted relevant inputs make a review incomplete. Preserve prior knowledge that cannot be rediscovered; propose removals or contradictions only with evidence and approval.
 
-Use existing memory as the baseline. Retain useful knowledge even if the scan cannot rediscover it, including historical rationale and operational facts. For every existing durable entry, retain it, propose a change/removal with evidence, or retain it pending clarification. Any removal or contradiction needs approval of the concrete diff; uncertainty never authorizes deletion. Preserve imports, user-authored/host-specific instructions, confirmed settings and the adopt-managed Rules section. Existing standard-format documents receive a reviewed full candidate; customized owners receive a reviewed targeted patch in their existing sections.
+Useful additions improve future decisions and remain relevant for weeks/months. Non-obvious knowledge deserves priority, but essential startup/test commands qualify even when discoverable in scripts. Completed task status alone is not durable memory. Keep detailed coverage in the review/report, not a new ledger or the always-loaded file.
 
-Project Config Check runs at most once, asking only about missing applicable settings in every update mode. Preserve explicit `false` and all unrelated existing settings. A No answer saves `git-auto-commit: false`, so it is not asked again as a missing flag. Ask merge strategy only for an existing or pending GitHub Flow configuration with no saved value. Reuse pending answers in the accepted write; do not ask again during generation. Keep fenced blocks intact. An existing owner without a config block receives a minimal proposed section addition for approval. Confirmed setting choices may be saved separately when the developer accepts settings only, without advancing the review point; cancelling the proposal discards pending choices. The invocation still finishes under its original Git policy.
+## Remember developer-confirmed lessons
 
-Target under 150 lines without padding or sacrificing protected/durable content. Use `review_head` only when the coverage and acceptance conditions are met. Fresh incomplete reviews have no marker. For a fresh setup, selecting Full scan authorizes ordinary descriptive content and the Claude adapter; proposed new safety rules still require approval. Verify both files. Do not install or update `.claude/rules/` here; rule adoption belongs to adopt, and safety findings are proposed rather than silently installed.
+Remember accepts explicitly supplied lessons or developer corrections/agreements from the current visible conversation. Show candidate provenance in the proposal, without persisting transcripts, dates or a session changelog. Never mine hidden sessions, host-private auto-memory or personal files, and never turn an inferred preference into confirmed policy.
 
-## Gap update
+Propose a short actionable entry with a useful why. Shared lessons go in AGENTS.md; clearly Claude-only additions can go after the adapter's import, and Codex-only mechanics need an explicit condition. Configuration choices belong in the existing configuration block rather than duplicated prose.
 
-Ask only about missing configuration, reusing any answers already collected. Inspect every commit's relevant changes through the pinned snapshot, using messages to navigate rather than filter out categories. A proposed addition must satisfy all three questions:
+When desired policy contradicts observed code, show the discrepancy and ask whether to record the policy, a trap/known violation, or drop the candidate, unless the developer already made that choice explicitly. Do not assert that desired behavior is implemented or silently modify code. Resolve conflicting guidance through a reviewed diff. New safety instructions still need explicit approval.
 
-1. Would a future session struggle to find it quickly?
-2. Would knowing it improve development decisions?
-3. Will it stay true for weeks or months?
+Remember uses only evidence checks needed for its patch, then the same quality/approval/read-back process. It does not require a whole-project/history scan and preserves the review marker's exact value, placement or absence, including after layout migration. Report lessons recorded and source coverage as not reviewed.
 
-Patch affected sections only, preserving custom structure and prior knowledge. Propose substantive changes as a diff and wait for approval. Apply accepted changes and an eligible snapshot marker together after rechecking inputs. If a fully inspected range introduces or invalidates nothing durable, apply any confirmed missing settings and advance only the eligible marker without another knowledge-diff question. Partial acceptance or rejection leaves the marker unchanged and reports unresolved findings. Moving files alone never advances it.
+## Quality audit, approval and size
 
-## Commit and finalize
+Before a knowledge/configuration proposal is applied:
 
-Read back retained knowledge, settings (including false), Rules/imports, approved layout and the eligible original review snapshot before any commit. Commit layout separately from remaining knowledge/configuration outputs under the recorded policy. A scan Skip/current result does not erase an earlier layout commit or confirmed setting/marker write.
+- Trace commands to actual scripts/task runners/config and prerequisites; check input/reference paths by inspection, without running commands/tests. Identify placeholders, future outputs and unavailable external dependencies honestly.
+- Check contradictions, ambiguous wording and duplicate statements against actual loaded configuration/rules/imports. Show evidence for proposed removals; uncertainty preserves the old entry. Keep mandatory eager safety reads.
+- Check shared/host-specific scope and preserve ownership, Rules, imports and overrides.
+- Prefer concrete project guidance and conditional pointers to existing detail. Eager imports still cost context. Do not generate support files/nested entries or prune automatically.
+- Report current/proposed owner lines and UTF-8 bytes, with adapter/other mandatory reads separately when known. Keep the soft under-150-line goal without dropping protected knowledge. Codex's discovered-file byte budget and later explicit reads are different costs; unknown limits remain unknown.
 
-Follow the [shared Git and CI flow](../setup/git-and-ci.html) after the command's own output verification and commit approvals. GitHub Flow offers separately confirmed branch publication and PR creation, or a local/manual handoff, until required review/checks pass. Integration uses the configured squash/rebase/merge strategy and actual main/master base. Solo requires no PR unless explicit project policy says otherwise. Base publication always has its own confirmation.
+Show one combined diff per completed phase, grouped by section, including settings, removals and any eligible marker change. Offer Apply all, Apply some, Revise or Cancel, capped at four faithful options. Reuse authorization for the same exact transformation; re-audit revisions. Partial acceptance preserves unaccepted content and prevents marker advancement. Commit approvals stay at their current concrete boundaries; no approval for an unknown future diff.
 
-Before fan-out promotion, verify configured/applicable CI for the exact published source SHA with complete provider-aware coverage. Missing/failed/pending/unknown results stop or defer promotion; target selection cannot waive the gate. Use at most four target options or Yes/Skip for one, explicitly describing merge and push. Verify each operation and report completed/pending targets separately.
+Choosing Full scan for a genuinely fresh/Rules-only owner authorizes ordinary descriptive generation and the fresh adapter. Disclose content/coverage; new safety instructions require explicit approval. Existing knowledge always receives its reviewed diff, and existing Rules/settings remain protected. Cancelling a knowledge proposal drops its pending values; earlier approved layout work remains real work.
 
-Declined/failed commits, unsafe local edits or incomplete checkpoints preserve actual work and stop dependent operations. Safe cleanup uses ancestry checks and `git branch -d`; squash/rebase branches outside ancestry are retained, never force-deleted. Remote deletion needs its own push confirmation. Report PR URL/review status, actual branch, commits, integration/publication, CI, and promotions separately. Summarize output verification captured before publication, not a different original checkout after cleanup.
+## Review marker and completion
 
-## Completion report
+Pin `review_head` after branch setup and before layout writes. Full-scan currency attests to the source snapshot, not every intermediate commit; gap currency requires complete per-commit coverage. Validate a literal hexadecimal saved commit object and its ancestry before using a range. Invalid/unrelated history offers full investigation, never an invalid range or a current claim.
 
-Report shared-layout and knowledge/configuration outcomes separately, actual reviewed snapshot/coverage and marker eligibility, preserved/unaccepted findings, commits, PR or manual handoff, publication/CI and promotions. Layout-only, partial review and pending Git finalization remain explicit; do not report a branch push as publication of the base. Use verification captured on the workflow/integration branch before returning to another checkout.
+Recheck instruction/source inputs before applying and committing. Unrelated source changes or a moved HEAD require refreshed investigation and a new diff. Advance a marker only after complete coverage and acceptance/application of every substantive finding. Partial, rejected, skipped or incomplete work retains the prior marker and reports unresolved findings. Remember, configuration-only, layout-only and verified instruction maintenance never advance it. A fully inspected gap with no durable changes may write an eligible marker and accepted settings without another knowledge-diff prompt. No source gap means no marker churn.
+
+Place an eligible marker last in fresh/default generation, after preserved Rules. Targeted updates preserve custom placement, keeping an already-final marker last. Without HEAD, do not initialize Git or invent a marker; a completed accepted full scan omits one, while retained provenance on layout/Remember/partial paths is reported honestly.
+
+Read accepted outputs back before local commits, verifying retained knowledge/settings including false, Rules/imports, both host paths and the actual marker. Commit layout separately before investigation and remaining outputs under frozen local policy with exact-path staging. Declined/failed commits and pending drafts stay intact; no reset/stash, automatic branch handling or publication follows. Finish on the same permitted branch after verifying local outputs and eligible commits. No push/PR question, branch creation/switch/update, integration, environment promotion, return checkout or branch cleanup follows. Remote/provider access and published source IDs are not prerequisites merely to finish locally. Invoke [ship](ship.html) separately when the whole selected work is ready to publish. See [Git and CI behavior](../setup/git-and-ci.html).
+
+Safe return requires a clean index/tree, no in-progress Git operation, a valid original branch/worktree target and preserved ignored/untracked local inputs. If checkout is unsafe or fails, stay on the actual branch and report the pending return without forcing it. A clean committed branch may also be left safely after Leave local, missing remote access or a partial publication/PR failure; keep the branch and identify what was not published or created. Returning does not put the new knowledge on the original branch. Genuine no-op cleanup of an empty branch remains separate.
+
+Report setup/knowledge results, reviewed snapshot/coverage, eligible/retained marker, lessons/settings changed, unresolved findings, quality/footprint limits and separate verified commits/uncommitted paths on the same actual branch. Publication was not performed. A local source review does not imply tests, native-client verification, remote currency or deployment.
 
 ## See also
 
 - [`/helm:adopt`](adopt.html): installs shared rule files and connects their pointers.
-- [`/helm:manifest`](manifest.html): maintains the public-facing README.
-- [Compatibility and project instructions](../setup/compatibility.html): legacy layouts and host boundaries.
+- [`/helm:manifest`](manifest.html): maintains the human-facing README.
+- [Compatibility and project instructions](../setup/compatibility.html): current layouts and host boundaries.

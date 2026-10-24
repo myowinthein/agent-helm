@@ -1,6 +1,6 @@
 ---
 name: refactor
-description: Scan codebase for refactoring opportunities and apply selected categories
+description: Audit, plan or apply selected behavior-preserving refactors across the project or a targeted area
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the refactor workflow](../../workflows/refactor.md).

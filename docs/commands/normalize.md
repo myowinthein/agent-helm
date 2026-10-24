@@ -6,117 +6,150 @@ nav_order: 6
 
 # /helm:normalize
 
-Normalize non-conventional commit messages on a frozen, reviewed set of local branches. Existing tags stay on their original objects, including published releases. Remote-tracking refs, stashes, notes and unrelated backup refs are excluded. Inspection, local rewriting, ledger commits and remote publication have separate authorization rules.
+Audit commit messages against your project's convention, review exact replacements, and optionally rewrite all affected local branches together after approval. Message review and coordinated branch rewriting have separate scopes. Existing tags retain their exact objects; remote-tracking refs, stashes, notes and unaffected refs stay outside the rewrite.
 
-Command names use Claude notation. In Codex, select the same Helm workflow from the skill picker. Both hosts read settings from the resolved memory owner, normally shared `AGENTS.md` through the Claude adapter or directly in Codex, while preserving legacy owners and override precedence. The command does not create or edit Helm settings in `AGENTS.md` or `CLAUDE.md`. [Compatibility notes](../setup/compatibility.html) describe ownership and host boundaries.
+Command names use Claude notation. In Codex, select normalize from the skill picker and request the same mode in your message. Both hosts resolve the existing instruction owner, normally shared `AGENTS.md` with `CLAUDE.md` importing it, including applicable overrides and existing owners. Normalize never creates, migrates or edits instructions/settings. See [compatibility](../setup/compatibility.html).
+
+## Investigation depth and coverage
+
+Inspect every unique commit in the frozen requested audit set through full raw messages/metadata, with supporting diffs where intent requires them. Reconcile exact classified IDs, including accepted/no-change/unresolved messages, rather than counts or recent samples. Large independent message batches may use permitted read-only workers; the parent reconciles shared-SHA intent, graph/ref decisions, approvals and all mutations. Existing per-branch evidence remains; no new watermark-prefix assumption or generic Full/Gap mode is added. Audit scope does not expand automatically to messages on rewrite-only branches.
+
+Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
+
+## Modes
+
+| Request | Result |
+|---|---|
+| `/helm:normalize audit` | Read-only committed-message findings and coverage. |
+| `/helm:normalize plan` | Read-only findings, exact proposed messages, affected-branch scope and impact. |
+| `/helm:normalize` | Review first, then offer a separately approved local rewrite or eligible checkpoint. |
+| Resume a specified normalize run | Inspect its private evidence and actual refs, then offer only missing actions. |
+
+Audit and Plan can inspect dirty or detached checkouts. They audit committed objects at frozen IDs, excluding uncommitted work, and disclose dirty policy inputs. Detached review needs explicitly named refs or an explicitly requested detached commit; an empty repository reports no committed history. Neither mode runs tests, hooks, project configuration code, the filter backend or its dry-run; neither fetches, refreshes the index, writes files/refs/ledgers, creates a recovery bundle, or migrates state. Inspection disables external diff/textconv and other executable Git helpers/lazy fetching, stopping if local-only reads cannot be guaranteed. Their output stays in the conversation. Missing objects or unresolved policy are reported as coverage limits. A later Apply revalidates inputs and obtains its own authorization.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Run normalize]) --> Preflight[Resolve configuration and ledger destination<br/>Require clean repository and attached branch]
-  Preflight --> Warning{Continue to inspect<br/>history-rewrite risks?}
-  Warning -->|cancel| Cancel[/Exit with no changes/]
-  Warning -->|continue| Load[Load canonical or legacy ledger<br/>Freeze local branch refs and old tips<br/>Snapshot tags and excluded refs]
-  Load --> Scan[Inspect bounded history<br/>Validate incremental watermarks<br/>Build SHA-keyed message plan]
-  Scan --> Count{Replacements needed?}
-  Count -->|no| Ledger
-  Count -->|yes| Plan{Approve exact branch/message plan?}
-  Plan -->|cancel| Cancel
-  Plan -->|approve| Rewrite[Create recovery bundle<br/>Rewrite explicit local branch refs only]
-  Rewrite --> Verify{Messages, trees, topology,<br/>tags and excluded refs verified?}
-  Verify -->|no| Blocked[/Stop: preserve ledger and recovery data<br/>No publication/]
-  Verify -->|yes| Ledger[Write or migrate verified ledger<br/>Use planned destination and commit policy]
-  Ledger --> ActualRewrite{Verified history<br/>rewrite occurred?}
-  ActualRewrite -->|no| Report
-  ActualRewrite -->|yes| Publish{Approve bounded branch publication?}
-  Publish -->|keep local| Report
-  Publish -->|approve| Push[Push changed branches with explicit leases<br/>Never push tags or bookkeeping branch here]
-  Push --> Report([Report actual history, ledger,<br/>publication and recovery status])
+  Start([Select audit, plan or normal review]) --> Inspect[Inspect committed messages in requested scope]
+  Inspect --> Readonly{Read-only mode?}
+  Readonly -->|yes| Report([Report evidence and coverage])
+  Readonly -->|no| Decisions[Review exact message changes]
+  Decisions --> Changes{Accepted non-identical corrections?}
+  Changes -->|yes| Impact[Detect all affected local branches and exact graph]
+  Impact --> Approve{Existing impact warning and Apply confirmation}
+  Approve -->|cancel| Report
+  Approve -->|approved| Recover[Validate clean local refs and recovery bundle]
+  Recover --> Rewrite[Coordinated rewrite and full mapping verification]
+  Rewrite --> Ledger
+  Changes -->|no| Ledger[Eligible truthful local checkpoint on current branch]
+  Ledger --> End([Report local result and private evidence path<br/>No publication or new branch])
 ```
 
-## Before starting
+## 1. Resolve the actual convention and scope
 
-History inspection can start from any attached local branch. Requires a repository with HEAD, no in-progress merge/rebase, a clean index/working tree, and the required Git/filesystem capabilities. Pending user work is never automatically committed, stashed or discarded. Detached HEAD stops the workflow.
+Explicit project/user policy takes priority, followed by statically inspectable compatible configuration, then Helm's scoped Conventional Commits default for gaps. Existing commitlint types, scopes, case and length rules matter. Arbitrary JavaScript configs and unresolved `extends` are not executed to discover rules; material uncertainty is raised before dependent changes.
 
-Resolve `git-strategy` and `git-auto-commit` before mutations and plan where the ledger change will go:
+Conventional Commits allows optional scopes and custom types. A message may be valid under the specification yet outside the project's chosen convention. Findings distinguish accepted, spec-valid but nonpreferred, spec-invalid and unresolved messages. Already accepted messages are not rewritten merely to perfect their style.
 
-- **Solo:** main/master, switching there only after rewrite verification when necessary.
-- **GitHub Flow:** a new unique `chore/normalize-ledger-{date}` branch from main/master, created after verification and left for normal PR review. No ledger commit directly on main/master or an environment branch, no automatic merge, and no inclusion of this bookkeeping branch in the frozen rewrite/publication set.
+The current local branch is the default **message-review scope**. Explicit requests can name other branches or all local branches; there is no routine current/chosen/all branch picker. This determines which messages receive proposals, not a limit that leaves affected related branches on old history. Detached review requires explicit refs/commit scope, and Apply requires named local branch refs.
 
-Resolve conflicts with the base branch's configuration or project-specific placement rules before rewriting. Rewrite approval never substitutes for ledger-commit or push approval.
+You can audit complete requested histories and limit proposed message changes to an unpublished tail or a confirmed product/stream release boundary; full-history migration remains explicit. Older findings outside that boundary stay visible. Once message decisions are settled, affected descendants require coordinated ID changes even where their messages stay unchanged. Missing/shallow objects and replace/graft interpretation must be resolved before a rewrite, without automatic fetch or cleanup.
 
-## 1. Risk warning
+### All affected local branches, one existing confirmation
 
-The initial question authorizes inspection only. It explains changed SHAs, possible loss of commit signatures, preserved tags and excluded refs, and disruption to other clones if rewritten branches are later published. Cancel leaves history and all ledger paths untouched.
+For the exact non-identical message corrections you accept, normalize detects every frozen local branch whose tip can reach at least one changed original commit. A branch pointing directly to that commit is included. It rewrites all these affected branches together using one consistent original-SHA mapping. Main/master is included only when affected; changing a feature-only commit does not rewrite main or unrelated siblings. Branches sharing only earlier unchanged ancestors are unaffected. This rule is independent of ship-method and git-merge-strategy.
 
-Preserving tags means tagged releases deliberately retain their original history. The command never moves or force-pushes an existing tag, whether the repository is private or public.
+For example, if main, feat-A and feat-B all contain `B`, correcting it gives all three the same new `B′` and consistent rewritten shared descendants. If only feat-A's unique `D` changes, main and feat-B need no rewrite. Additional branches' unique messages remain byte-identical unless separately reviewed/accepted; their IDs can change through rewritten parents. That consistency work does not certify those messages as compliant or recursively create more correction proposals.
 
-## 2. Load ledger and scan
+The existing impact plan shows the complete affected branch list, old tips, exact graph, consistency-only additions/unaudited messages and other history effects. It then asks the existing **Apply reviewed rewrite / Cancel/keep review only**. No extra warning screen, all-versus-chosen question or rewrite multi-select is added. Detection alone grants no rewrite. Explicit contradictory exclusions must be reconciled rather than silently ignored. With no selected corrections, no rewrite or rewrite-scope prompt occurs.
 
-Both agents use `.helm/normalize-log.json` and check both legacy locations, `.claude/helm/normalize-log.json` and `.claude/normalize-log.json`. Validate and compare every existing copy before using watermarks. Equivalent data can be deduplicated at the next eligible authorized ledger write; differing histories require explicit reconciliation. Do not write or delete during inspection. Malformed or unsupported schemas stop with all candidates preserved. A missing schema version means version 1; the schema remains unchanged. Only normalize's file migrates.
+Proving a branch unaffected requires complete ancestry across the entire local inventory. A shallow boundary or unavailable parent anywhere blocks Apply. Partial/promisor clones must prove that local commit-parent closure without lazy fetch. Existing replace refs/effective grafts block Apply until resolved outside normalize, without deletion/rewriting by the command. Parent walks can be deduplicated without auditing every unique message.
 
-The ledger stores `branches` keyed by local branch name, each with `last_checked_commit` and `last_checked_date`. With no candidate file, scan full history over the frozen local branches. Validate each watermark exists and is an ancestor of the corresponding branch tip; invalid entries cause a disclosed full re-scan. New branches are scanned, removed branches are dropped only in the eventual ledger update, and shared history is deduplicated.
+The graph contains the changed original commits and all their descendants reachable from affected tips. Its unchanged boundary includes **every outside parent** of those graph commits, including merge second parents and parents of changed roots. Freeze affected tip refs plus exclusions for all those boundary IDs and prove the exact union; excluding only changed commits' parents can accidentally include imported side-history. Do not add unrelated ancestors, drop affected branches through per-branch exclusions or correct unreviewed messages. Recheck the complete local inventory before Apply; new/deleted/moved branches require reassessment and renewed approval when scope changes. Unsafe/elsewhere-checked-out/unsupported/policy-forbidden affected branches stop the coordinated rewrite. The developer resolves blockers externally and replans; normalize never deletes old bookkeeping branches or changes protection to unblock itself.
 
-Enumerate and freeze fully qualified `refs/heads/...` names and old tips. Use this same list for scanning, approval, rewriting and verification. Never use an unbounded `--all`, wildcard, or a newly enumerated list during execution. Materializing a remote-only branch requires a fresh scan and plan. Snapshot all existing tag/excluded ref object IDs and remote configuration, and record expected origin branch tips read-only for later push leases. Never delete stashes or backup refs as cleanup. Grafts or replace refs that change interpreted history require separate resolution first.
+Proven old bookkeeping-only branches can stay outside default message review, but are still included when affected; branch names never establish an exemption. Remote-only branches are not auto-created, and remote-tracking refs, tags, notes/stashes and other clones are not rewritten. Report known old-history holders, including detached other worktrees, and unknown coverage from local evidence without fetch or reattaching/moving another checkout. Check available tracking refs across branches before calling a correction unpublished; a private review branch alone proves no such thing. Preserved tags can lose ancestry. Local consistency is not a promise that every future merge or remote/clone history is reconciled; publication remains separately approved.
 
-Check backend/Python prerequisites before mutation. Classify commits using messages and relevant diffs. Infer type and scope from affected code and preserve breaking-change information. Keep the full original SHA and exact message, and key proposed replacements by SHA so identical text on unrelated commits cannot collide. Uncertain classifications are resolved before rewriting.
+## 2. Infer intent and preserve existing information
 
-## 3. Review the plan
+Read full original messages and relevant parent-relative diffs. Infer the change's purpose rather than mapping filenames to types. A Markdown file can implement functionality, a new test need not be a feature, and a dependency correction can fix a bug. Performance intent does not require executing a new benchmark. Merges, reverts, generated/fixup messages, opaque changes and binary-only diffs receive explicit contextual treatment; uncertain intent is not filled with invented explanations.
 
-A clean scan has nothing to rewrite: it can update the ledger under the normal commit policy, then reports without a force-push gate.
+Use the project's language, accepted types and scope conventions, including supported multi-scope. Default to subject-only edits. Preserve message bytes/newlines outside the exact edit, body, trailers, issue references, sign-offs, existing coauthors, Change-Id and encoding. A necessary body/footer change must be visible in the complete reviewed replacement. No attribution is invented. Unsupported encoding or metadata handling blocks the affected rewrite.
 
-Otherwise present the full replacement plan, with up to five examples in the confirmation question and all remaining changes available for review. Include frozen branches/tips, preserved tags/excluded refs, backend, recovery-backup location and ledger destination. Approval covers only that exact local transformation. Cancel leaves the ledger unchanged so pending findings are not hidden by an advanced watermark. Changed inputs require a fresh plan and approval.
+Formal breaking markers are `!` immediately before the header colon on any type/optional scope, or an uppercase `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer. Ordinary punctuation and phrases such as "avoid breaking links" do not establish breaking behavior. Preserve genuine information without duplicating a footer. Newly inferred incompatibility requires evidence and explicit message approval. The review explains potential effects on [ship](ship.html)'s future version proposal when a type/breaking marker changes.
 
-## 4. Rewrite and verify
+## 3. Review exact decisions and impact
 
-Create a recoverable bundle outside the checkout before rewriting. Stop if the backup cannot be created, and retain it through verification/publication. Message data lives in a private temporary JSON file rather than being interpolated into shell code.
+Audit findings identify full original SHAs/messages, evidence/confidence and affected refs without requiring replacement drafts. Plan/Apply adds complete before/after messages bound to that exact original. Choose **Accept**, **Edit**, **Keep** or **Defer**, individually or in coherent visible batches. Accept selects a replacement; separate confirmation still governs rewriting. Edits are revalidated. Kept/deferred noncompliant messages remain findings, with no false full-branch compliance checkpoint. Byte-identical proposals are discarded; no selected replacements means no backend run or rewrite-publication gate.
 
-The preferred backend uses `git filter-repo` with an explicit `--refs` list and a SHA-keyed commit callback. Partial mode keeps origin and excludes tag/remote-tracking refs. Automatic commit-message hash substitution and empty/degenerate commit pruning are disabled so results remain within the approved message-only plan. Unselected messages pass through unchanged. `--force` bypasses the fresh-clone check only after approval, clean-tree checks and backup; host permissions still apply.
+The complete plan shows message-review versus automatically affected rewrite scope, boundaries, selected edits, consistency-only additions, excluded/retained findings, backend, recovery location and ledger/publication dependencies. Default mode with corrections inspects its own existing anchors before this plan; show each proposed remap/date preservation or exact invalidation/reason here, even with auto-commit enabled. Missing/unavailable/malformed state leaves bookkeeping limits/pending actions explicit, never a false completion claim; Audit/Plan still read no ledger. Examples in the existing confirmation are capped at five; all exact changes and the complete branch list remain available. One shared commit receives one consistent decision and mapped ID across every affected branch. Unreviewed unique messages on added branches remain outside compliance claims.
 
-If filter-repo is unavailable, the fallback uses `git filter-branch` with the same explicit positive branch refs and a SHA-keyed Python message filter. No `--all` or tag-name filter. It creates backups under a new declared namespace without overwriting existing recovery refs; no destructive retry flags or automatic backup deletion.
+The existing impact report separates changed messages from descendant IDs and exported commits whose signatures may be lost even if their messages are unchanged. It explains old history retained by remote-only/tracking refs, other clones and preserved refs, notes still pointing at old objects, and potentially stale Helm/submodule/external SHA anchors without reading or editing another workflow's state or external pins. No local branch containing a changed original may be labelled unaffected merely because it was excluded from message review.
 
-A backend error stops ledger advancement and publication. Verify every planned message replacement and unselected message, commit count, tip trees, parent topology and unaffected metadata, accounting for signature effects. Compare excluded refs and remote configuration with their snapshots; only approved branch updates and declared new fallback backups may differ. Samples alone do not prove correctness. Report failures with the actual state and recovery path rather than silently restoring refs or claiming success.
+Every relevant release tag receives an ancestry assessment. Keeping a tag's object unchanged can leave it outside rewritten branch ancestry; ship may then lose its previous reachable release boundary. After rewriting, actual old/new per-branch reachability is verified, rather than inferred from a commit-map entry. Existing tags are never moved to compensate.
 
-## 5. Verify preserved tags
+The existing Apply/Cancel confirmation approves the exact corrections, complete affected branch set, graph and disclosed effects together. Cancel writes no ledger, migration or recovery artifacts. Keep/Defer may leave unrelated accepted edits eligible, but cannot be hidden behind an advanced watermark. Changed policy, local inventory, graph or approved content invalidates dependent approval; recompute affected scope rather than silently widening or shrinking it.
 
-Compare every pre-existing tag name and exact object ID, including annotated/signed tags. No tag may be added, deleted or replaced. A preserved tag can remain on old history outside the rewritten branches; reachability from the new branches is not the criterion. A mismatch blocks ledger advancement and publication. Never repair it by replacing a published tag.
+## 4. Prepare supported rewriting and recovery
 
-## 6. Update or migrate the ledger
+Apply requires an attached local branch, a clean worktree/index including untracked project files, no active merge/rebase/cherry-pick/revert, and safe worktrees for every affected branch. Pending user work is never stashed, reset or committed to make room. A shared ref checked out elsewhere blocks the coordinated rewrite, including when that branch was added only for consistency; never silently skip it or change another checkout.
 
-Only a complete clean scan or verified rewrite advances the ledger. Capture inspected branch tips before a later ledger commit, using post-rewrite SHAs when applicable. Preserve schema version 1, add new scanned branches and drop removed ones. A newly created bookkeeping branch is not a scanned branch in this run. Skip serialization/commit when no checkpoint data change is needed.
+Git filter-repo and Python are required for rewriting. There is no automatic filter-branch fallback or installation. Missing capability leaves the review/manual handoff available. Trees, ordered parent topology, author/committer identities and dates, encoding and unapproved metadata must be preserved. Signature loss is disclosed; unsupported extended headers or transformations block the graph rather than being silently discarded or re-signed.
 
-Use the ledger destination planned before rewriting and re-resolve its candidate files after switching branches. Write and read back the canonical ledger. Only after verification and commit authorization, retire queued same-file legacy sources and stage the canonical change plus tracked removals together using explicit paths. Never stage unrelated edits. A declined commit preserves legacy sources and leaves any canonical draft pending; report migration as pending. A no-op exit does not perform a cleanup-only migration.
+Normalize completes locally without contacting a provider or requiring a publication destination. Preserve original local tips/history and available remote configuration/tracking evidence privately, without treating it as fresh remote proof. Later ship normalize reads authoritative remote tips and proves containment against that original history before reviewing publication.
 
-Honor `git-auto-commit`: true permits the ledger commit automatically; false or absent asks explicitly. Earlier rewrite or publication approval does not answer that commit question. Use `chore(normalize): update ledger after {scan / rewrite}`. Under Solo, an authorized ledger commit can travel with an explicitly approved publication of that branch. Under GitHub Flow, leave the bookkeeping branch for a separately approved normal push/PR; no automatic merge or force-push. Return to the starting branch only when safe and report pending work otherwise.
+Recheck the whole frozen local inventory, affected-set/graph proof and all other frozen inputs before mutation. Create a private recovery directory outside the checkout containing the reviewed plan/policy, raw original objects/graph evidence, exact refs/tag/symref and remote-config snapshots, expected remote tips and a verified self-contained bundle of every affected old branch tip and existing tags. Inspect bundle prerequisites and heads as well as verification results. A source-repository verification alone does not prove self-containment. Failed recovery preparation stops the rewrite. Credentials in configuration stay private and are not printed.
 
-A no-rewrite run ends after ledger handling and reporting, without any force push or tag push.
+The bundle does not back up worktree/index/config by itself. Retain its companion private records for verification and resume. This does not introduce a tracked ledger schema or change any existing operational state.
 
-## 7. Publish rewritten branches
+## 5. Filter the exact graph and verify every commit
 
-Determine which frozen branches actually changed using verified pre/post-filter tips, before counting any ledger commit. Present only those branches and intended new tips for separate approval. Missing origin/access leaves the rewrite local. Keep-local is a supported outcome with the backup and exact bounded publication instructions retained.
+The filter-repo callback uses a full-SHA-to-complete-message map, loaded once per process, with exact original-message binding. It never interpolates messages into shell code. The workflow's example is UTF-8 only; other encodings require a reviewed supported byte-preserving path or stop.
 
-Push only approved changed branch refspecs with explicit `--force-with-lease=refs/heads/{branch}:{expected_remote_sha}` expectations captured before rewriting. An explicitly approved new remote branch uses an empty expected SHA. Recheck intended local tips before pushing. If the remote advanced, stop and report partial results; never replace the expectation just to override new work or retry with plain `--force`. Do not push tags, all branches, mirror refs, or the GitHub Flow bookkeeping branch in this loop. Normal local tracking-ref updates caused by an approved push are reported as publication results; excluded refs must remain unchanged during filtering itself.
+One filter operation uses explicit affected branch `--refs` and frozen range arguments proven to match the complete approved descendant graph. Partial mode preserves origin, tags and excluded refs, disables automatic unrelated cleanup, and retains recovery history. Commit-message hash substitution and empty/degenerate commit pruning are disabled. A tail correction plan must not become extra message corrections or an all-history rewrite. `--force` only bypasses the fresh-clone check after approval and verified backup; it bypasses no project/provider rule.
 
-## 8. Report
+Verification covers every exported commit and boundary parent: exact approved messages, unchanged unselected message bytes, per-commit trees, ordered mapped parents, identities/dates/encoding, declared signature effects, unique counts and selected branch tips. Independently derive an unambiguous current-run old-to-new map and cross-check backend output. Existing filter-repo metadata may compose a prior A-to-C map instead of this run's B-to-C correspondence; do not delete metadata or trust it blindly. Ambiguous matches or coalescing block completion.
 
-Report actual scan/rewrite/verification outcomes, frozen scope and changed/pushed branches, unchanged tags/excluded refs, ledger migration/commit/destination status, unresolved work, and retained recovery data. Distinguish clean scan, local rewrite, completed or partial publication, cancellation and failure. Never report proposed work as completed.
+Verify every affected tip and the identical mapped ID of each shared original across affected branches; reprove that no excluded local branch was actually affected. All excluded refs/symrefs and remote configuration must match their snapshots. All tag names and exact object IDs, including signed/annotated objects, stay unchanged with no additions or deletions. Verify actual per-branch ancestry and planned release effects separately. A sample, tip-tree comparison or successful backend exit is insufficient. Failure stops checkpointing/publication and retains the actual state, bundle and private evidence; no automatic ref/tag restoration or destructive retry.
 
-Other clones need deliberate reconciliation only after publication. Preserve their local work and coordinate first; do not prescribe an unconditional hard reset or branch deletion as generic recovery. Preserved release tags intentionally remain on old history.
+## 6. Record truthful checkpoints without churn
 
-## Stop conditions
+Only default/apply loads current schema-1 `.helm/normalize-log.json` through the shared canonical-state procedure. Validate branch coverage/provenance before using anchors; preserve unknown fields and unaffected records. Unsupported paths/versions stop with upgrade guidance and no reader/converter/reset. Private rewrite bundles/maps remain separate recovery evidence, not ledger inputs for ship.
 
-- Risk warning or rewrite-plan approval declined: no history or ledger changes.
-- Dirty worktree, detached HEAD, unsupported inputs, changed frozen refs, or missing required capability: stop the affected path.
-- Backend or verification failure: retain recovery data; do not advance the ledger or publish.
-- Ledger commit declined: preserve pending files and report the actual branch; never commit implicitly later.
-- Publication declined/unavailable or a push lease rejected: retain local work and report actual remote results.
-- Clean scan: handle an eligible ledger update under the commit policy, then report without force-pushing.
+A watermark's existence/ancestry does not prove current-policy coverage. Revalidate full reachable messages when that proof is missing, deduplicating shared history and loading diffs only for findings. Do not use another branch's watermark as an exclusion for unproven history.
+
+Advance only through a fully audited accepted reachable prefix after a completed clean scan or verified rewrite. A bounded review, unresolved policy or Keep/Defer finding cannot certify the full tip. Preserve only a proven safe previous anchor and map it through the verified current-run correspondence when needed. With no safe anchor, explicitly review removal of the affected branch entry, never create null/partial records or new exception fields. Handle merge DAGs by actual reachable coverage. A previously stored checkpoint must not continue hiding a newly discovered retained finding. Preserve unaffected branch entries and carried unknown fields; remove deleted-branch entries only as explicitly reviewed. Partial results and original/mapped unresolved IDs remain in the report/private evidence.
+
+Consistency-only added branches receive no new/full-tip compliance entry or later date just because their history was remapped. Remap an existing anchor only when its prior coverage is still proven valid, retaining date/coverage; otherwise use the existing reviewed invalidation rule. Show each actual affected-entry delta/reason in the existing pre-commit review/report regardless of auto-commit, reusing the maintenance scope already disclosed before Apply and refreshing materially changed actions. Normal commit approvals remain separate; no new routine screen is added. No new schema fields or unreviewed compliance claims are permitted. Historical ledger blobs inside rewritten commits stay unchanged; old anchors require ancestry/coverage revalidation before future use.
+
+Checkpoint the verified source before a later ledger commit. On the next run, recognize an own-bookkeeping-only tail from its complete diff, state transition, policy and provenance. A familiar branch name or commit subject is insufficient. Do not rewrite the ledger for a date change, its own commit changing HEAD, an old bookkeeping branch, equivalent JSON formatting or cleanup-only migration. Revalidation with no meaningful checkpoint change creates no write/commit.
+
+### Local destination and commit
+
+Write eligible records on the same attached current branch, whether base, feature or environment, subject to actual project instructions. Never switch/create a bookkeeping branch or require remote reachability of local source anchors. If policy forbids the current-branch commit, leave bookkeeping pending rather than changing branches or expanding the rewrite scope.
+
+Recheck canonical bytes/source and the unsupported-path tripwire; write/read back/validate only the exact reviewed schema-1 file under its local commit policy. Preserve coverage/history/unknown fields. No alternate-file reading or retirement occurs. Rewrite approval is separate from commit approval. Failed/declined work retains drafts and private recovery evidence.
+
+## 7. Finish locally; publish later through ship
+
+Normalize never pushes, prompts to publish, opens a PR, creates/selects/switches/deletes a branch or tags/promotes. Finish on the same current branch at its verified rewritten tip with actual local checkpoint/commit status and recovery path. A clean scan or record-only run does not create a recovery directory merely for handoff. A verified local checkpoint may refer to unpublished source commits.
+
+When the work is ready, explicitly run `/helm:ship normalize <private-run-evidence>`. Ship validates the identified old/new graph/map and bundle, reviews all included work and exact remote mappings, and checks fresh remote history against the approved originals. Already committed unfinished work on a selected branch would also be published, so it remains visible in that review. The live normalize ledger stays outside ship's access; identified committed record deltas are narrow provenance only.
+
+Ship's specialist route is independent of ordinary direct/pr preference. Replacing published IDs requires explicit fixed-lease force approval; only-unpublished corrections may permit normal updates. A PR cannot replace remote history. Prefer a bounded atomic multi-ref push with no follow-tags, use fixed per-ref expectations, stop moved/uncontained refs and never refresh a rejected lease to overwrite new work. Sequential fallback needs separate approval. Read back every destination, retain partial successes/recovery evidence and leave protected/unknown targets pending. No release tag, version or environment promotion follows this route.
+
+## 8. Resume and report
+
+Local resume verifies the identified plan, complete affected graph, recovery/map, current local refs and record dependencies, then completes only missing eligible local work on the same branch. It never filters again to reconstruct missing evidence, guesses old approval, switches to a legacy bookkeeping branch, repeats a commit or resumes remote pushes/PRs. Those are separate ship/project actions. Changed inputs need reconciliation.
+
+Report scope versus all affected branches, shared-ID mapping, exact counts/retained findings, signature/tag ancestry effects, verified local record/migration status, actual branch/drafts, recovery paths and limitations. Publication was not performed and other clones/remotes remain unchanged. After later publication, collaborators need deliberate reconciliation preserving their work; never prescribe generic hard resets or tag replacement.
 
 ## See also
 
-- [`git.md`](../rules/git.html): shared configuration, commit policy and Conventional Commits.
-- [`/helm:ship`](ship.html): calculates versions from commit history.
-- [`/helm:adopt`](adopt.html): installs the Git rules.
-- [git-filter-repo manual source](https://github.com/newren/git-filter-repo/blob/main/Documentation/git-filter-repo.txt): explicit refs and callback behavior.
-- [Git filter-branch documentation](https://git-scm.com/docs/git-filter-branch): positive revision scope and backup namespaces.
+- [Git rules](../rules/git.html): effective configuration, commit policy and required checks.
+- [Ship](ship.html): version proposals and reachable release boundaries.
+- [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/): syntax versus project preferences.
+- [Commitlint rules](https://commitlint.js.org/reference/rules.html): configurable message policy.
+- [Git filter-repo manual](https://github.com/newren/git-filter-repo/blob/main/Documentation/git-filter-repo.txt): partial/range filtering, callbacks and composed commit maps.
+- [Git bundles](https://git-scm.com/docs/git-bundle): self-contained recovery versus prerequisites.
+- [Git push](https://git-scm.com/docs/git-push): fixed leases, follow-tags and atomic support.

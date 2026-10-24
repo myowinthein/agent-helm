@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Bump version, run tests, tag release, and promote to deployment environments
+description: Publish current work and optional targets via direct push or verified PR; explicitly release versions/tags or publish normalized history and archive backups
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the ship workflow](../../workflows/ship.md).

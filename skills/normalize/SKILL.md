@@ -1,6 +1,6 @@
 ---
 name: normalize
-description: Rewrite non-conventional commit messages across full repo history
+description: Audit commit messages, review exact corrections, and rewrite all affected local branches together after approval
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the normalize workflow](../../workflows/normalize.md).

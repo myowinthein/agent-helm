@@ -1,6 +1,6 @@
 ---
 name: env
-description: Audit and fix .env files and .gitignore — sync, format, detect missing vars, flag hardcoded values
+description: Audit environment loading and Git protection, then apply reviewed fixes or create safe templates
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the env workflow](../../workflows/env.md).

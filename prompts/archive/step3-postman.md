@@ -1,99 +1,57 @@
 # Step 3 — Generate Postman Collection
 
-Generate a Postman collection for this project if it exposes an API.
+Preserve useful API recovery files when the project owns an API. In normal mode, read verified `{archive_root}/step1-explore.md` and `{archive_root}/step2-restore-and-freeze.md` as historical context, using only the root validated by the orchestrator; missing/mismatched reports stop dependent work. Plan mode proposes source-derived work only, without operational-state access, requests, writes or execution.
 
-Read the prior step reports from `.archive/` — `step1-explore.md` and `step2-restore-and-freeze.md` — and use them as context. If a required report is missing, stop and report that the prior step must complete first.
+## Applicability and preservation
 
-Goal: Create reusable Postman files that future me can use to understand, test, troubleshoot, and demonstrate the project's API years later.
+An owned REST, GraphQL or similar API qualifies, regardless of the project's broad frontend/backend label. Include owned frontend-hosted server routes, serverless/BaaS functions and inbound webhooks when they expose an actual API contract. Third-party consumption, direct client-SDK database access or server actions without a stable HTTP contract do not justify inventing endpoints. With no applicable API, output the not-applicable report below and keep the normal report approval.
 
----
+Choose **Retain / Repair / Create / Skip** within the existing approved stage plan: retain a useful collection at its current path; repair evidenced gaps while preserving customization; create only when useful recovery coverage is missing; or explicitly skip with the reason/limitations. Reuse still-applicable exact approval instead of adding another picker. Skip for an applicable API is distinct from not applicable, and retained files need no redundant recovery copy.
 
-## Applicability
+Reuse existing Postman collections/specifications and useful examples/customization. For creation, prefer an evidenced current OpenAPI contract when useful, cross-checking implementation/routes, validation and auth. Routes alone do not establish request bodies, auth or expected behavior; neither does an unverified stale specification. Record conflicts/unknowns rather than silently changing the API contract. Discover actual method/path/operation identities and disclose disabled/deprecated endpoints. Avoid duplicates; GraphQL operations sharing a URL are not automatically the same request. Preserve canonical source specs at their paths and link them from recovery docs. Do not require extra client formats or force unsupported protocols into Postman v2.1; link useful native specs and document the limits.
 
-Generate a collection if the project exposes an API it owns — REST, GraphQL, or similar.
+Apply the orchestrator's protected-import check before any collection/spec/example write. Review existing target conflicts and proposed diffs, retaining custom requests unless a specific approved repair requires changes. Record exact output changes in the inventory. No commit, push, dependency installation, automatic runtime restart or other workflow invocation.
 
-Skip if:
-- The project has no API surface (pure frontend, static site, CLI tool, library, etc.)
-- The only APIs present belong to third-party services (Stripe, SendGrid, etc.)
+## Secret-free, portable output
 
-If skipping: explain why, output the report, and stop.
-
-If an existing Postman collection is found (from Step 1): use it as the starting point — update, verify, and expand rather than generating from scratch.
-
----
-
-## Rules
-
-- Discover endpoints from source code, route definitions, or OpenAPI/Swagger specs. Do not speculate.
-- Avoid deprecated, disabled, or commented-out endpoints.
-- Use demo accounts, local tokens, or placeholder values only. No real credentials, secrets, or production URLs.
-- Treat Step 2's running status as historical. Before requests, verify on this host that the approved local endpoint maps to this project's current isolated runtime, using current process/container/project ownership and a safe health check. A reachable port alone is insufficient; do not send demo credentials to an unidentified service or follow redirects to an unapproved host.
-- If the app is not running, the host cannot reach it, ownership is uncertain, or the old report lacks enough identity: use source-code discovery only and mark requests unverified with the reason. Do not automatically restart/restage completed restoration or reuse another host's localhost assumption. A newly available runtime may be used only after current ownership/access checks and applicable approvals.
-- Do not commit or push.
-
-## Verification
-
-Verify representative requests where safe — GET requests, health endpoints, authentication flows, and local demo workflows. Verify at minimum one GET request per functional area and the primary authentication flow. If fewer than half of all endpoints have been verified, note this explicitly in Known Limitations.
-
-Do not verify endpoints that may delete data, send emails or SMS, trigger webhooks, process payments, or perform bulk actions without explicit approval. Mark those as unverified with a note explaining why.
-
----
-
-## Output Files
-
-Use the project name from Step 1 for the filenames — slugified to lowercase, hyphens instead of spaces or punctuation (e.g. Step 1's "Project name: My Cool App" becomes `{project-name}` = `my-cool-app` here):
+Use the explicit `Project name:` from Step 1 to select a safe lowercase hyphenated filename, normally:
 
 - `recovery/postman/{project-name}.postman_collection.json`
-- `recovery/postman/{project-name}.postman_environment.json`
+- `recovery/postman/{project-name}.postman_environment.json` only when separate environment selection adds value beyond collection variables.
 
-Organize requests by functional area (Authentication, Users, Admin, Products, Orders, etc.). Use collection variables, environment variables, request descriptions, and authentication notes. Use localhost URLs and placeholder values. Avoid duplicate endpoints.
+These are defaults for new outputs, not relocation instructions for retained files. Use collection variables alone when sufficient; do not create an empty environment companion.
 
-Use **Postman Collection Format v2.1** (`schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"`). This format is supported by Postman, Bruno, and most modern API clients. Do not use v2.0 — it is not importable by Bruno without conversion.
+Review empty/ambiguous slug or existing-path collisions, reject escaping/symlinked unsafe destinations, and use approved alternate paths for protected imports. For new collections, generate Collection Format v2.1 with schema `https://schema.getpostman.com/json/collection/v2.1.0/collection.json`; retaining a usable existing collection does not require conversion. v2.1 is the preferred new output; Bruno supports importing both v2 and v2.1, so do not claim v2 is inherently incompatible. Import format support is not proof that every script/dependency behaves identically across clients.
 
----
+Organize by actual functional area and include useful descriptions, local base URL placeholders, parameter/body examples, auth setup and expected happy/error results where evidenced. Review/redact collection/environment/current values, examples, saved responses, URLs, headers and scripts. No real credentials, tokens (including generated local runtime tokens), private records or production endpoints are persisted. Requests may use approved ephemeral local auth in memory; exported variables remain empty/placeholders, with reproducible local auth instructions.
 
-## Tasks
+Inspect existing collection/pre-request/test scripts before any execution. They may invoke additional hosts, dependencies or effects; importing/reusing a file does not authorize those actions. Source-derived generation and static format/reference review remain available without running the API or client.
 
-1. Determine whether a Postman collection is applicable for this project
-2. Check for existing Postman files from Step 1 — use as starting point if found
-3. Discover all API endpoints from source code, routes, or OpenAPI specs
-4. Determine authentication method and required environment variables
-5. Generate or update the collection and environment files
-6. Organize requests by functional area
-7. Verify representative requests where safe
-8. Mark unverified requests with a reason
+## Verification by value and actual effects
 
----
+Treat Step 2's `App running:` status as historical. Before any approved request, establish this host's current isolated project/container/process identity, owned data target and exact local endpoint. A reachable port is insufficient. Do not follow redirects to unapproved hosts or send credentials to an unidentified service. Missing/uncertain runtime access uses source-only discovery and marks requests unverified; never automatically repeat restoration after a host/session change.
 
-Output the report in this format:
+Choose representative requests based on actual project value/risk, such as relevant auth/authorization, a useful domain read/workflow and an error case. These are examples, not a mandatory one-of-each quota. GET/health/auth handlers can mutate data, enqueue work or contact services: inspect their effects and isolation, not HTTP verb alone. Destructive operations, imports, external messages/webhooks/payments/bulk actions require their existing exact-target approval and must not be exercised merely to increase coverage. Do not impose one GET per area or a verified-endpoint percentage floor.
+
+Honor explicit verification deferral; make no requests or client-script runs when deferred. Report actual selected identities, inputs without sensitive values, outcomes, exclusions and unverified reasons. Static discovery/import-format validity does not certify endpoint behavior or comprehensive test coverage.
+
+## Report
+
+For a project with no owned API, use the following report:
 
 ## Applicability
-Postman collection generated: yes/no
-Whether a collection was generated or skipped and why.
+Postman collection generated: no
+Reason/evidence that no applicable owned API was found, with inspected scope/limitations. No collection/environment files created and no requests executed.
 
-## Existing Collection
-Whether an existing Postman collection was found and how it was used.
+For applicable projects, preserve the following report sections:
 
-## Endpoints Discovered
-Total endpoints found. How they were discovered (routes, OpenAPI spec, source code). Any endpoints excluded and why.
+- **Applicability:** on its own line, `Postman collection generated: yes/no`; actual Retain/Repair/Create/Skip outcome and scope. A retained unchanged collection may have generated: no while still providing useful recovery files; record its actual paths. Skip does not mean no owned API.
+- **Existing Collection:** existing collections/specs retained, linked or approved for repair, including preserved custom content.
+- **Endpoints Discovered:** stable method/path/operation identities, source evidence, excluded/deprecated/uncertain items and scope limits.
+- **Authentication:** non-secret method/setup, ephemeral runtime usage if any; exported tokens/values omitted.
+- **Files Created or Updated:** exact paths and meaningful changes or pending drafts.
+- **Verified Requests:** only requests actually performed, current ownership/isolation checks and actual scoped results.
+- **Unverified Requests:** excluded/deferred/unreachable/unsafe requests and reasons; no quotas or blanket success.
+- **Known Limitations:** unsupported scripts/import behavior, external dependencies, missing context and remaining gaps.
 
-## Authentication
-Auth method used. How it is configured in the collection.
-
-## Files Created or Updated
-File paths and what changed if updating an existing collection.
-
-## Verified Requests
-Requests tested against the currently identified local app, ownership/access checks, and results. Distinguish previous reports from verification performed on this host.
-
-## Unverified Requests
-Requests that could not be safely verified. Reason for each.
-
-## Known Limitations
-Endpoints that could not be covered, external dependencies, or gaps in coverage.
-
----
-
-The "Postman collection generated:" field is read directly by Step 4 (`docs/archive-metadata.md`'s structured snapshot), rather than inferred from the Applicability prose. State it explicitly, on its own line.
-
-Do not commit or push. Output the report and stop. Wait for explicit approval before proceeding to Step 4.
+Preserve the literal `Postman collection generated:` field for Step 4's structured snapshot. Step 4 also uses the actual outcome and retained/updated paths, never this flag alone to infer API applicability or artifact absence. Normal mode outputs the report, including a not-applicable or skipped result, and waits for explicit approval before recording it/proceeding to Step 4. Do not commit or push.

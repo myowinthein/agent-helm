@@ -1,539 +1,188 @@
 # legal
 
-Scan the project and generate legal documents based on what the
-project actually does. Only generate documents that apply.
+Create or maintain selected legal documents from confirmed business facts and an evidence-based data profile. Support privacy-policy, terms, cookie-policy, refund-policy, eula and disclaimer; these are drafting starting points, not a compliance guarantee or an exhaustive legal assessment.
 
 ## Before starting
 
-`/helm:legal` generates canonical, public-facing legal documents from the project's data profile, so it needs the full merged state and a clean landing path to the resolved base branch. Behavior depends on `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
+Apply the shared runtime and resolve effective instructions, `{memory_file}` and invocation policy without changing either instruction file. Read configuration through the existing owner/bridges on both hosts; never create settings, a profile file or another command's state. Legal document commits always require explicit approval, regardless of `git-auto-commit`.
 
-Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = docs/legal-{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
+Read `{package_root}/prompts/shared/content-sync.md`. This workflow uses its normal clean-base preparation, not log's first-run policy overlay. Read `{package_root}/prompts/shared/project-state.md` before any manifest use; only the invoked legal workflow may access its own manifest.
 
-## Step 1 — Project scan
-
-Scan the codebase to understand the project's legal profile:
-
-**App type**
-- Chrome extension, web app, mobile app, desktop app, open source library
-- Infer from manifest.json, package.json, composer.json, folder structure
-
-**Data collection**
-- Forms, auth systems, user accounts
-- Analytics tools (Google Analytics, Mixpanel, Hotjar, GTM)
-- Error tracking (Sentry, Bugsnag)
-- Any personally identifiable information (PII) collected or stored
-
-**Sensitive data (GDPR Art. 9 special category)**
-- Health, medical, or fitness data; biometric or genetic data
-- Race or ethnicity, religion, political views, trade-union membership, sexual orientation
-- Detect from data fields, model schemas, or integrations that handle such data
-- If any is present, the privacy policy must call it out — special-category data needs explicit consent and a stricter legal basis
-
-**Children and minors**
-- Is the service directed at, or knowingly accessible to, children?
-- Age gates, minimum-age checks (13+ / 16+), parental-consent flows, kid-directed content or framing
-- Drives the Children's Privacy section (GDPR Art. 8, and COPPA where US minors are involved)
-
-**Third party integrations**
-- Payment processors (Stripe, PayPal, Paddle)
-- Social auth (Google, GitHub, Facebook OAuth)
-- Cloud services (AWS, GCP, Firebase)
-- Marketing or tracking tools
+## Step 1 — Scope and prepare
 
-**Email and marketing communications**
-- Email service providers (Mailchimp, SendGrid, Postmark, Klaviyo, Resend, and similar)
-- Newsletter or marketing-list signup forms
-- Distinguish transactional email (account/receipts) from marketing email — marketing requires consent under GDPR and the ePrivacy rules, and belongs in the privacy policy
+Before Git mutations, perform only a cheap, read-only inventory of project/package metadata, likely legal-page locations and current checkout status. Identify the requested product and cancellation intent. If scope is ambiguous, ask which legal service/operator is being reviewed; related frontend, backend and workers may form one service. An output package is a separate choice, not the boundary of its data processing. Do not fully scan/classify documents on this preliminary checkout or treat it as the merged source. Cancellation here creates no branch or files.
 
-**Monetization**
-- Payment processing, subscription logic, pricing pages
-- Free vs paid tiers
+For dynamic scope/output/locale lists, use 2–4 picker options, a direct confirmation for one candidate, or list **all** candidates with paths in conversation when there are more than four. Wait for an exact selection; never truncate or invent a one-option picker. Follow the shared runtime's free-text fallback on both hosts. Reuse supplied answers when their facts remain valid.
 
-**Content model**
-- Does the app let users generate or upload content?
-- Does the app provide advice (financial, health, legal, AI-generated)?
+Apply **Prepare the current branch** from the shared local-edit helper. Require the actual main/master base and clean eligible inputs; otherwise block writes with a reason. No branch creation/switch/update occurs. Re-resolve instructions/configuration, confirm scope and pin `{review_head}` to actual inspected HEAD before document writes. Retain source/document/state snapshots for drift checks and never absorb unrelated work.
 
-**AI features**
-- Does the app use AI to generate recommendations presented as facts?
-- Does it use a BYOK model (user provides their own API key)?
+## Step 2 — Build the scoped legal profile
 
-**No legal need detected**
+At actual product-source investigation, read `{package_root}/prompts/shared/investigation-evidence.md`. Cover the selected service's evidence categories, not unrelated applications or every source line. Trace relevant routes, data/schema flows, SDK initialization and actual call sites, integrations and deployment descriptions; record each category's implementation evidence, configured-but-unverified facts, inference or missing material. Justify exclusions separately from inaccessible inputs. Large independent source topics may use permitted read-only workers with explicit instructions, safe inputs and inspected/unread identities; the parent reconciles shared providers/data flows and retains business decisions, current primary research and all state/actions.
 
-If every category above came back empty — no data collection, no sensitive data, not directed at children, no third-party integrations, no email/marketing, no monetization, no user-generated or advice content, no AI features — none of the usual signals that make privacy/terms documents necessary were found. Stop here, before resolving an output location or a contact point (both are pointless if nothing gets generated):
+For each document's source delta, review the complete relevant changed behaviors and affected unchanged consumers, not only filenames or net counts. Parent synthesis must distinguish adequate source coverage from separately confirmed business/provider facts and applicable current legal research. No signals or unchanged source never certifies absence of legal need or compliance. Preserve the existing narrow exits and freshness dimensions; do not add generic Full/Gap choices or new manifest fields.
 
-  AskUserQuestion:
-    question: "Scan found no data collection, sensitive data, third-party integrations, monetization, user-generated/advice content, or AI features — none of the signals that typically make privacy or terms documents necessary. This project may not need legal documents."
-    header:   "No legal need"
-    multiSelect: false
-    options:
-      - label: "Exit — no documents needed (Recommended)"
-        description: "Skip document generation entirely; nothing is written"
-      - label: "Proceed anyway"
-        description: "Continue the scan and pick documents manually — use this if the scan missed something"
+Confirm the minimum business context early: operator/entity and public identity, establishment and served markets, consumer/business audience, controller/processor roles, and requested language. Ask only for missing material facts, explain why they affect the selected service, and defer document-specific commercial/contact details until selection. Repository location, author metadata and hosting region do not establish domicile or governing law. Existing approved facts are candidates for confirmation, not permanent proof.
 
-  If "Exit" selected → treat exactly as Step 2's "nothing selected" outcome: proceed straight to Step 4, which writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created. Report per Step 5 with `Generated: none — scan found no legal need` instead of a document list.
+Inspect relevant source/configuration, routes, schemas, integrations and deployment descriptions for the service, including confirmed related packages/providers. Exclude unrelated applications, operational Helm records, secrets and real user data. Do not open live env values or production/user records, start the app, or call production APIs to discover processing.
 
-  If "Proceed anyway" selected → continue to Framework and output detection below, same as if this check had never triggered.
+Keep an in-run evidence map, not a new persisted profile. Distinguish confirmed implementation, configured-but-unverified behavior, inference, unknowns, developer attestations and previously approved statements needing confirmation. An installed dependency alone does not establish active production use. Capture:
 
-**Framework and output detection**
+- App/distribution type, public surfaces, accounts/forms and data categories/sources, including indirect collection.
+- Hosting/CDN/server access logs, error monitoring, backups, retention, deletion, regions and actual recipients/processors/subprocessors.
+- Cookies, local storage, sessions, pixels and SDKs by purpose, provider, duration and actual controls, including server-side tracking.
+- Special-category processing and purpose; biometric identification and ordinary fitness features are not interchangeable. Where GDPR applies, distinguish an Article 6 basis from an applicable Article 9 condition; explicit consent is one possible condition, not the only one.
+- Children-directed services, intended/actual audience, age/parental flows and markets. Determine applicable law and thresholds; do not assume universal 13/16 limits or that all US minors trigger COPPA.
+- Transactional versus marketing messages and recipients, actual consent/opt-out mechanisms and applicable local exceptions. Do not make blanket consent claims from the presence of an email provider or a cookie category.
+- Paid offerings, donations, subscriptions, renewal/cancellation, merchant-of-record/platform roles and approved commercial policy; payment integration alone does not establish that the developer sets refunds.
+- User content and ownership, advice domains, AI/BYOK prompts/uploads/keys, provider data use/training/retention and automated decisions. Do not infer no third-party collection merely because the key is supplied by the user.
 
-Scan the project to determine which scenario applies. Use config files, package
-manifests, folder structure, and any other available signals to decide:
+Research current applicable requirements from primary authorities where a material conclusion depends on law, regulator guidance or store rules. Record source URL, review date and applicable market in the assessment/report. Use the Commission/EDPB for EU data protection, relevant national regulators for tracking/marketing, FTC for applicable COPPA scope, and relevant consumer authorities for sales rights. GDPR is a regulatory regime, not a governing-law jurisdiction. Research only the relevant scope; unavailable evidence leaves the conclusion unassessed and blocks affected canonical-ready claims, not unrelated drafting. Never promise compliance from a repository scan.
 
-  If the scan finds multiple independent web packages or apps (e.g. a workspace layout with several `package.json` files each defining their own framework, under `apps/`, `packages/`, or similar): ask which one the legal documents belong to, since a monorepo usually has one public-facing surface — then apply the scenarios below scoped to that package only.
+**Store requirements extension:** for detected Chrome extensions/mobile apps, check the applicable store's current primary requirements for privacy URLs, disclosures and listing/in-app access. Report missing links, unconfirmed store facts and implementation gaps. A repository file is not automatically a published privacy URL. Do not submit store forms, change listings or implement client flows as part of drafting.
 
-  For 2–4 detected packages, use the single-select question below. For more than 4, do not build an oversized picker or truncate the package list: present every package in a numbered list in ordinary conversation, including its framework and project-relative path, then ask the developer to reply with one number or exact package path. Wait for a reply and resolve it to exactly one detected package before proceeding; re-ask for an ambiguous or unknown selection. This same fallback applies on both hosts.
+**Existing multilingual coverage extension:** discover existing legal translations, locale routing and links. Explicitly agree which locales are covered; preserve their structure, identify stale/unreviewed translations and report excluded locales. Never silently translate, rewrite all languages, or imply one reviewed locale covers the others.
 
-    AskUserQuestion:
-      question: "Multiple web packages found: {list}. Which one should receive the legal documents?"
-      header:   "Monorepo target"
-      multiSelect: false
-      options: one entry per detected package (2–4 total), e.g.:
-        - label: "{package name}"
-          description: "{detected framework and path, e.g. \"Next.js app in apps/web\"}"
-
-  Static site generator (Jekyll, Hugo, Eleventy, and similar):
-  - Format: `.md`
-  - Output path: the generator's content or docs directory, under a `legal/` subfolder
-  - Detect the correct content directory from the generator's config
+### Discover existing documents and assess freshness
 
-  JS framework with SSR or SSG (Next.js, Astro, Nuxt, SvelteKit, and similar):
-  - Format: `.mdx`
-  - Output path: the framework's pages or content directory, under a `legal/` subfolder
-  - Detect the correct pages directory from the framework's config and folder structure
-
-  SPA or plain HTML site (no server-side rendering, no static site generator):
-  - Format: `.html` with subfolder structure (`legal/privacy-policy/index.html`, etc.)
-  - Output path: the directory that is served as the web root (e.g. `public/`, `dist/`, or root)
-
-  No web project detected (pure library, CLI tool, or non-web repo):
-  AskUserQuestion:
-    question: "No web framework detected. Where should legal documents be written, and in what format?"
-    header:   "Output"
-    multiSelect: false
-    options:
-      - label: "legal/ as Markdown (Recommended)"
-        description: "Standard location for repos without a web front end"
-      - label: "legal/ as HTML"
-        description: "Bare semantic HTML — suitable for plain HTML sites"
-      - label: "Custom path"
-        description: "Specify a path and format manually"
-
-  This question is itself the output-location choice for non-web repos — skip the "Confirm output location" step below when it was asked.
-
-**CSS style detection (HTML output only)**
-
-When the resolved format is `.html`, scan the project to determine whether styles
-are applied globally or scoped:
-
-  Global CSS (element and class selectors that apply site-wide):
-  → Output bare semantic HTML. The site's stylesheet handles rendering.
-
-  Scoped or utility-first CSS (styles tied to components or utility classes,
-  where unstyled semantic HTML receives no visual treatment):
-  → Find the prose or layout container used by existing pages and wrap the
-  generated semantic HTML in the same element and classes inside `<body>`.
+Find existing legal source pages/routes and linked policies throughout the scoped product before choosing an output folder. Include custom filenames and translated pages; avoid duplicate live policies. Associate actual files with document types/locales rather than assuming six `.md` filenames.
 
-  Cannot determine:
-  → Wrap the generated semantic HTML in `<main>` as a safe default.
+Resolve only `.helm/legal-manifest.json` under the shared project-state procedure. Require explicit schema 1 and a documents array of objects with safe project-relative paths and string date/source-ID fields when present, preserving unknown fields. Missing or unusable provenance makes freshness unknown rather than erasing the record. Resolve document paths safely inside the consumer project before reading them. Malformed data, missing/unsupported versions, unsafe paths or invalid shapes block with files preserved. An absent manifest is a first run, not permission to create an empty one. No old-shape or alternate-path reader is supported.
 
-Record the resolved format and output path before proceeding.
+Present independent assessment dimensions for each discovered document:
 
-**Confirm output location**
+- **Origin:** recorded as Helm-generated, unrecorded/Foreign, or uncertain. Recorded origin never proves unedited content or authorizes overwrite.
+- **Document content:** actual applicable gaps/custom or lawyer-reviewed clauses, visible edits and uncertain provenance. A source SHA is not a fingerprint of document bytes. `git log -- path` after that SHA cannot prove manual editing: the original generation commit normally follows its source snapshot too. Use path history only as context with established provenance; otherwise say unknown.
+- **Source freshness:** changed, unchanged, or unknown, with reason. Validate `generated_at_commit` as a hexadecimal ID, resolve an existing commit object and verify ancestry to `{review_head}` before running a safely passed Git range. Review the complete relevant changes/profile, not just filenames. Missing/invalid/non-ancestor IDs, command failures or incomplete inspection mean unknown; never rewrite anchors to manufacture currency.
+- **Business/provider and legal freshness:** confirmed for this review, needing confirmation, or unassessed. Source-unchanged does not establish unchanged business practice, provider terms or law.
 
-Run this only for the auto-detected scenarios (SSG, JS framework, SPA/plain HTML), where the path and format were resolved without asking. Skip it for the no-web case — the "No web project detected" question already served as the location choice.
-
-After resolving the format and path, confirm with the user before continuing:
-
-  AskUserQuestion:
-    question: "Legal docs will be written to {resolved-path} as {Format} files. Confirm or choose a different location."
-    header:   "Output location"
-    multiSelect: false
-    options:
-      - label: "Use {resolved-path} (Recommended)"
-        description: "{Format} — detected from {framework/scenario name}"
-      - label: "Custom path"
-        description: "Specify a different output path and format"
-
-  If Custom path selected → ask the user to type the path and preferred format before proceeding.
-  If confirmed → proceed with the resolved path and format.
-
-**Contact point**
-
-Legal documents must give users a real way to reach the owner (mandatory under GDPR Art. 13). Resolve it now — do not generate anything until a valid contact point is confirmed. Never fall back to a bare placeholder.
-
-Infer candidates from the project:
-- Existing contact page — a contact / contact-us page in the project (e.g. `contact.html`, `contact.md`, a `/contact` route, `pages/contact.*`, `src/pages/contact.*`). Use its site URL or path.
-- Repo issues URL — from the git remote, `package.json`, or `composer.json`.
-- Support/contact email — from `package.json` (`bugs.email`, `author.email`), `composer.json` (`authors.email`), or a `SECURITY.md` / `CONTACT` file.
-
-Deduplicate candidates by contact value, then choose the question shape by the number found:
-
-- **No candidates:** do not show a picker. Ask in ordinary conversation: "No contact point was found. Enter the email address, URL, or postal address to use in these documents." Wait for the actual contact before continuing; do not invent a candidate or treat an unanswered question as a contact.
-- **One candidate:** use the question below with that candidate and an "Enter a contact manually" option, making exactly two options.
-- **Two to four candidates:** use the question below with one option per candidate, in the order above, making two to four options.
-- **More than four candidates:** list every candidate in a numbered list in ordinary conversation and ask for one number or a manually entered contact. Do not truncate the list. Wait for a reply and resolve it to one contact; re-ask for ambiguous or unknown selections.
-
-Use this picker only in the one-to-four-candidate cases above:
-
-  AskUserQuestion:
-    question: "How should users contact the owner in the legal documents? Required — a legal document needs a real contact."
-    header:   "Contact point"
-    multiSelect: false
-    options:
-      - label: "Contact page"                ← include only if a contact page was found; show its URL/path in the description
-        description: "Point users to {contact page URL}"
-      - label: "Open a repo issue"           ← include only if an issues URL was found; show the URL in the description
-        description: "Users open an issue at {issues URL}"
-      - label: "Email"                        ← include only if an email was found; show it in the description
-        description: "Users email {email}"
-      - label: "Enter a contact manually"      ← include only when exactly one candidate was found
-        description: "Type a different email address, URL, or postal address"
-
-Use distinct labels/descriptions when multiple candidates have the same type. The built-in Other response, or the shared runtime's free-text equivalent, also lets the developer type a contact. If "Enter a contact manually" is selected, ask for the actual value and wait; the option label itself is not a contact. On every path, whatever is chosen or typed must be a valid contact — an email address, a URL, or a postal address. If the response is empty or not a recognisable contact, re-ask; do not proceed without one.
-
-Record the resolved contact and its type (email / issue URL / page / postal) for the Contact section in Step 3.
-
-**Existing legal documents**
-- Check whether the resolved output path exists.
-- List which documents are already present using the resolved file extension.
-- Read `{package_root}/prompts/shared/project-state.md` and apply it to `legal-manifest.json`. Resolve `.helm/legal-manifest.json` and both legacy paths, `.claude/helm/legal-manifest.json` and `.claude/legal-manifest.json`. Validate and compare every existing candidate before classifying documents; resolve differing manifests explicitly. Load without moving files during scanning. The resolved manifest records which documents a previous run generated and the commit each was generated at. Classify each present document:
-  - **Helm-generated** — its path is listed in the manifest. Regeneration still follows this workflow's document review/commit gates; it is always a full replacement, never an in-place edit. Before checking staleness, treat `generated_at_commit` as untrusted data: accept only a hexadecimal commit ID (a uniquely resolvable abbreviation or full ID), never an arbitrary revision expression, option or shell fragment. Resolve it to an existing commit object and successfully verify it is an ancestor of the pinned current project HEAD. Run the validated commit range through safe structured arguments/quoting and check command success. Inspect the relevant changes for legal-profile effects (analytics, processors, auth, integrations, data collection, manifests/config/code).
-    - Meaningful profile changes: **may be outdated**.
-    - Only a valid, successfully inspected range with no relevant changes: **up to date**.
-    - Missing/malformed/unavailable/non-ancestor ID, unavailable history, failed Git command, or incomplete inspection: **unknown / may be outdated**, with a non-secret reason. Never turn an error or missing output into up to date or allow the all-up-to-date no-op exit. Keep it in Step 2's regeneration/review candidates; no automatic regeneration is authorized by uncertainty.
-    Missing/unusable historical IDs affect staleness, not ownership of an otherwise recognizable generated-document record; malformed JSON, unsupported schemas or invalid manifest structure still follow the shared state stop rules. Recheck HEAD and manifest inputs before using the result. A changed snapshot requires renewed assessment. Do not rewrite stored IDs or migrate a manifest just to repair read-only classification; only normal approved regeneration records a new inspected baseline.
-  - **Foreign** — present on disk but not in the manifest. Likely hand-written or lawyer-reviewed; must not be overwritten without explicit confirmation.
-- The published legal documents carry no marker of their own — this manifest is the only record of what helm generated, so end-user-facing files stay clean.
-
-Record all findings, including each document's classification and staleness, before proceeding.
-
----
-
-## Step 2 — Determine which documents to generate
-
-First determine the candidate set: privacy-policy.md and terms.md are always candidates once this step is reached (Step 1's "No legal need detected" check already exited before here if neither applied); cookie-policy.md, refund-policy.md, eula.md, and disclaimer.md are candidates only if applicable per the scan findings below.
-
-**Applicability** (does this document apply at all, regardless of whether it already exists):
-- privacy-policy.md — always applies
-- terms.md — always applies
-- cookie-policy.md — applies if non-essential cookies or analytics detected
-- refund-policy.md — applies if payment processing detected
-- eula.md — applies if Chrome extension, desktop app, or downloadable software detected
-- disclaimer.md — applies if financial, health, legal advice or AI recommendations detected
-
-**Recommended** (whether to nudge the user toward selecting it) is not the same as applicable — an applicable document that's already generated and current doesn't need touching:
-- Doesn't exist yet, and applies → Recommended (needs generating for the first time).
-- Exists, Helm-generated, and flagged **may be outdated** or **unknown** in Step 1 → Recommended for review/regeneration, with the uncertainty/reason disclosed; selection is still required.
-- Exists, Helm-generated, and **up to date** → not Recommended, regardless of applicability — nothing changed since it was last generated.
-- Exists, Foreign → not Recommended either way; the user opts in explicitly if they want it replaced (see Step 3's overwrite confirmation).
-
-**All candidates up to date — skip this step entirely:** if every candidate document exists, is Helm-generated, and was classified up to date in Step 1 (none missing, none Foreign, none stale or unknown), there's nothing to regenerate. Inform the user: "Legal documents are up to date — no meaningful changes since last generation." Do not present either AskUserQuestion below. Proceed to Step 4, which writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created.
-
-Otherwise, present the two questions below.
-
-AskUserQuestion supports a maximum of 4 options. Split into two questions.
-
-Labeling applies to both questions below:
-- Append `(Recommended)` per the Recommended rule above (not the Applicability rule alone — an applicable-but-current document is not Recommended).
-- For an existing document, append its classification suffix from Step 1: `(exists — up to date)` for a current Helm-generated file, `(exists — may be outdated)` for a stale Helm-generated file, `(exists — history unknown: {reason})` for an uncertain one, or `(exists — not helm-generated)` for a Foreign file. This lets the user tell an auto-generated file from a hand-edited one, and a current file from a stale one.
-
-Question 1 — core documents:
-  AskUserQuestion:
-    question: "Which core legal documents should be generated? (Jurisdiction: GDPR · Tone: plain English)"
-    header:   "Core documents"
-    multiSelect: true
-    options:
-      - label: "privacy-policy.md"                  ← append "(Recommended)" per the Recommended rule above; append the existing-document suffix if present
-        description: "Explains what data is collected and how it is handled"
-      - label: "terms.md"                            ← append "(Recommended)" per the Recommended rule above; append the existing-document suffix if present
-        description: "Acceptable use, IP ownership, liability, governing law"
-      - label: "eula.md"                             ← same treatment, gated on downloadable-software applicability
-        description: "License grant, restrictions, and liability for installable software"
-      - label: "disclaimer.md"                       ← same treatment, gated on AI-content/advice applicability
-        description: "No-professional-advice notice and AI-generated content warning"
-
-Question 2 — conditional documents (only ask if applicable based on scan findings):
-
-  If both cookie-policy.md and refund-policy.md apply:
-    AskUserQuestion:
-      question: "Any additional legal documents needed?"
-      header:   "Additional documents"
-      multiSelect: true
-      options:
-        - label: "cookie-policy.md"                   ← same treatment, gated on analytics applicability
-          description: "Required if non-essential cookies or analytics tools are present"
-        - label: "refund-policy.md"                   ← same treatment, gated on payments applicability
-          description: "Required if payment processing is present"
-
-  If only one of the two applies, a multi-select with a single option isn't valid — AskUserQuestion requires at least 2. Ask directly instead:
-    AskUserQuestion:
-      question: "{document} appears to be needed based on the scan. Generate it?"
-      header:   "Additional document"
-      multiSelect: false
-      options:
-        - label: "Yes (Recommended)"                  ← same treatment, applying the existing-document suffix if present
-          description: "{same description as the applicable document above}"
-        - label: "Skip"
-          description: "Don't generate {document} this run"
-
-    "Yes" is equivalent to selecting that document in the multi-select above — proceed the same way.
-
-  Skip Question 2 entirely if neither cookie-policy nor refund-policy is applicable
-  based on scan findings (no analytics, no payments detected).
-
-Generate only the documents selected across both questions.
-If nothing is selected, exit without generating anything — proceed to Step 4, which writes nothing but still needs to run its GitHub Flow cleanup (delete `{branch}`, return to `{original_branch}`) if a temporary branch was created.
-Selected Helm-generated documents that already exist are overwritten. Selected Foreign documents are confirmed individually before overwriting (see Step 3).
-
-Wait for both responses before proceeding.
-
----
-
-## Step 3 — Generate documents
-
-Generate each selected document in plain English, GDPR compliant.
-Use em-dashes sparingly — only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
-Write to the resolved output path using the resolved format. When a document already exists, this is a full replace, not an incremental patch: use the Write tool to overwrite the entire file in one operation with the freshly generated content — never targeted `Edit` calls that leave old wording in place alongside new. This matches Step 1's "Do not edit it in place — regeneration is always a full rewrite."
-
-**Before writing a document that already exists:**
-- If it is **Helm-generated** (in the manifest) → overwrite silently.
-- If it is **Foreign** (not in the manifest) → confirm first, since it may be hand-written or lawyer-reviewed:
-
-  AskUserQuestion:
-    question: "{file} already exists and was not generated by helm — it may be customized or lawyer-reviewed. Overwrite it?"
-    header:   "Overwrite existing"
-    multiSelect: false
-    options:
-      - label: "Overwrite"
-        description: "Replace it with the freshly generated document"
-      - label: "Skip"
-        description: "Leave the existing file untouched"
-
-  If Skip → do not write that document; note it in the completion report.
-
-Do not write any marker into the documents themselves — they are published to end users and must stay clean.
-
-Before updating or migrating the manifest, read back the generated documents using Step 5's completeness checks. A missing or incomplete document stops the manifest write and legacy cleanup; preserve the prior manifest candidates and report the incomplete output.
-
-**After generating at least one document**, write/update `.helm/legal-manifest.json` using the shared project-state procedure so future runs can recognize generated documents and detect staleness. Verify the canonical result now, but preserve legacy sources until Step 4's explicit commit approval; retire only verified same-file legacy sources in that same commit. If no document was actually written (including every foreign document being skipped), do not write or migrate a manifest. Record each document actually written, with its path, the current date, and the current HEAD commit:
-
-```
+If no signals are detected, offer **Exit without drafting** or **Review anyway / supply missing facts**, before output/contact questions. Explain scan limits; do not certify no legal need. If all applicable documents exist and complete source review finds no relevant source changes or other known gaps, report that narrow result and offer **Finish source-only review** or **Review documents anyway**. Name unassessed business/provider/legal scopes. Never silently exit on an explicit refresh, known changed facts, missing/Foreign/unknown source classifications or material evidence gaps. Both exits write/migrate nothing and perform no branch cleanup.
+
+## Step 3 — Choose documents, then resolve details
+
+Classify each supported document as required by an identified applicable law/store rule, useful, uncertain pending facts, or not applicable, with the evidence/reason. Neither privacy nor terms is universally required. A separate cookie page may be unnecessary when a suitable existing disclosure covers the need. Downloadable OSS does not automatically need an EULA or replacement license; respect `LICENSE` and third-party rights. Flag evidenced needs outside these six types, such as a DPA/subprocessor notice, as follow-up gaps without generating a seventh type or implying exhaustive clearance.
+
+| Document type | Candidate reason, subject to confirmed context |
+|---|---|
+| privacy-policy | Relevant personal-data processing or applicable disclosure/store requirements |
+| terms | Service/account/commercial rules that the operator actually wants and can adopt |
+| eula | An approved end-user licensing arrangement compatible with existing licenses |
+| disclaimer | Actual advice/AI/content risks needing a specific, supportable notice |
+| cookie-policy | Tracking/storage disclosure not already adequately covered elsewhere |
+| refund-policy | The operator's confirmed sales/refund responsibilities, including platform roles |
+
+All choices are opt-in. Show applicability, existing path/locale, origin, source status and material confirmation gaps. Recommend applicable missing documents or evidenced review work; label uncertain candidates as review suggestions, not established requirements. Foreign files are not automatically recommended for replacement; source-unchanged files receive no regeneration nudge without another identified gap. Developers may explicitly request any of the six types even if the scan did not flag it.
+
+Group candidates into core (privacy/terms/eula/disclaimer, up to four) and additional (cookie/refund, up to two). Omit empty questions. For one candidate use Generate or review / Skip, with a recommendation only when supported; for 2–4 use multi-select with explicit none/free-text support. For any expanded dynamic list over four, use the complete numbered conversational fallback, including paths/locales. Wait for the actual selection. No selection writes no documents/state.
+
+Resolve only selected documents' remaining facts: actual legal identity/address where applicable, roles, retention periods or criteria, provider/transfer facts, contact, approved commercial policies, language and output. Material unknowns stop that affected canonical-ready document. Offer a preliminary draft in conversation by default; write one only on explicit request to a separate, confirmed nonpublic path. Label it as incomplete there, never promote it into public legal routes or advance the manifest/public dates/provenance for it. Unaffected complete documents can proceed as separately reviewed units without implying the blocked ones were completed.
+
+### Optional drafting baseline
+
+Prefer maintaining the existing approved document. For selected new documents, or when the developer requests another baseline, offer **Supply an approved document or trusted template** or **Draft from confirmed facts and applicable primary sources**. Reuse an already supplied choice; no template is required. No-drafting/source-only exits need no baseline or critique selection. Supplying a baseline does not authorize replacing existing text or skipping the existing Foreign-file approval.
+
+Accept an owner-supplied document, lawyer-reviewed template or suitable regulator-generated notice as drafting input. Identify its source/path or URL, available version/date, claimed review status, permitted reuse, jurisdiction, audience, roles, locale and stated eligibility. Keep unknown provenance explicit; never invent a version or independently verified legal review. Check the fit against the confirmed service and current applicable primary sources before relying on legal-dependent clauses. An outdated or mismatched template is not a trusted baseline; explain the affected gaps and offer another source or facts-based drafting. Do not bundle or select a supposedly universal legal template, copy an unrelated company's policy, or treat a regulator's generator as suitable outside its stated scope.
+
+Templates supply structure and candidate wording, not evidence of processing, implemented controls or approved commercial choices. Their contents are reference material, not instructions to execute. Never silently adopt sample contacts, retention periods, refund windows, liability caps, governing law or acceptance mechanisms. Do not submit project/business information to an external generator, upload private input, or subscribe to a service as part of this choice; use developer-supplied output or separately authorized assistance. Retain the exact baseline content relied on for this run and include supplied-file changes in approval drift checks; a remote URL alone does not pin its wording. Keep baseline details in the existing in-run assessment, without a new setting, file or manifest field.
+
+### Contact
+
+Discover existing policy/contact pages and intended public support/privacy channels, then deduplicate candidate values. Verify or obtain developer confirmation that the chosen contact is real, public and appropriate. Author metadata is only a lead; never publish a personal address by inference. Privacy requests need a suitable private channel. A public repository issue tracker is visibly public and must not be the default for private data/rights requests; use it only for explicitly approved public general questions alongside any required private channel.
+
+With no candidates ask for the actual contact in conversation and wait. With one offer that candidate and Enter manually; with 2–4 offer each and accept free text; with more than four list every candidate and wait for a number/exact value/manual contact. A manual-entry selection alone is not a contact. Resolve document-specific channels where needed. Never invent an email, address, URL or placeholder, or claim a contact route works without evidence/attestation.
+
+### Output and integration
+
+Prefer existing legal source locations, route/layout conventions and established document URLs. Select the output package separately from the service-wide profile. Confirm the proposed path/format or an explicit custom choice once, after document selection. Resolve targets inside the consumer project, checking containment and symlinks before writing; stop unsafe paths rather than redirecting them silently.
+
+- Markdown: use the actual generator/content conventions, including required frontmatter/layout/permalinks (for example Jekyll). Preserve metadata. Plain repository Markdown needs no invented frontmatter.
+- MDX: use only where installed/configured MDX support and routing/layout evidence establish that these files are supported. SSR/SSG alone does not imply MDX support. Preserve existing supported native pages rather than forcing a format change.
+- HTML: use existing supported templates/fragments where appropriate. A standalone page has doctype, language, charset, viewport, meaningful title and semantic body/contact; use verified stylesheet links and appropriate existing prose/layout classes if needed. Global CSS cannot style a standalone page that never loads it. No added JavaScript, inline styles or invented stylesheet assets.
+- Prefer durable source/static directories; never write generated `dist/`, build output or dependency directories. Without verified native support, offer ordinary `legal/` Markdown source and report the missing route/hosting integration.
+
+Do not install packages, add framework support, alter navigation/routes/consent or assent flows, or submit store changes silently. Identify required integration work separately; document creation alone does not implement those duties. An explicitly requested implementation needs its own reviewed scope.
+
+## Step 4 — Draft or maintain selected content
+
+Cover applicable topics rather than enforcing fixed headings/order across locales and formats. Do not include empty clauses or add invisible Helm markers to published files. Each material statement must match evidence, explicit developer attestation or an approved policy; unresolved decisions belong in the private assessment, not public placeholders or invented promises.
+
+Preserve legally significant terms and qualifications. Do not equate a longer document, more jurisdictions or more legalistic wording with better coverage. Use the selected baseline only for applicable clauses and preserve the existing document's approved substance.
+
+For existing documents, default to targeted clause edits. Present what is kept/changed/removed and preserve custom/lawyer-reviewed provisions, metadata, locale structure and effective/version dates. Recorded Helm origin is not permission for a full rewrite. Whole replacement requires an explicit reviewed choice. Before editing Foreign or untracked existing legal content, show the proposed content/diff and obtain explicit approval; Skip preserves it. For tracked Helm documents, the selected targeted drafting work may proceed to the mandatory content/commit review below without another universal pre-write prompt. Changed scope/content invalidates an earlier approval.
+
+Use the following per-document checklist, omitting genuinely inapplicable topics with reasons in the assessment rather than filling pages with irrelevant sections:
+
+### Privacy Policy
+
+Identify the actual operator/controller and applicable representative/DPO/contact. Describe data categories and sources (including indirect sources and whether publicly available), purposes and applicable bases/interests, recipients/processor roles, transfer regions and actual safeguards, and retention periods or meaningful criteria. Where applicable cover Article 6 plus an Article 9 condition, consent withdrawal, qualified access/rectification/erasure/restriction/portability/objection rights and complaint authority, required data and consequences of not providing it, relevant automated decisions/profiling, tracking, children and change notification. Do not promise universal erasure/portability, fabricated SCCs, encryption, zero logs or implemented deletion that cannot be substantiated. State no collection only when the full scoped service evidence supports it.
+
+### Terms of Service
+
+Describe the actual service, eligibility/accounts, permitted/prohibited use, owner/user/third-party IP rights, and approved commercial rules (billing, renewal/cancellation and applicable consumer protections). Confirm the intended assent/notice mechanism; do not invent an implemented mechanism or assume mere use/continued use always creates acceptance. Warranty exclusions, liability caps, indemnities, termination and governing law/disputes are owner decisions subject to applicable law and non-waivable rights, not default boilerplate. Preserve approved terms and flag unsupported or missing decisions rather than inventing numbers or waivers.
+
+### Cookie Policy
+
+Cover applicable cookies and similar storage/access/tracking technologies, actual purposes/providers/durations, relevant consent or exemption conditions, third-party disclosures and implemented preference/withdrawal controls. Determine rules from purpose and applicable jurisdiction, not blanket necessary/functional/analytics labels. Browser controls do not replace required in-product controls. Link to real controls and related privacy text; do not claim a consent banner exists because a policy was written.
+
+### Refund Policy
+
+Confirm seller/merchant-of-record responsibilities, covered products/plans, approved eligibility/window/exclusions, request channel/process and actual refund method/timing. Distinguish discretionary refunds, cancellation and mandatory consumer remedies/withdrawal rights, including conditions for any digital-content exceptions. Do not guess a 14/30-day business policy, silently waive consumer rights, or promise refunds controlled by a platform. Cross-check billing/renewal/cancellation terms and actual payment flows.
+
+### End User License Agreement
+
+Use the approved license grant/scope, distribution/platform context, actual owner/third-party rights, compatible restrictions, updates/support, termination consequences, and approved warranty/liability/law terms subject to applicable rights. Do not restrict redistribution/reverse engineering contrary to existing OSS licenses or applicable law, claim all third-party IP belongs to the operator, or replace `LICENSE`. Do not assume unilateral changes become binding through continued use.
+
+### Disclaimer
+
+Address only the actual advice/content domains and relevant AI limitations, user review needs, accuracy/freshness limits and external links. Avoid automatic legal/medical/financial boilerplate when those domains are absent. Any liability wording needs approved lawful scope, not an absolute immunity claim. Describe real review/escalation measures without inventing professional oversight; a disclaimer does not remove operational or statutory duties.
+
+### Dates and completeness
+
+For new complete documents, include an appropriate human-visible last-updated date and real contact. For existing documents, propose a public last-updated change only for substantive reviewed changes; preserve effective dates/version history and agree any change-notice implications. Show proposed date changes in the content/commit review, apply them only after approval, and read back before recording state or committing. A no-op, partial/rejected draft, formatting-only repair or failed review must not refresh public dates or manifest provenance. Use format-native titles/date/contact elements and existing layout conventions; HTML does not need literal Markdown `**Last updated:**` or `## Contact`. Headings may be translated or combined if the information is clear.
+
+Read back each actual output and diff. Verify applicable checklist coverage, identity/contact, dates/metadata, links/output conventions, locale coverage and consistency across documents and implementation. Check for contradictory retention, recipients, age, licensing, refund or rights claims, empty clauses and unresolved identity/decision placeholders. Separate static source verification from runtime/rendering, deployed URLs, store approval and legal review. Do not run tests/builds merely to generate prose; any applicable required publication checks still govern later finalization and unavailable checks are not passes. Failed/incomplete readback blocks the affected checkpoint and dependent integration; preserve actual drafts and prior manifest sources.
+
+### Review important claims and wording
+
+Turn the in-run evidence map into a short review table alongside the draft/diff: **Claim or clause / Basis / Confirmation or gap**. Cover material factual claims, promises and owner decisions, especially collection, purposes, recipients, transfers, retention/deletion, security, cookies, children, rights, refunds, liability and governing law. Group related claims rather than listing every sentence; identify unchanged inherited claims that were not reassessed instead of implying the whole document was validated. Cite relevant source paths, owner attestations/approved policies or current primary-source URLs with jurisdiction/date, distinguishing observed implementation from configured or attested behavior. A template alone supports neither factual claims nor legal applicability. Owner adoption can establish a commercial decision, not its enforceability or implemented behavior. Show only the evidence needed for review, without secrets or private intake details; keep the table outside public documents and the manifest.
+
+For each important promise, confirm that actual practice supports it. An approved future intention is not an implemented control. Resolve conflicting evidence rather than selecting the more reassuring account. Remove unsupported optional claims or request missing facts; required disclosures and statutory rights cannot simply be omitted because support or operational controls are missing. Report the implementation gap separately and keep an affected materially incomplete document preliminary under Step 3.
+
+Review suspect passages with concrete questions: does this tell the reader something relevant about this service, practice, obligation or action; is vague or hedged wording hiding an unknown; does it repeat another clause; would deletion lose meaningful information or a required qualification? Quote actual problems and propose precise fixes. Standard wording and necessary legal qualifications may remain when applicable; neither generic phrasing nor words such as "may" automatically fail. Do not change legal meaning during stylistic cleanup. Recheck important claims and applicable coverage after edits.
+
+Offer one optional separate drafting critique before final approval, reusing an existing request/decision. If chosen, use an authorized available fresh-context reviewer with only the selected draft/diff, relevant evidence table, confirmed scope and baseline information; no independent repository/state access or edits. Confirm any external sharing of private material before sending it, and do not require a particular host, model, installation or paid service. Ask for quoted unsupported claims, material omissions, invented choices, unsuitable clauses and contradictions, not a compliance score or approval certificate. If unavailable, report the critique as unperformed and offer the same rubric for owner review; never silently substitute or claim independence for the drafter's readback. Resolve findings against evidence, show resulting changes and repeat affected readback; changed content invalidates earlier approval. Declining this optional critique does not waive factual completeness or the mandatory content/commit review.
+
+In that same review, identify concrete decisions for qualified legal review when present, such as liability/indemnity/law/dispute provisions, children's or sensitive data, complex international transfers, automated decisions, consumer withdrawal/refunds or substantive changes to lawyer-reviewed clauses. State the issue and unresolved decision, rather than adding a generic warning to every document. Owner confirmation, a trusted template or another AI's agreement never establishes legal validity; unresolved material decisions retain the existing preliminary-document gate.
+
+## Step 5 — Review, record and commit
+
+If no complete canonical document actually changed, do not create/update/migrate state or make a housekeeping commit. Only accepted complete substantive content changes qualify for manifest updates; a formatting-only repair can receive its own reviewed document commit while retaining its old dates and manifest record, without a migration-only write. A genuinely no-write/no-commit run performs no Git cleanup. Any private preliminary draft, failed write or pending canonical edits remain actual work: preserve/report them without cleanup or publication of unresolved drafts.
+
+Show the actual document diffs, the keep/change/remove decisions, important-claims table, baseline source/fit, optional critique outcome and specific legal-review decisions, plus remaining integration/locale/store gaps. For complete changed canonical documents, describe the exact proposed manifest updates  before asking **Commit reviewed legal documents** or **Leave uncommitted**. This mandatory content/commit review applies even with auto-commit. It covers only the reviewed complete files and state plan, never push/PR publication. Decline leaves actual drafts and prior records intact on the current branch; do not advance the manifest, integrate, delete the branch or change checkouts. Do not include incomplete/preliminary/rejected documents in an approved unit or claim their old records were refreshed.
+
+On approval, recheck HEAD against `{review_head}` and all relevant source/document/baseline/owner/state inputs. Before each mutation also confirm expected content/existence at the canonical manifest and the shared unsupported-path tripwire; account explicitly for verified own writes rather than comparing a newly written canonical result to its old bytes. Unexpected drift stops the pending plan for reassessment, not automatic baseline repair. Do not treat the workflow's own reviewed document/date edits as external drift. If an earlier approved unit was committed, track that exact commit separately and verify it contains only reviewed workflow outputs; `{review_head}` remains the inspected source snapshot.
+
+Write `.helm/legal-manifest.json` under the shared state procedure only for actually changed, accepted, complete canonical documents with substantive content changes. Require explicit schema 1, all loaded records/unknown fields and unselected entries; do not silently prune missing/moved paths or rewrite their baselines. Explicitly reconcile moved records if needed. Refresh only eligible approved records with their project-relative path, review date and pinned `{review_head}`, not a later generated-document/merge tip. This provenance describes inspected source, not a document fingerprint, legal certification or last-change detector. Do not add a mandatory hash/profile/schema migration.
+
+```json
 {
   "schema_version": 1,
   "documents": [
-    { "file": "legal/privacy-policy.md", "generated_at": "YYYY-MM-DD", "generated_at_commit": "abc1234" }
+    { "file": "legal/privacy-policy.md", "generated_at": "YYYY-MM-DD", "generated_at_commit": "{review_head}" }
   ]
 }
 ```
 
-`schema_version` — bumped only if this manifest's structure changes in a future release. Lets a future version of this command detect an older-shaped file and handle it explicitly instead of misreading it. Treat a missing `schema_version` as `1` (every manifest written before this field existed). Always write it going forward.
+When state is eligible to change, read back and strictly validate the canonical manifest, preserving carried-forward data. Stage only exact approved documents and the eligible canonical manifest with literal paths. No other operational state or instruction files enter the commit. Inspect the complete staged diff and verify the actual commit; failure/decline preserves real drafts and prior work. No old-file retirement or automatic cleanup occurs.
 
-Keep entries for documents that still exist; add or refresh entries for the ones written this run (the refreshed `generated_at_commit` resets their staleness baseline).
+After verifying eligible local outputs/commits, apply **Finish verified local work** from `{package_root}/prompts/shared/content-sync.md`. Finish on the current permitted branch. No push/PR question, integration, environment promotion, branch creation/switch/return or cleanup follows. Preserve drafts and failed/declined commits honestly; publication is a later explicit ship action. A verified local result needs no remote/provider availability or published-source dependency. Legal retains mandatory explicit content/commit approval; a local commit does not publish legal pages.
 
-**Format rules**
+## Step 6 — Report actual outcomes
 
-For Markdown (`.md`) in an SSG content directory:
-- Use standard markdown headings (`#`, `##`)
-- No YAML frontmatter
-- No HTML wrapper — the site's template handles rendering
+Report the scoped product/operator, reviewed source SHA, confirmed markets/roles, assessment/research date and applicable primary-source links, without exposing private intake details. List complete changed versus unchanged/skipped/blocked/preliminary documents, paths/formats, covered versus unreviewed locales, confirmed facts and material unknowns. Include store URL/disclosure and routing/consent/assent/operational gaps, plus any evidenced out-of-scope legal-document needs. Do not present a broad compliance checklist or certificate.
 
-For MDX (`.mdx`) in a JS framework's pages directory:
-- Use standard markdown headings (`#`, `##`)
-- No HTML wrapper — the framework's layout handles rendering
+When drafting/review occurred, include the chosen existing-document/template/facts-based baseline and its relevant limits, important claims still needing confirmation, optional critique performed/declined/unavailable and any unresolved findings, and concrete decisions needing qualified legal review. Keep assessment and critique material out of published documents, state and commits; no extra report file is required. If a report file is explicitly requested, agree a separate nonpublic path and scope before writing it, preserving confidential source material.
 
-For HTML (`.html`):
-- Write each document to its own subfolder as `index.html` for clean URLs:
-  `{output-path}/privacy-policy/index.html`, `{output-path}/terms/index.html`, etc.
-- Write a complete standalone page: `<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`
-- Use semantic HTML elements: `<h1>`, `<h2>`, `<p>`, `<ul>`, `<li>`
-- No inline styles, no `<style>` blocks, no JavaScript — the site's stylesheet handles rendering
-- Include `<meta charset="UTF-8">` and `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
-- Set `<title>` to the document title (e.g. "Privacy Policy")
+Distinguish source freshness from business/provider/legal assessment; a source-only exit says exactly what was inspected and what remains unassessed. Report contact/output only if resolved. State manifest loaded path(s), destination and migration outcome (not needed/completed/pending/blocked), actual current branch, content/commit approvals, verified local commits, pending drafts and performed/deferred checks. No publication, PR, integration, promotion or branch cleanup occurred. Report local document completion separately from deployment/legal readiness; ship is a later action.
 
-**Last updated (all documents):** Begin every document with a `**Last updated:** {current date}` line directly below the title, before the first section. Use the current date in `YYYY-MM-DD` format (e.g. `2026-07-07`).
-
-**Contact section (all documents):** End every document with a `## Contact` section, using the contact point resolved in Step 1 and wording that matches its type:
-
-  Email → "For questions about this {Document Title}, contact us at {email}."
-  Contact page → "For questions about this {Document Title}, visit our contact page at {url}."
-  Repo issue URL → "For questions about this {Document Title}, open an issue at {issues URL}."
-  Other URL → "For questions about this {Document Title}, reach us at {url}."
-  Postal address → "For questions about this {Document Title}, write to us at {address}."
-
-  Never emit a placeholder here — Step 1 has already guaranteed a valid contact.
-
----
-
-### privacy-policy.md
-
-Title: `# Privacy Policy`
-
-Required sections in order:
-
-1. `## Who We Are` — one paragraph identifying the project, its purpose, and its owner
-2. `## What Data We Collect` — list every category of data collected; if none, state that explicitly
-3. `## How We Use Your Data` — for each purpose, state the GDPR legal basis (Art. 6); mandatory
-4. `## Data Sharing and Third Parties` — name every third party that receives data; if none, state that
-5. `## International Data Transfers` — state whether data leaves the EEA and under what safeguards; omit only if no data is collected at all
-6. `## Data Retention` — how long each category of data is kept and why
-7. `## Your Rights` — cover all GDPR Art. 15–21 rights: access, rectification, erasure, restriction, portability, objection; mandatory
-8. `## Cookies` — include if cookies are used; omit if not applicable
-9. `## Children's Privacy` — state whether the service is directed at children and any age restrictions
-10. `## Supervisory Authority` — inform users of their right to lodge a complaint with a data protection authority (GDPR Art. 77); mandatory
-11. `## Changes to This Policy` — how and when users are notified of updates
-12. `## Contact` — standard contact wording
-
----
-
-### terms.md
-
-Title: `# Terms of Service`
-
-Required sections in order:
-
-1. `## Acceptance of Terms` — by using the service, users accept these terms
-2. `## Description of Service` — what the service is and what it does
-3. `## User Accounts and Eligibility` — age requirements, account responsibilities; omit if no accounts
-4. `## Acceptable Use` — what users may do
-5. `## Prohibited Conduct` — what users may not do; be specific
-6. `## Intellectual Property` — who owns the software; who owns user-generated content if any
-7. `## Disclaimer of Warranties` — service provided as-is; no guarantees
-8. `## Limitation of Liability` — cap on damages; exclude consequential damages
-9. `## Indemnification` — user agrees to hold the owner harmless for their misuse
-10. `## Termination` — conditions under which access can be revoked
-11. `## Governing Law and Dispute Resolution` — jurisdiction and how disputes are handled
-12. `## Changes to These Terms` — how users are notified of updates
-13. `## Contact` — standard contact wording
-
----
-
-### cookie-policy.md
-
-Title: `# Cookie Policy`
-
-Required sections in order:
-
-1. `## What Are Cookies` — brief plain-English explanation
-2. `## How We Use Cookies` — overview of cookie usage on this site/app
-3. `## Categories of Cookies` — list each category with its legal basis under GDPR/ePrivacy:
-   - Necessary (no consent required)
-   - Functional (consent required)
-   - Analytics (consent required)
-   - Marketing (consent required)
-   Only include categories that actually apply; omit the rest.
-4. `## Third-Party Cookies` — name each third party that sets cookies; link to their policies
-5. `## Your Consent and How to Withdraw It` — how consent was obtained and how to withdraw it; withdrawal must be as easy as giving consent; mandatory under ePrivacy Directive
-6. `## Managing Cookies in Your Browser` — link or instructions for browser cookie controls
-7. `## Contact` — standard contact wording
-
----
-
-### refund-policy.md
-
-Title: `# Refund Policy`
-
-Required sections in order:
-
-1. `## Overview` — what this policy covers and which products or plans it applies to
-2. `## Eligibility for Refunds` — conditions that must be met to qualify
-3. `## Refund Window` — how many days after purchase a refund can be requested
-4. `## How to Request a Refund` — step-by-step process
-5. `## How Refunds Are Issued` — method (original payment method, credit, etc.) and timeline
-6. `## Non-Refundable Items` — what is explicitly excluded
-7. `## Contact` — standard contact wording
-
----
-
-### eula.md
-
-Title: `# End User License Agreement`
-
-Required sections in order:
-
-1. `## Grant of License` — what rights the user is granted (scope, number of devices, personal vs commercial)
-2. `## License Restrictions` — what the user may not do (reverse engineer, redistribute, sublicense, etc.)
-3. `## Intellectual Property Ownership` — all IP belongs to the owner; no transfer of ownership
-4. `## Updates and Modifications` — owner may update the software; user's continued use implies acceptance
-5. `## No Warranty` — software provided as-is; all implied warranties disclaimed
-6. `## Limitation of Liability` — cap on damages; exclude consequential and indirect damages
-7. `## Termination` — conditions for termination; what happens on termination (cease use, delete copies)
-8. `## Governing Law` — jurisdiction
-9. `## Contact` — standard contact wording
-
----
-
-### disclaimer.md
-
-Title: `# Disclaimer`
-
-Required sections in order:
-
-1. `## No Professional Advice` — nothing in the output constitutes legal, financial, or medical advice; name all three categories explicitly
-2. `## AI-Generated Content` — output is produced by an AI model; AI can make mistakes, omit details, or misread context; always review before use
-3. `## Accuracy and Completeness` — information may be incomplete, outdated, or incorrect; no guarantee of accuracy
-4. `## External Links` — if the project links to third-party sites, disclaim responsibility for their content; omit if not applicable
-5. `## Limitation of Liability` — owner is not liable for decisions made based on the output
-6. `## Changes to This Disclaimer` — owner may update this disclaimer; continued use implies acceptance
-7. `## Contact` — standard contact wording
-
----
-
-## Step 4 — Commit and finalize
-
-If no document was actually written (including no legal need, all verified current, no selection, or all foreign files skipped), do not commit or write/migrate state. Only a genuine no-write/no-commit run may use the shared empty-branch cleanup. If a write/read-back failed, preserve the actual drafts and legacy sources and report incomplete work instead.
-
-Read back every generated document before finalization, verifying its required content, date and real resolved contact, plus the canonical manifest under the project-state procedure. Show the actual documents/diff and always ask `Commit reviewed legal documents` or `Leave uncommitted`, regardless of auto-commit. This review covers exact output paths and any manifest migration/removals, never push or PR publication. On decline preserve remaining legacy sources, any canonical draft and documents on the actual branch; no integration, deletion or checkout.
-
-On approval, recheck inputs and retire only verified same-file legacy manifest sources under the shared state procedure. Stage exact reviewed documents, `.helm/legal-manifest.json` if changed, and tracked approved legacy removals with literal pathspecs. Inspect the complete staged diff and commit `docs(legal): generate legal documents`, including resolved output path/format in the body when nondefault. A failed staging/commit stops with actual pending state and remaining sources preserved. Verify the commit and all intended outputs before proceeding.
-
-Read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = legal`. Its PR/push, configured integration, `{base_branch}`, exact-SHA CI and fan-out gates apply, with legal's stronger approval requirement retained for every integration commit. A branch-push/PR choice never replaces legal content review. Do not claim published legal documents merely because their local commit or PR exists.
-
----
-
-## Step 5 — Confirm completion
-
-If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
-
-If Step 1's "No legal need detected" check exited early: report just that outcome — output location and contact point were never resolved, so the full report below doesn't apply.
-
-LEGAL COMPLETE
-Generated: none — scan found no legal need (no data collection, third-party integrations, monetization, user-generated/advice content, or AI features)
-
-GitHub Flow only:
-Branch:       {branch} — deleted
-Returned to:  {original_branch}
-
-If Step 2's "all candidates up to date" check exited early: report that instead — output location and contact point were resolved (this exit happens after them), but nothing needed regenerating.
-
-LEGAL COMPLETE
-Generated: none — legal documents already up to date, no meaningful changes since last generation
-
-Location:     {resolved output path}
-
-GitHub Flow only:
-Branch:       {branch} — deleted
-Returned to:  {original_branch}
-
-Otherwise, summarize the pre-commit/integration read-back on the actual workflow branch (not a different checkout after cleanup). For each generated document, confirm it exists, begins with a `**Last updated:** {date}` line, and ends with a `## Contact` section that does not contain a placeholder (an unfilled `{...}` or `[...]` token) in place of the real contact resolved in Step 1. If any document fails this check, report the error for that specific file instead of folding it into LEGAL COMPLETE below — this is public, legally-binding text, so a silently incomplete document is worse than a loud one.
-
-Report:
-
-LEGAL COMPLETE
-Generated:
-- {list of documents generated}
-
-Location:     {resolved output path}
-Format:       {Markdown / MDX / HTML}
-Jurisdiction: GDPR
-Tone:         plain English
-Committed:    yes / no
-Pushed:       yes / no — push manually when ready / N/A (not committed)
-Environments promoted: {list or none}
-
-GitHub Flow only:
-Branch:       {branch} — PR pending / integrated to {base_branch}, deleted or retained / local only / pending drafts
-Returned to:  {original_branch}
-
-Note: These documents are AI-generated starting points.
-Review before publishing. Consult a lawyer for high-stakes products.
+Describe documents as AI-assisted drafting for owner review; material legal decisions may need qualified counsel. Neither an accepted commit nor static checklist completion establishes legal readiness, deployed behavior or compliance.
