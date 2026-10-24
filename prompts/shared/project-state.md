@@ -11,7 +11,7 @@ Apply only when the invoked workflow owns the selected file. State is shared by 
 
 ## Resolve and validate
 
-Access only the invoked owner's file at its eligible state entry. Audit/Plan, unrelated workflows, source edits and agent switches never open records. An absent canonical file means no prior history, not permission to create an empty ledger.
+Access only the invoked owner's file at its eligible state entry. Read-only exits explicitly defined by an owner, unrelated workflows, source edits and agent switches never open records. An absent canonical file means no prior history, not permission to create an empty ledger.
 
 For this filename only, use no-follow path metadata to check whether `.claude/helm/{filename}` or `.claude/{filename}` exists, without reading it. A symlink or conflicting parent blocks the check without traversal. Any such leftover blocks dependent state use/writes, even if canonical state exists: preserve all files and point to the one-time upgrade guide. There is no reader, reconciliation, converter, path migration, duplicate cleanup or automatic reset for unsupported inputs.
 

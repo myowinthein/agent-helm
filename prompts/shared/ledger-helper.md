@@ -1,6 +1,6 @@
 # Read-only ledger helper
 
-Load only at refactor Step 3 or test Step 2 when the invoked owner permits its own state access, including that owner's later authorized pre-write/readback checks. The parent alone invokes it. Audit/Plan, workers, source investigations, unrelated commands and agent switches never invoke it or load ledgers. This is an explicit packaged read-only operation in those normal owner paths, not permission to execute project code or broaden static modes.
+Load only at refactor Step 3 or test Step 2 when the invoked owner permits its own state access, including that owner's later authorized pre-write/readback checks. The parent alone invokes it. Refactor Audit/Plan, workers, source investigations, unrelated commands and agent switches never invoke it or load ledgers. This is an explicit packaged read-only operation in those eligible owner paths, not permission to execute project code or override source-inspection boundaries.
 
 ## Runtime and package
 

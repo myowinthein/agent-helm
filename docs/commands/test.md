@@ -6,15 +6,15 @@ nav_order: 4
 
 # /helm:test
 
-Normal owning-state assessment prefers the shared [Python ledger helper](../setup/python-helpers.html) for complete schema-3 validation and digest-bound retrieval of relevant case indexes/full records, including closed history. The bundled implementation needs Python 3.11+. If Python/execution is unavailable, offer/reuse Set up Python / Continue without Python / Stop once per run. Approved equivalent tools may meet the same complete validation, safe-path, resource, retrieval and preservation checks, including canonical readback. Without equivalent evidence, continue independent assessment/planning with ledger-dependent edits/writes pending. Invalid data and broken packages retain their blockers. Audit/Plan never invoke the helper, load ledgers or ask about runtime setup. The helper writes/migrates nothing and proves neither semantic continuity nor passing tests. Existing approved writes still preserve the complete original; pages are not a replacement document. Report the actual validation method and unperformed automation.
+Owning-state assessment prefers the shared [Python ledger helper](../setup/python-helpers.html) for complete schema-3 validation and digest-bound retrieval of relevant case indexes/full records, including closed history. The bundled implementation needs Python 3.11+. If Python/execution is unavailable, offer/reuse Set up Python / Continue without Python / Stop once per run. Approved equivalent tools may meet the same complete validation, safe-path, resource, retrieval and preservation checks, including canonical readback. Without equivalent evidence, continue independent assessment/planning with ledger-dependent edits/writes pending. Invalid data and broken packages retain their blockers. The helper writes/migrates nothing and proves neither semantic continuity nor passing tests. Existing approved writes still preserve the complete original; pages are not a replacement document. Report the actual validation method and unperformed automation.
 
-Assess important behaviors and existing tests, then write or maintain approved cases for recent changes, the whole project or a selected area. The workflow adapts to actual packages, languages and test layers. Assessment, successful execution, remaining gaps and publication are reported separately.
+Assess important behaviors and existing tests, then write or maintain approved cases for recent changes or the whole project. The workflow adapts to actual packages, languages and test layers. Assessment, successful execution, remaining gaps and publication are reported separately.
 
 Choose testing techniques from project needs, including specialist checks when justified. Each recommendation needs a reason, a meaningful expected outcome and appropriate execution limits. This is not an all-types checklist: projects do not automatically receive every technique, new tooling or expensive test runs.
 
-Command names use Claude notation. In Codex, select test from the skill picker and request the same mode/scope in your message. Both hosts resolve the existing instruction owner, normally shared `AGENTS.md` with a `CLAUDE.md` import, including overrides and existing owners. Test does not create, migrate or edit instructions/settings. See [compatibility](../setup/compatibility.html).
+Command names use Claude notation. In Codex, select test from the skill picker to start the same workflow. Both hosts resolve the existing instruction owner, normally shared `AGENTS.md` with a `CLAUDE.md` import, including overrides and existing owners. Test does not create, migrate or edit instructions/settings. See [compatibility](../setup/compatibility.html).
 
-Selected test/setup and eligible ledger writes stay on the same current actual main/master, established feature/maintenance branch or confirmed environment branch. Recommend targeted tests alongside a feature or against an environment branch's integrated snapshot, and main/master for project-wide Gap scan/Full scan; all modes remain available on eligible roles. Unresolved/unsupported roles need classification before writes. Project policies can further restrict eligibility; branch names alone do not establish role, ownership, safe runtime targets or resume permission. Actual script/service effects retain their approval and isolation requirements.
+Selected test/setup and eligible ledger writes stay on the same current actual main/master, established feature/maintenance branch or confirmed environment branch. Recommend targeted tests alongside a feature or against an environment branch's integrated snapshot, and main/master for project-wide Gap scan/Full scan; both scan depths remain available on eligible roles. Unresolved/unsupported roles need classification before writes. Project policies can further restrict eligibility; branch names alone do not establish role, ownership, safe runtime targets or resume permission. Actual script/service effects retain their approval and isolation requirements.
 
 ## Investigation depth and coverage
 
@@ -22,26 +22,21 @@ Full scan assesses every scoped component's behaviors and relevant existing test
 
 Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
 
-## Modes and scope
+## Usage
 
-| Request | Result |
-|---|---|
-| `/helm:test` | Static assessment, then Gap scan / Full scan / Skip and an approved path to write/maintain tests or record an assessment. |
-| `/helm:test audit` | Static inventory, behavior/risk findings and coverage limits; no execution or writes. |
-| `/helm:test plan` | Also propose exact cases, expected results, setup paths and verification commands; no execution or writes. |
-| `/helm:test ./api` | Limit assessment and approved work to a path/package and evidenced affected dependencies. |
-| `/helm:test plan -- ./web` | Read-only detailed plan for that selected area. |
-| Explicit feature request | Resolve its actual boundary and affected surface before planning; ask if ambiguous. |
+```text
+/helm:test
+```
 
-Audit and Plan work on dirty or detached checkouts, labelling exactly which worktree/staged/untracked or committed inputs were inspected. Without usable Git HEAD, they remain advisory static reviews. They never initialize Git, checkout/update/fetch, create branches, refresh the index, install tools, collect/run tests, import project configuration, execute coverage/builds/services, write reports/state, or migrate files. Inspection disables executable Git helpers and lazy object fetching or reports the affected read as unavailable. Output stays in conversation. A later write run revalidates the prepared source and approvals.
+Start with static inventory, choose Gap scan / Full scan / Skip from the available baseline and coverage evidence, then review the findings and proposed cases. Select the cases to write or maintain before approving concrete test/setup changes or an assessment checkpoint. Developer answers are passed unchanged and never interpreted as shell code.
 
-`audit` and `plan` are reserved only as the initial mode token. Use `./audit`, `./plan` or `-- audit`/`-- plan` for literal paths. Quoted paths with spaces remain supported. An explicit target does not require a previous Full scan and never silently expands into whole-project work.
+Initial source inspection works on dirty or detached checkouts, labelling exactly which worktree/staged/untracked or committed inputs were inspected. Without usable Git HEAD, only advisory static source review is available: no ledger access, helper execution, runtime-setup question, Git initialization or writes. Source inspection never checks out/updates/fetches, creates branches, refreshes the index, installs tools, collects/runs tests, imports project configuration, executes coverage/builds/services or writes reports/state. Inspection disables executable Git helpers and lazy object fetching or reports the affected read as unavailable. Output stays in conversation. The eligible ledger step separately permits read-only validation/retrieval; later writes revalidate the prepared source and approvals.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Select mode and scope]) --> Inspect[Read-only inspection of current checkout]
+  Start([Inventory project]) --> Inspect[Read-only inspection of current checkout]
   Inspect --> Write{Selected local writes?}
   Write -->|no| Report([Report scope, evidence and limits])
   Write -->|yes| Ready{Clean permitted current branch?}
@@ -57,7 +52,7 @@ flowchart TD
   Closure --> Report
 ```
 
-Normal runs can save authorized assessed findings before implementation, including when no tests are selected. Complete Full scan / Gap scan assessments can advance their appropriate source anchors; partial/targeted findings cannot advance project anchors. Later failure leaves the committed assessment intact and affected findings open. Audit/Plan, pre-write cancellation, unapproved writes and genuine no-ops create no checkpoint or migration.
+The workflow can save authorized assessed findings before implementation, including when no tests are selected. Complete Full scan / Gap scan assessments can advance their appropriate source anchors; partial findings cannot advance project anchors. Later failure leaves the committed assessment intact and affected findings open. Pre-write cancellation, unapproved writes and genuine no-ops create no checkpoint or migration.
 
 ## 1. Inventory before preparation
 
@@ -145,7 +140,7 @@ Five gaps in `orders.ts` become five independent records. Resolving two changes 
 
 Unsupported formats stay untouched. A selected fresh start is explicit one-time maintenance outside the test command; it preserves a recoverable before-image and creates no empty replacement ledger. The next owning run assesses actual source before recording findings.
 
-Validate commit availability/ancestry as identities against the relevant inspected snapshot, without fetching, accepting revision expressions or guessing replacement IDs. Later accepted code/evidence commit B is checked against the current accepted lineage, including reviewed setup/test overlays; it need not precede frozen assessment source A. New anchors use full commit IDs. An invalid/missing global baseline offers Full scan, targeted assessment or Skip; only complete Full scan can replace it. Invalid/stale case or closure context needs scoped reassessment. Unchanged source bytes alone do not prove current context: tests, fixtures, requirements, dependencies, configuration and consumers matter. Historical proof is not a current pass.
+Validate commit availability/ancestry as identities against the relevant inspected snapshot, without fetching, accepting revision expressions or guessing replacement IDs. Later accepted code/evidence commit B is checked against the current accepted lineage, including reviewed setup/test overlays; it need not precede frozen assessment source A. New anchors use full commit IDs. An invalid/missing global baseline offers Full scan or Skip; only complete Full scan can replace it. Invalid/stale case or closure context needs scoped reassessment. Unchanged source bytes alone do not prove current context: tests, fixtures, requirements, dependencies, configuration and consumers matter. Historical proof is not a current pass.
 
 Preserve IDs through demonstrated semantic continuity. Check expected behavior, evidence, layer and actual related code rather than path/title equality or fuzzy renames alone. Surface uncertain duplicates and same-ID/different-meaning conflicts for explicit reconciliation; never auto-union branch histories or overwrite human decisions. Reopen only from evidence of lost/changed protection, removing the active old closure while Git preserves it. Out-of-scope records remain intact. New guidance alone neither certifies more techniques nor forces a rescan.
 
@@ -157,11 +152,9 @@ When advisory review includes staged/worktree/untracked inputs, inspect those se
 
 **Full scan** statically reviews every component of the whole project. Use read-only module chunks in batches of at most eight, queueing enough batches for complete coverage. Workers respect actual host concurrency, or the same review runs sequentially with that fallback reported. The parent reconciles duplicates and cross-module flows. On Codex the parent owns all writes; test writing is sequential on both hosts.
 
-**Targeted scope** inspects only the selected area and evidenced dependencies. Authorized persistence can record those supported cases while leaving both root anchors unchanged/null and all out-of-scope records intact. It never fabricates whole-project provenance or pulls unrelated backlog into edits.
+At an existing Full scan / Gap scan choice, use the [shared scan-depth selection](../setup/compatibility.html#shared-scan-depth-selection) with existing permitted facts. The helper grants no additional state access or execution permission.
 
-At an existing Full scan / Gap scan choice, use the [shared scan-depth selection](../setup/compatibility.html#shared-scan-depth-selection) with facts already permitted in that mode. Targeted work gains no selection-helper/global-baseline prerequisite. Read-only modes gain no extra state access, questions or Apply path.
-
-No tests, no established prior Full scan, an unusable baseline or insufficient/broad impact evidence recommends Full scan; targeted work remains available. This workflow's separate Full-scan anchor supplies its own prior-coverage fact, without making unknown Full-scan history mean never-Full for other commands. A local unknown may instead need clarification or targeted reassessment. Age, counts and Gap scan frequency alone never trigger Full. Explicit supported depth remains subject to complete affected-surface coverage; malformed/conflicting state still needs its existing reviewed resolution, never an automatic reset through Full. Preserve the independent assessment and case-closure checkpoints. Keep questions within four options with faithful paging/chat fallback.
+No tests, no established prior Full scan, an unusable baseline or insufficient/broad impact evidence recommends Full scan. This workflow's separate Full-scan anchor supplies its own prior-coverage fact, without making unknown Full-scan history mean never-Full for other commands. A local unknown may instead need clarification or case reassessment. Age, counts and Gap scan frequency alone never trigger Full. Explicit supported depth remains subject to complete affected-surface coverage; malformed/conflicting state still needs its existing reviewed resolution, never an automatic reset through Full. Preserve the independent assessment and case-closure checkpoints. Keep questions within four options with faithful paging/chat fallback.
 
 An empty diff produces a scoped statement such as "No new relevant changes found since {snapshot}; retained open findings remain." Offer relevant backlog work, reassessment or Skip. Absence of records does not prove complete testing; never report "tests are up to date" from an anchor alone. A genuine no-op does not refresh judgment/anchors or create an empty ledger commit.
 
@@ -193,7 +186,7 @@ Folder/category labels, auth/money wording, silent wrong output, layer, LOC and 
 
 ### Maintain existing tests
 
-Keep useful existing tests by default, regardless of who or what generated them. Review cases connected to the selected behavior and affected dependencies, without turning targeted/Gap scan work into a whole-project cleanup. Full scan does not require assigning an action to every test. Static review can justify keeping a test but cannot certify that it passes; distinguish reviewed-kept, unresolved/deferred and unassessed cases.
+Keep useful existing tests by default, regardless of who or what generated them. Review cases connected to the selected behavior and affected dependencies, without turning Gap scan work into a whole-project cleanup. Full scan does not require assigning an action to every test. Static review can justify keeping a test but cannot certify that it passes; distinguish reviewed-kept, unresolved/deferred and unassessed cases.
 
 | Action | When it fits |
 |---|---|
@@ -207,7 +200,7 @@ Compare assertions, fixtures, layers, support targets and regression purpose. Si
 
 The existing plan names exact files/test names, durable finding IDs or clearly mapped report aliases, action, evidence/reason, relevant issue/history references, preserved guarantees and checks. Consolidation/replacement includes an old-to-new scenario/assertion and relevant fixture/snapshot mapping; removal identifies the obsolete contract or exact remaining coverage. Inspect CI selectors/tags, case-ID filters, shared-fixture consumers and documented references before renames/deletions. Unknown consumers or uncertain equivalence leave the affected change pending. Support files are removed only with established lack of remaining consumers and exact-path approval. Preserve meaningful regression context in surviving cases or the reviewed commit description.
 
-This uses the existing concrete plan approval, including its listed removals. There is no five-option/per-case picker or extra universal confirmation. Material scope/mapping changes need renewed review. Audit reports actions and evidence statically; Plan and normal approved writing include the detailed maintenance proposal. Production fixes/redesign remain separate work.
+This uses the existing concrete plan approval, including its listed removals. There is no five-option/per-case picker or extra universal confirmation. Material scope/mapping changes need renewed review. Include the detailed maintenance proposal before approval. Production fixes/redesign remain separate work.
 
 ### Select techniques from project needs
 
@@ -227,7 +220,7 @@ Use this guide when evidence or an explicit developer need justifies it, rather 
 | Critical code with potentially weak assertions | Scoped mutation testing | Detection of relevant artificial faults, with surviving/equivalent/inconclusive cases reviewed |
 | Business acceptance or ease-of-use questions | Acceptance scenarios and human usability review | Agreed acceptance criteria and separately evidenced human findings/sign-off |
 
-The existing plan explains each recommended technique's evidence/risk, layer/scope, expected outcome and its source, paths/tooling, limits and manual requirements. Show material exclusions/prerequisites without a separate all-types picker, fixed recommendation cap, new mode or configuration. Reuse native/existing tools first; missing tools use the same approved setup flow. Audit can report needs without a full execution plan. Unknown criteria use the existing clarification/characterization/defer choices, not invented requirements. An identified unselected technique remains a gap where applicable, not an invented human skip or unfinished selected work.
+The existing plan explains each recommended technique's evidence/risk, layer/scope, expected outcome and its source, paths/tooling, limits and manual requirements. Show material exclusions/prerequisites without a separate all-types picker, fixed recommendation cap, new mode or configuration. Reuse native/existing tools first; missing tools use the same approved setup flow. Unknown criteria use the existing clarification/characterization/defer choices, not invented requirements. An identified unselected technique remains a gap where applicable, not an invented human skip or unfinished selected work.
 
 ### What useful specialist tests require
 
@@ -242,16 +235,16 @@ Use intended contracts, documentation, existing tests, relevant code evidence an
 
 Separate adequately covered behavior (cite where), kept useful tests (no adequacy/pass assumption), unclear intent, execution blockers and required manual work. Record meaningful findings, not every kept test. Group proposals by module/behavior with stable IDs or temporary P1/P2 aliases, expected outcomes, priorities/reasons, actions, layers and prerequisites. Aliases map to durable IDs when recorded and never encode priority. Category/tier/layer views overlap; count a finding once.
 
-The same selection flow applies to normal Full scan, Gap scan and targeted work. Small sets go directly to their concrete plan/approval with free-text refinements. Larger sets offer at most four scope choices:
+The same selection flow applies to Full scan and Gap scan. Small sets go directly to their concrete plan/approval with free-text refinements. Larger sets offer at most four scope choices:
 
 | Choice | Candidate scope, not authorization |
 |---|---|
-| **Recommended** | Exact listed ready proposals and reasons. Full scan normally starts with actionable High; Gap scan/targeted also includes relevant Medium in the changed/requested surface. Say when empty and omit the empty option. |
+| **Recommended** | Exact listed ready proposals and reasons. Full scan normally starts with actionable High; Gap scan also includes relevant Medium in the changed surface. Say when empty and omit the empty option. |
 | **All ready proposals** | Listed ready ordinary work, including labelled cleanup. |
 | **Choose cases or groups** | IDs, module/behavior/category or tier filters and exclusions, using faithful picker paging or chat. |
 | **None** | No test/setup edits. Findings can still be saved only if an assessment-only write is authorized. Not Cancel or ledger permission. |
 
-Show blocked, unknown-intent and expensive/intrusive work separately; explicit inclusion needs its reviewed setup/limits/manual requirements. Recommendations/defaults never count as selection. Preserve independent choices above host limits through paging/chat, without forcing whole modules or pretending both hosts have native multi-select. Audit/Plan show textual recommendations only, never selection/apply questions or silent mode escalation.
+Show blocked, unknown-intent and expensive/intrusive work separately; explicit inclusion needs its reviewed setup/limits/manual requirements. Recommendations/defaults never count as selection. Preserve independent choices above host limits through paging/chat, without forcing whole modules or pretending both hosts have native multi-select.
 
 Before approval disclose required setup, shared fixtures and coherent replacement mappings by finding ID. Do not add independent unselected cases; excluding a prerequisite requires revising/deferring dependents. Members keep their own priority even if a coherent unit is sequenced by its highest-priority member. Explicit cleanup requests remain eligible.
 
@@ -275,7 +268,7 @@ Selected writes validate clean current actual main/master, an established curren
 
 Pin `{assessment_head}` immediately after preparation and before framework/setup/test commits. If source SHA/branch or policy differs from the advisory plan, show the change and reassess/reapprove before writing. Keep the original source baseline through all approved local test/setup/record commits and revalidate it after later history changes. Setup/test outputs are reviewed overlays; unrelated source drift invalidates dependent work. Re-discover affected runner/config context after setup without moving the source baseline to an install commit.
 
-Before test/setup edits or execution, save the authorized assessment on the prepared/revalidated eligible source using §6. Reconcile all meaningful in-scope findings, generate stable IDs/map report aliases and preserve unselected, blocked, unknown-impact, closed and out-of-scope cases appropriately. A complete non-targeted Full scan sets both anchors to `{assessment_head}`; a complete Gap scan advances only `assessed_commit`. Targeted/partial findings can be saved with neither root anchor advanced. Missing/invalid baseline needs complete Full scan for replacement. A declined/failed write/commit stops later writes. This accepted checkpoint survives later test failure/cancellation; identical existing state needs no repeat commit. Old-schema rebuild/reset needs its concrete review/authorization.
+Before test/setup edits or execution, save the authorized assessment on the prepared/revalidated eligible source using §6. Reconcile all meaningful in-scope findings, generate stable IDs/map report aliases and preserve unselected, blocked, unknown-impact, closed and out-of-scope cases appropriately. A complete Full scan sets both anchors to `{assessment_head}`; a complete Gap scan advances only `assessed_commit`. Partial findings can be saved with neither root anchor advanced. Missing/invalid baseline needs complete Full scan for replacement. A declined/failed write/commit stops later writes. This accepted checkpoint survives later test failure/cancellation; identical existing state needs no repeat commit. Old-schema rebuild/reset needs its concrete review/authorization.
 
 Before execution, inspect exact scripts/configuration and actual database, filesystem, network, container/service and cleanup effects. Use isolated synthetic data and owned temporary resources, never assumed disposable production/shared targets. Keep credentials private. Reuse existing safety confirmations where evidenced; ordinary approved safe tests need no duplicate gate. Unknown safety or missing capability blocks affected execution, not static planning. [Pytest's fixture guidance](https://docs.pytest.org/en/stable/how-to/fixtures.html#safe-teardowns) illustrates why cleanup must be designed for failures too.
 
@@ -342,17 +335,17 @@ Verify required checks on the relevant final inputs and accept exact-path code/t
 
 Historical closure proves its recorded snapshot/scope only. Lost reporter evidence, unavailable/rewritten anchors or changed context need reassessment. If interruption leaves tests with an open case, inspect and establish closure evidence next time rather than replaying old approval. Reopen only when protection/requirements demonstrably changed, removing the active stale closure while Git retains prior versions. Do not synchronize/union branch histories automatically.
 
-Only complete non-targeted Full scan advances both anchors. Complete Gap scan advances its source anchor for the fully assessed diff-derived impact scope, retaining other backlog/provenance. Targeted/partial work changes only supported in-scope cases and neither root anchor. Case judgments/human decisions come from actual assessment/choices, never fresh timestamps for reused data. Source anchors remain the pre-output source, not a later test or bookkeeping tip.
+Only complete Full scan advances both anchors. Complete Gap scan advances its source anchor for the fully assessed diff-derived impact scope, retaining other backlog/provenance. Partial assessments change only supported in-scope cases and neither root anchor. Case judgments/human decisions come from actual assessment/choices, never fresh timestamps for reused data. Source anchors remain the pre-output source, not a later test or bookkeeping tip.
 
 Before each update require the same clean eligible branch/no in-progress operation and verified expected lineage/owned overlays, retaining only the current canonical-input rules. Pending unverified drafts or unrelated source/index changes block persistence without staging/stashing/resetting them. Compare meaningful data: dates/order/default-only changes, own ledger HEAD changes and migration opportunities alone create no write. Inspect actual owned overlays before excluding bookkeeping; user tests/configuration/fixtures remain actionable, other workflows' records opaque. Preserve unknown fields and every out-of-scope/unaffected case. Old-schema replacement is bounded to its explicit reviewed rebuild/reset.
 
 Recheck canonical bytes/existence, source and the unsupported-path tripwire on the same eligible branch before each update. Strictly validate schema 3 and intended ID-keyed changes, preserve all untouched cases/unknown fields and verify readback/commit. No alternate-path read or old-file retirement occurs.
 
-Audit/Plan, unapproved/pre-write cancellation and genuine no-ops write nothing. Authorized partial/targeted findings can be saved without project-anchor advancement. Accepted earlier checkpoints remain truthful historical records after later interruption; pending selected work is not final success.
+Unapproved/pre-write cancellation and genuine no-ops write nothing. Authorized partial findings can be saved without project-anchor advancement. Accepted earlier checkpoints remain truthful historical records after later interruption; pending selected work is not final success.
 
 ## 7. Git finalization and continuation
 
-Use local completion only with the declared assessment scope complete, verified intended commits/combined checks, supported closures/checkpoints accepted, clean state and no failed/declined/unfinished selected work. Assessment-only completion needs no invented runtime pass. Unselected backlog is not unfinished selected work. A completed targeted scope can finish; a partial requested larger scan remains a partial handoff even when findings were saved. Neither implies whole-project completion. With no meaningful ledger delta, report actual outputs/handoff rather than create a synthetic checkpoint or advance anchors. Shared helper/other-command policy stays intact.
+Use local completion only with the declared assessment scope complete, verified intended commits/combined checks, supported closures/checkpoints accepted, clean state and no failed/declined/unfinished selected work. Assessment-only completion needs no invented runtime pass. Unselected backlog is not unfinished selected work. A partial scan remains a partial handoff even when findings were saved; it does not claim completed assessment. With no meaningful ledger delta, report actual outputs/handoff rather than create a synthetic checkpoint or advance anchors. Shared helper/other-command policy stays intact.
 
 Finish on the same permitted branch after verifying local outputs and eligible commits. No push/PR question, branch creation/switch/update, integration, environment promotion, return checkout or branch cleanup follows. Remote/provider access and published source IDs are not prerequisites merely to finish locally. Invoke [ship](ship.html) separately when the whole selected work is ready to publish. See [Git and CI behavior](../setup/git-and-ci.html). Preserve actual source/judgment/decision provenance; never invent source IDs to make saved ancestry pass.
 
@@ -362,7 +355,7 @@ Continuation uses explicitly identified retained work, checked against actual co
 
 ## 8. Report actual results
 
-Report mode/target, exact snapshot/branch/base, packages/layers/perspectives assessed and missing, stable IDs/alias mappings, per-case priority reasons, open/resolved/obsolete/reopened findings, historical versus current evidence and actual human decisions. Name new/extended tests and behaviors, distinguishing declaration blocks from actual collected/executed parameterized cases; use reporter evidence or mark counts unknown.
+Report Full scan / Gap scan depth and actual scope, exact snapshot/branch/base, packages/layers/perspectives assessed and missing, stable IDs/alias mappings, per-case priority reasons, open/resolved/obsolete/reopened findings, historical versus current evidence and actual human decisions. Name new/extended tests and behaviors, distinguishing declaration blocks from actual collected/executed parameterized cases; use reporter evidence or mark counts unknown.
 
 Report reviewed-kept versus out-of-scope/unassessed tests, proposed/selected versus applied improve/consolidate/replace/remove actions, their reasons and preserved/superseded guarantees. Include relevant old-to-new/remaining-coverage mappings and actual case/fixture/selector changes. Distinguish declined proposals, unresolved intent and draft/pending-verification work, without an inventory of every existing test or a new report artifact. Static Keep is not a test-pass claim.
 
@@ -374,7 +367,7 @@ Where produced, include generator domain/settings/replay evidence, reviewed visu
 
 Report relevant package/layer commands and working directories, dependency owners, actual setup operation and outcome: declared, restored/added/repaired/upgraded, runner verified, tests passed/failed or blocked/unrun, with evidence and unexpected changes. A successful install is distinct from a working runner and passing tests. Restore-only work may have no tracked changes or setup commit. Tool inventory stays transient; a case blocker or actual closure command is not a tooling cache/profile.
 
-Separate drafts and setup/test commits, the pre-implementation assessment checkpoint and later supported case closures, actual method/command/scope/evidence commits, schema-3 or pending reviewed rebuild, migration/commit status and unchanged targeted anchors. Show recommended/selected versus unselected/blocked/unknown/cleanup/manual groups with scoped counts, without implying publication, integration, CI or deployment. Include actual current checkout, retained work and exact next action. No-write/Skip still reports; proposals, partial assessments, unverified drafts and published review branches are not completed testing/publication.
+Separate drafts and setup/test commits, the pre-implementation assessment checkpoint and later supported case closures, actual method/command/scope/evidence commits, schema-3 or pending reviewed rebuild, migration/commit status and unchanged anchors for partial assessments. Show recommended/selected versus unselected/blocked/unknown/cleanup/manual groups with scoped counts, without implying publication, integration, CI or deployment. Include actual current checkout, retained work and exact next action. No-write/Skip still reports; proposals, partial assessments, unverified drafts and published review branches are not completed testing/publication.
 
 ## See also
 
