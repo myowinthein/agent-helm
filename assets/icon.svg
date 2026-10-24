@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Agent Helm</title>
+  <desc id="desc">A wooden ship's wheel with brass highlights, inspired by the helm in the Agent Helm banner.</desc>
+  <path d="M256 52v408M52 256h408M112 112l288 288M112 400l288-288" fill="none" stroke="#35251f" stroke-width="40" stroke-linecap="round"/>
+  <path d="M256 52v408M52 256h408M112 112l288 288M112 400l288-288" fill="none" stroke="#90603b" stroke-width="24" stroke-linecap="round"/>
+  <path d="M256 52v36m0 336v36M52 256h36m336 0h36M112 112l25 25m238 238 25 25M112 400l25-25m238-238 25-25" fill="none" stroke="#bf8e53" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="148" fill="none" stroke="#35251f" stroke-width="48"/>
+  <circle cx="256" cy="256" r="148" fill="none" stroke="#90603b" stroke-width="28"/>
+  <path d="M108 256a148 148 0 0 1 296 0" fill="none" stroke="#bf8e53" stroke-width="8"/>
+  <circle cx="256" cy="256" r="62" fill="#35251f"/>
+  <circle cx="256" cy="256" r="50" fill="#90603b"/>
+  <circle cx="256" cy="256" r="34" fill="#c19456"/>
+  <circle cx="256" cy="256" r="22" fill="#49382a"/>
+  <circle cx="250" cy="250" r="8" fill="#bf8e53"/>
+</svg>

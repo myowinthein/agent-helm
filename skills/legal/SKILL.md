@@ -1,6 +1,6 @@
 ---
 name: legal
-description: Scan project and generate GDPR-compliant legal documents based on what it does
+description: Create or maintain selected legal documents from confirmed business facts and actual data flows
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the legal workflow](../../workflows/legal.md).

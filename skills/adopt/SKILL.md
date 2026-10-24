@@ -1,6 +1,6 @@
 ---
 name: adopt
-description: Install or update helm rule files (git.md, safety.md) into the current project
+description: Audit, plan, install or update shared local Helm rules; review conversion or recovery of legacy external references
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the adopt workflow](../../workflows/adopt.md).

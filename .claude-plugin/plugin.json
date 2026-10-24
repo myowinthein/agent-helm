@@ -1,7 +1,8 @@
 {
   "name": "helm",
+  "displayName": "Agent Helm",
   "version": "2.22.3",
-  "description": "A Claude and Codex workflow plugin for solo developers. Shared workflows and rules to ship, refactor, test, document, generate legal docs, audit env config, normalize commit history, adopt rule files, and archive your own work.",
+  "description": "A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.",
   "author": {
     "name": "Myo Win Thein",
     "email": "mwt.creative@gmail.com",
@@ -13,19 +14,26 @@
   "keywords": [
     "claude-code",
     "claude-code-plugin",
-    "slash-commands",
     "conventional-commits",
     "semantic-versioning",
-    "solo-developer",
-    "indie-developer",
     "developer-tools",
     "workflow-automation",
     "release-automation",
     "codex",
     "codex-cli",
     "codex-plugin",
-    "agent-skills"
+    "agent-skills",
+    "code-review",
+    "documentation",
+    "refactoring",
+    "software-testing"
   ],
   "skills": "./skills/",
-  "commands": []
+  "commands": [],
+  "icon": "./assets/icon.svg",
+  "interface": {
+    "displayName": "Agent Helm",
+    "logo": "./assets/icon.svg",
+    "composerIcon": "./assets/icon.svg"
+  }
 }

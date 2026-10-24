@@ -1,214 +1,114 @@
 # Step 2 — Restore and Freeze
 
-Restore this project and freeze its environment for long-term archive recovery.
+Restore the approved project scope and preserve its working environment and data for later recovery. Read the verified `{archive_root}/step1-explore.md` and `{archive_root}/files.json` first in normal mode, using only the root validated by the orchestrator; missing/mismatched context stops dependent work. Plan mode uses only static facts already inspected and never opens operational state, executes or writes.
 
-Read Step 1's report from `.archive/step1-explore.md` and use it as context. If it is missing, stop and report that Step 1 must complete first.
+Within this same phase, follow **restore plan → restore → actual evidence → offer developer check → freeze recommendation → approved freeze execution**. Initial freeze candidates are provisional. Keep the existing single Step 2 report/checkpoint; no extra phase, state field or setup workflow is introduced. For older reports without a component handoff, recover needed facts from bounded source/config/docs reads before dependent actions.
 
-Goal: Get the project running locally, containerize it with pinned image versions, and export the built images to tarballs so the environment can be recovered years later without depending on external registries.
+## Establish reliable setup inputs
 
----
+For each required component, cross-check existing setup notes against its manifests/locks, scripts, CI, Dockerfiles, version declarations and actual platform. No source always wins: docs, a lockfile or CI can be stale or describe another component. Resolve material conflicts from compatible evidence or a concrete developer choice. Reconstruct missing instructions from inspected inputs and label them reconstructed; do not invent successful commands.
 
-## Rules
+Consult version-matched official guidance only when needed to resolve a real setup/freeze decision. Current upstream advice is not permission to modernize an old project. Audit/Plan make no network requests and leave any needed external research to check. Record and obtain approval for necessary compatible deviations instead of silently upgrading.
 
-- Preserve the original project as much as possible. Prefer compatibility fixes over upgrades, restoration over modernization.
-- Record every file created, modified, or deleted with the reason.
-- Use placeholder values for external services.
-- Do not connect to production systems, live databases, or external services.
-- Do not send emails, SMS, notifications, webhooks, or invoke payment gateways without explicit approval.
-- Do not change Git state — no commit, push, pull, fetch, checkout, reset, rebase, merge, or history rewrite.
-- Work only within the current repository. If another repository appears required, report which one and why, then stop and ask how to proceed — either continue without it (noting the gap in the report), or wait while you make it available, then continue on your signal.
+## Plan before execution
 
----
+Prefer compatibility fixes and restoration over modernization. Reuse existing project conventions and native tools. Before mutations, present one coherent plan covering:
 
-## Current-host runtime and change provenance
+- Selected recovery goal/features, original versus proposed versions/platform, exact file/output changes, missing inputs and accepted limitations. Apply protected-import checks before every write; use reviewed alternate paths or stop, never edit instruction owners/imports or opaque Helm ledgers.
+- Intended commands, installs/pulls, project lifecycle hooks, Dockerfile steps/build context and entrypoints. Separate explicitly approved package/image acquisition from runtime service contact. No production/live database or external-service access; waiting for access is not permission to connect later. A developer may provide an approved export or choose a limited fallback.
+- This host's Docker context/daemon or native runtime, dedicated project/container/process identities, fresh owned data targets, local endpoints and ownership evidence. Inspect broad bind mounts, socket/host-network/privileged settings, inherited env, external volumes/networks, jobs/schedulers, telemetry/webhook/message/payment paths and persisted endpoints.
+- Supported project-local isolation, disabled integrations/jobs and localhost-only exposure as applicable. Placeholders and a dedicated project name alone do not stop egress or make shared storage safe. Do not alter global firewall/client settings. If the no-live-contact requirement cannot be met, leave affected execution pending/source-only. Retain an approved credential-free recovery override/configuration when needed so future recovery uses the same isolation; a temporary machine-only override is not a preserved setup.
+- Data source/classification, exact import/migration/seed/backup targets and side effects, image/data outputs, scoped checks and optional cold rehearsal. Obtain missing action-specific approval, reusing authorization already covering this exact unchanged plan. No surprise broad test suite or another Helm workflow invocation.
+- Rough sizes, free-space needs, intended provider/object limits/LFS or separate-backup route before costly exports. An estimate/user-known preference is not verified provider capability; Step 5 rechecks actual facts. Avoid creating large artifacts with no agreed preservation route.
 
-Validate the archive context, prior report, and preservation inventory before work. Record each planned file change against the baseline; preserve agent instructions/configuration and opaque Helm state at their original paths. Use this host's verified project root and Docker context/daemon, not a previous session's absolute paths. Verify the target database/container/volume belongs to the approved isolated restoration before any import, migration, or start; reuse only approval covering that exact target. Missing tools/access stops the affected action without a completion claim.
+When recovery needs a missing safe configuration template, include its exact native path/content in that plan. Use evidenced key names, placeholders and approved safe defaults, preserving tracking/ignore policy and protected imports. Never copy a real `.env` or credential values, or create empty/redundant templates merely for symmetry.
 
-Record non-secret runtime identity in the report: host/context description, Compose project/container IDs and labels or process IDs with command/cwd/start identity, isolated data targets, local endpoints, and when ownership/health were verified. This is evidence to revalidate later, not a permanent authorization or guarantee that a PID/port still refers to this project. Do not include tokens or password-bearing commands in the report. On interruption or host change, revalidate existing artifacts and services; do not automatically rerun a completed restoration to recreate another host's services.
+Before each side effect, verify capabilities, source/inventory and target identity again. No Git commit/push/fetch/pull/checkout/reset/rebase/merge/history changes in this step. Work inside the project except explicitly approved isolated runtime resources; another repository requires a developer-provided input or an explicit limited-scope decision. Record actual changes, partial output and commands without secrets. Reconcile interruption before reapplying imports, migrations or other non-idempotent actions; do not replay merely because the step report is unapproved.
 
-## Restoration Philosophy
+## Choose a project-aware freeze
 
-The primary goal is not just to run the project today — it is to freeze the environment so it can be recovered 5–10 years from now, regardless of what runtimes, package versions, or registries are available at that time.
+Use these conditional candidates when planning, then finalize the recommendation after restoration evidence and the developer-check opportunity below. Recommend the best practical fit and at most a useful alternative for the selected goal, available inputs and actual project. Preserve useful existing distributables; propose new builds only when needed and approved. Do not create every candidate output.
 
-Docker is the preferred environment freeze mechanism. Base image tags and registries can disappear over time, so after a successful build, export all images to gzipped tarballs stored in `recovery/docker/`. Recovery then requires only Docker and the tarballs — no internet access, no registry dependency.
+| Project shape | Useful preservation candidate and limits |
+|---|---|
+| Web/API/CMS/full-stack, SSR or backend-dependent SPA | Compatible runtime/images plus required databases/files and recovery configuration. A frontend build alone does not freeze its server or services. |
+| Genuinely self-contained static site | Built output plus source/build requirements for the chosen goal. Confirm it has no required server/runtime dependency. |
+| Library or CLI | Source, native locks/environment and useful existing distributables. A container is optional when it adds recovery value. |
+| Data science or ML | Environment plus required models/datasets; record hardware/GPU/driver and external-input constraints. |
+| Mobile, desktop or browser extension | Useful existing builds and compatible toolchain/SDK/OS/CPU/signing/browser requirements. Signing or SDK availability may still limit future recovery. |
+| Hardware or proprietary tooling | Available firmware/binaries, hardware and licensed toolchain/acquisition requirements. Document unavailable or non-redistributable inputs instead of copying them. |
 
-For project types where Docker does not apply, document exact runtime versions, SDK versions, and toolchain versions in `docs/setup.md` as the freeze mechanism instead.
+Preserve only required runtime/build/test components for the selected goal, not every daemon image. Running now, offline runtime recovery and offline rebuild are separate claims. A binary, source plus lockfile, or version list with an unavailable SDK is not proof of offline recovery/rebuild or future platform availability.
 
----
+Record actual language/runtime/package-manager/SDK versions, native lockfiles, required OS packages and platform restrictions. Use native locked/frozen installs when supported; never silently upgrade, regenerate locks or substitute another platform's dependencies. Preserve additional build inputs/caches/installers only when needed for the selected rebuild goal and approved. Frozen runnable artifacts do not imply that source can rebuild offline or bit-for-bit.
 
-## Restoration Strategy
+For Docker, record full base/runtime references and upstream digests where available, actual local image IDs, stable recoverable tags and `os/arch/variant`. Version tags are mutable; pin known compatible digests rather than resolving a different version silently. Local builds may have no registry digest. Use stable explicit service image names or an approved recovery mapping so changing directory/Compose project name does not demand a rebuild. Record compatible Engine, Compose and API requirements. Prefer supported installed `docker compose` when applicable, without forcing upgrades or unsupported flags on an old toolchain.
 
-Use Step 1's findings to select the approach. Docker is the primary choice for most project types.
+Inspect `.dockerignore`, actual build context/`COPY`, build arguments/env, image configuration/history and other relevant binary/layer/data risks with output filtered before exposure. Image Env/history and an LFS pointer diff do not reveal every copied secret. Known secret-bearing artifacts block publication; unresolved material inclusion risk leaves the affected artifact pending/manual review. Record inspected versus uninspected surfaces, never a blanket secret-free pass. Do not copy real credentials or private client configuration into images, recovery files or reports.
 
-**Containerize with Docker (primary for most projects):**
+## Data restoration and persistence
 
-If a Docker or Docker Compose setup already exists: use it, but verify all image tags are pinned to specific versions (e.g. `node:18.17.1-alpine`, not `node:18` or `node:latest`). Update any unpinned tags before building.
+Choose data by provenance, safety, usefulness and compatibility, not a fixed dump-first hierarchy. Prefer sufficient synthetic/sanitized fixtures, seeds or dumps. An existing owned isolated source can be considered only after classification and applicable exact-target approval. Localhost may be a tunnel/shared/live service; never use it automatically. No production/private-user-data collection or automatic sanitizer is introduced.
 
-If no Docker setup exists: create a `Dockerfile` and `docker-compose.yml` appropriate for the project's stack and runtime. Pin all base image versions specifically.
+For each applicable store, preserve the necessary database, embedded/file storage, uploads/blobs, local object files, model weights/datasets and indexes, or document a verified regeneration procedure. External API consumers may need approved mocks/fixtures; no-data-layer projects state not applicable only after checking actual required inputs. Separate schema-only recovery from representative populated demonstration data.
 
-By project type:
+- Prefer a consistent engine-native logical dump plus required roles/extensions/schema/restore inputs when appropriate. Use commands compatible with the actual engine/version and capture successful results, checksums, sizes and provenance.
+- A physical backup is a valid fallback only with the engine's supported consistency procedure: stopped/quiesced source or supported consistent snapshot, complete required data/logs, exact engine/platform and permissions. Never tar an arbitrarily running database volume. Preserve required pinned helper images too; an unpinned helper fetched later breaks offline recovery.
+- Restore into a fresh explicitly owned isolated target, not an existing user/shared volume. Document exact load/init/restore order, first-start-only init behavior and ownership requirements. Start an isolated database engine first when its restore method requires it, then restore/verify data before starting dependent application consumers. Review scripts/dumps before executing them; import success and a populated correct result are distinct evidence.
+- Re-runnable schema/seed/dump inputs must actually travel with the archive, including required files outside the database. Verify backup readability/structure and restoration when authorized. Nonempty tar/dump size alone proves neither consistency nor recoverability.
 
-- **Web backend / API** (any language or framework): Docker Compose with app + database + any required services
-- **CMS** (WordPress, Drupal, etc.): Docker Compose with web server + database
-- **Web frontend** (React, Vue, Angular, Svelte, etc.): Docker for the build environment and a simple static server for the output
-- **Static site** (Jekyll, Hugo, Gatsby, Astro, etc.): Docker for the build environment; output is static files
-- **Full-stack / monorepo**: Docker Compose for all required services; restore minimum components for a working demonstration
-- **Data science / ML** (Jupyter, Python scripts, R, etc.): Docker with pinned base image and all dependencies installed; verify notebooks or scripts execute inside the container
-- **CLI tool or script** (with non-trivial runtime): Docker with pinned runtime image
+Missing data: offer an explicitly limited empty/schema-only restoration or wait for a suitable supplied source. A network/cloud/VPN source is not contacted; skip it or wait for an approved local export. Record gaps and exact file changes without exposing private records.
 
-**Document versions instead of containerizing (where Docker does not apply):**
+## Review restoration before freezing
 
-- **Mobile** (React Native, Flutter, iOS, Android): Docker cannot meaningfully freeze a mobile build environment. Document exact SDK version, toolchain version, target platform version, and any required IDE version in `docs/setup.md`.
-- **Desktop** (Electron, Tauri, etc.): prefer Docker for the build step if possible; otherwise document exact Node or Rust version.
-- **Browser extension**: document exact browser version and extension API versions used.
-- **Library / package**: Docker for the test environment; document the published package version.
+After approved restoration, capture actual build/run/data/domain evidence using relevant checks only when authorized. A listening port or a developer's feedback alone does not establish full restoration. If execution is deferred or blocked, offer only an explicitly limited preservation recommendation and retain the unverified outcome.
 
----
+Offer the developer a chance to inspect the restored app or relevant CLI/library/native behavior before selecting the final freeze approach. Record checked/declined/deferred in the existing report; omit the live pause only when an explicitly authorized unattended plan covers it. Silence or an assumed unattended session is not consent. Combine feedback and the remaining freeze decision when useful; reuse exact still-applicable action approval instead of asking again for unchanged exports/configuration.
 
-## Data Restoration
+Recommend the final approach from the actual evidence, goal and available inputs before freeze execution. Freeze the original approved safe restoration inputs by default, not silently the developer's post-demo mutated dataset. A different dataset needs an explicit source/classification choice and applicable export approval. Code/configuration/data changes invalidate affected builds, exports and verification evidence; reassess only those dependencies before capture. Do not manufacture an export or successful runtime result to complete this phase.
 
-First determine the project's data layer from Step 1's findings and the project type, then restore accordingly:
+## Failure-safe image export
 
-- **Database-backed** (backend / API, CMS, full-stack): restore from a data source — follow the priority list below.
-- **Consumes an external or backend API** (frontend-only): no local database to restore. Record how it gets data — whether the API is part of this repo (restore it too) or external (note as a dependency) — and how demo data is provided (mock data, fixtures, recorded responses).
-- **Local or file-based storage** (desktop, mobile, CLI, data science using SQLite, embedded stores, or data files): restore the local data files or embedded database if present in the repo.
-- **No data layer** (static site, stateless CLI, library): skip — state that no data restoration is required.
+Export the selected unique images to `recovery/docker/` after the applicable build/runtime evidence is obtained. A useful partial/build-only artifact may be preserved through explicit limited-outcome approval, never described as a verified working app.
 
-For database-backed projects, discover all available data sources in the repository, assess each for completeness and suitability, and use the best in this order:
+1. Derive the real service-to-image reference/ID mapping from inspected configuration and actual approved runtime evidence, including required init/helper images. A Compose service name is not necessarily an image reference. Render configuration only on the authorized execution path, redacting resolved secrets; static Plan does not run Compose. Deduplicate shared images while recording all consuming services and target platforms.
+2. Give every export a reviewed contained destination and safely passed image arguments. Use a new temporary file and check each command's result: either separate successful save/compress stages or a supported pipeline with `pipefail`. `gzip` of empty input is nonempty, so `[ -s ]` cannot detect a failed `docker save`. Do not truncate/replace the last verified artifact when a new attempt fails; remove only this run's known temporary output when safe.
+3. Validate compression/archive structure and compare captured tags/image configuration identity/platform with the intended mapping. Record SHA-256, byte size, actual image ID and source/build context in the report/inventory. A tag match alone is not identity proof. Controlled `docker load` validation, when authorized, accepts gzip directly and restores tags; use an approved isolated context or resolve possible tag collisions first. A tool/daemon/permission failure is not automatically archive corruption and must not trigger blind re-export.
+4. On resume, reuse an artifact only when its verified fingerprint and captured image/source/platform still match the current approved outputs. Mere existence, nonzero size or successful loading of an old image does not qualify. A changed mapping requires reassessment, not silent overwrite.
+5. Keep artifacts in place for Step 5's reviewed LFS/separate-backup decision; do not claim local-only files have been backed up or ignore/untrack them automatically. Record pending exclusions, duplicates avoided and unavailable exports.
 
-1. Repository-contained database dumps or backup files (SQL, MongoDB, SQLite, Redis snapshots, etc.)
-2. Seed scripts, fixture files, or sample datasets
-3. Schema migrations — reconstruct from scratch
-4. File-based data sources (CSV, JSON, XML data files used by the application)
-5. Documented external exports
-6. Existing localhost database — only if no repository-contained source exists
+## Progressive verification and recovery commands
 
-If no data source exists and the project requires one: report the gap and explain the impact on the demonstration, then stop and ask how to proceed — either continue without data (build with an empty or schema-only database, noting the limitation in the report), or wait while you provide a dump or point to a data source, then continue on your signal.
+During restoration, use relevant cheap checks first: referenced paths/configuration, data inputs and platform prerequisites, then approved safe build/start and representative API/UI/CLI/library/native behavior checks. During capture, verify inventory/checksums and archive/image identity. Reuse still-valid evidence rather than replaying restoration after export; changed inputs require only affected reassessment. Separate original failures, environment/capability gaps, new failures and unrun checks; a listening port/loadable image alone is not full restoration.
 
-If restoration requires a network, VPN-accessible, or cloud database: do not connect. Report which source needs it and why, then stop and ask how to proceed — either skip it and fall back to the next-best source (noting the reduced data in the report), or wait while you arrange access or provide a dump, then continue on your signal.
+Offer a default-off, separately approved cold-recovery rehearsal for the selected scope using a supported throwaway daemon/image store/VM/context and fresh data storage. Prove it uses preserved images/data/configuration rather than cached builds/registry acquisition. Never clear the developer's images/caches/volumes or substitute a new Compose project on the same image cache as proof of cold recovery. Missing capability leaves a manual rehearsal plan or unperformed result. Offline rebuilding is a separate goal with its own complete inputs and evidence.
 
----
+Honor testing/verification deferral: run no deferred checks or rehearsal; mark affected results unverified and avoid Fully Restored claims. Explicitly approved partial preservation/documentation may continue with limitations. No prerequisite check becomes passed merely because another host's report says it ran.
 
-## Image Export
+Write the actual recovery procedure in the approved setup path, normally `docs/setup.md`, including:
 
-After the project is verified as running:
+1. Required source/configuration, platform/Engine/Compose or native toolchain and selected artifacts, with checksum/identity validation. Step 4's human metadata holds the full artifact inventory; link it once present instead of duplicating identity tables, while keeping commands' necessary explicit arguments.
+2. Where images were selected, load each unique captured image with its correct recoverable mapping; gzip needs no separate decompression for supported Docker load. For native/static/library paths, give the actual supported preparation/launch procedure instead.
+3. Restore each data/file input to fresh owned targets in the verified order before starting dependent components; do not silently reuse existing volumes or rerun init on every start.
+4. For container recovery, use the reviewed recovery override and supported no-build/no-pull startup, such as `docker compose ... up --no-build --pull never` only when the recorded toolchain supports those flags. An unavailable image must fail explicitly rather than rebuilding/downloading. Do not assume a saved registry digest is resolvable offline without checking the restored mapping. Other approaches document their evidenced prerequisites and acquisition limits without invented Docker steps.
+5. Local access/useful demonstration commands, expected results, isolation/stop instructions and unresolved inputs. Reuse these facts in Step 4 and update current commands after approved later changes; historical reports stay verbatim.
 
-If this step was interrupted and is being re-run, check each service for a pre-existing tarball before exporting: if `recovery/docker/{service}.tar.gz` already exists, is non-empty, and passes `docker load` (see validation below), skip re-exporting that service — it already succeeded. Only export services that are missing or fail that check.
+## Report
 
-Export all Docker images to `recovery/docker/` as gzipped tarballs:
+Preserve these sections, keeping factual evidence and unknowns separate:
 
-```
-docker save {service} | gzip > recovery/docker/{service}.tar.gz
-```
-
-After each export, verify the file is not empty:
-```
-[ -s recovery/docker/{service}.tar.gz ] || echo "ERROR: tarball is empty — re-export before proceeding"
-```
-
-The shell pipe may silently produce an empty file if `docker save` fails; this check catches silent failures.
-
-Export one tarball per service (web, database, cache, etc.).
-
-After exporting each tarball, validate it by running:
-```
-docker load < recovery/docker/{service}.tar.gz
-```
-If `docker load` fails, the tarball is corrupt — re-export before proceeding.
-
-Do not gitignore `recovery/docker/`. The tarballs are the freeze mechanism and must travel with the archive for a clean-machine recovery — Step 5 commits them to the private remote via Git LFS (or, if you decline there, gitignores them and notes that they need separate backup). Leave them in place for now.
-
-Document the recovery commands in `docs/setup.md` (include the data-restore step from Data Persistence below, so recovery does not come up empty):
-
-```
-docker load < recovery/docker/web.tar.gz
-docker load < recovery/docker/db.tar.gz
-# restore data — see Data Persistence (auto-init from the committed dump, or restore the data-volume tarball first)
-docker-compose up
-```
-
----
-
-## Data Persistence
-
-Exporting the service images does not capture the restored data. A database keeps its data in a **volume**, not its image — so `docker save postgres` preserves the engine, not your rows. Without an extra step, recovery via `docker load` + `docker-compose up` comes up with an empty database.
-
-Skip this section for the non-database data layers (API-consuming frontend, no data layer). For **database-backed** and **local/file-based** projects, make the restored data recoverable — pick the mechanism that fits the source:
-
-- **Re-runnable source in the repo** (dump, seed, or migrations — the common case from the priority list): the source already travels with the repo. Wire the recovery so the database restores from it on startup — mount the dump into the image's init directory (e.g. `/docker-entrypoint-initdb.d/` for Postgres/MySQL) or document the exact restore command. Keeps the data human-readable and portable across future DB versions.
-- **No re-runnable source** (data exists only in the live volume — e.g. restored from an existing localhost DB): export the data volume to `recovery/docker/` as a gzipped tarball, and validate it is non-empty:
-  ```
-  docker run --rm -v {db_volume}:/data -v "$(pwd)/recovery/docker:/backup" alpine tar czf /backup/{db}-data.tar.gz -C /data .
-  [ -s recovery/docker/{db}-data.tar.gz ] || echo "ERROR: data tarball is empty — re-export before proceeding"
-  ```
-  Recovery restores the volume from this tarball before `docker-compose up`.
-
-Whichever mechanism is used, document its exact recovery step in `docs/setup.md` alongside the image-load commands.
-
----
-
-## Tasks
-
-1. Select restoration strategy using Step 1 context
-2. Configure the local environment
-3. Create or update Docker setup with pinned image versions
-4. Install dependencies
-5. Restore available data
-6. Build and start the containers
-7. Verify the project works
-8. Export all images to `recovery/docker/` as gzipped tarballs
-9. Make the restored data recoverable (re-runnable source on startup, or a data-volume tarball) and document its recovery step
-10. Record all changes made (Step 5 decides how the tarballs travel — Git LFS or local-only)
-
----
-
-Output the report in this format:
-
-## Restoration Strategy
-Chosen approach and why. Whether Docker was created or already existed. What was tried first if the first choice failed.
-
-## Docker Setup
-Base images used with exact pinned versions. Services defined. Whether Dockerfile and docker-compose.yml were created or already existed.
-
-## Image Exports
-Images exported to `recovery/docker/`. Size of each tarball. Recovery commands.
-
-## Data Persistence
-How the restored data is made recoverable: re-runnable source on startup, or an exported data-volume tarball. State "not applicable" for non-database data layers. The exact recovery step documented in `docs/setup.md`.
-
-## Data & Database
-Data source selected and why. How data was restored. Demo accounts or sample data available if any.
-
-## Changes Made
-Every file created, modified, or deleted: path, what changed (or why it was removed), and why it was necessary.
-
-## Environment Variables
-Any variables added or changed from the original.
-
-## Commands Used
-Exact commands run in order, with secret values omitted; preserve useful flags and refer to credential variable names without reproducing values.
-
-## Access Points
-How to access or run the project locally (URLs and ports for web projects, commands for CLI tools, entry points for scripts or notebooks). State "not applicable" if the project type has no access point.
-
-App running: yes/no/not applicable
-
-## Runtime Identity
-Non-secret host/Docker context, project/container labels or process identity, isolated data target, local endpoints, and verification time. Later steps must verify these again on their current host before use.
-
-## Verification Results
-What was tested and what the results were. Any critical errors found.
-
-## Restoration Outcome
-One of: Fully Restored / Partially Restored / Buildable But Not Runnable / Blocked / Cannot Be Restored Without Missing Dependencies — one sentence explaining why.
-
-## Remaining Blockers
-Anything that prevented full restoration or needs attention before proceeding to Step 3.
-
----
-
-The "App running:" field is historical status used by Step 3, not proof that the app is available or belongs to this project on a later host/session. State it explicitly, on its own line, even when "not applicable."
-
-Do not commit or push. Output the report and stop. Wait for explicit approval before proceeding to Step 3.
-
-If Restoration Outcome is anything other than Fully Restored: clearly state that proceeding to Step 3 is not recommended until blockers are resolved. List what needs to be fixed.
+- **Restoration Strategy:** setup evidence/conflicts or reconstructed instructions, chosen goal/scope, provisional versus recommended/selected freeze approach; original versus actual compatible versions, accepted deviations and missing native/toolchain/rebuild inputs. Include optional `Developer check:` text with actual feedback, decline/deferral or explicit unattended scope; older reports without it remain valid.
+- **Docker Setup:** actual source/recovery config paths, base references/digests, service-to-image IDs/tags/platform and Engine/Compose requirements; not applicable where appropriate.
+- **Image Exports:** unique paths, SHA-256/size/identity/platform, validation commands/results, reused artifacts and remaining omissions.
+- **Data Persistence:** every required database/file/blob/model input or regeneration source, consistency/restore method, provenance/classification and actual setup instructions. Not applicable only when no such input is required.
+- **Data & Database:** selected source and why, isolated restore target, synthetic/sanitized/demo-data availability and actual populated/schema-only result, with values/private records omitted.
+- **Changes Made:** every created/modified/deleted path/reason, protected files preserved, approved alternate outputs and pending drafts.
+- **Environment Variables:** changed key names and purpose, never real values or runtime tokens.
+- **Commands Used:** actual commands in order with scope/outcome; secret-free useful flags, no invented successful execution.
+- **Access Points:** local URLs/ports/CLI/notebook/native entry points or not applicable. On its own line: `App running: yes/no/not applicable`.
+- **Runtime Identity:** current host/context, project/container or process/cwd/start identity, owned data targets and verification time. Historical evidence to revalidate, never permanent authorization.
+- **Verification Results:** static/build/run/domain/data checks separately, cold rehearsal and offline rebuild performed/not performed with scope/results, deferrals and capability gaps, artifact privacy inspection limits.
+- **Restoration Outcome:** Fully Restored / Partially Restored / Buildable But Not Runnable / Blocked / Cannot Be Restored Without Missing Dependencies, with an evidence-based sentence. No full/offline promise from static checks or local startup alone.
+- **Remaining Blockers:** missing artifacts/features, rough versus verified storage route, local-only backup needs and exact next actions.
+
+Normal mode outputs the report and stops for explicit approval before Step 3. Warn when the outcome is not Fully Restored; the developer can approve continuing with stated limitations without certifying unverified recovery. Do not commit or push.

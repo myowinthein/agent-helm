@@ -1,6 +1,6 @@
 ---
 name: test
-description: Detect test framework and write missing tests for recent changes or full project
+description: Audit or plan behavior-focused tests, then write approved cases for recent changes, a project or a targeted area
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the test workflow](../../workflows/test.md).

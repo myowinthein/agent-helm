@@ -6,121 +6,155 @@ nav_order: 3
 
 # /helm:manifest
 
-Keep `README.md` in sync with the codebase. Full scan on first run, gap update on subsequent runs. Supports two styles: Standard Readme spec (enforced structure) or custom (preserves the developer's existing structure).
+Keep a project's README useful to people evaluating, using or contributing to it. Review the current project, update reader-facing changes since a saved review, or repair specific content/structure gaps. Full scans preserve existing writing and propose a reviewed diff instead of replacing the file automatically.
 
-Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Configuration comes from the existing memory owner, including through a bridge; [compatibility notes](../setup/compatibility.html) describe host-specific behavior.
+Command names below use Claude notation. In Codex, select the same Helm workflow from the skill picker. Both hosts use the same workflow and existing instruction owner; see [compatibility notes](../setup/compatibility.html).
+
+## Investigation depth and coverage
+
+Full scan traces existing README claims to source/docs/manifests or confirmed human context, then sweeps reader-facing requirements, setup/configuration, usage, interfaces and help/policy surfaces for omissions. Gap scan maps actual changes to affected claims/workflows, reading relevant patches and surrounding contracts rather than relying on filenames. Large independent claim/package groups may use permitted read-only workers; the parent reconciles shared setup, evidence and unread areas. This is not a detailed whole-code audit or log's lesson history.
+
+Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Run manifest]) --> Prepare[Resolve owner, policy and main/master base]
-  Prepare --> Branch[Solo on base; GitHub Flow on unique branch]
-  Branch --> Work[Workflow assessment, choices and approved edits]
-  Work --> Changed{Any workflow changes or commits?}
-  Changed -->|no| Noop[Safe empty-branch cleanup and report]
-  Changed -->|yes| Verify[Verify outputs and required commit approvals]
-  Verify --> Mode{Git strategy?}
-  Mode -->|GitHub Flow| Review[Confirmed branch push and PR handoff; required review and CI]
-  Review -->|pending| Pending[Retain work and report pending state]
-  Review -->|satisfied| Merge[Configured integration strategy]
-  Mode -->|Solo| Push
-  Merge --> Push[Separately confirm publication]
-  Push -->|declined or failed| Pending
-  Push -->|verified published SHA| CI[Required promotion CI passed or not applicable]
-  CI -->|blocked| Pending
-  CI -->|ready| Promote[Optional confirmed fan-out]
-  Promote --> Cleanup[Safe eligible cleanup and report]
+  Start([Select mode and scope]) --> Inspect[Read-only inspection of current checkout]
+  Inspect --> Write{Selected local writes?}
+  Write -->|no| Report([Report scope, evidence and limits])
+  Write -->|yes| Ready{Clean permitted current branch?}
+  Ready -->|no| Block[Explain blocker; preserve work; no checkout]
+  Block --> Report
+  Ready -->|yes| Review[Review concrete changes and required approvals]
+  Review --> Apply[Apply selected work; verify outputs and source provenance]
+  Apply --> Commit[Exact-path local commits under applicable approval]
+  Commit --> Report
 ```
 
-## Steps
+The diagram summarizes the main routes. New factual generation is authorized by the selected mode/style or approved custom outline; a style-only save has its own explicit setting diff. Unknown policy facts still need a decision. Declined or blocked writes/publication preserve actual work and report the pending state.
 
-### Before starting
+## Before starting
 
-Resolves the existing configuration and project-knowledge owner through the shared runtime first. If that file does not exist, including a project with neither `AGENTS.md` nor `CLAUDE.md`, stops before any Git mutation or file write and directs the developer to run `log`, then re-run `manifest`. It does not create instruction files or automatically invoke another workflow. Existing bridge, override, conflict, and missing-import rules still apply.
+Manifest requires an existing resolved project-instruction owner. If neither `AGENTS.md` nor `CLAUDE.md` exists, or the selected owner is missing, it directs you to run [log](log.html) first. It never creates/migrates instruction files or invokes another workflow automatically. Bridges, overrides, conflicts and missing imports still follow the shared runtime.
 
-Rewrites `README.md` from the project's state, so it needs the full merged, stable state, never an in-progress feature branch. Use the [shared Git and CI flow](../setup/git-and-ci.html): resolve the actual main/master base and invocation policy, require a clean setup, use a unique GitHub Flow branch (unused suffix on collisions), and revalidate destination ownership/configuration after checkout. Solo stays on the base without a temporary branch. Preserve real drafts/commits on failure; only a genuine no-write/no-commit exit safely returns before deleting its empty branch.
+Selected writes require a clean actual main/master current branch under the [local-edit procedure](../setup/git-and-ci.html). Read-only preflight may inspect another checkout, but cannot certify it as stable base. Wrong-branch writes block; no checkout, branch creation or upstream update occurs. Manifest never uses log's pending-policy overlay or initializes Git.
 
-## Scope
+## 1. Find the target and choose style
 
-README.md is human-facing documentation for contributors, GitHub visitors, and new users; not a changelog, not a technical spec, not a deployment manual. Write clear, scannable explanations for people reading the project. Shared agent instructions for Claude and Codex belong in the resolved project-memory owner. Whenever writing to README.md, in any step: use em-dashes sparingly, only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
+Root `README.md` remains the default, preserving an existing filename's actual casing. Manifest also discovers README candidates in `.github/` and `docs/`, alternative formats, translations and package siblings. It reports GitHub's effective entry-point priority, `.github` before root before `docs`, without guessing between ambiguous candidates.
 
-### 1. Assessment
+If another location overrides root, root is missing while another candidate exists, or the target is ambiguous/explicitly changed, you choose the target before work begins. The choice applies to this run only. It does not silently maintain every README, translate siblings, rename files or save another configuration flag. Long candidate lists use a grouped selection with at most four choices.
 
-First determines the README style by reading `readme-style` from the resolved owner's recognized configuration block. If the flag is absent, checks whether README.md already exists with content and asks accordingly: the question and the Custom option's description differ depending on whether there's an existing README to be "custom" relative to, since a brand-new project has nothing yet. Saves the choice (`readme-style: standard` or `readme-style: custom`) to that same owner before continuing, preserving the block's existing layout, including a recognized Compass-style fenced block.
+Alternative formats retain their own syntax. Unsupported formats/checkpointing, unsafe or outside-project symlinks and generator-owned targets need a reviewed target/format decision. Editable READMEs retain generated blocks. If the target is itself the memory owner or is imported as active agent instructions, ordinary README rewriting stops for a separate target or explicit instruction reconciliation.
 
-If the existing owner has no recognized configuration block, adds a `## Project Config` section containing only the chosen `readme-style` declaration. Preserves existing content and any end-of-file review marker, and does not invent other settings. In the shared layout, this updates `AGENTS.md` while leaving `CLAUDE.md`'s import and Claude-specific additions intact. An existing legacy owner remains the owner until a reviewed `log` migration; configuration is never duplicated in a wrapper or a second owner.
+Manifest records the current structure, unique human context, language, frontmatter/permalink, banners, badges, assets, HTML, comments, reference definitions, generated blocks and link conventions. It preserves these across GitHub, documentation-site and package rendering contexts.
 
-Then reads the current `README.md`, checks for a saved `<!-- last-reviewed: {hash} -->` marker, and if found, runs `git log {hash}..HEAD --oneline` to measure the gap. Ignores noise commits.
+### Two styles
 
-When `readme-style: standard` and a hash exists, also checks whether all mandatory sections are present. If any are missing, recommends a full scan regardless of gap size and states which sections are missing.
+- **Standard Readme spec** uses the applicable [specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md), with proposed repairs/conversions reviewed before changing existing content.
+- **Custom** preserves the existing section names/order. Adding, removing, renaming or reordering sections requires approval of the exact change and placement.
 
-### 2. Pick mode
+An existing `readme-style: standard|custom` is reused. If missing, manifest asks once and holds the choice pending. An explicitly requested style change follows the same pending-write rule. Skip/Cancel saves nothing.
 
-Four outcomes, default depending on assessment:
+Only an approved setting is written into the existing owner's recognized configuration block, preserving Helm declarations or Compass-style fences. If no block exists, manifest may add a minimal `## Project Config` section containing only `readme-style`, preserving the owner's content and review marker. Normally this updates `AGENTS.md`; `CLAUDE.md` remains the import adapter with its own additions. Existing owners remain in place until a reviewed log migration.
 
-- **No file or no hash**: Full scan or skip.
-- **Standard style, structure broken**: Full scan (recommended), gap update, or skip.
-- **Structure intact (or custom) and no meaningful commits since the last review**: exits cleanly ("README.md is up to date"), no prompt shown.
-- **Structure intact (or custom) and meaningful commits since the last review**: Gap update or Full scan, recommended option first based on gap size, or skip.
+### New custom README from an outline
 
-### 3. Full scan
+When custom style has no existing content, supply an outline or reference. Manifest adapts it into proposed section names/order for your approval before drafting from this project's evidence. It does not copy the reference project's facts, branding, license or commands, or silently invent your custom structure.
 
-**Custom mode with no existing README exits immediately, before investigation runs.** Custom mode preserves structure, it doesn't author it; if there's nothing to preserve, there's nothing worth investigating the project for either. Reports that there's no README.md yet and asks the developer to write one in whatever structure they prefer; a future run then preserves it. No project scan or README write; any earlier approved style-setting write still reaches finalization.
+Without an outline, you can provide one, cancel, or explicitly **Save style only** if the setting changes. Style-only saves use normal Git finalization, need no source scan and never advance a README marker. You no longer have to hand-write the entire README to start custom mode.
 
-Otherwise, investigates: business purpose and target audience, stack and dependencies, installation steps, core usage patterns and CLI commands, public API surface, license, contributing model, maintainers, and project motivation/limitations worth surfacing.
+## 2. Assess and choose scope
 
-If `readme-style: standard`: writes `README.md` following the Standard Readme spec section order.
+Manifest checks existence/content, applicable structure and the saved `<!-- last-reviewed: {hash} -->` anchor. An anchor must be one unambiguous literal hexadecimal ID resolving to a commit that is an ancestor of the candidate source HEAD. Missing, malformed, unavailable or divergent history is reported as unknown; unvalidated marker text is never executed as Git syntax.
 
-Mandatory sections: Title (matches repo name), Short Description (under 120 chars, matches `package.json` description), Table of Contents (if README exceeds 100 lines), Install, Usage, Contributing, License (last section before the comment tag).
+A cheap index of changed paths, commit range, packages and reader-facing surfaces guides mode selection before deep investigation. Changes are judged by their impact on setup, usage, examples, requirements, availability and policy. Fixes, styling, dependencies, CRUD and README-only changes are not categorically excluded.
 
-Optional sections when relevant: badges, long description, background, API, limitations (only if the project has meaningful limitations worth surfacing to users evaluating adoption).
+At the existing Full scan/Gap scan choice, use the [shared scan-depth selection](../setup/compatibility.html#shared-scan-depth-selection) with this target's already permitted request, anchor, source snapshot and reader-impact evidence. Bounded changes normally favor Gap; credible broad reader-facing changes favor Full. An unusable anchor within otherwise valid inputs recommends Full, while ownership conflicts remain blockers. Age/counts alone do not trigger Full, and unknown Full-scan history is not never-Full. Honor explicit supported scope: Full preserves existing material, and a valid Gap covers every affected reader surface even when broad. Repair structure and Style-only gain no helper or baseline prerequisite. No source gap alone does not waive target/style/structure checks or the marker acceptance gate.
 
-Skipped unless specifically needed: banner, security, thanks, maintainers, extra sections.
+| Mode | What it does |
+|---|---|
+| Full scan | Review the current README-facing project snapshot, retaining existing material and proposing focused changes. Appropriate for new content, unknown history or broad changes. |
+| Gap scan | Use a validated anchor to investigate affected reader workflows and edit relevant sections. |
+| Repair structure | Investigate specific missing/inaccurate content or headings, without forcing a full project scan. Available without an anchor. |
+| Skip | Exit without README or pending style writes. |
 
-If `readme-style: custom` (the only way to reach this point is with an existing README, per the early exit above): reads the existing structure first, rewrites content within each section based on the project scan, and does not add, remove, or rename sections without explicit approval.
+Only applicable options appear, at most four at once. Explicit style-only saving is separate from Skip. A missing heading alone does not require Full scan: equivalent content is considered before adding duplicate sections or renaming anything. Content coverage and strict spec conformance are reported separately.
 
-Appends the current HEAD hash as `<!-- last-reviewed: ... -->`. Writes directly.
+A narrow no-op can avoid writes when the selected base is clean, the target/style are settled with no pending style change, structure needs no repair and a valid anchor shows no intervening commits or only inspected maintenance already represented. It does not override an explicit scan request or dismiss commits based on their names. The report names the exact local SHA and states that no remote fetch occurred. Dirty/feature checkouts are not certified as the stable base, and local currency is not remote currency.
 
-### 4. Gap update
+## 3. Prepare the base and investigate
 
-Reads commit messages first. Reads file changes only for significant commits. Focuses on new features, API changes, new install steps, changed usage, changed CLI commands, new env vars, and removed functionality.
+Once real work is selected, validate current-base eligibility and pin the actual source snapshot without creating/updating/switching a branch. Recheck target, owner/configuration and source inputs; changed assumptions refresh the assessment rather than applying stale approval.
 
-For each significant change, identifies the affected README section. Updates only those sections. Does not rewrite unaffected sections.
+The workflow pins the actual source SHA after preparation and before style/README writes. It records target/owner inputs and relevant source state, then rechecks them before applying and committing. Unexpected drift stops dependent work for a fresh proposal; it never resets, stashes or includes someone else's changes.
 
-If no significant changes are found despite the initial gap estimate: reports that no update is needed (the equivalent of [`/helm:log`](log.html)'s Outcome A) and skips the proposal and confirmation below; only the hash advances.
+A full scan inventories relevant first-party packages/services, entry points, docs, task/build manifests and contribution/license evidence. It covers the purpose, prerequisites, smallest working path, representative usage and relevant behavior the README claims to describe. Each custom section gets its own subject-specific investigation, retaining human context that source cannot rediscover. It does not regenerate unchanged paragraphs or erase unfamiliar sections.
 
-If `readme-style: standard`: sections remain in spec order after updates. A significant change can also add a newly-relevant optional section (e.g. a first public API) in its spec position, or remove one whose justification went away (e.g. the API was removed), never inventing a section outside the spec.
-If `readme-style: custom`: preserves existing section order and naming, and, matching Step 2, does not add, remove, or rename sections without explicit approval. If a significant change doesn't fit any existing section, asks whether to add a new one or fold it into the closest existing section rather than deciding silently.
+A gap review reads relevant patches and current code/docs, following history for migrations, releases, reverts or ambiguous results. A path/net-diff index alone is not proof of coverage. Relevant uninspected or blocked surfaces are disclosed. This reviews the current README-facing snapshot; it does not copy log's audit of every historical development lesson.
 
-Proposes the changes per section, asks for confirmation, then writes. Bumps the saved hash to HEAD.
+A repair investigates only enough to correct the selected content/structure. A style-only save prepares only the setting diff. Neither becomes a full scan implicitly.
 
-### 5. Commit and finalize
+## 4. Keep the README useful and accurate
 
-Count both README edits and any approved owner `readme-style` change. Custom mode with no README may still have a configuration write; it is not automatically a no-op. Verify approved outputs and marker, stage exact paths and honor auto-commit. A failed/declined commit leaves drafts intact.
+Lead readers to the purpose, prerequisites, smallest copyable getting-started example, common usage, help, contribution and license facts. Link detailed docs instead of accumulating API inventories or deployment manuals. Badges are not required.
 
-Follow the [shared Git and CI flow](../setup/git-and-ci.html) after the command's own output verification and commit approvals. GitHub Flow offers separately confirmed branch publication and PR creation, or a local/manual handoff, until required review/checks pass. Integration uses the configured squash/rebase/merge strategy and actual main/master base. Solo requires no PR unless explicit project policy says otherwise. Base publication always has its own confirmation.
+Before writing, review changed content and its dependencies for:
 
-Before fan-out promotion, verify configured/applicable CI for the exact published source SHA with complete provider-aware coverage. Missing/failed/pending/unknown results stop or defer promotion; target selection cannot waive the gate. Use at most four target options or Yes/Skip for one, explicitly describing merge and push. Verify each operation and report completed/pending targets separately.
+- Commands/examples supported by actual interfaces/scripts, correct working directory and prerequisites, language-tagged code fences without shell prompt characters, and evidenced expected results.
+- Accurate availability/version/package claims and environment key names/placeholders, without invented releases, promises or real secrets.
+- Valid links, anchors and assets for the actual renderers, retaining deliberate absolute/relative conventions and protected content.
+- Verified contribution/help/license policy, retained human context and unresolved facts.
 
-Declined/failed commits, unsafe local edits or incomplete checkpoints preserve actual work and stop dependent operations. Safe cleanup uses ancestry checks and `git branch -d`; squash/rebase branches outside ancestry are retained, never force-deleted. Remote deletion needs its own push confirmation. Report PR URL/review status, actual branch, commits, integration/publication, CI, and promotions separately. Summarize output verification captured before publication, not a different original checkout after cleanup.
+This is a static evidence review. Drafting an example does not run installs, tests, migrations or operational commands, and unexecuted examples are never described as tested. Later required publication checks remain required; unavailable checks are not passes.
 
-### 6. Confirm completion
+### Standard Readme details
 
-If a scan or gap update wrote anything this run, first verifies it: reads README.md back and confirms the `<!-- last-reviewed: {hash} -->` comment and the claimed section changes actually landed, reporting per-section errors instead of a false-clean outcome, mirroring adopt.md's and legal.md's own write-verification pattern. Then reports the outcome (up to date / full scan written / gap update written / skipped), the style used (standard or custom), which sections were updated, and which environments were promoted. Under GitHub Flow, also reports the temporary branch's fate and which branch you were returned to. Runs even when nothing was written, since that's still an outcome worth reporting.
+The order is Title, optional Banner/Badges, Short Description, optional Long Description, Table of Contents, optional Security/Background, Install, Usage, relevant extra sections, optional API/Maintainers/Thanks, Contributing, License.
+
+Use the real display title and disclose naming/metadata differences. The short description is under 120 characters and consistent with the applicable package-manager description when present, including non-Node projects. Manifest does not rename repository/package metadata to make it match.
+
+The specification makes a table of contents optional below 100 lines and expects it at 100 or more. Generator-owned contents stay protected; renderer navigation or intentional deviations are disclosed. Install and Usage normally apply but are optional for documentation-only repositories. CLI/import examples depend on the project's real interfaces.
+
+Useful additional sections are allowed after Usage and before API, such as configuration, development or limitations. They are named for their subject, not literally "Extra Sections". Contribution/license sections need real policy/license evidence or a maintainer decision, never an invented license or contribution/support promise.
+
+Title/short description are not mandatory H2 headings. Equivalent content can avoid duplicate repairs, but synonyms/custom order do not prove strict conformance. Locale, frontmatter and rendering requirements remain protected; any conflict with strict compliance gets a reviewed choice rather than a silent conversion or false compliance claim.
+
+## 5. Approve and write
+
+For an existing README, review one consolidated section-level diff covering retained content, updates, additions/removals, structural changes, pending style and marker eligibility. Choose Apply all, Apply some, Revise or Cancel. Full scan alone does not authorize whole-file replacement; that requires an explicit reviewed choice showing retained/protected content. Targeted edits preserve unaffected bytes.
+
+For a new/empty README, selected factual generation with standard style or an approved custom outline can write directly. Unknown policy/license facts and scope changes still need decisions. A style-only save shows its exact setting diff.
+
+### Marker eligibility
+
+The marker records a complete static assessment of this README's relevant source snapshot, using the pinned source SHA. It does not certify all code/history, runtime behavior or external services.
+
+- Complete full/gap assessment, all substantive findings accepted/applied and unchanged inputs: advance/create the marker.
+- Complete assessment with no prose changes: an explained marker-only update is allowed without an extra prose-change question.
+- Own-output-only maintenance or no new source: avoid recurring marker churn.
+- Partial acceptance, rejection, unresolved substantive findings or incomplete investigation: retain the old marker; a new incomplete README gets none.
+- Bounded repair, style-only or outline-only work: retain provenance unless a separate complete snapshot review actually occurred.
+
+Never replace provenance with a later docs/integration/publication tip. Existing marker placement is preserved; eligible new Markdown generation places it at the end. Alternative formats do not silently receive an incompatible HTML-comment marker.
+
+Accepted content and an eligible marker are applied together, after approval and a final input check. Readback verifies each changed section, protected content, setting and provenance, plus the instruction/adapter chain. Errors are reported per section and stop dependent Git actions. Other READMEs, generators, metadata and operational state are outside scope.
+
+## 6. Finalize and report
+
+Both README edits and explicit style-only saves count as real work. Stage only exact approved literal paths, inspect the proposed index and honor normal auto-commit policy. Declined or failed commits preserve drafts/index/branch. A genuine no-write/no-commit exit performs no cleanup.
+
+Finish on the same permitted branch after verifying local outputs and eligible commits. No push/PR question, branch creation/switch/update, integration, environment promotion, return checkout or branch cleanup follows. Remote/provider access and published source IDs are not prerequisites merely to finish locally. Invoke [ship](ship.html) separately when the whole selected work is ready to publish. See [Git and CI behavior](../setup/git-and-ci.html).
+
+Return only with a clean index/tree, no in-progress Git operation and a safe valid original checkout, checking ignored/untracked collisions too. If unsafe or failed, preserve work and report the pending return. Leave local or a partial push/PR failure may still allow an independently safe return, while the branch remains retained and the missing step stays explicit. Opening a PR does not update the original branch's README. Genuine empty-branch no-op cleanup is separate.
+
+Report local content completion, exact target/effective GitHub entry, untouched siblings, style saved/discarded, changed sections, unresolved facts, source SHA/marker eligibility, current branch and verified local commits/drafts. Publication was not performed. A preflight exit discloses unchecked remote freshness; unperformed runtime checks remain unverified.
 
 ## Stop conditions
 
-- **No existing instruction owner.** Run `log` first, then re-run `manifest`. Stops before Git mutations or file writes.
-- **Solo Mode, not on main/master.** Switch to main or master and re-run.
-- **README.md is up to date.** Structure intact and no meaningful commits since the last review; clean exit, no prompt.
-- **User picks Skip.** Clean exit, no changes.
-- **User cancels at the proposed-changes confirmation.** No write.
-- **No significant changes found during Gap Update.** Only the hash advances.
-
-Only a genuine no-write/no-commit exit uses safe empty-branch cleanup. Drafted configuration or committed work instead follows finalization or its pending-work path.
-
-## See also
-
-- [`/helm:log`](log.html) - same lifecycle for `AGENTS.md` (the agent-facing version)
-- [`/helm:ship`](ship.html) - typically run before shipping so the manifest reflects the release
+- Missing/conflicting instruction owner, unsafe/ambiguous target, imported instructions needing reconciliation or unsupported format/generator handling.
+- Missing custom outline until supplied/approved, unless an explicit style-only save is selected.
+- Skip/Cancel before writing, which also discards pending style.
+- A qualifying local no-op, reported at its actual SHA without a remote currency claim.
+- Dirty/unsafe Git preparation, changed inputs, incomplete evidence, failed readback or declined/blocked finalization. Actual work stays intact and provenance is not falsely advanced.

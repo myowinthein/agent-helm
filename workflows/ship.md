@@ -1,335 +1,193 @@
 # ship
 
-## Before starting
+Publish the current branch's reviewed work, then optionally send the same source to selected targets. Release versioning, tags and hosted releases require explicit `ship release` intent. A branch push, PR handoff, target integration, Git release and deployment are separate outcomes. Ship never publishes registry packages or uploads release assets automatically.
 
-Resolve effective memory/configuration through the shared runtime and record invocation Git strategy. Resolve `{base_branch}` to the actual main/master branch and use it consistently. Check the actual current branch. Read `{package_root}/prompts/shared/ci.md` before any promotion; configured/applicable CI must pass for the exact published source SHA, with no implicit override.
+## Before starting and modes
 
-**GitHub capability preflight ({base_branch} and environment branches):** before committing pending work, editing release files, tagging, or pushing, inspect origin to determine whether this is a GitHub repository. On GitHub, check `gh --version` and, only if installed, `gh auth status` for the origin's host. Record whether the CLI is available/authenticated and a non-secret reason if unavailable; do not expose credentials, install tools, or log in automatically. Inform the user up front if GitHub CI inspection or GitHub Release creation is unavailable on this host. Git transport credentials are separate; a successful Git push does not establish GitHub API access.
+Apply the shared runtime and resolve effective instructions and `{memory_file}`. Resolve `ship-method` (`direct`/`pr`, default pr; retired-key leftovers follow the Git rules' stop guard), independent `git-merge-strategy` (default squash), actual main/master `{base_branch}` and relevant provider policy. Freeze/recheck invocation policy; never write settings or migrate instruction ownership. Read `{package_root}/prompts/shared/ci.md` and `release-providers.md` before their gates. Retired environment-promotion is preserved/inert: independent optional targets have no tier ordering. Plain ship loads no operational state and creates no ledger. Provider recipes grant no approval/check waiver.
 
-Missing CLI/authentication does not imply CI passed or that no CI exists. A separately approved Git release may proceed, but configured/applicable CI still blocks promotion when unverified, and GitHub Release creation must be skipped with manual instructions. Later API/network/permission failures receive the same unavailable handling even if preflight passed. Non-GitHub repositories do not require gh for this workflow.
+Select the mode from arguments or explicit developer intent. This is one `ship` skill with space-separated modes, not additional skills:
 
-If on {base_branch}:
-  Check for a clean working tree: `git status --porcelain`.
+| Mode | Behavior |
+|---|---|
+| `ship` | Publish the current base/feature/confirmed environment work first; offer optional same-source target actions, then finish without releasing |
+| `ship release` | Explicit main/master-only SemVer/version metadata, tag and optional hosted release; recognize/resume an existing candidate before proposing a bump |
+| `ship plan [release]` | Read-only current-branch publication/optional-target plan, or explicitly requested release plan; no default version proposal for ordinary shipping |
+| `ship status [tag]` | Read-only branch publication/PR/target state; inspect an identified release when relevant, never invent a tag for ordinary work |
+| `ship resume <tag-or-identified-candidate>` | Inspect the same release or explicitly identified partial shipping plan and offer only its missing actions without a new bump |
+| `ship promote <tag-or-published-SHA>` | Explicit existing published base/release-to-environment promotion; no current-work publication, version or tag |
+| `ship normalize <private-run-evidence>` | Separately approve/publish a proven local rewrite with fixed leases for published-history replacement |
+| `ship archive` | Separately approve/publish the prepared local archive payload and verified private completion receipt |
 
-  If clean → proceed normally, full ship flow including version tagging.
+Unknown/ambiguous arguments require clarification before side effects. In Claude invoke `/helm:ship release`; in Codex select ship and request release in the message (or mention its listed skill name with that mode). Pass arguments unchanged. Plan/status can inspect authenticated read-only Git/provider facts, never fetch, refresh the index, checkout, write files/refs, run hooks/checks, commit, tag, push, create PRs/releases or trigger jobs. Label dirty/local/inaccessible scope and keep output in conversation.
 
-  If not clean, first inspect path/status metadata only, without opening operational state. Pending operational `.helm/`, `.claude/helm/`, or known flat legacy ledgers block ship; do not open/commit/migrate those records here. For remaining paths, locally screen contents without exposing values or raw secret-bearing diffs. Non-example `.env*`, credential/private-key files, or any pending content containing secrets (including `.env.example`, source, README or version files) also block the preparatory commit and release. Report paths only and leave everything intact for the owning workflow or developer. An inability to verify safety is a block, not permission to stage it. Do not just exclude protected paths and continue with a dirty release.
+Dispatch explicit normalize/archive publication **before** ordinary scope/base/clean-tree requirements. Load respectively [history publication](../prompts/shared/history-publication.md) or [archive publication](../prompts/shared/archive-publication.md), follow its unchanged own preflight/approval/verification and finish that terminal route. Do not invoke the originating workflow, tag/release or fan out afterward. Plain ship never infers these routes from divergence/state paths; only ship archive accesses its identified bundle, and ship normalize uses identified private evidence rather than its live ledger.
 
-  Under GitHub Flow, unrelated pending work cannot be committed directly to the base under the release-commit exception. Stop and direct it through the normal branch/PR path first. That exception covers only reviewed release version/metadata changes, never arbitrary pending work.
+Ordinary ship follows Step 1's core publication, then the optional target selection/execution in Step 6, and Step 8 reporting. No target is compulsory. A core PR finishes that handoff but may be followed by the expressly selected **independent** target handoffs; never await or merge the core PR. Explicit release follows Step 1's release preflight and Steps 2–5, then reports, with **no automatic target selector/fan-out**. Status uses Step 7 read-only. Resume inspects Step 7 and performs only missing explicitly approved actions. Explicit promote uses Step 6's separate existing-source path. Never fall through between these routes.
 
-  In Solo, if every pending path/change is verified safe, show the complete safe diff and exact proposed paths/commits, then offer `Commit reviewed safe changes` or `Stop here`. The answer covers only that concrete preparatory commit, not release tagging/push. Recheck inputs and index; stage only exact approved safe paths with literal pathspecs (including reviewed deletions), never everything from status or unrelated pre-staged changes. Inspect the complete proposed index, commit scoped logical units, verify each commit and require a clean tree before continuing. A declined/failed commit leaves actual work intact and stops the release. Never reset, stash or discard work to force a clean status.
+## Step 1 — Establish scope, capabilities and core publication
 
-If on environment branch (staging, production, etc):
-  Proceed with promotion only — Steps 1-4 (version bump, commit, tag, code quality checks, GitHub Release) are all skipped; only Step 5's promotion runs.
-  Inform user:
-  "On {branch}. Promoting to next environment only — no version bump, commit, tag, code quality checks, or GitHub Release. Those only run from {base_branch}."
+Perform a read-only inventory first. Resolve the actual repository, base and current branch role from project/developer evidence, not prefixes. Confirmed roles are base, feature and environment; detached, unconfirmed environment candidates, ambiguous or unsupported maintenance/release/bot roles block plain ship writes rather than being routed to main. A branch that is the actual base uses the base route even when it also deploys production. Record `{original_branch}`, current attached branch/HEAD, index/tree, ongoing Git operations, shallow/missing history and required capabilities. No repository/HEAD or ambiguous base blocks dependent writes, never initializes Git. Product/stream selection is required for release, not speculative versioning of every ordinary source push.
 
-If on feature or any other branch:
-  Stop and inform user:
-  "Feature branches must be merged to {base_branch} via PR before releasing.
-  Please merge your branch, switch to {base_branch}, and run /ship
-  from there."
+Resolve actual fetch and **push** URLs, upstream/configured push behavior and credential-free host/repository/ref identity. Do not assume origin/fetch URL or an ambient provider repository. Bind exactly one source push destination; ambiguous/multiple push URLs need resolution. Bind each optional target's actual repository/destination separately in its reviewed action, never infer authorization to push to another remote. A fork feature PR additionally verifies the intended upstream target and its actual main/environment refs, access and policy; source publication grants no upstream push. Unavailable provider access is not proof of absent protection, CI or PRs.
 
----
+Inspect applicable project checks/signing/protection, branch/tag/PR-preview deployment triggers and CI-owned version/tag/release behavior. Respect real restrictions on bypassing main or publishing environment branches even though Helm now permits explicitly chosen edges. A required PR blocks direct target publication and offers a separately reviewed PR alternative, never silently switches method or bypasses protection. Unknown required policy blocks the affected gate. Ordinary publication does not create version metadata, tags or hosted releases, or duplicate CI-owned automation.
 
-## Step 1 — Select deployment targets ({base_branch} branch only)
+### Safe worktree, remote baseline and publication evidence
 
-Skip this step if on environment branch — proceed directly to Step 5.
+When this mode actually investigates publication diffs/history, read `{package_root}/prompts/shared/investigation-evidence.md` for the existing exact scope only; status/no-scan paths gain no prerequisite. Default to parent review for ordered publication work. Unusually large independent read-only history analysis may delegate when permitted, returning exact reviewed commit IDs, full-message/needed-diff evidence and unresolved remainder; parent alone handles provider operations, ref/source decisions, approvals and execution. Reconcile exact required IDs/changes with the pinned publication/release range, never just counts or a recent sample; do not add a full-code audit, generic Full/Gap choices or an operational ledger.
 
-Discover environment branches via: git branch -r
-Filter for known environment names (staging, production, or similar).
+Every mutating route requires clean safe index/tree and no in-progress merge/rebase/cherry-pick/revert before dependent actions. Inspect path metadata first: pending operational Helm state blocks without opening it; secret-bearing/non-template env/private-key changes and unverifiable content block publication without unsafe diffs. Never stash, reset, discard, absorb unrelated staged work or merely exclude unsafe paths and continue dirty. On base only, retain the existing explicit **Commit reviewed safe changes / Stop here** preparatory logical-unit choice, with exact staging/content verification; it grants no publication/tag/PR approval. Feature/env edits must be safely committed through normal development first. Committed work can still be unfinished: review the entire included range/diff, not just today's changes, and stop unready/excluded work.
 
-Check `environment-promotion` in {memory_file} Project Config (see git.md's Environment Branches section; absence defaults to `fan-out`):
-- **fan-out**: offer every discovered environment branch below. AskUserQuestion caps at 4 options — if more than 4 branches qualify, offer only the first 4 (recognized tier names first — staging/stage/uat/preprod, then production/prod, then any others alphabetically) and note in the question that remaining branches need a follow-up run.
-- **chain**: offer only first-tier branches (staging, stage, uat, preprod) — second-tier branches (production, prod) are never a direct deploy target from {base_branch} in chain mode; they're only reached later via Step 5's promotion from the first tier. If only second-tier branches exist (no first tier to promote through), offer none and inform the human why: "production-tier branches require a pre-production tier to promote through in chain mode; none found."
+For writes, describe needed narrow fetch/history completion before performing it. Preserve tags, unrelated refs and remote configuration; no pruning/forced tag replacement. Compare actual advertised source/target refs. No ordinary force, automatic divergent merge/rebase, reset or conflict repair. A behind-only clean branch may be safely fast-forwarded under policy and reassessed; otherwise leave manual reconciliation. Detect reviewed squash/rebase equivalence before calling old IDs new work: do not republish equivalent patches or create another PR to fix local divergence. Pin `{source_sha}` to the complete reviewed current tip after preparation and capture remote expectations. Recheck before every dependent mutation; later target results never replace this source.
 
-If no environment branches exist (after filtering):
-  Skip this step. Tag and push {base_branch} only.
+Before core publication show the source SHA, exact destination/refspec, full included changes, applicable checks and known triggers, and obtain concrete approval or reuse same-action approval. Inspect existing PRs that use the source: pushing review fixes updates **all open PRs sharing that source**, not only a newly selected target. Disclose those known effects before approval. A previously merged PR/branch does not receive later commits automatically; new changes need an explicitly selected new target action. Verify actual refs and provider results after success or uncertainty before retry. Required deferred/unavailable/failed checks remain pending, never green.
 
-If environment branches exist (after filtering), use AskUserQuestion:
-  AskUserQuestion:
-    question: "{base_branch} will always be tagged and pushed. Which additional environments should be promoted?"
-    header:   "Deploy targets"
-    multiSelect: true
-    options: one entry per offered environment branch, e.g.:
-      - label: "staging"
-        description: "Merge and push {base_branch} to the staging branch"
-      - label: "production"
-        description: "Merge and push {base_branch} to the production branch"  (fan-out mode only)
+### Core direct publication
 
-  If exactly one environment branch qualifies (after fan-out/chain filtering), a multi-select with one option isn't valid — AskUserQuestion requires at least 2. Ask a direct yes/no confirmation instead:
+For base, feature and confirmed environment alike, publish only the exact reviewed current branch tip to its intended same-role remote ref with `--no-follow-tags`, after applicable pre-publication checks/approval. Never merge into main, merge main into the current environment or push another branch merely to finish the core. An already published matching tip needs no duplicate push; verify and report it. Remote-ahead/divergent or unrelated local-ahead work requires reconciliation, never force. Verify the actual remote ref against the approved SHA/containment plan. A new ref needs its creation/triggers described explicitly.
 
-    AskUserQuestion:
-      question: "{base_branch} will always be tagged and pushed. Also promote to {branch}?"
-      header:   "Deploy target"
-      multiSelect: false
-      options:
-        - label: "Yes — promote to {branch} (Recommended)"
-          description: "Merge and push {base_branch} to {branch}"
-        - label: "Skip"
-          description: "Deploy to {base_branch} only"
+After core success, bind `{published_source_repository}` and `{published_source_ref}` to that verified current-branch destination at `{source_sha}`, then offer Step 6 optional targets. Selecting none ends successfully at branch publication, even for a feature that has not been integrated into main. Source push/deployment effects remain explicit; a push is not verified deployment. Core failure or unresolved publication outcome blocks dependent target work.
 
-    "Yes" is equivalent to selecting {branch} in the multi-select above — proceed the same way.
+### Core PR publication and helper reuse
 
-  If user selects none → deploy to {base_branch} only.
-  Wait for response before proceeding.
+For a **feature**, the existing feature ref is the source: approve/push/verify it exactly as above under source-publication policy. No helper or self-PR is needed, and a main PR is not automatic. Proceed to optional main/env target selection; none still means the feature was published successfully. `ship-method: pr` controls integration-target updates, not the source push needed to propose them.
 
----
+For **base or confirmed environment**, propose the reviewed current work through one `ship/*` source ref into the hosted current branch. Never open same-repository same-ref main-to-main/env-to-itself PRs, push that permanent target directly, or reset/rewind/rebase/cherry-pick the original branch to move work. The original branch stays at its current tip. Resolve the complete target diff and whether work is already integrated before creating anything; reviewed inclusion/equivalence creates no empty own-target PR or new helper. Inspect retained optional requests below before concluding a helper is unnecessary. Only if no established applicable helper/optional handoff remains may an already-published current branch bind its verified repository/ref/SHA as the optional source. Unreconciled squash/rebase divergence still blocks dependent publication; equivalence does not authorize silently changing `{source_sha}`.
 
-## Step 2 — Calculate and propose version ({base_branch} branch only)
+Before making a helper, inspect applicable open requests and explicitly identified retained run/source evidence with complete pagination. Reuse a uniquely established helper for this original branch/work and exact own-target repository/ref; its name prefix alone is not ownership. Verify actual PR identity, graph/content, source/target tips and all open requests sharing that helper. An existing source at `{source_sha}` needs no repush. Updating it for review fixes requires its observed published tip/history to be fully included in the reviewed current source and a normal fast-forward; show the entire delta and effects on every shared-source PR. Helper-only reviewer commits absent from local source, conflicting work, multiple/uncertain candidate helpers, denied lookup or a closed-unmerged request require reconciliation/identification, not a new helper, overwrite, force or silent reopening. A source already integrated with different IDs needs deliberate original-branch reconciliation before another publication.
 
-Skip this step if on environment branch — proceed directly to Step 5.
+If the own-target PR merged but associated optional PRs remain open, keep that proven shared helper for the still-applicable reviewed work; do not replace it with hosted main/env and create parallel same-work target PRs. Verify the old source/scope against the current plan, review any eligible fast-forward helper update and its shared-PR effects, and skip the already-integrated own-target request. A changed/ambiguous scope needs explicit reconciliation, not an automatic source swap. Historical merged/closed requests alone never establish a new pending helper.
 
-Detect version file by scanning for `.claude-plugin/plugin.json` (Claude Code plugin format), package.json, composer.json, or VERSION file, in that priority order if more than one exists — a `.claude-plugin/plugin.json` is a strong, deliberate signal that this repo's canonical version lives there, not in an incidental package.json. Needed later in Step 4 regardless of whether a tag exists.
+Only when the absence of a matching pending helper/request is established may ship create an unused `ship/changes-{YYYYMMDD-HHMMSS}` at the exact reviewed tip, with a numeric suffix on collision. Keep enough reviewed original-branch/source context in its PR proposal to support later identification without a new ledger. Do not reuse an unrelated name or create helpers per target. Obtain approval, run applicable checks, push/verify this exact source ref, then create/reuse/read back the matching own-target PR/MR through the provider guide unless its reviewed content is already integrated. A failure after source publication preserves it and reports missing PR/API work; later runs recover that identified source rather than duplicating it.
 
-Run: git describe --tags --abbrev=0
-If no tag exists:
-  Read current version from the detected file.
-  If version found in file → use it as base version.
-  If not found → use 0.1.0 as base version.
-  Inform human: "No tags found. Using {base_version} as base version."
+Freeze `{published_source_ref}`, `{published_source_repository}` and `{source_sha}` for optional targets. For a new/pending helper, every optional PR uses **that same helper**, not the older hosted current branch. Example: local main has C above remote P; helper(C)→main and helper(C)→staging both propose C, independently. Staging may accept it before main or even if main rejects it. Show this in the plan and obey stronger project restrictions; do not silently substitute P or wait for main's PR to merge. No PR route auto-merges, waits for future review/CI, updates a source from its target, deletes branches or releases. After an own-target PR handoff, proceed only to the expressly optional independent actions in Step 6 and then report.
 
-**Detect commit style and calculate version**
-Run: git log {last_tag}..HEAD --oneline
+### Explicit release preflight
 
-Use this single output for both detection and version calculation:
-- If feat:/fix:/chore:/feat!: patterns are present → Conventional Commits detected
-- If no Conventional Commits patterns → not detected
+Only explicit `ship release` or an identified same-release continuation enters Steps 2–5. Require the current actual main/master for release preparation/tagging; block feature/env starts with a reason, never tag them or silently checkout base. Reconcile local main with the actual intended published base after independent integration. Unpublished application changes go through ordinary ship first; an open code PR is not release readiness. Stronger protection/review/check policy remains binding. Only the subsequently reviewed direct release-metadata commit is an allowed new base delta within the release route.
 
-If Conventional Commits detected:
-  Read commit messages and scan file changes.
+Before computing a bump, identify any existing local tag, pending/merged metadata PR, version patch already included in the original code PR, or explicitly identified failed candidate for this product/stream. An open verified metadata PR is already handed off: report and stop. After integration, prove its accepted patch/source on actual published main (including complete content/provider evidence for squash/rebase), then use the **same version**, not another bump/PR. A partial direct release may retain exactly its proven previously approved metadata-only delta above that integrated code under Step 7; do not send it through ordinary ship or reject it as unpublished application work merely because its push/tag failed. Unrelated/ahead application work still blocks. Do not infer candidate ownership from a branch name, subject or version string alone; ambiguous candidates need reconciliation. A ready integrated/tag-only candidate needs no empty metadata commit/PR. Show new metadata edits under the ordinary direct/PR policy only when actually needed. Publish code first, release later; ordinary aligned main reports nothing new to publish rather than entering release implicitly.
 
-  Triage by commit type (covers every type in git.md's Conventional Commits list):
-  - feat              → minor bump candidate
-  - fix, perf         → patch bump candidate — perf is a real improvement to shipped behavior, not a no-op
-  - feat! or BREAKING CHANGE → major bump candidate
-  - chore, docs, style, ci, build, refactor, test, revert → ignore for version calculation — no behavior change from the user's perspective
+## Step 2 — Determine the release baseline and version
 
-  Calculate next version based on highest-priority commit type:
-  - Any BREAKING CHANGE or feat! → major bump
-  - Any feat (no breaking change) → minor bump
-  - Only fix/perf commits (the patch-bump-triggering types) → patch bump
+For a new release, identify the selected product's canonical version source and exact tag convention. Prefer `.claude-plugin/plugin.json` for a confirmed Helm/plugin product; otherwise inspect existing package.json, composer.json, VERSION or project-declared/tag-derived versioning. Resolve competing sources/independent packages explicitly. Do not add a version field/file to a tag-versioned project or assume incidental manifests are owners. Missing version files permit an explicitly reviewed tag-only release; there must be no undefined staging target or fabricated empty release commit.
 
-  Present to human:
+Determine the appropriate **reachable, published** previous release for this product and stable/prerelease/maintenance stream. Use complete relevant tag/history evidence and real SemVer parsing, not an arbitrary nearest `git describe` result or the highest global tag. Keep `{previous_tag}` (exact existing ref) separate from its parsed `{base_version}`; do not prepend `v` to an existing tag. Confirm ambiguity, unpublished local tags and metadata/tag disagreement rather than silently picking a winner.
 
-  Current version: v{last_tag}
-  Next version:    v{proposed}
+Before proposing another bump, recognize evidence of an existing prepared/partly published candidate, such as a local-only release tag or matching release metadata commit ahead of the published baseline. Offer same-version status/resume or Cancel instead of treating it as an ordinary new change. A separate new release requires an explicit choice and a fresh assessment; uncertain tagless identity still follows Step 7 rather than being guessed from HEAD.
 
-  Commits included:
-  - {list of feat and fix commits, skip chore/docs/style}
+A first release uses the full scoped history through `{source_sha}`, with a report of the complete assessment. Never substitute an empty `..HEAD` range. An existing version is an initial candidate, not an instruction to bump twice; ask for the intended initial version. With no version evidence, offer 0.1.0 as a proposal, not an already approved base/release. Missing/shallow history is unknown, not proof of a first release.
 
-  Deployment targets:
-  - {selected environments from Step 1}
+Read full commit subjects, bodies and footers for `{previous_tag}..{source_sha}`, or the explicit first-release history. Reconcile inspected IDs with every commit in the exact scoped release set; unread messages or missing history remain unknown and block dependent version/completion claims. Preserve boundaries/IDs and inspect relevant product changes; do not limit the analysis to `--oneline` or a recent sample. Apply Conventional Commits case-insensitive type/scope handling with the specification's uppercase breaking footer tokens:
 
-  AskUserQuestion:
-    question: "Ship v{proposed}? Confirming will commit, tag, push, and promote to any environments selected in Step 1. Current: v{last_tag} → Proposed: v{proposed}"
-    header:   "Version"
-    multiSelect: false
-    options:
-      - label: "Confirm v{proposed} (Recommended)"
-        description: "Commit, tag, push, and promote v{proposed} — this is the release go-ahead"
-      - label: "Bump to v1.0.0"  (only include if current version is 0.x.x)
-        description: "This release completes a usable set of features that solves a real problem end-to-end"
-      - label: "Enter custom version"
-        description: "Specify a different version number"
+- `!` after **any** type/optional scope, or `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer: breaking candidate. For stable versions propose major; for 0.x explicitly resolve whether the project wants a 0.x breaking increment or graduation to 1.0.0.
+- `feat`: minor candidate; `fix` or `perf`: patch candidate, with the highest applicable bump winning.
+- Other nonbreaking types have no automatic bump. Reverts need context and must not be mechanically cancelled or assumed harmless. Never normalize/rewrite history here.
+- Empty unreleased scope: report no new release needed and offer an existing release's status/resume when relevant. Non-bumping, mixed or non-Conventional history: show the uncertainty and offer **Finish without releasing** / **Choose an explicit version**. Markdown/workflow changes can be the product, so do not equate a `docs` label with no user impact or silently discard those changes from review.
 
-  If "Confirm v{proposed}" selected → set `{version}` and record explicit release approval for that exact version and the listed targets.
-  If "Bump to v1.0.0" selected → set `{version}` to `1.0.0` and use the final release confirmation below.
-  If "Enter custom version" selected → ask human to type the version, then validate it and use the final release confirmation below. Choosing custom entry is not release approval.
-  Wait for response before proceeding.
+Validate **every** proposed/custom version as SemVer, including prerelease/build identifiers and leading-zero rules. Preserve project tag naming; validate the complete tag ref too. Check local and remote collisions before edits and again before tagging/publication. A new release must have an appropriate increase within the chosen stream; build metadata alone does not increase precedence. Resolve prerelease increments versus graduation explicitly. A same version is a resume/status decision, not another release. Lower maintenance versions need their explicitly selected stream, never an accidental downgrade or global latest designation. Typing a version, selecting the 1.0.0 shortcut or choosing custom entry is not release approval.
 
-If Conventional Commits not detected:
-  Inform human:
-  "Conventional Commits not detected in this repo.
-  Version cannot be calculated automatically.
-  Consider adopting Conventional Commits for future auto-versioning.
-  Current version: v{last_tag}
-  What should the next version be?"
+## Step 3 — Plan release outputs and notes
 
-  Wait for human to input version before proceeding.
+Prepare a concrete in-run patch for the canonical version and its verified companions, retaining formatting/unknown fields and avoiding dependency churn. For supported npm metadata keep the package version and existing corresponding package-lock/npm-shrinkwrap root version records consistent; do not change dependency versions/integrities or blindly regenerate lockfiles. Do not assume `npm version` is a harmless edit: it can run lifecycle scripts and create commits/tags. For other declared companions use a verified narrow edit or block that affected release with an explicit repair handoff. Do not insert optional version fields or edit independent packages speculatively.
 
-Whichever path supplied {version} manually (custom version entry, or the no-CC direct-entry path), validate it matches Semantic Versioning format (MAJOR.MINOR.PATCH, optionally with a `-prerelease` or `+build` suffix, e.g. `2.1.0` or `2.1.0-beta.1`) before proceeding to Step 3. If it doesn't match, inform the human and ask again — this value gets written into the version file and baked into a permanent tag (git.md: tags are never rewritten), so it isn't safe to accept unchecked. {proposed} from the auto-calculated path doesn't need this check — it's derived from a known-good base version, always well-formed by construction.
+For plugin releases, update the matching local marketplace entry's existing version when present, after verifying product identity and an unambiguous matching entry. Absence of the file or optional version field is not permission to invent metadata. Conflicting/duplicate identity or version declarations require resolution. Update only identified current **own-product** README version mentions; preserve dependency/minimum versions, historical examples/pinned URLs, frontmatter, custom content and review markers. Respect existing changelog/release-tool ownership; propose only requested or established changelog updates, not a competing new file.
 
-**Final release confirmation for manual/custom versions and the v1.0.0 shortcut:** after obtaining a valid version, present that exact version, the current/base version, selected environments, and any GitHub capability limitation from preflight, then ask:
+Build reader-facing release notes from the same frozen source range: relevant breaking changes/migration guidance, features, fixes, performance and public security/relevant non-CC changes, without inventing claims or publishing private vulnerability details. A release metadata commit is not a new feature. Never use `v{previous_tag}`, a feat/fix-only grep or moving HEAD for the notes. Prepare reviewed notes via a safe file outside tracked output, stdin or a structured API body; never interpolate commit text into shell code. Plan/status show notes in conversation and create no file.
 
-  AskUserQuestion:
-    question: "Ship v{version}? After quality checks, this commits the release, creates and pushes v{version}, pushes the release branch, and promotes to {selected environments or 'none'}."
-    header:   "Release approval"
-    multiSelect: false
-    options:
-      - label: "Ship v{version}"
-        description: "Approve this version's commit, tag, push, and selected promotions"
-      - label: "Cancel"
-        description: "Stop before release edits, tagging, pushing, or promotion"
+Show one release-only plan: product/stream, integrated source and previous tag/range, exact proposed version/tag, metadata diff, notes, push repository/refs, method, channel/latest behavior, applicable checks/protection, CI-owned actions and capability/deployment gaps. Offer **Ship this release**, **Choose another version**, **Cancel**, plus **Use 1.0.0** only when relevant (at most four). Changed/custom versions return to the exact plan. Cancel changes no release files/refs; preserve/report any separately approved prior commits.
 
-  If Cancel → stop without executing the release. If Ship selected → record approval for this exact version and target list. A typed version, successful validation, missing answer, or approval of a different version is not release approval. Reuse an explicit approval already given for the same exact release instead of asking twice. The calculated-version Confirm option above already supplies that approval.
+The explicit go-ahead covers only the described metadata commit/PR or integrated tag/base publication. Hosted release creation keeps its own exact offer/approval. No environment or other target selection follows release, even after successful tagging; later ordinary ship or explicit promote is a separate action. Reuse valid approval; material content/source/version/target/destination/effect changes require refreshed review. Auto-commit, tool permission, defaults and timeouts are not consent. Plan release ends with its in-conversation proposal and unresolved evidence, without writes/checks.
 
----
+## Step 4 — Prepare and verify the final release tree
 
-## Step 3 — Run code quality checks
+For a new release, recheck the source, effective owner/policy, destination and clean index/tree. If the approved metadata patch is nonempty under pr (or an explicitly selected required-PR route), create an unused `ship/release-{version}` source branch at the verified integrated base, with a suffix on collision, and apply only that patch there. Otherwise apply the approved patch on the permitted base. Branch creation occurs only after exact reviewed ship scope, never in editing commands. A resume candidate uses the same validation/tag prerequisites for missing actions without reapplying metadata, bumping or creating another release commit. Run the project's established formatter/linter and full release test suite, plus configured required type/build/metadata checks. Use actual project commands and safe existing tools; do not install tools, introduce new scanners or run publishing/deploy lifecycle scripts merely because a check is missing. With no test framework, explicitly ask whether to release without test validation; a configured but failed/unavailable test or required check blocks release and cannot be waived as absent. A request to defer testing leaves affected release/publication pending, not green.
 
-Only reached on the {base_branch}-branch path — Step 1's redirect sends the environment-branch path straight to Step 5, skipping this step entirely.
+Verify the final version/companion metadata, README/changelog/notes and exact diff. Formatter changes outside the approved release patch require reviewed scope approval; unrelated code fixes return through normal integration, not an implicit release-metadata scope expansion. Run the full required gate on the intended final tree after formatting/edits, ordering checks to avoid redundant reruns. Hooks or later source changes invalidate that evidence: inspect the new content and rerun the required gate. Skip a full rerun only for an established metadata-only change with applicable metadata validation and explicit evidence that source/check inputs are unchanged. Never tag unverified content based on tests from before the release edits.
 
-Run the git.md Code Quality gate — lint + tests — before releasing. Two release-specific overrides:
-- Run the full test suite, not just changed-file tests — a release warrants it.
-- If no test framework is detected, don't skip silently — ask "No test framework detected — releasing without test validation. Continue?" and wait.
+Stage literal approved paths only, inspect the **complete** index and ensure no unrelated staged content. If files changed, commit `chore(release): bump version to {version}` under the release approval; otherwise a tag-only release needs no empty commit. Verify actual commit contents/tree and hooks against the reviewed output before tagging. If a metadata source branch was required, publish its exact verified tip through the provider PR/MR handoff after concrete approval, verify/reuse/read back the PR, then finish with no tag, merge, environment promotion or wait. Preserve that branch and version identity for later same-version resume after integration. Otherwise pin `{release_sha}` to the verified integrated base commit. Recheck tag absence and create the approved annotated tag, honoring required signing policy/capability rather than changing settings. Verify the exact tag object and peeled target. On failed checks/commit/tag, preserve actual edits/index/commit/tag state, stop dependent publication and report how to inspect/resume the same candidate.
 
-Do not proceed until lint passes and tests are green.
+A release-metadata PR/MR is a terminal handoff through required review, with the same source push/verified PR procedures as features. Never tag a pre-merge commit assuming squash/rebase preserves its SHA. After independent integration, resume the same version at the proven integrated base SHA and reassess changed content/checks before tagging. A resume of a still-open metadata PR reports that handoff without merging or waiting. Direct shipping blocked by required PR policy offers this explicitly reviewed path, never changes the method silently. Tag-only publication on an already integrated base creates no empty metadata PR.
 
----
+## Step 5 — Publish and optionally create a hosted release
 
-## Step 4 — Execute release on {base_branch}
+Before any publication recheck exact local commit/tag objects, remote branch/tag advertisements, policy and approval, accounting explicitly for verified own release commits/tags in the expected snapshots. Unexpected remote/source changes invalidate the pending plan. Enforce any required pre-publication checks through the supported review/check path; an unprotected `direct` release does not acquire an invented remote gate. Where checks can run only after an approved branch/tag push, expose that ordering and its triggers; such publication remains pending validation and never proves later release/promotion gates passed.
 
-Only run this step if on {base_branch}.
+Prefer an atomic push of **only** the approved refs to the selected single push destination, with follow-tags disabled. For a new unpublished base commit, use explicit refspecs of the form `{release_sha}:refs/heads/{base_branch}` and `refs/tags/{release_tag}:refs/tags/{release_tag}`, with `--atomic --no-follow-tags`. If the base already contains this approved candidate, publish only the missing exact tag/ref as appropriate; never move a newer base backward. Never push all tags/branches, rely on ambient push defaults, force, or silently publish to a second remote. History replacement belongs only to the explicit normalize-publication route.
 
-Require the recorded release approval for `{version}` and the selected targets before release writes or mutations. If the version or targets changed after approval, return to the final release confirmation. Respect any stricter project-specific push confirmation requirements as well.
+If the server specifically rejects unsupported atomic publication, verify actual refs, then offer **Use described sequential publication** / **Leave pending**, explaining the partial-publication risk and branch/tag triggers. Other errors stop for diagnosis, not automatic fallback. Sequential publication pushes/verifies the approved branch first, then the exact tag; a failure stops remaining operations. Atomic Git refs do not make CI, hosted APIs or deployments atomic and do not suppress duplicate branch/tag pipelines. Network uncertainty requires inspecting authoritative remote refs before retry, not assuming either failure or success. Verify branch containment/tip as planned, annotated tag object and peeled commit against `{release_sha}`; published mismatches block dependent actions and are never overwritten/deleted.
 
-Bump version in detected version file to {version}.
+After verified Git publication, offer **Create hosted release** / **Skip** for an available GitHub/GitLab capability, describing its exact tag/repository/channel/notes and known release-event consequences. Reuse explicit approval already covering that exact hosted write. Honor required checks or CI-owned release creation first; if a pipeline creates it, observe/verify that result rather than creating a duplicate. An optional declined/skipped hosted release does not undo Git publication. Missing capabilities yield a same-tag manual handoff; required unavailable gates stay pending. Follow the provider guide's safe create/readback/retry procedure. Do not claim a hosted release or deployment from a local tag/PR or successful preflight.
 
-Scan README.md for version references (badges, inline mentions).
-If found, update to {version}. Skip silently if none found.
+## Step 6 — Optional targets and explicit promotion
 
-If the detected version file is `.claude-plugin/plugin.json`, also check `.claude-plugin/marketplace.json` for a `plugins[]` entry whose `name` matches plugin.json's own `name` field, and bump that entry's `version` to {version} too — marketplace metadata drifting from the actual plugin version is exactly the kind of staleness this step exists to prevent. Skip silently if `marketplace.json` doesn't exist or has no matching entry.
+### Select optional targets after core publication
 
-Commit, tag, and push only the reviewed release changes. Recheck the clean-tree baseline, source inputs and complete index for safe content before staging. Stop on a failed commit/tag/push, preserve actual results and never execute dependent publication as if it succeeded. Verify published branch/tag refs against the intended objects; report partial publication without creating a new version to retry.
+After Step 1 core publication/handoff is verified (or its already-published no-op is proven), offer one complete selector with explicit **None / Finish**. Do not start target work before this choice. Preserve prior explicit selection of the same reviewed plan without asking again. No candidates means no question; one uses Yes/Skip, 2–4 use a picker, more use a complete numbered conversational multi-selection. Never truncate or preselect production/main as consent.
 
-Commit, tag, and push:
-- git add {version_file}
-- git add README.md  (only if README was updated in the step above)
-- git add .claude-plugin/marketplace.json  (only if it was updated in the step above)
-- git add {any files the Step 3 linter/formatter modified}  (per git.md: fold formatting changes into the last commit; never git add -A)
-- git commit -m "chore(release): bump version to {version}"
-- git tag -a v{version} -m "Release v{version}"
-- git push origin HEAD
-- git push origin v{version}
+| Original current role | Optional targets |
+|---|---|
+| Actual main/master | Confirmed environments only |
+| Feature | Actual main/master and confirmed environments |
+| Confirmed environment | Actual main/master and other confirmed environments, excluding itself |
 
-Capture the commit SHA (`git rev-parse HEAD`) as {commit_sha} for the Step 6 report.
+Discover roles from actual configuration/provider/developer evidence, not names alone. Do not offer arbitrary feature/bot refs as destinations. For fork mappings, verify each target's intended repository, refs and policy; a source push/PR target binding never authorizes a second Git destination. Actual project prohibitions still block an edge. Helm itself no longer imposes mandatory main-first or forbids selected feature→env/env→main/env→other-env edges. Local-edit eligibility remains independent: env/test permit approved confirmed-environment work, while refactor keeps confirmed non-base environments Audit/Plan only; ship routing bypasses neither command nor project policy.
 
-Before promoting, verify the release source commit/ref was actually published. If no environments were selected, no promotion gate is needed. Otherwise apply the **promotion** gate in `{package_root}/prompts/shared/ci.md` to `{commit_sha}` on `{base_branch}`. Inspect all applicable provider checks, not only GitHub Actions or a fixed recent-run window. Unverified/pending/failed CI leaves promotion pending without environment mutations; offer Wait/recheck versus Skip promotion, never Promote anyway. The already-published release remains intact, and its separate GitHub Release creation may still be handled below without claiming environments were promoted.
+Every choice describes **merge the reviewed source into this target and push** for direct, or **create/reuse a source-to-target PR** for pr. Before dependent writes show exact source/ref/SHA, each target's fresh tip/repository, complete commit range/diff (including source-only environment configuration/history), known deploy effects, method/checks/protection and concrete action approval. Counts/diffstat are summaries, not substitutes for content review. Explicitly label routes that bypass main and independent pending-main reviews. Selection alone is consent only when those exact actions/content/effects were already presented; otherwise review the concrete plan once. None ends the run; it does not undo source publication or known updates to existing source-sharing PRs.
 
-For each selected environment, only after the gate passes/not applicable, recheck source SHA/CI and destination policy, safely switch to the up-to-date destination, merge `{base_branch}` with `--no-ff` and `chore(deploy): promote {base_branch} to {environment} for v{version}`, then push only after successful merge and verify its remote SHA. Selection supplies approval only for the described target pushes, not a CI waiver. Stop on any failure with actual branch/index preserved; report completed and pending targets separately. Return safely to `{base_branch}` after a successful target.
+Use **one** `{source_sha}` independently for every target, with the verified published existing feature/helper/current branch as PR source. Never use a newly merged target as the next source, switch to old hosted main/env after a helper PR, or silently broaden/move the source. PRs track refs and can include later pushed commits: revalidate the observed source SHA at every handoff and disclose future movement, never promise an immutable snapshot. Each target's approval/review is independent and never waits for another PR to merge.
 
-Then use the provider identity established by origin's capability preflight. A non-GitHub provider skips GitHub Release creation, without skipping its applicable CI gates. For GitHub (including a supported configured enterprise host), use the recorded authenticated repository interface and host; do not infer provider identity solely from a github.com substring.
+### Explicit existing-source promotion
 
-If hosted on GitHub, use the recorded capability preflight. If gh is unavailable or unauthenticated, skip the AskUserQuestion below and inform human of the reason, the already-completed Git release actions, and how to create this same release manually once CLI access is available:
+`ship promote <tag-or-published-SHA>` remains a distinct base/release→selected-environments operation. Verify the exact existing source's provenance through the intended published base, pin `{source_sha}` to that commit and bind its actual repository/publication identity. Then borrow this selector's confirmed-environment discovery, explicit none and exact action review, irrespective of the invocation branch's role. It performs **no core current-branch push or own-target PR**, even when invoked from an environment, and creates no version/tag/release. Unlike ordinary optional routing, it never substitutes unpublished current feature/env/helper work for the requested published release.
 
-```sh
-gh release create v{version} --title "v{version}" --notes "..."
-```
+For direct promotion integrate the exact published tag/SHA. For PR promotion retain the published base ref as source, with no snapshot helper; its current head must equal the requested SHA. An older exact snapshot cannot silently become a newer-main PR: show the extra range and leave that action pending, or accept a separately approved current-main promotion. Do not introduce a helper just to change this explicit route's exact-source contract. Release/status does not invoke promotion automatically; only an explicit selected legacy-resume action can continue an already identified old plan.
 
-Do not rerun the whole ship workflow merely to retry GitHub Release creation; that would start another version. Do not claim a GitHub Release was created when this step was skipped or failed.
+### Target gates and no-ops
 
-If gh was available/authenticated, use AskUserQuestion:
-  AskUserQuestion:
-    question: "Create a GitHub Release for v{version}?"
-    header:   "GitHub Release"
-    multiSelect: false
-    options:
-      - label: "Create release (Recommended)"
-        description: "Run gh release create with auto-generated notes"
-      - label: "Skip"
-        description: "No GitHub Release for this version"
+Require clean safe workspace, no in-progress operation, verified source publication and fresh source/target identities throughout. Check affected worktrees before checkout/ref changes. Apply **integration** gates for main and **promotion** gates for environments using the actual published feature/helper/base/env source SHA/ref; configured/applicable source CI must pass for environment actions, even if the source ref is a helper. Filters may mean its checks cannot run: leave that action pending rather than treating an older base's green result as source evidence. Later PR/merge-result review/CI remains pending/not awaited; source green does not test a future merged target or prove deployment.
 
-  If Skip selected → skip silently.
+Verify inclusion/equivalence in the **published target** before deciding a no-op; local containment alone cannot skip a missing target push. A merged historical PR cannot receive new commits: when a new reviewed source delta remains, offer a new matching target request only under its explicit selection/approval. Reuse one exact open PR rather than create duplicates. No-op targets get no empty merge/PR/repush. Unresolved target evidence blocks that action, never the truth of earlier core success.
 
-  If Create release selected:
-  - Build release notes from git log:
-    git log v{last_tag}..HEAD --pretty=format:"- %s" | grep -E "^- (feat|fix)"
-  - Run: gh release create v{version} --title "v{version}" --notes "{extracted_notes}"
-  - On success, `gh release create` prints the release URL to stdout — capture it as {release_url} for the Step 6 report.
-  - If the command fails with an auth, permission, network, or other error, report the failure and actual completed actions, with a non-secret reason. Offer manual creation/retry of the same `v{version}` GitHub Release after access is restored, not a fresh ship invocation. A previously successful preflight is not proof that this write succeeded.
+### direct — integrate and push each selected target
 
----
+Recheck policy, source SHA, target/worktree safety and fresh remote tip. Safely checkout/synchronize an eligible behind-only clean target; divergence or unrelated local commits block rather than being absorbed, reset or stashed. Integrate the **same pinned source SHA** using the project-permitted configured method, with appropriate merge/commit approval. A source just published by core shipping is shared: rebase must not rewrite it. If configured rebase cannot be honored without rewriting a published source, offer a separately approved permitted merge/squash or leave pending, never silently change the strategy. Use `--no-ff` only where policy permits; verify full resulting content and source inclusion or reviewed squash/rebase equivalence.
 
-## Step 5 — Execute promotion on environment branch
+Run applicable result/integration checks before target publication; source CI alone is insufficient. Required provider review/remote checks get their valid reviewed path, not a direct bypass or an invented remote gate on an otherwise permitted local integration. Push only the exact approved target result/ref with `--no-follow-tags`, then read back its actual remote SHA. Refresh expected snapshots only for verified own actions. No target merge invokes SemVer/version metadata, a tag or hosted release, including a feature/env merge into main.
 
-Only run this step if on environment branch.
+A failed check/push can leave this run's unpushed target integration. Preserve it and report original source, target-before/remote expectations, exact local result, complete reviewed diff and remaining action. A later explicitly identified partial run may prove parents/equivalence, source contents, fresh remote and required checks, then offer only the missing approved push. Never infer ownership from a message/local-ahead state alone, merge again, reset or manufacture a ledger. Unproven/drifted work remains for manual reconciliation.
 
-Check `environment-promotion` in {memory_file} Project Config (see git.md's Environment Branches section; absence defaults to `fan-out`).
+### pr — independent handoffs from the shared published source
 
-### Fan-out mode
+For each approved target, use the exact `{published_source_repository}`/`{published_source_ref}` at observed `{source_sha}` as head and the selected target as base. A main/env helper is shared by its core own-target request and every optional target request; a feature keeps its existing source. Do not create helpers per target, push/merge a target, update a source from a target, request auto-merge/source deletion or wait for later CI/review/merge. Source publication fixes update all open requests sharing that ref. Check the full per-target diff and actual provider/project restrictions before the handoff.
 
-There is no chain to advance — environment branches only ever receive code directly from {base_branch} (Step 1), never from each other. Before pushing, confirm:
+Use the provider guide to search/create/reuse/read back the exact PR/MR pair, actual repositories/refs/open state and head SHA. A source change during handoff leaves the real request preserved but the result pending reassessment. Known conflicts/forbidden merge methods leave an honest pending handoff, never auto-resolution or an extra source branch. Verify every selected request, report later review/merge checks as pending/not awaited, then finish even if merge-ready. No code publication/PR route falls through to release.
 
-  AskUserQuestion:
-    question: "Push {current_branch} to origin now? This publishes the branch and may trigger its deployment."
-    header:   "Push environment"
-    multiSelect: false
-    options:
-      - label: "Push {current_branch}"
-        description: "Run git push origin {current_branch}"
-      - label: "Cancel"
-        description: "Exit without pushing or triggering deployment"
+### Partial results and finish
 
-If Cancel → report that no push was attempted and exit without mutations. If Push selected → run `git push origin {current_branch}`. Reuse approval if the user already explicitly authorized this same branch push; the workflow invocation, auto-commit setting, or host tool permission is not a substitute for explicit push approval. On success, report the actual branch pushed; on failure, report it without claiming deployment was triggered.
+Stop at the first failed/blocked selected action and list remaining selections as not attempted. Keep verified core publication and earlier target results, helpers, feature/base/environment refs and real drafts/conflicts intact. Never undo source publication to make the optional stage look atomic. A supported abort is allowed only for this run's own merge when prior work/recorded clean baseline stay intact; verify it without reset/stash/force, otherwise leave manual recovery. Apply Step 8's independent safe return. CI/manual/artifact deployments receive a precise handoff, not invented job triggers or a deployment-success claim.
 
-### Chain mode
+## Step 7 — Inspect publication or resume an identified plan
 
-Determine next environment in promotion chain. git.md recognizes these environment names; treat names within the same tier as equivalent, matching {current_branch} against whichever it is:
-  Tier 1 (pre-production): staging, stage, uat, preprod
-  Tier 2 (production):     production, prod
+For ordinary branch status, inspect current/identified source and remote refs, established helper/PR identities, source/target inclusion/equivalence and explicitly selected partial actions. No tag is required. Report core publication separately from optional targets and actual review/CI/merge state. An open matching PR is an existing handoff, not permission to merge/wait or create another. An identified partial ordinary resume freshly validates that source/ref/observed tip, original role/target set, complete diffs and prior successful operations, then offers only missing source push/own PR or selected target work through Steps 1/6. Without recoverable provenance ask for the exact source/request rather than guessing a helper or new target plan. Ordinary ship itself reuses these same established source/PR facts; it never resumes a release implicitly.
 
-If {current_branch} matches Tier 1: the next environment is whichever Tier 2 branch actually exists on the remote (discover via `git branch -r`, same detection as Step 1). If no Tier 2 branch exists, treat as no further promotion.
-If {current_branch} matches Tier 2: no further promotion, inform human and exit.
-If {current_branch} matches neither tier (a long-lived branch that still qualifies as an environment branch per git.md, just outside the recognized name list): ask the human which branch it should promote to, rather than guessing.
+For an explicit release/status candidate, identify the exact selected tag/product/stream and read local/remote refs, tag object/type/peeled target, corresponding release metadata/commit, hosted release, relevant CI and explicitly selected destination ancestry/state. Read version/companion metadata from the candidate's own tree, not a later checkout with another version. Status without a tag reports unambiguous selected-stream candidates; ask/report ambiguity rather than choose the highest global tag. No new ledger or operational-state access is used. A target containing the source proves content inclusion, not that a deployment completed or was performed by a particular prior run.
 
-If a next environment exists, apply the shared **promotion** CI gate to the exact source `{current_branch}` SHA, with provider-aware complete coverage. Required CI must pass before the next-environment merge/push. An unpublished source may need a separately confirmed source-branch push first so CI can run; that authorizes no target merge/push, and trigger filters may still leave checks unavailable. Freeze and verify the published source SHA, then wait/recheck or report promotion pending. No Promote-anyway override is offered, and no required check is replaced by local test success.
+Build a per-action matrix: not attempted/absent, locally prepared, verified published, skipped, pending/unknown, or failed with evidence. Remote branch containment can verify a release already published even if the base has advanced; never push the old SHA over that newer base. Existing matching hosted releases are verified and reused, not edited. A mismatched remote/local tag, wrong hosted tag/commit, incompatible tag type/signature or unknown release identity stops dependent writes; do not retag, force, delete or silently rewrite notes. A legacy lightweight tag may be reported, but is not silently converted to an annotated release candidate.
 
-Confirm before mutating anything (per safety.md: never push without confirmation):
-  AskUserQuestion:
-    question: "Promote {current_branch} to {next_environment}? This merges {current_branch} into {next_environment} and pushes the target branch from the verified published source SHA. CI: {passed for exact SHA / not applicable}"
-    header:   "Promote"
-    multiSelect: false
-    options:
-      - label: "Promote to {next_environment}"
-        description: "Merge {current_branch} into {next_environment} and push"
-      - label: "Cancel"
-        description: "Exit without promoting"
+For a release-metadata PR candidate, inspect its exact source/base repositories/refs, reviewed version patch and current provider integration evidence. A still-open verified PR is already handed off: report it and stop without merge/wait/tag. After squash/rebase, prove the accepted metadata change and intended source are present in the actual integrated base using provider merge/result evidence plus complete content/ancestry comparison; never assume the original source SHA survived. Pin the actual permitted integrated release SHA, reassess changed content and required checks, and never tag an unintegrated source branch even if ship-method changed. Missing/ambiguous proof leaves the same-version release pending.
 
-  If Cancel → exit silently.
+If a failed release has no tag yet, resume needs the exact candidate commit from the current approved run/report or an explicit developer-supplied SHA, plus matching reviewed version metadata/stream. Do not guess from HEAD, fabricate the old approval or infer a new release. Reassess that candidate's required checks and exact tag plan. If required evidence cannot be recovered, leave a concrete handoff. Read-only status never performs this recovery.
 
-  If confirmed:
-  - Recheck the verified published source SHA/CI before the target mutation; do not push the already-approved source twice.
-  - git checkout {next_environment}
-  - git merge {current_branch} --no-ff -m "chore(deploy): promote {current_branch} to {next_environment}"
-    - If the merge conflicts: run `git merge --abort` to restore a clean state, then `git checkout {current_branch}` to return to the starting branch. Inform the human: "Merge conflict promoting {current_branch} to {next_environment}. Aborted — {next_environment} is unchanged. Resolve the conflict manually (e.g. merge {current_branch} into {next_environment} in a local checkout, fix conflicts, push), then re-run." Stop here — do not proceed to the push/checkout below.
-  - git push origin {next_environment}
-  - git checkout {current_branch}
-  - Inform human:
-    "Promoted {current_branch} → {next_environment}. Report only deployment behavior supported by repository/provider evidence."
+For release resume, require actual main/master for metadata/tag mutations as in release preflight; tag/hosted read-only status can inspect anywhere. Show only missing actions and ask **Resume these actions** / **Leave pending** before mutation, reusing still-valid same-action approval. It may finish a missing tag/push, same-tag hosted release under Steps 4–5. Only a separately identified previously approved target/promotion plan may resume missing Step 6 actions; a release does not introduce new targets or reuse approval for a different source. Inspect existing PR identity/head and target inclusion; an open PR is a completed review handoff, not an action to merge or wait on. A moved main never silently upgrades an exact older promotion request. Do not rerun bump calculation, create an extra release commit, repeat completed side effects or automatically publish assets. Reconstruct notes from the correct frozen source range/established changelog, not later unrelated commits. Resolve uncertain API/push outcomes by reading before retrying; the same-version resume path must survive branch/tag/API partial success without claiming rollback.
 
-If no next environment (already on the last tier):
-  Stop and inform human:
-  "Already on the last environment in the chain. Nothing to promote further."
+## Step 8 — Report actual outcomes
 
----
+On mutating routes, return to recorded `{original_branch}` when independently safe. If already on that branch, verify/report the actual checkout without a redundant switch or cleanup. A needed checkout requires clean index/tree, no ongoing Git operation, an existing original branch not occupied by another worktree and no incoming tracked-path collision with ignored/untracked inputs, including local env files. Inspect safe path/status metadata without exposing secret contents; clean status alone is insufficient. No force, reset, stash, discard, secret backups, automatic pull/merge or committing drafts to force checkout. Verify the actual resulting branch. Unsafe/missing/occupied target or checkout failure preserves actual work and reports the pending return and non-secret reason. A clean partial publication/manual handoff may still return safely; return does not make a failed handoff successful. Retain helper/feature/base/environment branches locally and remotely. Plan/status never check out, including a cosmetic return.
 
-## Step 6 — Confirm completion
+Report the selected mode, resolved original/current role and base, original/actual checkout and safe-return status, source repository/ref/SHA/helper when applicable and the actual source push/core own-target PR result. Report every optional target separately: selected/none, exact source/target/destination, bypass-main effects, merge/commit/push or PR URL/head identity, verified/no-op/pending/failed/not-attempted result, checks and concrete continuation. Capture result verification before return. A later GitHub/GitLab source push updates existing open PRs sharing it; merged PRs remain completed historical requests, not automatic destinations for fixes.
 
-If on {base_branch}:
-  Report:
-  - Commit:                {commit_sha} "chore(release): bump version to {version}"
-  - Version tagged:        v{version}
-  - Tag pushed:            yes
-  - README updated:        yes/no
-  - Environments promoted: {list, or "none" if none selected, or "none — skipped" if skipped for CI reasons}
-  - GitHub Release:        {release_url, if created} / skipped with reason / failed with reason / not GitHub
-  - GitHub capability/CI:  {available / unavailable with reason; actual CI status if checked}
-  - Deployment triggered:  verified triggered / not triggered / unknown (supported by actual deployment configuration/provider evidence, not CI presence alone)
+For explicit releases also report product/stream, prior/exact version/tag rationale, actual integrated release SHA, metadata PR/commit, local/remote tag, hosted URL/channel and missing same-version actions. Ordinary ship and optional integrations report **release not performed**, even when the starting or selected branch is main. Main-only release is explicit after independent integration/reconciliation; no new code PR is needed merely to tag ready integrated content, while genuinely new metadata may require its own reviewed PR.
 
-  Required CI overrides are not supported. Report blocked/pending promotion with its exact source SHA and reason; never claim it succeeded.
-  If promotion was skipped because CI hadn't passed: add a line — "To promote later: verify required CI for this same published source SHA, then use an approved environment promotion or reviewed manual merge/push — re-running /helm:ship would cut a new version rather than retry this promotion."
-
-If on environment branch, fan-out mode:
-  Report:
-  - Branch pushed:         {current_branch, or none if cancelled/failed}
-  - Deployment triggered:  verified triggered / not triggered / unknown (supported by actual deployment configuration/provider evidence, not CI presence alone)
-
-If on environment branch, chain mode:
-  Report:
-  - Promoted:              {current_branch} → {next_environment}
-  - Source publication:     {pushed this run / already published / pending}
-  - Target publication:     {next_environment pushed and verified / not attempted / failed}
-  - Deployment triggered:  verified triggered / not triggered / unknown (supported by actual deployment configuration/provider evidence, not CI presence alone)
-
-  If CI blocked promotion, report no target mutation, the exact source SHA and pending reason. Source publication and target publication are reported separately, including whether the source was already published before this run.
+Keep source publication, PR handoff, later review/CI/merge, target inclusion, release and deployment distinct. A source/PR URL or preflight cannot certify deployment; report package/registry/asset actions as not performed or independently observed CI behavior with evidence. Preserve all verified results on later failure, list exact pending manual work, and never invent a tag for ordinary resume, recalculate a release to recover partial publication, overwrite published refs or claim unperformed tests/provider support passed. Read-only/no-op/cancel creates no state or cosmetic cleanup.

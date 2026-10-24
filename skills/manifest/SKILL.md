@@ -1,6 +1,6 @@
 ---
 name: manifest
-description: Update README.md with a full scan or gap update since last review
+description: Create, review or repair a project README while preserving its style and existing content
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the manifest workflow](../../workflows/manifest.md).

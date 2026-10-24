@@ -1,9 +1,17 @@
 title: agent-helm
-description: A workflow plugin for Claude and Codex, built for solo developers.
+description: A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.
 url: "https://myowinthein.github.io"
 baseurl: "/agent-helm"
-remote_theme: just-the-docs/just-the-docs@v0.12.0
+remote_theme: just-the-docs/just-the-docs@latest
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: default
 nav_sort: order
+nav_external_links_new_tab: false
+aux_links_new_tab: false
 nav_external_links:
   - title: GitHub
     url: https://github.com/myowinthein/agent-helm
@@ -27,10 +35,10 @@ exclude:
   - .DS_Store
   - .claude/
   - .claude-plugin/
-  - commands/
   - rules/
   - prompts/
   - skills/
   - workflows/
+  - helpers/
   - scripts/
   - Rakefile

@@ -1,587 +1,168 @@
 # env
 
-Scan `.env` files, `.gitignore`, and source code to find and fix environment configuration issues.
+Audit environment files, `.gitignore` and relevant project code/configuration, then apply only approved fixes. Preserve intentional differences between services, modes and local overrides.
 
 ## Before starting
 
-Check `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
+Apply the shared runtime's instruction/configuration resolution first. Read effective Helm settings from `{memory_file}` when present, including bridges, overrides and recognized fenced configuration; genuinely absent settings use the Git rules' defaults. Env never creates/migrates an instruction owner, writes settings to AGENTS.md/CLAUDE.md, invokes log, or reads/writes/migrates operational Helm state. It owns no ledger or review marker.
 
-Before switching branches or writing files, check for pre-existing staged changes. If any exist, stop and ask the developer to commit or unstage them before re-running env. Do not commit, unstage, or overwrite their staged work as part of this workflow.
+Read `{package_root}/prompts/shared/content-sync.md`, but do not apply **Prepare the current branch** until selected fixes need a write. The initial audit runs on the current checkout with no checkout, fetch, branch, index or file changes. Record branch/HEAD (or unavailable), dirty/staged state and relevant input identities without printing contents. A dirty/staged checkout may be audited; disclose that normal write preparation is blocked. Never commit, unstage, stash, reset or absorb pre-existing work to proceed.
 
-Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = chore/env-{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
+Writes are eligible on the actual current main/master base, an established existing current feature branch or a confirmed current environment branch, under project policy and the helper's role checks. Unresolved or unsupported branch roles block writes with an explanation, never an automatic checkout. Recommend feature/main for shared configuration fixes and an environment branch for its intentional configuration differences or integrated-source problems; the same approved workflow actions remain available on every eligible role. Branch eligibility does not establish a safe runtime target or authorize publication, live provisioning or synchronization to another branch.
 
----
+### Value-free inspection boundary
 
-## Step 1 — Scan
+Before any potentially secret-bearing read, establish safe local inspection/filtering. Reports, tool output, plans, diffs, errors and completion summaries expose only paths, key names, locations, types and classifications. Never emit existing values, prefixes/suffixes, value hashes, token-bearing URLs or raw source/env snippets. Even apparent placeholders can be misclassified: report the placeholder kind, not its existing text. Newly generated synthetic placeholder literals may be shown.
 
-Read-only. Do not modify anything in this step.
+Filter before output reaches the conversation, including edit-tool echoes and parser errors. Do not source env files, import/boot the application, dump process/resolved configuration, fetch secrets or contact services to validate values. If safe inspection or a required capability cannot be established, mark that scope blocked and continue only independent safe checks. No real-value temporary reports, backups or exported artifacts.
 
-Scan all env files and source files completely before proceeding. Never stop early — a partial scan produces an incomplete report and missed findings will silently persist.
+## Step 1: Inventory and read-only audit
 
-### 1.1 — Detect env files
+### Declare scope and discover actual inputs
 
-Find all `.env*` files in the project. For each file found, infer its purpose from the filename and context. If purpose cannot be determined, label as unknown.
+At actual audit, read `{package_root}/prompts/shared/investigation-evidence.md`; env keeps its current-snapshot Env files/.gitignore scope, with no invented Full/Gap modes or ledger. Map every scoped service/loader/check to inspected evidence, a justified exclusion or an actual gap. Read loaders and configuration modules in sufficient detail to establish resolution/precedence; cover other consumers with convention-aware searches and context, tracing dynamic access where possible. Use safely filtered value-free projections across all source/configuration, not only env files; a whole-file raw read is never required to satisfy another prompt. Hidden/ignored env paths and relevant templates remain discoverable.
 
-### 1.2 — Compare entries across env files
+Large independent code-reference investigations may use permitted read-only workers with exact scope/depth and only safely filtered evidence; known sensitive inputs/projections stay with the parent. Never give workers raw env contents, values or secret-bearing source snippets. If safe filtering cannot be established, keep that part blocked, not clean. Parent reconciliation covers exact service/loader/input identities and check applicability, not matching key counts. Keep unresolved/external references explicit and retain the eleven existing check outcomes.
 
-For each env file, extract all key names (ignore values).
+Start with a cheap metadata inventory: first-party services/packages, entry points, loader/task manifests, relevant source/config/scripts, templates, deployment/CI declarations and nested `.gitignore` files. Honor an explicit Env files or .gitignore focus before expensive checks; inspect safety prerequisites read-only even if their fixes are outside scope. Default to both targets. Do not invent a new mode/flag contract.
 
-Build a matrix of all keys across all files. Find mismatches:
-- Keys present in one file but missing from others
-- For each mismatch, note which files have the key and which don't
+Discover ignored and hidden `.env*` files intentionally, rather than relying on a source search that omits them. Also follow evidence of custom filenames/paths from loader options, Compose `env_file`/`--env-file`, scripts or project documentation. Do not guess additional files. Exclude vendored/dependency, generated/build, binary and unrelated fixture trees from ordinary source scanning; recognize relevant test configuration as its own scope. Always exclude `.helm/`, `.claude/helm/` and the known flat legacy operational JSON files under the runtime's rules.
 
-### 1.3 — Scan source code for env var references
+Group actual consumers and files by service, loader, mode and role. Record a lightweight invocation-only map of load order/inheritance, configuration access, template ownership and external providers. Keep unknown roles/precedence explicit; no persistent profile/schema framework. Resolve target containment/symlinks before editing. Encrypted, generated, mounted/read-only, outside-project or uncertain-dialect files are report-only pending a safe workflow/placement decision; never replace a mount/link, decrypt files or change permissions to make a fix possible.
 
-Detect the project's language and framework, then scan source files for env var access patterns appropriate for the detected stack. Collect every unique key referenced in source code.
+Cover every relevant first-party area in the declared scope, using focused searches and supporting context instead of indiscriminately reading every file. Label checks complete, partial, blocked, not applicable or out of scope. A restricted/partial scan cannot support a project-wide clean-audit claim.
 
-### 1.4 — Cross-reference code vs env files
+### Keep the eleven checks
 
-Using findings from 1.2 and 1.3:
+| Check | Assessment contract |
+|---|---|
+| 1.1 Detect env files | Discover actual inputs and classify template, ignored local, shared defaults, environment override, generated/encrypted or unknown roles. |
+| 1.2 Env sync | Compare keys within the correct service/loader family and its effective layers, not the union of every file. |
+| 1.3 Source/config references | Gather literal keys and references through actual configuration conventions, scripts, CI/containers and relevant test setup; disclose dynamic/unresolved access. |
+| 1.4 Cross-reference | Distinguish genuinely missing required inputs from visible defaults, optional/conditional features, external provision and keys with no reference found in the scanned scope. |
+| 1.5 Secrets/placeholders | Identify credible secret exposure in committable material and unfilled required local inputs, with confidence and role-specific evidence. |
+| 1.6 Hardcoded values | Find credible environment-dependent settings or credentials and propose a coherent access/destination mapping. |
+| 1.7 Env formatting | Find syntax/duplicate/readability problems under the actual loader dialect, preserving parsed meaning. |
+| 1.8 Gitignore missing protection | Check actual Git protection for local files and evidence-backed project artifacts, including shared versus personal exclusion rules. |
+| 1.9 Tracked ignore matches | Identify tracked paths and their effective matching rules for a policy decision, never an automatic removal recommendation. |
+| 1.10 Harmful ignore rules | Demonstrate a conflict with intended versioned files/policy before proposing minimal rule changes. |
+| 1.11 Gitignore formatting | Identify provably redundant patterns or optional readability improvements without changing order, escapes or scope. |
 
-**Missing from env files:** Keys referenced in source code that do not appear in any env file (completely missing, not just missing from some). Keys missing from some but not all env files are covered by the Env sync check. These would silently fail or use undefined values at runtime.
+### Keys, roles and confidence
 
-**Never referenced in code:** Keys present in env files that do not appear anywhere in source code. These may be stale or only used at the infrastructure level — flag but do not auto-remove.
+An override may intentionally contain only its differences from a baseline. A key absent from one layer is not missing if supplied by another applicable layer. Separate template omissions from runtime requirements. External shell/CI/secret-manager injection and visible defaults can satisfy a requirement without an env file; inspecting declarations does not verify remote values. Treat built-in-looking names such as `NODE_ENV`, `CI` or `HOME` according to actual consumer evidence, not a blanket exclusion list. Infer optional/required/conditional status only as far as source/schema/config evidence supports it.
 
-### 1.5 — Check secret vs placeholder correctness
+Recognize templates consistently across discovery, secret cleanup, placeholder checks, extraction and staging: `.env.example`, `.env.sample`, `.env.template`, `.env.dist`, service-specific examples or other explicitly verified template paths. A suffix alone is not enough to classify an encrypted/generated file as a template. Safe shared/test defaults and intentionally fake fixtures are not automatically secrets or broken runtime configuration. Preserve verified useful defaults in templates; do not replace every value with a sentinel.
 
-Two complementary checks:
+Empty values, ordinary defaults and publishable identifiers are not automatically failures or credentials. Distinguish confirmed/credible secret findings, likely required unfilled inputs, and informational/unknown cases. Report uncertainty without adding it to confirmed issue counts. For confirmed or credible exposed secrets, explain that moving/untracking them does not revoke access or remove history; recommend developer review and revocation/rotation as appropriate. Never rotate, rewrite history or publish a credential automatically.
 
-**`.env.example` — no real secrets allowed**
-If no `.env.example` exists, skip this check silently.
-Flag suspected real credentials, but report only file path, key name and credential type, with values omitted entirely. Never emit prefixes, suffixes, hashes, raw secret-bearing snippets/diffs, or token-bearing URLs. Inspect/filter locally before tool output reaches the conversation; if the host cannot do that safely, mark the affected inspection blocked rather than exposing values. This applies to every scan, preview, replacement plan and completion report below.
+Use **No reference found in scanned scope**, not an assertion that a key is dead. Consider infrastructure, scripts, loaders, dependencies and dynamic access before suggesting deletion; similar names alone are weak evidence. Keep unresolved/external keys outside confirmed missing/stale totals. With no env files, explain external configuration evidence/uncertainty instead of listing every access as an error. Do not invent unnecessary env files.
 
-**All other env files — no placeholders allowed**
-Flag any key whose value looks like an unfilled placeholder. These would cause silent failures at runtime.
+### Hardcoded and formatting evidence
 
-### 1.6 — Scan for hardcoded values in source code
+Exclude genuine environment-independent constants, fixtures and mock data from extraction recommendations. Severity follows credential sensitivity and operational impact, not merely a string literal or public key name. Follow the project's existing access convention: configuration indirection/cache behavior, browser/server boundary, build-time versus runtime availability, prefixes, types, empty-versus-absent behavior and defaults. Do not expose a secret by choosing a client-public prefix or retain it as a source fallback.
 
-Scan source files for values that should be env vars. For each finding, suggest a descriptive env var name.
+Identify the real parser/loader before proposing env formatting. Preserve quote/escape semantics, multiline values, comments, expansion/assignment order, meaningful whitespace, encoding and file permissions. Never apply a generic keep-last duplicate policy. Resolve differing assignments by an explicit key/line choice; remove even identical duplicates only when redundancy is established under that loader's semantics. Unknown dialect means report-only. Group headings are optional, normally template-only; absence of identical groupings everywhere is not a correctness issue.
 
-Exclude test fixtures, mock data, and constants that are genuinely environment-agnostic.
+### Git-native ignore assessment
 
-### 1.7 — Check env file formatting
+Use Git's matching semantics, not a second glob implementation. Collect tracked paths with `git ls-files -z`; for relevant paths use read-only `git check-ignore --no-index --verbose --stdin -z` or an equivalent Git-native query. Interpret the winning rule and negation, including nested files, escaped characters and excluded parents. Handle literal/NUL-delimited paths and check failures; an unavailable Git query leaves the check unknown, not passed. Output rule source/line and only a safely filtered pattern.
 
-Check each env file for formatting issues. Also check whether comment-based category groupings exist and whether all keys belong to the right group.
+Read applicable project rules and account for `.git/info/exclude` and `core.excludesFile` without changing those personal/global files. A local env file protected only there still lacks shared project protection; report that distinction. Suggest stack artifacts only with project evidence, not a generic checklist. `dist/`, `vendor/`, lockfiles, compiled `*.js`, safe tracked defaults and partially local config directories may be intentionally versioned or excluded. A tracked match alone proves neither that untracking is right nor that the rule is harmful.
 
-### 1.8 — Check for missing .gitignore entries
+Preserve pattern order, anchoring, escapes, meaningful trailing spaces, comments, nested scope and negations. Remove only provably redundant patterns. For example, within the same file an earlier byte-identical pattern may be redundant under last-match-wins semantics; removing the later copy can change the result around intervening exceptions. Never sort/regroup patterns just for appearance. Protect verified template paths when adding env exclusions, accounting for excluded-parent rules rather than blindly appending a negation.
 
-Detect the project's stack and check `.gitignore` for missing stack-appropriate entries.
+Do not suggest blanket exclusions of canonical `.helm/`, shared AGENTS.md/CLAUDE.md, shared rules or protected unsupported Helm state directories. Preserve legitimate client-local exclusions. Env may assess `.gitignore` protection without opening operational ledgers or modifying instruction/rule files.
 
-### 1.9 — Check for tracked files matching .gitignore
+## Step 2: Report and select work before Git mutation
 
-Run `git ls-files` and cross-check against `.gitignore` patterns — flag any tracked file that matches, since gitignore will not protect already-tracked files.
+Present an `ENV AUDIT REPORT` grouped by the eleven checks, with:
 
-### 1.10 — Check for entries that should not be ignored
+- Exact checkout/HEAD and dirty state; no remote-freshness claim or implied merged-base assessment.
+- Declared services/targets, files and roles, effective-layer assumptions and coverage limitations.
+- Invocation-stable finding IDs, locations/key names, confidence, impact, evidence and recommended action. Count unique confirmed problems separately from informational, uncertain, stylistic, partial and blocked checks.
+- Proposed committable template/source/gitignore changes, local-only work, report-only tracked/managed files and any external provisioning or exposure follow-up.
 
-Flag overly broad or harmful `.gitignore` entries (e.g. patterns that would exclude source files or committed application code).
+If no actionable findings exist and no template creation was requested, report the scoped audit result and finish without questions, writes or branch creation. Unknown/blocked coverage stays visible; do not claim the whole project is clean. Skip/none also exits without mutation.
 
-### 1.11 — Check .gitignore formatting
+For both targets with findings, offer **Env files** and **.gitignore** as the existing multi-select; honor an explicit target choice already made. For one target, use **Work through findings** / **Skip**, not a one-option picker. Choosing a target only selects planning scope, not every fix. Keep all pickers at two to four options; group larger lists behind finding IDs/free text rather than silently truncating. Preserve Other and explicit none.
 
-Check `.gitignore` for formatting issues and whether comment-based category groupings exist.
+If a dirty/staged tree or missing Git capability prevents normal fixes, explain that before collecting dependent write approvals. Keep the audit usable, leave files/index untouched and stop the write route. No automatic stash, owner setup or repository initialization.
 
----
+Template maintenance/creation is optional, never a missing-file error by itself. A request to create a missing template may continue to planning even with no correctness findings. Do not manufacture a secret or runtime-error finding to make it selectable.
 
-## Step 2 — Report
+## Step 3: Prepare and approve a concrete plan
 
-Present all findings grouped by category. Use this format:
+For selected writes, recheck staged inputs and require **Prepare the current branch** from `{package_root}/prompts/shared/content-sync.md`: clean eligible state on the actual current main/master base, an established current feature branch or a confirmed current environment branch. Unresolved/unsupported roles and other prerequisite failures block writes while retaining the audit. Preserve ignored/untracked local inputs and secret files; never stash, copy secrets to backups, replace local files or absorb unrelated work to prepare. Record the actual current `{branch}` and local commit policy. There is no checkout/update or log-specific policy overlay.
 
-```
-─────────────────────────────────
-ENV AUDIT REPORT
-─────────────────────────────────
-ENV FILES FOUND
-─────────────────────────────────
-.env              local development
-.env.example      onboarding template
-.env.staging      staging deployment
-.env.production   production deployment
+On the same validated current branch, re-resolve instructions/configuration and rescan affected services, input roles, key/reference sets and ignore outcomes on the actual destination. If the advisory snapshot differed, reassess its findings against this actual current source; never transplant them. Refresh broader coverage when needed; do not apply stale recommendations or carry approvals to changed inputs. Capture actual source HEAD and relevant source/template/ignore/local input identities using safe local comparison without exposing values or value hashes. Unexpected source/HEAD/ownership/input changes stop dependent work for refreshed evidence/approval. Expected approved edits are tracked separately. Ignored local env files are worktree-local inputs, not branch-versioned outputs; switching branches later does not merge or synchronize them.
 
-─────────────────────────────────
-ENV SYNC          {X issues}
-─────────────────────────────────
-KEY_NAME          missing from: .env.staging, .env.production
-KEY_NAME          missing from: .env.production
+Present one consolidated redacted plan, grouped into coherent dependency units. Each unit lists finding IDs, exact paths/keys and action, minimal source/template/ignore patches, local or external requirements, dependency order and verification. Generated placeholders are safe to show; removed/replaced real values are never printed. Show new files as **Create** with exact path/key list and placeholder structure.
 
-─────────────────────────────────
-MISSING FROM ENV  {X issues}
-─────────────────────────────────
-Keys referenced in code but not in any env file:
-- KEY_NAME        src/config.js:14
-- KEY_NAME        src/api/client.ts:8
-
-─────────────────────────────────
-NEVER REFERENCED  {X issues}
-─────────────────────────────────
-Keys in env files with no code reference (may be infrastructure-only):
-- KEY_NAME        .env, .env.staging
-
-─────────────────────────────────
-SECRET/PLACEHOLDER ISSUES        {X found}
-─────────────────────────────────
-.env.example — real secrets found (should be placeholders):
-- KEY_NAME        .env.example    API credential (value omitted)
-- GITHUB_TOKEN    .env.example    access token (value omitted)
-
-.env, .env.staging — placeholders found (should be real values):
-- KEY_NAME        .env            your-key-here
-- KEY_NAME        .env.staging    REPLACE_ME
-
-─────────────────────────────────
-HARDCODED VALUES  {X issues}
-─────────────────────────────────
-[High] API key hardcoded as string literal
-      File: src/api/stripe.js:23
-      Type: API credential (value omitted)
-      Suggested env var: STRIPE_PUBLISHABLE_KEY
-
-[Medium] Environment-specific URL hardcoded
-      File: src/config.js:5
-      Type: environment-specific URL (value omitted)
-      Suggested env var: API_BASE_URL
+On an environment branch, identify shared versus intentionally environment-specific fixes, or unresolved scope, in that same plan. Preserve intentional differences. Note when a shared fix may need deliberate application upstream or may be overwritten by later integration; never copy, merge or back-propagate it automatically. Resolve only material missing decisions through the existing approval, without a new per-run branch confirmation. Ignored local env inputs remain worktree-local, not branch-synchronized artifacts.
 
-─────────────────────────────────
-ENV FORMATTING    {X issues}
-─────────────────────────────────
-.env:
-- 2 duplicate keys
-- Inconsistent spacing around = on 3 lines
-.env.staging:
-- Trailing whitespace on 1 line
+Use **Apply plan**, **Choose changes**, **Revise**, or **Skip** (maximum four). Choose changes accepts IDs/groups/free text and produces an explicit bounded selection. Resolve differing duplicate assignments and existing-key conflicts with exact key/line/location choices. Ask only for missing decisions; reuse approval of the same concrete unit. Never treat silence or a selected target as approval. Untracking retains its separate confirmation below.
 
-─────────────────────────────────
-GITIGNORE MISSING ENTRIES   {X issues}
-─────────────────────────────────
-node_modules/     (stack: Node.js)
-.env.local
-dist/
-
-─────────────────────────────────
-GITIGNORE TRACKED FILES     {X issues}
-─────────────────────────────────
-.env.local        already tracked by git — run git rm --cached .env.local to untrack
-
-─────────────────────────────────
-GITIGNORE ENTRIES TO REMOVE {X issues}
-─────────────────────────────────
-*.js              overly broad — would exclude source files
-config/           matches committed application code — likely added by mistake
+A selected subset can be a valid outcome. Apply no dependency unit halfway: if a required destination, template decision, ignore protection or key conflict is unresolved, leave that unit pending and proceed only with independent approved units. No fixed finding-count threshold or per-file commit requirement.
 
-─────────────────────────────────
-GITIGNORE FORMATTING        {X issues}
-─────────────────────────────────
-3 duplicate entries found
-Missing category groupings
+### Optional template maintenance and creation
 
-─────────────────────────────────
-TOTAL: {N} issues across {N} categories
-─────────────────────────────────
-```
+For an existing recognized template, propose adding only approved, relevant key names in its existing structure/placeholder style. Keep supported safe defaults and comments; never copy real values. Do not add every local experiment or unrelated service key. Do not generate instructions about obtaining credentials without existing authoritative project guidance.
 
-Then ask which targets to work through. Only two targets exist (Env files, .gitignore), so if only one has findings, a multi-select with a single option isn't valid — AskUserQuestion requires at least 2. Use whichever question shape matches how many targets actually have findings:
+If the relevant service has no template, offer explicit **Create template** / **Skip** with the proposed path and content structure. Default to that service's `.env.example` only when appropriate; ask about ambiguity. Approval of the concrete creation in the consolidated plan also satisfies this choice, without another identical question. Verify that no competing template exists and that the path is safe and intended for tracking. Assess effective ignore rules first; any required minimal exception needs its own approved `.gitignore` patch. If protection cannot be safely established, leave creation pending; never force-add or create a real env file instead.
 
-If both targets have findings:
+Bootstrap from evidenced keys with newly generated, dialect-compatible placeholders, including required/optional/unknown status in the report. Do not copy current values or guess credentials/defaults. Preserve role boundaries when multiple services need separate templates: create only the explicitly chosen paths, never a repository-wide template set. No env file is created implicitly by scanning or extracting a value.
 
-AskUserQuestion:
-  question: "Which findings would you like to work through?"
-  header:   "Fix scope"
-  multiSelect: true
-  options:
-    - label: "Env files"
-      description: "All env-file findings: sync, missing keys, secrets/placeholders, hardcoded values, unreferenced keys, formatting"
-    - label: ".gitignore"
-      description: "All .gitignore findings: missing entries, tracked files, overly-broad entries, formatting"
+## Step 4: Apply coherent units and verify
 
-If only one target has findings, skip this picker and ask directly whether to work through it:
+### Edit eligibility and commit boundary
 
-AskUserQuestion:
-  question: "Work through the {N} {target} finding(s)?"
-  header:   "Fix scope"
-  multiSelect: false
-  options:
-    - label: "Yes (Recommended)"
-      description: "Walk through {target}'s findings"
-    - label: "Skip"
-      description: "Exit without changes"
+- Recognized, explicitly approved templates may be edited/created and committed only after their entire resulting contents are verified free of real credentials. This includes verified alternative templates, not only exact `.env.example`. Skipped/unresolved secret cleanup prevents staging that template.
+- Non-template operational env contents are never staged, including safe shared defaults, even if already tracked. Tracked non-template env files are report-only for edits under this workflow; do not untrack them just to bypass that restriction. Intentionally tracked safe files are not automatically anomalies. Managed/encrypted/unknown targets remain report-only as described above.
+- Eligible local env edits are confined to explicitly approved, existing, ignored and untracked files with a known loader and safe local tooling. Real values stay local. Otherwise the developer performs entry through their normal local/provider tooling; never request credentials in conversation.
+- Approved credential-free source and project `.gitignore` patches are committable. A separately confirmed untracking index deletion is allowed while preserving its local file. No instruction files, client settings, global/info excludes, ledgers or unrelated paths enter the write set.
 
-  "Yes" is equivalent to selecting that target in the multi-select above — proceed the same way.
+### Manual input, extraction and key removal
 
-Selecting/confirming a target walks through each of its findings in Step 3 — every sub-flow shows what it found and asks, so you can skip any you do not want. Selecting neither (or Skip) exits without changes (the report above already lists everything).
+For sync/missing/placeholder issues, show the relevant keys and destinations under effective-layer rules. Let the developer enter real values locally or provision them externally. Do not insert empty `KEY=` lines merely to make a matrix look complete: empty may differ from absent. Recheck locally after Done using value-free key/syntax/sentinel results. Report verified present, still missing/unfilled, blocked or developer-attested external setup; do not equate key existence with valid credentials or a working connection.
 
-Wait for response before proceeding.
+For hardcoded extraction, approve the exact access expression, key name, service/load phase, any type conversion/default behavior and local/external destination before editing. Do not silently reuse a conflicting existing key/value or overwrite an existing setting. Never copy one real value into development, staging, production or other services indiscriminately. Templates receive compatible synthetic placeholders or retain verified safe existing defaults; no real value enters them.
 
----
+When local transfer is approved, use safe local operations that do not echo the secret, only to the approved existing ignored/untracked destination. Otherwise require developer entry. Apply/verify needed approved ignore protection and template/destination setup before the dependent source patch. External provisioning requires explicit developer attestation; if readiness is unresolved, keep the dependent source edit pending. Do not keep a credential literal as a fallback or move a server secret into a client bundle. Include newly required key names and pending environment provisioning in the handoff; neither a local edit nor CI proves deployment values exist.
 
-## Step 3 — Apply fixes
+For keys with no reference found, keep by default. Removal needs explicit key-and-file IDs and dependency evidence, including any original feature-snapshot usage. Explain that deleted local values may have no Git recovery. A free-text delete-all answer covers only the exact disclosed set; ambiguity needs clarification. Never delete a whole env file or remove infrastructure/dynamic/externally managed keys based only on a search miss.
 
-### Commit boundary — applies to every sub-flow and commit
+Formatting uses minimal, approved edits under identified loader/Git semantics. Preserve unaffected bytes and existing structure. Optional group headings belong in approved template edits, not forced rewrites of every operational env file. Unknown dialect or changed source inputs stops that edit instead of guessing.
 
-Environment edits and committable changes are separate. Keep `.env` and all other non-example `.env*` files local, even when already tracked; never stage their contents, use force-add to bypass ignore rules, or copy their real values into templates, reports, or commit messages. A reviewed `.env.example` may be committed only when its entire resulting content is free of real secrets. Source files and `.gitignore` must also be checked for credentials before staging.
+### Gitignore patches and explicit untracking
 
-Track the exact files and changes made by this run. Stage only approved, safe changes using explicit paths (or task-specific hunks when a file also has unrelated edits), never a repository-wide `git add -u`, `git add -A`, or `git commit -a`. A developer-confirmed `git rm --cached` deletion is allowed: preserve that index deletion without re-adding the local file. This removes tracking; it does not erase secrets from existing history.
+Apply only the minimal approved pattern changes, creating a missing project `.gitignore` only when its proposed path/content was reviewed. Re-evaluate actual Git outcomes after any change: relevant local files remain protected, intended templates/source files remain eligible and previously reported matches have not changed. Treat newly discovered tracked matches as new decisions.
 
-Before every commit, including per-file commits below, verify the complete proposed index: only this run's approved changes may be present, no non-example env file may be added or modified, and all resulting staged file contents must be free of real credentials. Inspect locally without emitting credential values or raw secret-bearing diffs in tool output. If a check fails or cannot be completed, stop the commit/push path and report paths and key names only; do not silently unstage the developer's changes or claim a successful commit. A skipped secret cleanup is not permission to commit a template that still contains credentials.
+For each bounded untracking group, list its exact paths/count, winning rule and why policy may warrant removal. Offer **Untrack listed paths** / **Skip** with this explanation: `git rm --cached` retains local files, but the committed removal may delete clean copies in other clones/deployment checkouts when updated; modified copies may block update. It does not revoke secrets or erase history. Environment fan-out can propagate that deletion. Default intentional shared artifacts to keeping them tracked unless the developer approves the demonstrated change.
 
-Run the sub-flows for each selected target: the **Env files** sub-flows if "Env files" was selected, the **.gitignore** sub-flows if ".gitignore" was selected. Within a selected target, run a sub-flow only if it has findings — each shows its findings and asks, with a Skip.
+On that explicit approval only, use literal pathspecs with option separation/NUL-safe lists as needed for `git rm --cached`; no shell/glob expansion, force, whole-index rebuild or worktree deletion. Verify the exact index deletion and that local files are unchanged/present before continuing. Keep approved deletions in the index without re-adding local contents. Decline/failure preserves actual files/index and blocks dependent operations; do not undo someone else's work automatically.
 
-Apply each sub-flow one at a time. Complete each fully before moving to the next. Never mark the command done if a sub-flow was only partially applied — partial fixes leave the project in an inconsistent state.
+### Readback and input drift
 
----
+Before each unit, recheck its source HEAD and relevant input identities against the approved baseline or expected earlier outputs. Track the expected current HEAD separately from the audited source snapshot; advance that expectation only to verified commits made by this run. After each unit, perform safe static readback: key presence/absence, syntax, intended source access/types, preserved parsed meaning for formatting, template credential freedom, Git ignore outcomes and exact untracking effects. Keep raw parser/error output and secrets out of the conversation. Re-evaluate dependent sync/reference/protection findings and update their statuses rather than using the stale initial matrix.
 
-**Env files sub-flows** — run these only if "Env files" was selected.
+Do not run application/service probes, installs, migrations, builds or tests merely to audit/draft a fix. Static verification and developer attestation are separate from runtime checks. Required later publication checks still apply; unavailable required checks are blocked, not passed. A failed/incomplete unit stops its dependents and any finalization of unresolved drafts; preserve actual work and report partial status.
 
-### Secret cleanup (.env.example)
+## Step 5: Commit, finalize and report
 
-Only run this section if real secrets were found in `.env.example`.
+Track exact approved outputs and actual run commits. Before every logical-unit commit, inspect the complete proposed index through safe filtering: only this run's approved paths/hunks and confirmed untracking deletions may be present; no operational env content, real credentials or unrelated work may enter it. Verify entire resulting source/template/gitignore contents, not only new lines. Never use broad `git add -u`, `git add -A`, `git commit -a`, force-add or silently unstage unexpected changes. Literal exact-path staging applies. If a check fails/cannot be completed, stop commit/publication and report paths/key names and reason only.
 
-Display the flagged keys with their planned replacement:
+Honor invocation auto-commit and existing scope conventions with an accurate logical-unit message, such as `fix(env): correct configuration loading` or template/ignore-specific wording. Replace the old greater-than-ten-findings rule with dependency-coherent commits. Earlier verified commits still count if the final stage has nothing new. Declined/failed commits preserve drafts/index/branch and stop dependent finalization.
 
-```
-.env.example — real secrets found. Planned replacements:
+Keep approved local-only edits on disk and outside commits. Never reset, stash, discard or commit secret-bearing inputs to make work look complete. No checkout, integration or cleanup occurs. Local-only edits without a safe commit are a valid separate outcome; report them and external provisioning/exposure dependencies without querying values or claiming deployment/rotation. A no-write/no-commit exit changes no branches.
 
-KEY_NAME        API credential (value omitted) → <YOUR_KEY_NAME>
-GITHUB_TOKEN    access token (value omitted)   → <YOUR_GITHUB_TOKEN>
-```
+After verifying eligible local outputs/commits, apply **Finish verified local work** from `{package_root}/prompts/shared/content-sync.md`. Finish on the current permitted branch. No push/PR question, integration, environment promotion, branch creation/switch/return or cleanup follows. Preserve drafts and failed/declined commits honestly; publication is a later explicit ship action. A verified local result needs no remote/provider availability or published-source dependency.
 
-Then ask:
+Report audit scope and fixes separately:
 
-AskUserQuestion:
-  question: "Replace real secrets in .env.example with placeholders?"
-  header:   "Secret cleanup"
-  multiSelect: false
-  options:
-    - label: "Replace all"
-      description: "Replace all {N} flagged values with the placeholders shown above"
-    - label: "Skip"
-      description: "Leave .env.example unchanged — handle manually"
-
-If Replace all selected: replace each flagged key's value with `<YOUR_{KEY_NAME}>`.
-If user selects Other and types instructions: follow their instructions exactly. Apply only what was explicitly requested.
-If Skip selected: note in Step 5 report under manual action.
-
-Do not touch values in any other env file during this section.
-
-### Placeholder cleanup (other env files)
-
-Only run this section if placeholders were found in non-example env files.
-
-Display findings grouped by file:
-
-```
-Other env files — placeholders found (should be real values):
-
-.env
-  KEY_NAME        your-key-here
-  DB_PASSWORD     <YOUR_DB_PASSWORD>
-
-.env.staging
-  API_SECRET      REPLACE_ME
-  KEY_NAME        your-key-here
-
-Fill in the real values in each file, then mark done.
-```
-
-Then ask:
-
-AskUserQuestion:
-  question: "Have you filled in the placeholder values?"
-  header:   "Placeholders"
-  multiSelect: false
-  options:
-    - label: "Done — move to next step"
-      description: "Continue to the next sub-flow"
-    - label: "Skip"
-      description: "Leave these placeholders as-is and move on"
-
-Do not recheck or validate what was filled in.
-
----
-
-### Env sync
-
-Process one env file at a time. For each file with missing keys:
-
-1. Display the missing keys and where they exist:
-
-```
-.env.staging — 3 keys missing
-
-KEY_NAME       exists in: .env, .env.production
-DB_URL         exists in: .env only
-API_SECRET     exists in: .env, .env.production
-```
-
-2. Let the developer add the keys manually to the file.
-
-3. Ask to proceed:
-
-AskUserQuestion:
-  question: "Have you finished updating .env.staging?"
-  header:   "Env sync"
-  multiSelect: false
-  options:
-    - label: "Done — move to next file"
-      description: "Continue to the next env file with missing keys"
-    - label: "Skip this file"
-      description: "Leave .env.staging as-is and move on"
-
-4. Move to the next file. Do not recheck or validate what was added.
-
-### Missing from env
-
-Display keys that are completely missing from all env files with their code reference locations:
-
-```
-Keys referenced in code but missing from all env files:
-
-KEY_NAME        src/config.js:14
-KEY_NAME        src/api/client.ts:8
-
-Add these to .env and all relevant env files manually.
-```
-
-Then wait:
-
-AskUserQuestion:
-  question: "Have you finished adding the missing keys to your env files?"
-  header:   "Missing from env"
-  multiSelect: false
-  options:
-    - label: "Done — move to next step"
-      description: "Continue to the next sub-flow"
-    - label: "Skip"
-      description: "Leave these keys unresolved and move on"
-
-### Hardcoded values
-
-Display all findings:
-
-```
-Hardcoded values found — should be moved to env vars:
-
-[High] src/api/stripe.js:23
-  Type: API credential (value omitted)
-  Suggested env var: STRIPE_PUBLISHABLE_KEY
-
-[Medium] src/config.js:5
-  Type: environment-specific URL (value omitted)
-  Suggested env var: API_BASE_URL
-```
-
-Then ask:
-
-AskUserQuestion:
-  question: "Move hardcoded values to env vars?"
-  header:   "Hardcoded values"
-  multiSelect: false
-  options:
-    - label: "Replace all"
-      description: "Substitute in source + add to all env files using the suggested names above"
-    - label: "Skip"
-      description: "Leave all hardcoded values as-is"
-
-If Replace all selected:
-- If there are more than 10 findings, process one source file at a time. After applying that file's fixes, stage only its approved, credential-free source changes and any updated, verified placeholder-only `.env.example`; exclude all non-example env contents. Apply the Commit boundary above and git.md's Auto-Commit rule, then commit `fix(env): move hardcoded values to env vars ({file})` before moving to the next file.
-- For each finding:
-  - Replace the hardcoded value in source with the env var access pattern for the detected stack
-  - Add the key + real value to `.env` and all other non-example env files if absent
-  - Add the key + placeholder (`<YOUR_{KEY_NAME}>`) to `.env.example` if absent
-- Inform the dev which source files and env files were updated, distinguishing committable changes from local-only env edits
-
-If user selects Other and types instructions: follow their instructions exactly. Apply only what was explicitly requested.
-If Skip selected: no changes.
-
-### Never referenced
-
-Display keys that exist in env files but are never referenced in source code, grouped by file, with a note on whether each looks infrastructure-only or stale:
-
-```
-Keys in env files with no code reference:
-
-KEY_NAME        .env, .env.staging     (looks infrastructure-only)
-OLD_API_KEY     .env                   (looks stale — similar to STRIPE_API_KEY)
-DEBUG_TOKEN     .env.staging           (looks stale)
-
-What would you like to do? You can say things like:
-- "delete OLD_API_KEY and DEBUG_TOKEN, keep KEY_NAME"
-- "replace config/database.js line 12 with KEY_NAME"
-- "delete all" / "keep all"
-```
-
-Read the developer's free-text response and act accordingly. Apply only what was explicitly requested.
-
-### Env formatting
-
-Only run this section if env formatting issues were found.
-
-AskUserQuestion:
-  question: "Fix formatting across all env files?"
-  header:   "Env formatting"
-  multiSelect: false
-  options:
-    - label: "Proceed"
-      description: "Fix formatting, remove duplicates, and add category groupings consistently across all env files"
-    - label: "Skip"
-      description: "Leave env file formatting as-is"
-
-If Proceed selected:
-- Apply consistent formatting rules across all env files: spacing around `=`, line endings, no trailing whitespace
-- Remove duplicate keys (keep last occurrence) in each file
-- Add category groupings if absent — use the same grouping structure across all env files
-- Preserve existing group order — do not reorder entries within a group
-
-If Skip selected: no changes to env files.
-
----
-
-**.gitignore sub-flows** — run these only if ".gitignore" was selected.
-
-### Missing entries
-
-Only run this section if missing entries were found in Step 1.8.
-
-Display all missing entries with a reason:
-
-```
-Missing .gitignore entries (stack: Node.js):
-
-node_modules/    dependency directory — never committed
-.env.local       local override file — contains machine-specific values
-dist/            build output — regenerated on every build
-```
-
-Then ask:
-
-AskUserQuestion:
-  question: "Add missing entries to .gitignore?"
-  header:   "Missing entries"
-  multiSelect: false
-  options:
-    - label: "Add all"
-      description: "Add all {N} missing entries to .gitignore"
-    - label: "Skip"
-      description: "Leave .gitignore unchanged"
-
-If Add all selected: add all entries to .gitignore, then proceed immediately to tracked files check below.
-If Skip selected: skip to next section.
-
-### Tracked files
-
-Run this section in two cases:
-- Automatically after Missing entries if new entries were added — check for tracked files matching those new patterns
-- If pre-existing tracked files were found in Step 1.9 — handle those too
-
-For each tracked file, ask:
-
-AskUserQuestion:
-  question: "{file} is tracked by git but matches a .gitignore pattern. Untrack it?"
-  header:   "Untrack file"
-  multiSelect: false
-  options:
-    - label: "Untrack"
-      description: "Run git rm --cached {file} so .gitignore takes effect"
-    - label: "Skip"
-      description: "Leave it tracked — handle manually later"
-
-If Untrack selected → run `git rm --cached {file}`.
-If Skip selected → note it in the Step 5 report under manual action.
-
-### Entries to remove
-
-Only run this section if overly broad or harmful entries were found in Step 1.10.
-
-Display all entries to remove with a reason:
-
-```
-Entries that should not be ignored:
-
-*.js             overly broad — would exclude source files
-config/          matches committed application code — likely added by mistake
-```
-
-Then ask:
-
-AskUserQuestion:
-  question: "Remove these entries from .gitignore?"
-  header:   "Entries to remove"
-  multiSelect: false
-  options:
-    - label: "Remove all"
-      description: "Remove all {N} flagged entries from .gitignore"
-    - label: "Skip"
-      description: "Leave .gitignore unchanged"
-
-If Remove all selected: remove all flagged entries from .gitignore.
-If Skip selected: no changes.
-
-### Gitignore formatting
-
-Only run this section if formatting issues were found in Step 1.11.
-
-AskUserQuestion:
-  question: "Fix .gitignore formatting?"
-  header:   "Gitignore formatting"
-  multiSelect: false
-  options:
-    - label: "Proceed"
-      description: "Fix formatting, remove duplicate entries, and add category groupings"
-    - label: "Skip"
-      description: "Leave .gitignore formatting as-is"
-
-If Proceed selected:
-- Fix formatting and remove duplicate entries
-- Add category groupings if absent
-- Preserve existing group order — do not reorder entries within a group
-
-If Skip selected: no changes.
-
----
-
-## Step 4 — Commit
-
-After all fixes are applied, follow Step 3's Commit boundary for the remaining changes. Stage only the exact approved source changes, verified placeholder-only `.env.example` changes (new or existing), and `.gitignore` changes made by this run. Preserve any confirmed untracking deletions. Never stage non-example env contents, including modified tracked files. Verify the full proposed index before committing; do not use broad staging commands or commit unrelated pre-staged work.
-
-Local-only env edits must remain on disk. If they block a checkout, merge, or cleanup, stop that affected operation and report the current branch and remaining work. Do not force checkout, discard, automatically stash, or commit those files to make Git operations succeed. Report local-only edits even when there is nothing safe to commit.
-
-Account for both remaining safe changes and earlier verified per-file commits. Nothing newly staged is not a no-op when the Hardcoded values flow already committed work; under either Git mode those commits remain eligible for the normal publication/review handoff. Track actual run commits rather than assuming main or a final-stage commit exists.
-
-Commit remaining approved safe changes under the invocation's auto-commit policy, after the complete index check above, with an accurate scoped message. A decline or failed verification/commit stops with actual local-only edits, drafts and branch preserved. Never commit a local env file to unblock a checkout. If no workflow writes/commits exist, use the shared genuine-no-op cleanup only when local-only work does not block it; report local edits separately.
-
-After all intended safe commits are verified, read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = env`. This includes confirmed PR/push handoff, configured merge strategy, `{base_branch}`, exact-SHA CI-gated fan-out and safe cleanup. Local-only env edits that block checkout/integration stop that action without reset, stash, discard or publication of those files.
-
----
-
-## Step 5 — Confirm completion
-
-If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
-
-Report:
-
-```
-ENV COMPLETE
-─────────────────────────────────
-Env files
-  Secret cleanup:   .env.example — {N} replaced, {N} skipped
-  Placeholder:      {N} keys flagged across {N} files — done / skipped
-  Env sync:         {N} keys added across {N} files
-  Missing from env: {N} keys identified — added manually
-  Hardcoded values: {N} replaced, {N} skipped
-  Never referenced: {N} deleted, {N} kept
-  Env formatting:   {N} files fixed
-.gitignore
-  Missing entries:  {N} added
-  Tracked files:    {N} untracked, {N} skipped
-  Entries removed:  {N} overly-broad removed
-  Formatting:       {N} duplicates removed, groupings added: yes/no
-─────────────────────────────────
-Needs manual action:
-- Secret cleanup skipped: real secrets remain in .env.example — replace with placeholders manually
-- Tracked files skipped: {list} — run git rm --cached to untrack manually
-- Local-only env edits: {paths or none} — kept on disk, excluded from commits
-- Commit blocked: {paths/key names and reason, or none} — no credential values
-─────────────────────────────────
-Committed: yes / no
-Pushed: yes / no — push manually when ready / N/A (nothing to commit)
-Environments promoted: {list or none}
-```
-
-If GitHub Flow: also report the temporary branch's fate ({merged and deleted / left as-is, uncommitted or unpushed}) and which branch you were returned to.
+- Outcome: scoped audit complete/partial/blocked, no actionable findings, fixes complete/partial/skipped or pending. Never label skipped/manual/incomplete work simply ENV COMPLETE.
+- Actual snapshot/coverage, services and file roles; no fetched-remote or runtime claims without evidence.
+- Finding IDs grouped by the eleven checks: verified resolved, retained/intentional, skipped, still missing, uncertain, developer-attested or blocked. Count actual verified file/key edits, not Done answers.
+- Templates updated/created and exact paths; report-only tracked/managed files, preserved local-only edits, exposure/provisioning/manual follow-up and dependency units still pending, with values omitted.
+- Static checks actually performed versus unrun runtime checks; commit eligibility and any blocked safe inspection.
+- Actual local drafts/verified commits, current branch, preserved local-only edits and remaining checks/dependencies. Publication, PR, integration, promotion and checkout were not performed; invoke ship separately when ready.

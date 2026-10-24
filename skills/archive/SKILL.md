@@ -1,6 +1,6 @@
 ---
 name: archive
-description: Explore, restore, containerize, document, and seal a project for long-term archive recovery
+description: Audit, plan or preserve an old project's environment, data and recovery docs, with a reviewed local payload; ship separately publishes the private backup
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the archive workflow](../../workflows/archive.md).

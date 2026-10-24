@@ -1,0 +1,146 @@
+{
+  "interface_version": 1,
+  "limits": {
+    "request_bytes": 65536,
+    "ledger_bytes": 33554432,
+    "response_bytes": 262144,
+    "depth": 64,
+    "nodes": 500000,
+    "records": 100000,
+    "page_default": 20,
+    "page_max": 100
+  },
+  "definitions": {
+    "text": {"type": "string", "nonblank": true},
+    "sha": {"type": "string", "format": "commit"},
+    "anchor": {"type": ["string", "null"], "format": "commit"},
+    "date": {"type": "string", "format": "date"},
+    "path": {"type": "string", "format": "path"},
+    "texts": {"type": "array", "items": {"ref": "text"}, "min_items": 1},
+    "paths": {"type": "array", "items": {"ref": "path"}, "min_items": 1},
+    "priority": {"type": "string", "enum": ["high", "medium", "low", "unknown"]},
+    "state": {"type": "string", "enum": ["open", "resolved", "obsolete"]},
+    "method": {"type": "string", "enum": ["runtime", "static", "manual"]},
+    "risk": {"type": "string", "enum": ["safe", "needs-review"]},
+    "category": {"type": "string", "enum": ["Architecture", "Consistency", "Code Quality", "Performance", "Tests", "Dependencies"]},
+    "found": {
+      "type": "object", "required": ["origin", "commit", "date"],
+      "properties": {
+        "origin": {"type": "string", "enum": ["native"]},
+        "commit": {"ref": "sha"}, "date": {"ref": "date"}
+      }
+    },
+    "assessment": {
+      "type": "object", "required": ["origin", "commit", "date", "priority", "risk", "reason", "evidence", "invariant"],
+      "properties": {
+        "origin": {"type": "string", "enum": ["native"]},
+        "commit": {"ref": "sha"}, "date": {"ref": "date"},
+        "priority": {"ref": "priority"}, "risk": {"ref": "risk"},
+        "reason": {"ref": "text"}, "evidence": {"ref": "texts"}, "invariant": {"ref": "text"}
+      }
+    },
+    "refactor_decision": {
+      "type": "object", "required": ["origin", "action", "commit", "date", "reason", "context"],
+      "properties": {
+        "origin": {"type": "string", "enum": ["native"]},
+        "action": {"type": "string", "enum": ["skip", "defer", "accepted-risk"]},
+        "commit": {"ref": "sha"}, "date": {"ref": "date"}, "reason": {"ref": "text"},
+        "context": {
+          "type": "object", "required": ["paths", "evidence"],
+          "properties": {"paths": {"ref": "paths"}, "evidence": {"ref": "texts"}}
+        }
+      }
+    },
+    "check": {
+      "type": "object", "required": ["command", "scope", "outcome"],
+      "properties": {"command": {"ref": "text"}, "scope": {"ref": "text"}, "outcome": {"ref": "text"}}
+    },
+    "refactor_closure": {
+      "type": "object", "required": ["origin", "kind", "commit", "date", "method", "evidence"],
+      "properties": {
+        "origin": {"type": "string", "enum": ["native"]},
+        "kind": {"type": "string", "enum": ["fixed", "no-longer-applicable", "duplicate"]},
+        "commit": {"ref": "sha"}, "date": {"ref": "date"}, "method": {"ref": "method"},
+        "evidence": {"ref": "texts"},
+        "checks": {"type": "array", "items": {"ref": "check"}, "min_items": 1}
+      }
+    },
+    "finding": {
+      "type": "object", "required": ["id", "category", "summary", "paths", "found", "assessment", "state", "depends_on"],
+      "properties": {
+        "id": {"ref": "text"}, "category": {"ref": "category"}, "summary": {"ref": "text"},
+        "paths": {"ref": "paths"}, "found": {"ref": "found"}, "assessment": {"ref": "assessment"},
+        "state": {"ref": "state"},
+        "depends_on": {"type": "array", "items": {"ref": "text"}, "unique": true},
+        "decision": {"ref": "refactor_decision"}, "closure": {"ref": "refactor_closure"},
+        "blocker": {
+          "type": "object", "required": ["kind", "reason"],
+          "properties": {
+            "kind": {"type": "string", "enum": ["clarification", "prerequisite", "verification"]},
+            "reason": {"ref": "text"}
+          }
+        },
+        "recurrence_of": {"ref": "text"}, "extensions": {"type": "object"}
+      }
+    },
+    "test_decision": {
+      "type": "object", "required": ["type", "note", "date", "commit"],
+      "properties": {
+        "type": {"type": "string", "enum": ["deferred", "accepted-risk"]},
+        "note": {"ref": "text"}, "date": {"ref": "date"}, "commit": {"ref": "sha"}
+      }
+    },
+    "test_closure": {
+      "type": "object", "required": ["reason", "refs", "method", "outcome", "commit"],
+      "properties": {
+        "reason": {"type": "string", "enum": ["tested", "equivalent-protection", "static-contract", "manual-signoff", "obsolete"]},
+        "refs": {"ref": "texts"}, "method": {"ref": "method"},
+        "outcome": {"ref": "text"}, "commit": {"ref": "sha"},
+        "command": {"ref": "text"}, "scope": {"ref": "text"}
+      }
+    },
+    "case": {
+      "type": "object", "required": ["id", "expected", "basis", "paths", "priority", "reason", "action", "state", "assessed_commit"],
+      "properties": {
+        "id": {"ref": "text"}, "expected": {"ref": "text"}, "basis": {"ref": "texts"},
+        "paths": {"ref": "paths"}, "priority": {"ref": "priority"}, "reason": {"ref": "text"},
+        "action": {"type": "string", "enum": ["add", "improve", "consolidate", "replace", "remove", "manual"]},
+        "state": {"ref": "state"}, "assessed_commit": {"ref": "sha"},
+        "layer": {"ref": "text"}, "tests": {"type": "array", "items": {"ref": "text"}},
+        "blocker": {
+          "type": "object", "required": ["kind", "note"],
+          "properties": {
+            "kind": {"type": "string", "enum": ["clarification", "execution", "verification"]},
+            "note": {"ref": "text"}
+          }
+        },
+        "decision": {"ref": "test_decision"}, "closure": {"ref": "test_closure"},
+        "extensions": {"type": "object"}
+      }
+    }
+  },
+  "owners": {
+    "refactor": {
+      "filename": "refactor-log.json", "schema_version": 2, "records": "findings",
+      "schema": {
+        "type": "object", "required": ["schema_version", "assessed_commit", "full_scan_commit", "findings"],
+        "properties": {
+          "schema_version": {"type": "integer", "enum": [2]},
+          "assessed_commit": {"ref": "anchor"}, "full_scan_commit": {"ref": "anchor"},
+          "findings": {"type": "array", "items": {"ref": "finding"}}, "extensions": {"type": "object"}
+        }
+      }
+    },
+    "test": {
+      "filename": "test-log.json", "schema_version": 3, "records": "cases",
+      "schema": {
+        "type": "object", "required": ["schema_version", "cases"],
+        "properties": {
+          "schema_version": {"type": "integer", "enum": [3]},
+          "assessed_commit": {"ref": "anchor"}, "full_scan_commit": {"ref": "anchor"},
+          "cases": {"type": "array", "items": {"ref": "case"}}, "extensions": {"type": "object"}
+        }
+      }
+    }
+  }
+}

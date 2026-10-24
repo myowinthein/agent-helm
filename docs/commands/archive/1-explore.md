@@ -7,89 +7,38 @@ nav_order: 1
 
 # Step 1: Explore
 
-Read-only reconnaissance. Scans every corner of the project: stack, data sources, integrations, credentials, Git state, and produces a structured report with a restoration complexity rating. Nothing is modified. The developer decides whether to proceed based on the report.
+Inspect enough local source, configuration, manifests, data flows and history to decide what should be preserved. No project execution or network contact occurs. Normal mode writes nothing before report approval; Audit/Plan never write reports or progress.
 
-## Flow
+Normal mode first applies the [archive directory rules](../archive.html#archive-directory-and-existing-projects) read-only, then the [source-branch confirmation](../archive.html#confirm-the-source-branch) before entering a pending phase. Show the actual branch/full HEAD, known excluded work and same-branch edit/local-payload effects; obtain Proceed/Cancel or reuse explicit still-applicable approval. This is separate from Step 1 report approval and creates no confirmation state. Proven prepared/completed report-only exits need no new question. A fresh run creates `.helm/archive/` only after Step 1 report approval and baseline capture. Unsupported old bundles stay protected and block archive continuation; see the upgrade guide. Audit/Plan open neither bundle and need no branch confirmation.
 
-```mermaid
-flowchart TD
-  Start([Begin Step 1]) --> ReadCode[Read source code, config,\nmanifests, docs, env files]
+## Decisions and evidence
 
-  ReadCode --> Gather["Determine:\n- Stack and runtime versions\n- Architecture and key modules\n- Database type and data sources\n- External integrations\n- Existing documentation\n- Postman/API collection files\n- Archive-worthy assets\n- Large or binary files\n- CI/CD pipelines\n- Git remotes and branches\n- Credential paths, keys and types; values omitted"]
+Read-only exploration follows the [shared investigation and exclusion contract](../../setup/investigation.html). Inventory exact recovery categories/components independently of familiar hotspots; trace required relationships and keep excluded versus inaccessible evidence separate. Permitted workers return inspected identities/depth, cross-topic dependencies, no-finding areas and unread remainder, with parent reconciliation. No new persistent inventory/report, generic Full/Gap mode or change to phase approvals is introduced.
 
-  Gather --> Complexity{Restoration\ncomplexity?}
-  Complexity -->|Easy| Report
-  Complexity -->|Medium| Report
-  Complexity -->|Complex| Report
-  Complexity -->|Blocked| Report
 
-  Report[Output structured report] --> Stop([Stop: wait for approval])
-```
+- Identify project name/domain, packages, architecture, authentication and useful demonstration/run/build paths.
+- Confirm the recovery goal: preserved source, frozen runtime/demo, offline runtime recovery and/or offline rebuild inputs.
+- Record original/last-working runtime, package/lock/SDK/toolchain/platform evidence. Current vendor support stays not checked unless established; no automatic modernization.
+- Classify required/optional external services and runtime side effects, env key names, jobs and isolation questions.
+- Inventory database/file/blob/model/dataset inputs, available synthetic/sanitized sources, provenance/sensitivity and regeneration gaps. A repository dump or localhost address is not safety proof.
+- Retain useful setup/build/deploy/design/legal/history/API evidence and identify protected instruction imports before proposing output paths.
+- Distinguish supplementary BA/design/history documents from application assets and required build/runtime/data inputs. External material uses known safe references or supplied exact local paths; no personal-drive crawl or token-bearing links.
+- Estimate artifact sizes/storage needs without claiming provider access or quota.
 
-## What it scans
+For multiple components, the existing Setup & Restoration Approach report section can include a compact handoff: role, required/optional status, evidenced setup source, config/data inputs, dependencies and unresolved gaps. This is useful context, not a new mandatory file or schema. Later steps reconstruct missing details from scoped evidence for older reports.
 
-The step reads source code, configuration files, manifests, env files, and any existing documentation. It does not rely only on README files. It separates confirmed facts from guesses and labels guesses explicitly.
+Use bounded package/data-flow reads and targeted follow-ups, not repeated whole-project reading. Missing reads and coverage limits remain visible. Vendor/generated exclusions require evidence, including whether files are tracked/custom or part of the build context.
 
-**Project profile**
-- Records the project's name explicitly as "Project name:" in its own field, rather than leaving it to be extracted from the Overview prose; Step 3 (Postman collection filenames) and Step 4 (README content) both read this field directly
-- Purpose and business domain
-- Technology stack: framework, language, runtime versions, package manager, database type
-- Architecture: key modules, layers, and how the pieces fit together
-- Authentication and authorization approach
+## Git and credentials
 
-**Data and database**
-- Database type and where credentials live
-- Available restoration sources in priority order: dumps, seeders, migrations, or none
-- Demo accounts or demo data if found
+Record literal `Project name:`, `Archiving from:` and full `Source commit:` fields. Normal work uses the actual attached project branch; an explicitly scoped advisory review can label dirty/staged/untracked/detached inputs or lack of HEAD without initializing Git.
 
-**External integrations**
-- Third-party services the project depends on
-- Which are required for basic operation vs optional
+Compare local ref tips/dates and ahead/behind metadata first, then relevant likely alternative branch content. Remote-tracking information is cached, never a remote-freshness claim. Report unmerged work and tags/submodules/LFS/hosted resources excluded from a source-only seal; never merge or select another source automatically.
 
-**Setup and restoration approach**
-- Runtime versions required, package manager, whether Docker is needed
-- Recommended restoration strategy (local or Docker) and why: this is a project-wide setup judgment, not specific to the database
+Credential review exposes only inspected paths/key names/types and local evidence, with values/fragments/private records removed before output. List uncovered surfaces; none found in that scope is not a secret-free certificate. No credential liveness testing.
 
-**Credentials risk**
-- Scans all env files: `.env`, `.env.staging`, `.env.production`, config files, Docker files
-- Shows file path and variable name only, with values and credential fragments omitted before tool/report output; credential liveness is unknown unless local evidence establishes it
-- Flags credential locations and locally evidenced risks without testing them against services
-- Before completing this section, confirms every file matching those env-file patterns was actually searched, and lists the files searched explicitly
+## Report and stop
 
-**Git and repository safety**
-- All remotes using credential-free identities
-- Branch list
-- Records the full source commit as `Source commit:` to bind approved exploration to its repository/history
-- Records the current branch explicitly as "Archiving from:" in its own field; Step 5's branch cleanup reads this directly together with validated state context; ambiguous legacy reports require explicit reconciliation before destructive work
-- Compares the current branch against every other local and remote branch; flags it (informational only, never blocking) if another branch looks more recently active or complete: archive candidates are often neglected, so the checked-out branch isn't always the real latest state
-- CI/CD pipelines that could auto-deploy on push
+The report covers overview/stack/architecture, data/integrations, retained docs/assets, Git safety, proposed restoration approach, credential review scope, specific unknowns and an Easy/Medium/Complex/Blocked rating. Confirm the goal and identify Step 2's planned edits, acquisitions, targets, isolation and checks needing resolution.
 
-**Existing documentation**
-- Identify protected root/nested agent entries, overrides, project instruction imports and adopted rules. Preserve these and opaque Helm state at original paths; do not classify them as consolidation targets.
-- Documentation files found in the project, what each one covers, and whether it appears current or outdated
-
-**Archive assets**
-- Existing Postman or API collection files
-- Screenshots, videos, sample exports, demo files
-- Large or binary files that could affect Git storage
-
-## Complexity rating
-
-The report closes with one of four ratings:
-
-| Rating | Meaning |
-|---|---|
-| Easy | Project is well-documented, dependencies are available, restoration is straightforward |
-| Medium | Some gaps or unknowns, but restoration is likely achievable |
-| Complex | Significant unknowns or missing dependencies; expect manual work |
-| Blocked | A hard blocker exists that prevents restoration without external action |
-
-## Rules
-
-- Read-only inspection may use native file tools or local shell commands for file and Git metadata inspection, with optional Git index-refresh writes disabled where supported. No files are created, modified, or deleted. Do not execute project code, scripts, tests, hooks, installs, builds or containers.
-- No external service contact.
-- Credential values/fragments and token-bearing URLs are omitted entirely. No report or `.archive/` write until approval.
-
-## Output
-
-A structured report covering all categories above, ending with the complexity rating and recommended next steps for Step 2. The command stops after the report and waits for explicit approval before Step 2 begins.
+In normal mode, wait for explicit approval before recording the report/inventory and proceeding. Stop-here/no-write remains available. Audit ends at findings; Plan continues only static proposed actions and then stops without execution, network, files or cursor changes. See the [archive guide](../archive.html) for mode and protected-file rules.

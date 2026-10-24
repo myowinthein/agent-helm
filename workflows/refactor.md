@@ -1,478 +1,287 @@
 # refactor
 
-Full project scan to identify and apply refactoring opportunities.
-Run periodically on mature codebases to maintain code quality.
+Find worthwhile code improvements and apply selected, behavior-preserving transformations in bounded units. Claude and Codex use the same assessment, review, verification, and resumable local procedure. A finding, an attempted edit, a verified fix, and publication are separate outcomes.
 
----
+## Before starting: mode and policy
 
-## Before starting
+Read the shared runtime and resolve `{memory_file}`, bridges/overrides, recognized configuration and local `git-auto-commit` policy (default false) before dependent writes. Ship method does not select a branch or finalization route here. Never change instruction/configuration ownership or Helm settings.
 
-Apply the shared runtime and resolve `{memory_file}` before Git actions. Read `git-strategy` (default: GitHub Flow), `git-auto-commit` (default: false), and GitHub Flow's `git-merge-strategy` (default: squash) from the effective owner, following bridges, overrides, and recognized fenced configuration. State the effective Git mode. Refactor always uses a `refactor/*` branch and offers PR/Leave choices even under Solo Mode, per git.md's documented exception; this does not waive review, commit, push, or deployment requirements. This workflow does not create, move, or edit Helm configuration or instruction-entry ownership in AGENTS.md or CLAUDE.md.
+- **`refactor audit`:** statically inspect the selected source and report findings, evidence, and coverage. Stop at the report.
+- **`refactor plan`:** also propose exact coherent transformations, affected paths, invariants, tradeoffs, dependencies, and verification. Stop at the report.
+- **`refactor` without a mode:** preview first, then offer the recorded Full scan/Gap scan/Fix Backlog and selected Apply path, or report-only/Skip.
+- **Targeted scope:** a path, package, module, or clearly identified feature limits any mode, for example `refactor ./api`, `refactor plan -- ./web`, or an explicit feature request. Include relevant dependency/contract context and disclose inspection versus edit scope. Resolve ambiguous targets before dependent work; never silently expand them to the whole project. No prior Full scan baseline is needed for a targeted assessment.
 
-Require a repository with HEAD and available Git/filesystem capabilities. Record the invocation branch. Before switching branches, require a clean index/working tree; pending drafts require explicit reconciliation on their current branch first. Never reset, stash, or commit user work to make the workflow proceed. Resolve `{base_branch}` to the project's main/master branch before creating a new refactor branch or planning integration; stop if its identity is ambiguous.
+Reserve `audit`/`plan` only as the initial mode token. Use `./audit`, `./plan`, or `-- audit`/`-- plan` for literal paths. Accept quoted paths with spaces and pass arguments safely, never as interpolated shell code. Codex receives the same modes/scope through its skill invocation.
 
-Proceed if on main, master, or an existing refactor/* branch — resuming a session left via Step 7's "Leave branch" option happens directly from that branch, not via a manual switch back to main first.
+Audit/Plan permit any branch, dirty/staged/untracked selected inputs, a detached checkout, or an explicit committed snapshot. Label the exact inspected inputs and SHA when available; a worktree review is advisory, not checkpoint provenance. Without usable Git HEAD, static review remains possible without initializing Git or writing state. Use `GIT_OPTIONAL_LOCKS=0` for Git inspection that might refresh the index. Suppress executable diff/textconv, pagers, filesystem-monitor helpers, and lazy fetching with supported capabilities; unavailable local-only reads leave explicit limitations.
 
-If on any other branch, stop and inform user:
+Static inspection never executes project code, dynamic configurations, imports, hooks, analyzers, lint/formatter/test discovery or collection, tests, benchmarks, builds, installers, services, or backend dry-runs. Audit/Plan do not fetch, check out, create branches, or write an index/ref/file/report artifact/ledger; they do not load or migrate operational state. Keep their output in conversation and never silently escalate to Apply. Later writes require fresh source/policy validation and any missing approval.
 
-"refactor must be run on main, master, or an existing refactor branch.
-Current branch is {branch}. Please switch and re-run."
+Recorded scans and actual edits require a repository with HEAD, an attached eligible branch, and a clean index/worktree including untracked project files, with no in-progress merge/rebase/cherry-pick/revert. Enforce this even when staying on the same resumed branch. Check affected worktrees before branch actions. Never stash, reset, or commit user work to satisfy a prerequisite. Unsupported state needs explicit maintenance outside this workflow.
 
----
+Recorded scans/Apply may run on the current resolved main/master base, an established existing current feature branch or an existing current `refactor/*` branch, under project policy. Establish non-base role and environment status from project/deployment evidence or explicit developer classification; reuse known evidence and ask only when unresolved before dependent approval. A prefix alone proves neither ownership nor safety. Confirmed non-base environment branches remain Audit/Plan only, even if their name matches `refactor/*`; unresolved/unsupported roles, dirty or detached snapshots remain advisory. Do not create/select/switch a branch or transplant assessments. Existing local checkpoints support continuation on the same proven snapshot; local verification/commit policies remain.
 
-## Step 1 — Select the refactor branch before loading history
+Recommend targeted refactoring of the feature's relevant areas to keep review scope clear and limit conflicts, without forcing targeted mode or silently narrowing an explicit broader request. Preserve behavior and coherent commit boundaries; feature functionality changes still need a separate reviewed scope. Neither feature nor refactor naming establishes a safe execution target, and stronger project/deployment policy remains binding.
 
-Run `git branch --list 'refactor/*'` and choose the working branch before loading any ledger, recommending a mode, or computing a diff. Use the exact existing branch name as `{branch}` throughout this run, including resuming a branch whose timestamp differs from today. Use a run timestamp only for messages/reporting, never to reconstruct an existing branch name.
+## Step 1: Preview, then validate the current branch
 
-- One existing branch: ask whether to continue on it or create a new branch, with those two choices.
-- Multiple existing branches: ask which exact branch to continue on or whether to create a new one. Never silently choose the first match. A picker may offer up to three existing branches plus Create new; show remaining names for a free-text selection, respecting the shared runtime's option limits.
-- No existing branch: create a new branch from `{base_branch}`.
+Cheaply inventory packages/stacks, likely source size and static tool/config evidence before a first-run Full scan or write. Explain Full scan versus narrower work and offer report-only/Skip. Invocation is not permission for unlimited refactoring; a no-op/report-only path writes no state.
 
-For a new branch, switch to `{base_branch}` first and create `refactor/{YYYYMMDD-HHMMSS}` from there, never from an old refactor branch. Verify the new name is unused. For continuation, switch to the selected existing branch, or stay if already on it. Record whether this invocation created the branch, and verify the actual branch and HEAD after each switch.
+Resolve actual main/master only for eligibility and record current branch/HEAD. A selected recorded scan/Apply requires clean eligible state on that current base, an established current feature branch or an existing current `refactor/*` confirmed not to be a non-base environment; otherwise block with the reason and leave Audit/Plan available. Never enumerate other branches to select one, create a branch, fetch/update base or checkout. Revalidate current instructions/configuration/scope/source and stop unexpected drift. Reassess changed advisory proposals before writes; load only this branch's own history in Step 3, never a copied assessment from another branch. A feature-branch source checkpoint describes that snapshot/scope, not integrated base; preserve existing targeted global-field rules and revalidate ancestry/context after later integration or history changes instead of fabricating IDs or merging state automatically.
 
-On the selected branch, re-read active instructions and resolve `{memory_file}` and effective configuration again. Resolve conflicting policy before continuing; do not carry settings from another branch or silently rewrite them. Only then run Steps 2 and 3, loading that branch's canonical and legacy state. An unexpected branch/history change invalidates the loaded ledger, changed-file list, and mode recommendation: repeat resolution and assessment before dependent work, including on a fresh host/session. Never transplant an old branch's findings into a fresh branch.
+## Step 2: Project-aware source and safety boundaries
 
----
+At actual source investigation, read `{package_root}/prompts/shared/investigation-evidence.md`. Apply its evidence-based exclusions, transient exact inventory, required-depth and worker/parent contracts under this workflow's gates; Audit/Plan gain no ledger access. Display only Full scan / Gap scan; clarify unsupported requests without reserving new path tokens.
 
-## Step 2 — Scan boundaries
+Inventory actual packages, languages, source/build systems, public interfaces, callers/consumers, tests/fixtures, schemas, scripts, and configured native verification commands. Start from tracked project inventory for clean recorded work; advisory reviews also include explicitly selected staged/worktree/untracked inputs with their provenance. Folder names such as `bin/`, `public/`, or `storage/` are not exclusions by themselves.
 
-Scan all project files except:
-- vendor/
-- node_modules/
-- public/
-- storage/
-- __pycache__/, .venv/, dist/, build/  (Python)
-- tmp/, log/                            (Ruby)
-- bin/                                  (Go)
-- migration files
-- .env files
-- generated or compiled files
-- .helm/ and .claude/helm/ (operational state, never source code)
-- .claude/refactor-log.json, .claude/test-log.json, .claude/normalize-log.json, .claude/legal-manifest.json (flat legacy state)
+Classify vendor, generated/compiled output, caches, runtime data, and secrets using project evidence. Attributes, headers, minification, or filenames are signals, not universal proof. Inspect manifests/lockfiles, schema and migration definitions as relevant read-only context without automatically upgrading dependencies, rewriting historical migrations, or executing database changes. Avoid reading secret values; report inaccessible evidence rather than guessing. Include test quality in source assessment.
 
-Include test files — test quality degrades fastest and matters most.
+Exclude operational Helm state from source discovery and noise inspection: `.helm/`, `.claude/helm/`, and flat `.claude/{refactor-log,test-log,normalize-log,legal-manifest}.json`. Only Step 3 and subsequent owning checkpoints may read the canonical refactor ledger through the shared state procedure. Other commands' ledgers remain opaque, including when their paths changed. Reading command/rule source does not invoke that workflow.
 
----
+Default to preserving behavior. For each proposal identify applicable API/public contracts, results/errors, ordering, formats, side effects, state transitions, transactions, and async behavior that must stay stable. Report observed bugs, security behavior changes, features, upgrades, indexes, and migrations as separately scoped follow-ups; do not silently fix them under a refactor approval. Bounded internal performance transformations can qualify when required behavior is preserved. Distinguish an expected benefit from a measured result; a benchmark alone proves neither equivalence nor safety.
 
-## Step 3 — Load history and choose mode
+### Stack-aware review context
 
-### 3.1 Load the ledger
+Build a transient review context for every selected package/service, including mixed-stack workspaces and non-web libraries, CLIs, native/mobile/desktop apps, data jobs, scripts and instruction/configuration plugins. Discover actual entry points, dependencies and runtime surfaces; do not stop at a named framework or the examples below. Full scan assesses all first-party components with their applicable checks; Gap scan/targeted include the evidenced affected surface without silently expanding to a framework-wide audit.
 
-Verify the selected `{branch}` and capture its HEAD as `{scan_head}` before loading state, including first runs. Before recording Deep/Quick results, require that branch, HEAD, effective configuration, ledger inputs, and inspected source files still match the scan. Unexpected changes invalidate the result and require reassessment before any write; this does not invalidate verified commits/checkpoints made by this workflow later in Step 6.
+1. Establish language/runtime/framework/library versions, supported targets and package boundaries from permitted static evidence: manifests, lockfiles, runtime constraints, imports, framework configuration and documented commands. Distinguish declared ranges from resolved versions, project requirements from locally available tools, and unknown facts from verified absence. Do not execute imports/configuration, discovery, package-manager probes or installers merely to identify the stack.
+2. Read applicable instructions, architecture decisions, local conventions and configured lint/formatter rules. Reuse supplied/local documentation and actual examples. Majority or minority usage alone proves neither intent nor correctness; preserve deliberate local differences and clarify conflicts. A configured check is evidence of policy, not proof it ran or covers the issue.
+3. Identify the guidance relevant to actual capabilities in each area: request/authorization/validation flow, persistence and data access, components/state/effects, dependency injection, events/jobs/caches, errors, concurrency, resource ownership, public exports/packaging and testing. Research unfamiliar or uncertain material points using version-applicable official documentation when needed. Do not require exhaustive browsing, a fixed framework catalog or the newest documentation for an older installed version. Missing documentation/access leaves an explicit limit, not invented guidance or permission to upgrade.
+4. Label the basis of a proposed framework-specific change in existing report and native assessment evidence: project requirement, mandatory framework constraint, optional documented pattern or inference. Name relevant local paths and, when used, the documentation/version. Active project policy governs authorized work but cannot change actual runtime/compatibility facts. A conflict with a mandatory constraint or intended contract needs clarification or a separate behavior-change proposal, never silent enforcement of either convention or docs. Nonconformance alone does not establish worthwhile refactoring.
+5. Relate that guidance to a concrete present burden, the smallest useful remedy and its preserved contracts under the perspectives below. Prefer suitable existing/native mechanisms over new wrappers. Keep the context and detailed plan transient: no stack profile, settings, report file, schema field or new dependency; no operational-state access beyond this workflow's existing owning procedure. Refresh relevant context after material source/tooling changes and reuse still-applicable evidence.
 
-Read `{package_root}/prompts/shared/project-state.md` and apply it to `refactor-log.json` for every load and write in this workflow. The canonical path is `.helm/refactor-log.json`; check both `.claude/helm/refactor-log.json` and `.claude/refactor-log.json` too. Validate and compare all existing candidates, resolving differing histories explicitly before using them. A legacy-only file is loaded without moving it during inspection; migration waits for the next successful authorized ledger write (Step 4A.8, 4B.5, or a later checkpoint). No candidate means first run.
+Apply conditional checks where actual code exposes them; this is a coverage guide, not a fixed catalog or a requirement to find issues in every row:
 
-Schema:
-```json
-{
-  "schema_version": 1,
-  "last_scanned_commit": "abc1234",
-  "last_mode": "deep",
-  "last_scan_date": "2026-06-01",
-  "consecutive_quick_count": 0,
-  "findings": [
-    {
-      "id": "f-0012",
-      "category": "architecture",
-      "priority": "high",
-      "risk": "needs-review",
-      "cluster_id": "c-004",
-      "depends_on": [],
-      "file": "app/Http/Controllers/OrderController.php",
-      "line": 42,
-      "related_files": [],
-      "description": "Business logic embedded in controller action",
-      "status": "open",
-      "first_found_commit": "9f1a2bc",
-      "first_found_date": "2026-05-01",
-      "resolved_commit": null,
-      "resolved_date": null
-    }
-  ]
-}
-```
+| Evidenced surface | Inspect and preserve |
+|---|---|
+| Web/API backends | Handler/service responsibilities, validation/authorization order, ORM/query behavior, transactions, serialization, cache/events/jobs and response/error contracts. |
+| Browser/mobile/desktop UI | Component ownership, state/effect dependencies, lifecycle and cleanup, rendering/data boundaries, cancellation, platform behavior, markup/focus/accessibility contracts and supported targets. |
+| Libraries/CLIs/packages | Public symbols/imports/exports, signatures, errors, exit codes, output formats, installation/packaging boundaries and supported runtime/OS behavior. |
+| Async/concurrent/native systems | Ownership and lifetimes, cancellation, ordering, locks/transactions, resource release, repeated side effects and blocking work. |
+| Data/batch/ML jobs | Transformation/schema contracts, ordering, checkpoints/retries, IO/resource cost and reproducible intended outputs, without silently changing data meaning or model behavior. |
+| Scripts/configuration/instruction plugins | Invocation and discovery contracts, path/config precedence, shell/data boundaries and documented consumer behavior; static or Markdown projects need relevant review too. |
 
-`schema_version` — bumped only if this ledger's structure changes in a future release. Lets a future version of this command detect an older-shaped file and handle it explicitly instead of misreading it. Treat a missing `schema_version` as `1` (every ledger written before this field existed). Always write it going forward.
+Security, reliability, observability and accessibility are preservation context across applicable perspectives, not new full-audit promises. Preserve access/tenant boundaries, input handling, retry/error meaning, log/metric contracts and UI behavior; report discovered defects or new requirements as separate follow-ups. Public APIs, formats, serialized state, migrations and external consumers constrain what is internal. Source moves/renames are not automatically behavior-neutral.
 
-`status` values: `open`, `fixed`, `skipped-by-user`, `auto-resolved`.
+### Design principles and paradigm fit
 
-`risk` values:
-- `safe` — mechanical, low-ambiguity fix (rename, dead code removal, add missing index, deduplicate identical blocks). Safe to auto-apply.
-- `needs-review` — requires judgment about business intent (e.g. an N+1 fix that depends on what the query is actually for). Must be confirmed with the user before touching code. Every `consistency` finding (Step 4A.5) is always `needs-review`, never `safe` — deciding whether a missing connection is intentional or a real gap requires product judgment.
+Use KISS, DRY, YAGNI, separation of concerns and relevant SOLID ideas as reasoning tools across perspectives, not extra categories or sufficient findings. DRY concerns duplicated knowledge/intent, not every similar-looking block; sharing unrelated concepts can increase coupling. KISS preserves required complexity. YAGNI discourages speculative future capabilities while allowing improvements to today's maintainability. SOLID does not require interfaces, factories or repositories everywhere. Explain the present cost, alternatives and abstraction tradeoff rather than saying a principle was violated.
 
-`related_files` — other files implicated by this finding beyond the primary `file`/`line` anchor. Empty for the five per-file categories, which are single-file by construction. A `consistency` finding is inherently multi-file, so it always sets this: `file`/`line` anchors the primary site (e.g. where the state change happens), `related_files` lists the other implicated file(s) (e.g. the missing consumer, or the asymmetrically-handled counterpart) as plain path strings — no per-entry line, since only the primary anchor's line drifts and needs re-verification (see Quick Mode 4B.2). Treat a missing `related_files` as `[]` (every finding written before this field existed).
-
-`cluster_id` — findings that touch the same file, or files with a direct dependency (e.g. controller + its service), share a cluster id. All findings in a cluster are applied together by a single agent — never split across parallel sub-agents, to avoid conflicting edits.
-
-`depends_on` — list of finding ids that must be applied before this one (e.g. "extract shared helper" must land before "deduplicate the 3 call sites that use it").
-
-`consecutive_quick_count` — number of consecutive Quick Mode scans since the last Deep Mode scan. Increment by 1 each time Quick Mode runs; reset to 0 when Deep Mode runs.
+Procedural, object-oriented, functional, reactive and generic styles can coexist. Judge fit with actual language/framework capabilities and project constraints; do not force a paradigm conversion or a preferred architecture. A bounded helper/module/seam may be justified; a wholesale style conversion, new service/deployment or speculative layering is separate scope. Web architecture checks activate for request-serving code, with equivalent relevant checks for other project types.
 
-### 3.2 First run — no ledger found
+For example, Laravel repository placement may be a project convention or justified pattern, not an automatic requirement for every Eloquent query. FormRequest extraction can help complex/reused validation only when authorization, preparation, validation/failure order and response/data contracts stay equivalent; simple inline validation need not move. Moving synchronous work to a queue can change result/error timing, ordering, transaction/retry behavior and worker requirements, so propose it separately; restructuring an already queued job may qualify. Check ORM hooks/events and query invariants before batching calls. These illustrations never replace discovery of other relevant Laravel capabilities or version-applicable guidance for other stacks.
 
-If no candidate ledger path from 3.1 has a file, this is the first run. Do not ask which mode to use.
-Inform user:
+## Step 3: Own history, identity, and assessment mode
 
-"No refactor history found — running Deep Mode to build a baseline."
+### Ledger ownership and schema
 
-Proceed to Step 4, Deep Mode, on the branch selected in Step 1.
+On the selected clean branch, pin HEAD as `{scan_head}` before output commits. Only now load `{package_root}/prompts/refactor-ledger.md`, `{package_root}/prompts/shared/project-state.md` and `{package_root}/prompts/shared/ledger-helper.md` before own-state access. The parent prefers packaged Python `ledger-check` for complete native schema-2 structural validation and digest-bound `ledger-view` for bounded indexes/full records across all states. If Python/execution is unavailable, offer/reuse Set up Python / Continue without Python / Stop once for this run. Approved available equivalent tools may perform the same complete validation, safe-path, resource, digest/retrieval and preservation checks, including later canonical readback. Without equivalent evidence, keep ledger-dependent edits/writes pending and continue only independent source assessment/planning. Unsupported/invalid inputs, drift and helper/package defects still block dependent work with files preserved; fallback bypasses none of these. No converter or helper writer is supplied. Audit/Plan gain neither a helper prerequisite, runtime-setup question nor state access. Disclose the actual method/unperformed automation in the existing report. Structural validation does not replace semantic identity/evidence, source/ancestry, approval or checkpoint checks.
 
-### 3.3 Later runs — ledger found
+Use one ordered `findings` array with permanent opaque IDs, current raw categories, `summary`, relevant `paths`, native `found`/`assessment`, `state` and `depends_on`, plus applicable native `decision`/`closure`, blockers, recurrence and custom extensions. Current judgments name actual inspected source, priority/risk/reason, evidence and invariant. Preserve current IDs; new IDs use `r-UUID`. Full IDs and unambiguous transient display aliases work without numeric assumptions. Keep display locations and execution plans transient.
 
-Count `open_count` from the selected branch's `status: open` findings. Use the inspected `{scan_head}` recorded in Step 3.1. Before comparisons, validate `last_scanned_commit`: accept a commit ID only, resolve it to an existing commit object, and verify it is an ancestor of `{scan_head}`. Never interpret a saved value as a shell argument or arbitrary revision expression. A syntactically plausible SHA alone is insufficient.
+`safe` means a specific mechanical transformation has adequate current reference/contract evidence and applicable verification, with no unresolved judgment. A rename must update actual references; dead-code removal needs evidence covering dynamic/config/template/plugin/public uses. Tool labels never grant blanket safety. `needs-review` covers intent, insufficient evidence and tradeoffs; consistency always needs review and performance defaults to reviewed unless narrowly evidenced equivalence qualifies. Missing or stale risk evidence means reassess, not safe. Distinguish unconfigured checks from required-but-unavailable checks, without universal test/AST installation.
 
-If the baseline is missing, unavailable, or outside this branch's ancestry, explain why incremental scope is unavailable. Offer **Deep Mode**, **Fix Backlog** only if open findings exist, and **Cancel**; do not offer Quick Mode or substitute `HEAD~1`. Fix Backlog still requires Step 6.2's targeted checks. Cancel writes/migrates nothing; clean up only an empty branch created by this invocation when safe, never an existing session branch. Keep prior findings and watermark intact until a successful new scan replaces scan metadata. After a mode choice go directly to Step 4, or Step 8 on Cancel; skip the valid-baseline comparisons/recommendation below.
+Build the bounded working view from complete validated own inputs; retrieve relevant records across **all states** for semantic deduplication, decisions, dependencies and recurrence. Never reconstruct the array from truncated context, dump every historical High into the prompt or mistake empty scoped results for whole-project currency. Recompute coherent units transiently; shared files or direct links alone do not merge a connected module graph. Whole-file validation does not claim fresh semantic review of every record.
 
-With a valid baseline, compute:
-- number of commits since `last_scanned_commit` on this branch
-- number of days since `last_scan_date`
-- `open_count`: findings with `status: open`
-- changed files: `git diff --name-only {last_scanned_commit}..{scan_head}`, respecting Step 2 exclusions; retain this list for Quick Mode
+Revalidate logical issues and applicable human decisions against actual current patterns, contracts and consumers. `skip`, `defer` and `accepted-risk` remain open but held, separate from ordinary actionable proposals. Preserve decisions through closure; missing/changed context requires current review, never automatic application. Missing/moved files or unavailable objects alone prove no resolution. Semantically proved absence becomes `obsolete`; a genuine verified fix becomes `resolved` with actual evidence. Preserve real past closures; a later recurrence gets a new ID with `recurrence_of`. A same-run disproved attempt may reopen its entry with the false closure removed and failure evidence retained. Explicit duplicate reconciliation preserves all IDs/human facts and requires review of any dependency changes. Full scan covers its full inspected scope; targeted reconciliation preserves out-of-scope records.
 
-Check every comparison's exit status. A failed command is not zero changes or a reason to recommend Fix Backlog; stop dependent work and report it without advancing state. If HEAD changes unexpectedly before the scan completes, discard the stale scope and reassess. Historical `first_found_commit`/`resolved_commit` values remain provenance even when no longer reachable; do not replace them with current HEAD to make validation pass.
+### Choose scope and mode
 
-Decide which mode to recommend using this logic:
-- If `open_count > 0` AND zero commits since `last_scanned_commit`: recommend **Fix Backlog** — there's nothing new to scan for.
-- Otherwise recommend **Deep Mode** if: 40+ commits since last scan, OR 60+ days since last scan, OR `consecutive_quick_count` is 2 or more, OR more than 50 files changed. Commit count is a weak proxy for diff size — a handful of commits can still touch hundreds of files (a dependency bump, a mass rename) — so the real changed-file count overrides it here.
-- Otherwise recommend **Quick Mode**.
+Only when choosing Full scan versus Gap scan, read `{package_root}/prompts/shared/scan-scope.md` with already permitted request, source/anchor-validation result and meaningful impact evidence. Explicit targeted assessment and Fix Backlog gain no helper/global-baseline prerequisite. Read-only depth recommendations use only facts that mode already permits: Audit/Plan never load operational state and gain no recording/Apply path.
 
-Ask with AskUserQuestion, filling in the reason in the description.
-Only include the Fix Backlog option if `open_count > 0`:
+First run still offers Full scan, targeted assessment, report-only or Skip. Gap scan requires a usable saved `assessed_commit`: a literal commit identity resolving unambiguously to an available commit object and ancestor of `{scan_head}`, never arbitrary Git syntax. An empty/missing/unavailable/non-ancestor anchor inside otherwise valid state cannot enter Gap scan. Offer the independently eligible Full scan, Targeted assessment, validated Fix Backlog when entries exist, Report-only and Skip/Cancel routes. Report-only and Skip/Cancel are distinct; above four choices use existing paging/chat without merging or hiding them. Invalid root history alone does not invalidate proven backlog entries; malformed/unsupported/conflicting ledger data still blocks dependent use. Never substitute HEAD~1, fetch/repair anchors or bypass write prerequisites.
 
-  AskUserQuestion:
-    question: "Which scan mode would you like to run?"
-    header:   "Scan mode"
-    multiSelect: false
-    options:
-      - label: "Deep Mode{recommended tag if applicable}"
-        description: "Full codebase re-scan using multiple agents. {reason, e.g. '158 files changed since last scan — too broad for a focused check.'}"
-      - label: "Quick Mode{recommended tag if applicable}"
-        description: "Only checks files changed since the last scan, plus re-validates past findings. {reason, e.g. 'Only 8 commits and 12 files changed since last scan — a quick check should cover it.'}"
-      - label: "Fix Backlog{recommended tag if applicable}"  (only include if open_count > 0)
-        description: "Skip scanning — {open_count} known issues waiting to be fixed. {reason if recommended, e.g. 'No new commits since last scan.'}"
+Apply the shared impact-based recommendation: bounded changes normally favor Gap scan; evidenced broad cross-area architecture/runtime/build/contract changes or insufficiently bounded impact favor Full scan. A valid explicitly requested Gap scan can still be complete if its entire affected-surface contract is met; otherwise report limits under the existing checkpoint rules, never silently upgrade or omit known consumers. Check every comparison/read result: failure is unknown, not zero changes, an empty backlog or coverage proof. Stop dependent recording and report the limitation.
 
-With a valid baseline and unchanged branch inputs, the recommendation is a suggestion: Quick Mode remains available even when Deep Mode is recommended for size or age. Baseline validity is a prerequisite, not an optional recommendation.
+Numeric/age/scan-count thresholds do not determine depth. Schema 2 has no active scan date/mode/count; prior source assessment does not imply current coverage. Exclude only evidenced bookkeeping-only effects; real code, tests, contracts and configuration remain meaningful even when created here. Other operational state stays opaque. With no source gap, apply this workflow's own validated Backlog/no-op rules, honoring explicit reviews and pending work.
 
-After the user confirms a mode, proceed to Step 4 on the already-selected branch.
+**Targeted assessment** inspects the requested area plus relevant contracts/dependencies through the six lenses, without requiring a global baseline. Preserve out-of-scope records and both root anchors, `assessed_commit` and `full_scan_commit`. First scoped v2 state uses explicit `null` anchors, without fabricated coverage. A later Gap scan without a usable global baseline offers the independently eligible alternatives above. Update complete packages on both clients before switching to v2; do not retain a v1 write mode.
 
----
+Present the eligible assessment choices with their recommendation and actual scope, including report-only/Cancel. Wait for the developer's selection unless an existing concrete request already specifies it. A recommendation or missing answer does not select Full scan/Gap scan or authorize edits.
 
-## Step 4 — Scan
+## Step 4: Assess and record truthful coverage
 
-### 4A. Deep Mode
+### Full scan: complete project coverage in bounded batches
 
-1. List all project files within scan boundaries (Step 2). Group them by folder/module rather than raw line count, so related code (e.g. a controller and its service layer) stays in the same chunk — this avoids missing issues that span two files in different chunks.
-2. Estimate a comfortable read budget per sub-agent, and compute how many chunks/sub-agents are needed based on total project size. Cap at 8 sub-agents maximum — if more chunks are needed, merge the smallest adjacent folders until within the cap.
-3. Use available read-only workers per chunk within the host's actual concurrency limit, queueing chunks or scanning sequentially with the same complete coverage when delegation is unavailable; report that fallback. On Codex the parent owns all code, Git, and ledger writes. Each sub-agent reads its full chunk once and checks the five per-file categories in that single pass (architecture, code quality, performance, tests, dependencies) — do not run a second category-only pass over the same files; that doubles cost for no real benefit. Consistency is not part of this per-chunk pass — see step 5 below (Step 4A.5).
-   - **Tests** findings are about existing test *code quality*, never about missing coverage — detecting and writing tests for untested code is `/helm:test`'s job exclusively; never create a finding here just because a file lacks tests. Flag 3+ test cases in a file that share the same input → assertion shape (e.g. one expected output per entry in a dictionary or lookup table) and could collapse into a single parametrized test (`it.each`/table-driven, per the framework's convention) with zero coverage loss.
-4. Each sub-agent returns structured findings: category, priority, file, line, description.
-5. Consistency pass — run once, separately from the per-chunk scans above. This category looks for gaps *between* features rather than problems *within* one file, so a single chunk-scoped sub-agent can't see it by design — it only has visibility into its own folder.
-   - Build a short list of the codebase's key persisted or externally-synced state (anywhere data is written to local storage, a database, or pushed to an external service) and the features that conceptually depend on or should react to each — sync, cache invalidation, notifications, derived-data recomputation, audit logging.
-   - For each, trace every site that writes or changes that state, and check whether the reactions it should trigger are wired up consistently at *all* of them, not just the primary/obvious code path. A missing connection — state changes but nothing downstream reacts — is a finding.
-   - Separately, look for asymmetric treatment: two structurally similar or clearly-related pieces of data or features handled with meaningfully different rigor within the same flow (e.g. one gets conflict review before being overwritten, a directly related one is silently replaced wholesale).
-   - Record each finding with `file`/`line` anchored to the primary site (the state change, or the more-rigorously-handled counterpart in an asymmetry finding) and `related_files` listing the other implicated file(s) (the missing consumer, or the less-rigorously-handled counterpart) — see the `related_files` field note in Step 3.1.
-   - This needs codebase-wide visibility, not folder-chunk visibility. Scope any sub-agents used for this pass by feature or data flow instead ("everything that touches the user's saved profile"), sized within the same capacity budget as step 2 above. On a small-to-medium codebase the main agent can often do this pass itself instead of spawning sub-agents for it.
-   - Every finding from this pass is `category: consistency` and always `risk: needs-review` (see the risk values note in Step 3.1) — never auto-applied.
-6. Main agent consolidation:
-   - Merge all sub-agent reports, including the consistency pass's findings.
-   - Look across chunk boundaries for cross-cutting issues (e.g. the same duplicated pattern appearing in two different chunks) that individual sub-agents couldn't see on their own.
-   - Cross-check against the ledger's existing `open` findings — do not duplicate an entry that already exists; keep it as-is.
-   - Any `open` ledger entry whose file no longer exists, or has been rewritten enough that the finding no longer applies, gets marked `auto-resolved`.
-   - Any genuinely new issue gets added as a new `open` entry.
-   - Assign `risk` (`safe` or `needs-review`) to every new finding.
-   - Group findings that touch the same or directly-related files into a shared `cluster_id`.
-   - Where one finding's fix is a precondition for another (e.g. extract-before-dedupe), record it in `depends_on`.
-7. Update the ledger: set `schema_version` to `1` if not already present, set `last_scanned_commit` to the verified `{scan_head}`, `last_mode` to `deep`, `last_scan_date` to today, reset `consecutive_quick_count` to 0, and save the merged findings list.
-8. Write and read back `.helm/refactor-log.json` using the shared project-state procedure. Honor the existing commit policy, retire only verified same-file legacy sources after commit authorization, and stage the canonical file plus tracked legacy removals together with explicit paths. Commit: `chore(refactor): update ledger after deep scan`. If approval is declined or the write/commit fails, follow the Checkpoint and pending-work rules: stay on this branch and report pending state in Step 8, without applying findings or entering Step 7.
+Enumerate the exact eligible first-party source/test inventory at the pinned snapshot, independently of prior findings. Read every eligible human-maintained implementation and test file in full through bounded sections, including scripts and Markdown workflows when these implement the product. Inspect relevant configuration, schemas, contracts and consumers sufficiently to assess their behavior; generator/data exclusions need evidence. A listing, grep hit, representative sample or truncated output does not satisfy full-file depth. Apply relevant perspectives per coherent unit, without a per-file six-lens ritual or issue quota.
 
-### 4B. Quick Mode
+Queue manageable chunks and prefer permitted read-only subagents for substantial Full scans. Batch/concurrency limits control simultaneous work, never total coverage; do not merge the remainder into oversized chunks or omit it. Workers return inspected paths/sections, evidence, no-finding areas, unresolved edges and unread remainder. Without delegation cover the same queue sequentially. Parent reconciliation matches exact inventory identities and required depth, resolves cross-chunk public/shared interfaces, configuration and test relationships, and makes risk-based rereads of important findings and questionable no-finding claims. Only the parent writes code/Git/state. Unmet required coverage is reported incomplete and cannot advance or write a Full-scan checkpoint; full reading still guarantees neither absence of issues nor semantic correctness.
 
-1. Reuse Step 3.3's changed-file list only while `{branch}`, `{scan_head}`, configuration, and loaded ledger inputs still match the assessment. A branch/history/input change requires fresh resolution and scope calculation. An invalid baseline cannot enter Quick Mode; offer Deep Mode or a validated backlog instead. No additional size restriction is introduced.
-2. Re-validate every `open` ledger entry, `consistency` findings included. This step only ever looks at the primary `file`/`line` anchor and, for findings that have them, `related_files` — never at the fix content itself:
-   - Primary `file` deleted or heavily rewritten → mark `auto-resolved` (the finding's anchor is gone, regardless of what `related_files` says).
-   - Primary `file` untouched and, if present, every path in `related_files` also untouched (none in the changed-file list) → carry forward unchanged, still `open`.
-   - Primary `file` touched but not heavily rewritten (the common case — a few unrelated lines added or removed elsewhere in the file): re-verify the finding's pattern still exists near its recorded `line`, and update `line` to its current position before carrying the finding forward as `open`. A stale line number left unchecked here is a real risk, not just noise — `risk: safe` findings get auto-applied with no human review in Step 6.2, so an unverified line pointing at the wrong code could silently apply a fix to unrelated lines. (This does not apply to `consistency` findings, which are always `needs-review`, never `safe` — see Step 3.1 — so there is no auto-apply risk from a stale line on those, but still refresh it for report accuracy.)
-   - Primary `file` untouched but one or more `related_files` entries were touched: re-check that entry specifically — if that related file was deleted, drop it from `related_files` (auto-resolve the whole finding only if that was the last remaining related file); if it still exists, carry the finding forward unchanged. `related_files` entries don't carry a `line`, so there is nothing to refresh on them beyond existence.
-3. Scan only the changed files (single thread, no sub-agents needed) across the five per-chunk categories for new issues (architecture, code quality, performance, tests, dependencies). Before adding any finding, cross-check it against the ledger's existing `open` findings for that same file — if it matches one already there, do not create a duplicate, just leave the existing entry as-is. Only genuinely new issues get added. Assign `risk`, `cluster_id`, and `depends_on` to any new findings the same way Deep Mode does. Do not scan for *new* consistency findings here — that requires the whole-codebase, cross-feature visibility only Deep Mode's dedicated pass (Step 4A.5) provides; a changed-files-only scan structurally can't see a missing connection to a file that didn't change.
-4. Update the ledger: set `schema_version` to `1` if not already present. Add new findings as `open`, keep carried-forward entries as-is, mark auto-resolved ones. Set `last_scanned_commit` to the verified `{scan_head}`, `last_mode` to `quick`, `last_scan_date` to today, increment `consecutive_quick_count` by 1.
-5. Write and read back `.helm/refactor-log.json` using the shared project-state procedure. Honor the existing commit policy, retire only verified same-file legacy sources after commit authorization, and stage the canonical file plus tracked legacy removals together with explicit paths. Commit: `chore(refactor): update ledger after quick scan`. If approval is declined or the write/commit fails, follow the Checkpoint and pending-work rules: stay on this branch and report pending state in Step 8, without applying findings or entering Step 7.
+Use six defined review perspectives, with no finding quotas or category-based severity. Their contracts apply to Full scan, Gap scan and targeted work within their existing coverage limits; Fix Backlog uses them for selected-item revalidation without a discovery scan. The following are clearer display names for the existing Architecture, Consistency, Code Quality, Performance, Tests and Dependencies identities, respectively. Accept former labels in category/filter requests; preserve historical raw `category` values, IDs, decisions and unknown fields. Do not rewrite records, invent replacement category keys, migrate schemas or bulk reclassify findings merely to relabel the report. Existing test findings remain independently selectable and resumable under their current evidence.
 
-### 4C. Fix Backlog
+#### Architecture and boundaries (Architecture)
 
-1. Skip discovery of new findings: no project-wide scan or changed-file discovery. Targeted reads of selected findings and their dependencies are still required by Step 6.2 before any edit; skipping a scan never authorizes applying stale anchors.
-2. Load every finding from the ledger with `status: open`. These are the only items in scope this run.
-3. Do not modify `last_scanned_commit`, `last_mode`, `last_scan_date`, or `consecutive_quick_count` — no scan happened, so this run leaves scan metadata untouched.
-4. Proceed directly to Step 5 using only this open-findings list.
+- **Purpose/applicability:** first-party responsibility allocation and coupling in any selected code type, including public libraries and production testability.
+- **Inspect:** module/layer/component boundaries, dependency direction/cycles, overloaded responsibilities, interface seams and paradigm fit. Web handler/validation/transaction placement is conditional on actual request-serving code.
+- **Evidence/invariants:** name a demonstrated change/verification burden and affected consumers; preserve public interfaces, ownership and side-effect order, not just file layout.
+- **Permitted remedy:** a bounded responsibility extraction, helper/module/seam or simpler boundary when its concrete benefit exceeds added abstraction. Avoid speculative extension points.
+- **Separate scope:** architectural-style conversions, new services/deployments and public contract changes. Missing layers or a preferred design pattern alone are not findings.
 
----
+#### Contracts and state consistency (Consistency)
 
-## Step 5 — Present findings
+- **Purpose/applicability:** reduce contradictory or duplicated representations of confirmed related contracts where actual paths share responsibilities; always needs review.
+- **Inspect:** data/state readers and writers, result/error shapes, cache invalidation, events/notifications, transaction/resource pairing, concurrency and log/metric contracts. Differences are investigation signals, not proof of a defect.
+- **Evidence/invariants:** establish shared intent and intentional variations. For example, consolidate an already confirmed shared cross-flow contract while keeping its distinct policies explicit.
+- **Permitted remedy:** remove representation drift or duplicate coordination without changing actual outputs, error semantics, state transitions, timing or side effects; include unchanged consumers.
+- **Separate scope:** missing invalidation, changed error policy or other behavior repairs are diagnostic follow-ups, never automatic normalization. Gap scan makes only scoped consistency claims.
 
-If this run used Fix Backlog mode, no scan occurred, so the report only ever shows the Still Open section — omit New and Auto-Resolved from the summary counts and category breakdowns entirely, and label the report header `REFACTORING REPORT (mode: Fix Backlog — no scan performed)`.
+#### Code clarity and maintainability (Code Quality)
 
-Otherwise, group by category, prioritize within each. Split into three sections so the user can see real progress instead of a flat repeated list:
+- **Purpose/applicability:** reduce comprehension and local change cost across code, scripts and relevant instruction/configuration sources.
+- **Inspect:** misleading names, control-flow complexity, duplicated knowledge, unnecessary indirection, stale adjacent comments/docs and apparently unused code. Test-code structure is source too; its protection-specific rules remain below.
+- **Evidence/invariants:** identify a concrete reading/change burden; dead-code claims need dynamic/config/template/plugin/public-use evidence. Preserve semantics, useful rationale and deliberate local conventions.
+- **Permitted remedy:** clearer names/flow, useful consolidation, removal of proved unused code or simpler abstractions. Prefer native lint/formatter support within the selected scope and approved effects; a declared rule neither resolves a finding nor authorizes fix-all.
+- **Separate scope:** cosmetic churn, formatter taste and speculative abstraction. A material source/requirement contradiction may instead need clarification or a behavior follow-up.
 
-- **New** — found for the first time this run
-- **Still Open** — found in a previous run, not yet fixed, still valid
-- **Auto-Resolved** — found in a previous run, file since deleted/rewritten, no longer applicable
+#### Performance and resource use (Performance)
 
-Priority levels:
-- High   — architectural issues, security concerns, major code smells
-- Medium — redundant code, missing abstractions, inconsistent patterns
-- Low    — minor improvements, style inconsistencies, small optimizations
+- **Purpose/applicability:** reduce evidenced avoidable work or resource cost where the selected code exposes it, with reviewed tradeoffs by default.
+- **Inspect:** algorithms, repeated computation/IO/queries, allocations, buffering/streaming and resource lifetimes. Trace actual workloads/constraints and consumer behavior rather than equating reachability with cost.
+- **Evidence/invariants:** separate structural evidence, expected benefit and measured results. Preserve results, errors, ordering, numeric precision, cancellation, hooks/events, transactions and resource ownership. Query changes also preserve tenant/global scopes, soft-delete visibility, casts/accessors, eager loading, pagination/cursors and connection behavior where applicable.
+- **Permitted remedy:** bounded equivalent transformations supported by current evidence and planned checks. Chunking, batching, caching and parallelism are not automatically equivalent. Unsupported speed ideas stay labelled observations; measurement is proposed only when useful under existing approval.
+- **Separate scope:** changed consistency/timing/error contracts, schema/index changes, new infrastructure or operational tuning. Do not claim a speedup or preserved behavior from a benchmark alone.
 
-Present in this format:
+#### Test quality and maintainability (Tests)
 
-─────────────────────────────────
-REFACTORING REPORT   (mode: {Deep/Quick})
-─────────────────────────────────
-NEW                    {X issues}
-STILL OPEN             {X issues carried over}
-AUTO-RESOLVED          {X issues closed automatically}
-─────────────────────────────────
+- **Purpose/applicability:** improve existing test code's maintenance/verification burden while preserving what it proves; inspect actual cases, fixtures, helpers, mocks and selectors in scope.
+- **Inspect:** readable case structure, useful parameterization, shared setup, isolation, deterministic time/async handling and mechanical adaptations to selected production refactors. Parameterize only when clearer, not from a three-case/DRY quota. Weak assertions or brittle mocks can signal missing protection rather than refactor-owned cleanup.
+- **Evidence/invariants:** preserve intended scenarios, inputs/asserted behavior, fixture responsibilities, effective layer/environment, isolation and regression context. Shared line coverage or similar mocks do not prove equivalence. Apply Step 6's test-preservation rules to every selected test change.
+- **Permitted remedy:** guarantee-preserving restructuring and necessary companion changes, plus explicitly planned additive guards tied to a selected refactor's invariants. Production testability work may instead belong to Architecture.
+- **Separate scope:** missing/stronger protection, independent runner/framework migrations, changed layer/strategy or standalone retirement campaigns belong to an explicit test task. Ordinary refactor approval never authorizes fixing a product bug found by tests.
 
-ARCHITECTURE          {X issues — High: N, Medium: N, Low: N}
-─────────────────────────────────
-[New][High][Safe] Brief description
-      File: path/to/file.php
-      Why: one sentence explanation
+#### Dependency and integration boundaries (Dependencies)
 
-[Still Open][Medium][Needs Review] ...
+- **Purpose/applicability:** improve how first-party code consumes external libraries/frameworks and workspace packages, when these relationships actually exist.
+- **Inspect:** declared versus actual usage, scattered SDK/framework coupling, duplicate wrappers, existing integration seams, deep/internal imports, workspace cycles and hand-rolled facilities already supported by the installed stack.
+- **Evidence/invariants:** show concrete maintenance cost and version-applicable semantics. Check runtime/build/script/optional/dynamic/public/transitive consumers and lifecycle/restore effects before claiming an API or dependency unused. A package declaration, wrapper or native alternative alone is not proof.
+- **Permitted remedy:** localize or simplify an evidenced seam or reuse equivalent existing/native APIs without adding unnecessary wrappers. Bounded proved-unused cleanup can qualify only with concrete reviewed paths, effects and verification; it grants no automatic uninstall or restoration.
+- **Separate scope:** upgrades, library replacement, CVE/license remediation and behavior-changing or insufficiently proved removal. Report these without installs, manifest churn or new tooling merely for a scan.
 
-CONSISTENCY           {X issues — High: N, Medium: N, Low: N}
-─────────────────────────────────
-[New][High][Needs Review] Brief description of the missing connection or asymmetry
-      Files: path/to/writer.php, path/to/expected-consumer.php
-      Why: one sentence explanation of what should happen and doesn't
+Every perspective can require cross-file context. Apply the relevant inspection responsibilities to all components in the selected assessment, without requiring every lens for every file; report not-applicable and unknown/incomplete scope honestly. No findings is valid. Consolidate one logical issue into one finding, assign its existing category by the remedy's main benefit and mention other relevant lenses in prose. For overlap, use Code Quality for local simplification, Architecture for moving responsibilities, Consistency for confirmed cross-flow coordination and Dependencies for external/package seams; do not multiply IDs or merge unrelated work to satisfy labels. Report concrete cost, smallest remedy, tradeoffs, invariant, confidence and verification.
 
-CODE QUALITY          {X issues — High: N, Medium: N, Low: N}
-─────────────────────────────────
-...
+Test-owned gaps are conversation follow-ups with exact paths/case names where known, the missing guarantee and reason for a later explicit test task. Do not automatically invoke test, read/write its ledger, invent cross-ledger IDs or require test to run before refactor. Refactor may record its own concrete maintenance remedy while reporting a separate protection gap; do not persist a test-only gap as refactor-owned work. Each invoked command deduplicates against its own permitted history; rediscovery across separate tasks is acceptable. A separate follow-up alone does not make a complete refactor assessment unrecordable; actual incomplete inspection still blocks its scan checkpoint, while a genuine fully assessed unclear refactor-owned finding may be recorded as unknown with a clarification blocker.
 
-PERFORMANCE           {X issues}
-─────────────────────────────────
-...
+### Gap scan: changed source plus affected surface
 
-TESTS                 {X issues}
-─────────────────────────────────
-...
+Assess complete changed logical units, their surrounding invariants and evidenced callers/consumers/tests/configuration; searches locate evidence rather than replace it. Expand a unit or read the whole file when interactions require it, without a universal full-file reread for a tiny edit. A targeted assessment applies the same required depth to its named area and relevant contracts. Keep small scans with the parent; large independent affected areas may use the same permitted read-only worker contract. Never stop discovery after the first familiar findings.
 
-DEPENDENCIES          {X issues}
-─────────────────────────────────
-...
+Reuse a baseline-to-`{scan_head}` changed-file list only while branch, HEAD, configuration, ledger inputs, and inspected source still match. Include unchanged callers, consumers, tests, configuration, contracts, and dependency surfaces when evidence connects them. A fixed one/two-hop limit does not establish completeness. Unknown/broad impact recommends Full scan or an explicitly bounded report with limitations.
 
-─────────────────────────────────
-TOTAL: {N} issues found ({N} new, {N} still open)
-─────────────────────────────────
+Revalidate affected open findings and prior decisions against actual current patterns and relationships. Deleted/moved/heavily rewritten anchors or deletion of the last related file do not prove resolution. Inspect meaningful related-file changes and surviving/moved consumers, not existence alone; fuzzy rename detection is not identity proof. Carry unchanged findings only with sufficient context evidence. Auto-resolve only after confirming the logical issue no longer applies; uncertainty stays open and is reported.
 
-Then present category selection. First determine how many of the 6 categories (Architecture, Consistency, Code Quality, Performance, Tests, Dependencies) have at least one `new` or `still open` finding:
+Discover new findings in the affected surface across applicable lenses, including bounded local consistency findings (always needs-review), while explicitly declining any whole-project consistency claim. Deduplicate across all statuses and handle genuine recurrence under Step 3. A recorded Gap scan establishes incremental assessment under its reported limitations, not that every possible finding in the project is absent.
 
-If zero categories qualify (TOTAL is 0): nothing to apply. Inform the user "No refactoring findings this run." and proceed directly to Step 7 (Merge and cleanup) — there is nothing to select or apply.
+### Fix Backlog: selected existing work
 
-If exactly one category qualifies, a multi-select with a single option isn't valid — AskUserQuestion requires at least 2. Ask directly instead:
+No discovery scan. Load open findings, select eligible items, and revalidate current patterns, dependencies, affected consumers, and safety before editing. Preserve both root anchors. Newly noticed issues during validation are reported as follow-ups rather than silently expanding the selected backlog.
 
-  AskUserQuestion:
-    question: "Apply the {N} {category} finding(s)?"
-    header:   "Apply category"
-    multiSelect: false
-    options:
-      - label: "Yes (Recommended)"
-        description: "{N} issues: {one-line summary}"
-      - label: "Skip"
-        description: "Leave these findings open, don't change this code"
+### Priority, risk, and uncertainty
 
-  "Yes" is equivalent to selecting that category in the multi-select below — proceed the same way.
+Rank the present cost of leaving the code as is or the concrete benefit of a behavior-preserving improvement. Explain who pays that cost, on which supported path, and the mechanism visible in source or confirmed by the developer. Reachability alone does not prove usage, scale or burden. Priority is independent of transformation risk, effort, readiness and assessment mode; those can shape the per-run recommendation without changing a finding's tier.
 
-Otherwise (2 or more categories qualify), present multi-select category selection using the AskUserQuestion tool:
+| Priority | Evidence required |
+|---|---|
+| **High** | Substantial demonstrated maintenance, change, verification or resource cost. Examples include a shared rule that demonstrably requires coordinated edits across active supported flows, or a structural obstacle to meaningful required verification. Name the material burden; duplication, coupling or a category label alone is insufficient. |
+| **Medium** | Meaningful localized cost without evidence warranting High, such as tangled responsibilities or duplicated logic that concretely makes changes harder. |
+| **Low** | A small concrete benefit, such as correcting a misleading name or simplifying unnecessarily nested logic. Explain the benefit; formatter-governed taste or filler is not a finding. |
 
-  Question:    "Which categories to apply?"
-  multiSelect: true
-  Options: one entry per qualifying category — "{N} issues: {one-line summary}"
+Use applicable evidence rather than scores, LOC/file/hop counts, fixed category tiers or speculative frameworks. Test-quality findings concern their verification/maintenance burden; broad missing coverage and behavior-changing bugs/security fixes/features/upgrades stay separate follow-ups. For performance, distinguish evidenced avoidable work and supported workload/contract or developer evidence from an unmeasured speed hypothesis. A loop, per-item call or reachable path alone cannot establish High. Unsupported speed ideas remain labelled unverified observations, not automatically Medium findings; runtime history or benchmarking is not a prerequisite for useful static assessment.
 
-  AskUserQuestion caps at 4 options. If more than 4 categories qualify, merge the smallest two into one option (e.g. "Tests & Dependencies") — repeat until at or under 4.
+Use schema-2 `assessment` for the actual source/date, priority, transformation risk, concrete reason, evidence and invariant; keep transient effort/readiness and detailed execution plans in the report. Ranked values remain `high`/`medium`/`low`; a genuine fully assessed unclear finding can use `unknown` with a clarification blocker. Risks remain `safe`/`needs-review`. A costly/blocked High stays High; a safe rename can be Low. Consistency-always-needs-review and performance-default-review remain. `safe` never means automatic selection or edit permission.
 
-  Selecting no options = skip. Do not add an explicit All or Skip option.
+When presenting or selecting an existing finding, revalidate its tier against current applicable evidence. Retain a supported tier; a supported correction can accompany an otherwise eligible checkpoint with its reason. Do not mass-rewrite old tiers, invent a cleanup-only checkpoint or reconsider prior skips merely because this rubric changed. If current evidence cannot support a carried tier, preserve its stored value/history and label it "recorded {tier}; current priority unconfirmed: {missing fact}" in the report. Do not present the old label as a fresh ranking or include it silently in a recommended/ready set.
 
-Wait for response before proceeding.
+Distinguish uncertainty within a supported tier from missing intent/impact that prevents ranking. A meaningful refactor-owned finding with a fully inspected logical problem can be recorded as `assessment.priority: unknown` with the actual evidence and a `clarification` blocker identifying the missing fact and what each answer changes. Batch clarification and reuse supplied context. Do not invent Low, a provisional ranked tier or a skip decision. Unknown findings are held, never silently ready/recommended or Apply-authorized. If clarification establishes no refactor-owned improvement, report that honestly rather than manufacturing a finding.
 
----
+Unknown priority or a pending remedy is not an inspection gap: a complete Full scan/Gap scan can record it and advance its appropriate anchors. Actual incomplete/failed coverage still writes no incomplete scan checkpoint. Do not silently exclude uninspected areas and call the original scope complete. Separately chosen eligible Targeted/Backlog work remains available with its limits. Audit/Plan show missing questions as text and stop without operational state, interactive Apply or writes.
+
+### Assessment checkpoint eligibility
+
+Before a recorded result, recheck branch, `{scan_head}`, configuration, the canonical own-state file and inspected source against the assessment. Unexpected changes invalidate dependent results. Only completed whole-project Full scan sets both `assessed_commit` and `full_scan_commit` to the actual pre-output source; completed defined Gap scan advances only `assessed_commit`. Targeted/Backlog preserve both. Incomplete/failed coverage writes no incomplete scan checkpoint. Unknown priority, held decisions and pending fixes do not block an otherwise complete assessment.
+
+A completed targeted assessment may record genuine scoped changes under normal policy. Preserve out-of-scope/unselected records. No real finding/decision or eligible source-assessment change means no ledger write/commit; identical data and cleanup-only changes never justify a checkpoint.
+
+Use the refactor-ledger and shared state procedures for complete canonical ID-keyed updates, strict native schema-2 validation, drift rechecks, readback and commit policy. Preserve untouched data. Stage only the exact authorized canonical file and related approved changes; no conversion or old-file cleanup occurs. Use an appropriate `chore(refactor): ...` assessment commit, verify it and refresh snapshots. Failure/decline preserves actual drafts and prior checkpoints and stops dependent actions; never claim automatic rollback.
+
+## Step 5: Rank proposals and select one global plan
+
+Report the exact snapshot, inspected/excluded/incomplete scope, and unique new/open/semantically obsolete IDs; Backlog reports existing work with no claim that a scan occurred. Rank using Step 4's benefit/burden criteria, showing risk, effort and readiness separately. Keep behavior-change follow-ups and unverified observations visible outside the refactor selection.
+
+Group the display by module or behavior, with individual finding IDs, priority/reason, risk, concrete small remedy, affected files/consumers, expected benefit, invariants, tradeoffs/uncertainty, verification and prerequisite IDs. Category, priority and risk are overlapping filters, not execution queues. Allow exact IDs, groups and filter exclusions without forcing whole-module/category selection. Count each finding once across views. A group may summarize "highest priority: High ({ID})", but every member retains its own tier; dependency-first sequencing may use that highest tier without relabelling its members. Keep test-maintenance and dependency-boundary findings independently selectable, never combine unrelated categories or hide a material proposal behind a display limit.
+
+For a small clear set, go straight to the exact plan and existing approval, accepting free-text refinements. For larger reports, offer one scope question with at most four options:
+
+1. **Recommended:** exact listed findings and reasons, a bounded set of best-supported High and worthwhile relevant Medium improvements. Current changed/requested scope matters, without changing their tiers or silently expanding scope. Low can be included when explicitly requested or justified as part of a selected transformation; no quotas or filler. This is not High-only for Full scan, nor safe-only in any mode. Revalidate Backlog before recommending it. If empty, say so and omit it; if identical to All listed ready, combine those equivalent options.
+2. **All listed ready:** the exact listed ordinary proposals, including Low and needs-review items, with counts/IDs and explicit exclusions. Ready means current revalidated evidence, a supported tier and concrete remedy/invariant/verification path with prerequisites satisfied or explicitly included in the proposed set. It does not mean tested, risk-free or authorized; named remedy choices still require the existing review before edits.
+3. **Choose findings or groups:** IDs, bounded groups, module/behavior/category/priority/risk filters and exclusions via faithful independent picker pages or chat. Keep unusually costly/intrusive proposals, blocked work, contextual decisions, unknown priorities and carried unconfirmed tiers visible separately with true priority or uncertainty, actual blockers and a route to clarify/resolve/select them. The menu never bypasses blockers or authorizes behavior changes. Do not silently include these held items in Recommended/All; point to significant held High work even when easier work is recommended.
+4. **None:** no Apply work. Findings stay open, and an already authorized Step 4 assessment checkpoint remains. None is not a permanent skip, Cancel, permission for a new ledger write/migration or an instruction to undo completed work.
+
+Risk/effort/readiness help choose a useful per-run set, not lower a tier. Refactoring's useful cleanup remains eligible; do not copy test's default exclusion of test-cleanup proposals. Distinguish concrete small benefit from cosmetic churn. High-cost/intrusive is explained by the actual coordination, tradeoff, diff or required setup/effects, not an arbitrary size threshold; resolving it uses the existing concrete review/verification gates, never a new universal approval stage. Deferred/unavailable checks remain blockers to verified completion, with only explicitly authorized drafts under the existing policy. Audit/Plan show recommendations as text only and stop without a scope/Apply picker or ledger access.
+
+Selection/filtering is scope, not approval. Preserve independent choices above four through runtime's paging/chat fallback; defaults, silence, timeout and unsupported multi-select do not mean all. Reuse an existing exact selection/approval rather than asking again; changed scope/semantics still needs a decision. Before editing, show the complete selected plan with IDs, exact paths/companion changes, units, invariants, unresolved remedy choices, prerequisites, checks and code/ledger checkpoint scope. Use the existing Apply selected plan/Cancel approval only when missing, without per-tier/per-finding duplicate prompts. Missing decision answers leave that unit pending.
+
+Construct **one dependency plan across all selected categories**, recomputing bounded logical units on current code. Verify each dependency ID, current state and actual satisfaction; a historical resolved label alone is not proof. Dangling/cyclic/skipped/unselected prerequisites cannot be ignored. Show required mechanical companion edits (such as call sites/imports/test references) as part of the proposed transformation. A companion that is itself an unselected finding or an independent improvement needs explicit inclusion, or its dependents are revised/deferred. Transient unit labels, shared files and group display do not silently expand selection. If one member cannot be changed independently, explain and obtain the exact joint scope or defer it. Combine a cycle only if it forms one coherent reviewed joint transformation. One unit may span categories and receive one appropriate code commit; no category execution order or per-category commit constraint remains.
+
+Resolve every needs-review choice for the **whole selected coherent unit before any edit**, including its safe members and guard tests. Batch equivalent transformations within the reviewed scope and reuse exact approval. An unselected/excluded item stays open; None is not a permanent skip decision. Explicit skip/defer/accepted-risk records a contextual `decision` under normal meaningful checkpoint policy, leaving the item open and held. Preserve that choice on later closure; nonselection never invents one. Step 4's authorized assessment remains before this fix selection; do not move it after the picker, repeat it because of None or claim its write was approved by that choice. If nothing is selected, report-only/no-op exits remain available, without inventing an apply or publication action.
 
 ## Checkpoint and pending-work rules
 
-Apply these rules to every scan, cluster, verification, and integration commit, including when `git-auto-commit` is off. The shared project-state procedure governs every ledger write, read-back, migration, and commit. Preserve append-only findings history, IDs, and unknown fields; update statuses without rebuilding the array from only open findings.
+Honor invocation `git-auto-commit` for every local assessment, guard-test, code, ledger and verification commit. A declined/failed commit, write/readback, or incomplete checkpoint stops subsequent edits, wave handoffs and finalization. Preserve the actual branch, drafts, index, verified prior commits/canonical state, and preserved inputs; report actual pending paths. Do not reset, stash, switch away, merge/rebase/push/promote/delete branches, silently commit, or claim rollback.
 
-A declined commit, failed commit/write/read-back, or incomplete checkpoint stops subsequent edits, wave handoffs, and finalization. Preserve the current branch, drafted files, existing verified commits, verified canonical state, and remaining legacy sources; report any staged removals. Go directly to Step 8 with pending/blocked status. Do not merge, rebase, push, promote, delete branches, or switch back, even if earlier clusters were committed. Declining migration commit approval leaves legacy sources intact. Never silently commit, reset, or stash drafts to pass a gate.
+Only a durable verified checkpoint is complete or transferable. After each own commit refresh the expected branch/HEAD/source/state snapshots; unexpected external changes require resolution. If code committed but its ledger checkpoint failed, reconcile those actual states before resuming; never reapply a fix just because its old entry still says open. Saved `closure.commit` identifies the real accepted code/evidence commit, so do not collapse code and ledger into one self-referential commit. Preserve historical SHA provenance even if integration later rewrites ancestry.
 
-After each successful ledger checkpoint, verify its commit and refresh the recorded state snapshots before another write. Only a durable checkpoint may be described as complete or handed to another session. If code committed but its ledger commit failed, report those two states separately and reconcile them before resuming; do not apply the same fix again from an old open status.
+## Step 6: Apply serial coherent units and verify progressively
 
-## Step 6 — Apply refactoring
+### 6.1 Prepare verification and bounded waves
 
-Apply selected categories one at a time. Complete steps 6.1–6.4 fully for each category before starting the next. Do not batch changes from multiple categories into a single commit.
+Statically discover actual native configured commands/targets and inspect their side effects, isolation, credentials/services and data requirements before running them. Prefer existing tools; distinguish declared commands, available capability, successful execution, no configured tests, and configured-but-unrunnable checks. No automatic installs, services, production access, database migrations, project-wide fix-all, or another workflow invocation. Obtain any missing approval for needed setup/side effects.
 
-### 6.1 Plan waves within capacity
+Plan a safe scoped pre-change baseline before editing. Separate existing failures, environment/tool gaps, and new regressions. A pre-existing failure is not this run's regression and is not permission to fix production behavior silently; unresolved required failures still block dependent completion/publication. Minimal approved characterization/regression guards may precede a risky refactor, with correct expected behavior, scoped verification, and their own logical commit when appropriate. Broad coverage expansion stays a separately selected `/helm:test` task.
 
-- Take all findings in this category, grouped into their clusters.
-- Estimate how many clusters one agent session can safely handle without running low on context (rough budget based on total diff size expected, similar to the capacity math used for Deep Mode chunking).
-- If the category's clusters fit within that budget, it's a single wave. If not, split into sequential waves — each wave a bounded batch of clusters, still processed one at a time, never in parallel.
-- Sort clusters by `depends_on` across the whole category first, then assign to waves in that order, so a cluster never lands in an earlier wave than something it depends on.
+Honor explicit verification deferral. Static findings/plans can still be reported, but unavailable/deferred required runtime checks are not passing; affected edit drafts remain uncommitted, not fixed, with finalization blocked. A genuinely unconfigured check is not an unavailable required check; use appropriate evidence and report limits rather than universally installing a framework.
 
-### 6.2 Apply one cluster at a time
+For test-affecting work under unavailable/deferred required verification, keep retirement, substitution or weakening of existing protecting cases/assertions/discovery/required fixtures plan-only. Explicitly approved safely additive guard drafts can proceed with existing protections preserved; do not silently substitute an unverified test for them. This is not a blanket prohibition on every test-file edit: distinguish additive/support changes that preserve protection from retirement. General unverified production-draft limits remain. If interruption/failure actually leaves a partially changed tree after an approved edit, preserve/report that reality and its pending checks, never claim original protection is intact, verified equivalence or automatic rollback.
 
-Work through the current wave's clusters one at a time, in order. For each cluster:
+Order selected units globally by verified dependencies, then by priority among eligible units, using a unit's highest member without relabelling other findings. Split into bounded sequential waves based on expected diff/context size. Never edit multiple units in parallel or expand a wave to absorb all follow-ups.
 
-- Verify the expected branch and checkpoint before reading its selected findings. Re-read their current primary files and relevant `related_files`, locate each actual issue by its pattern/context rather than its saved line alone, refresh anchors, and confirm dependencies and the proposed edit still apply. Do this in all modes, including Fix Backlog and fresh-session resumes; earlier clusters can move lines too. Respect Step 2 exclusions and project containment.
-- If a finding's file/issue is verified gone, mark it `auto-resolved` without applying a fix. An issue whose current identity/location is unclear stays open pending clarification; never guess a replacement site. Reassess risk on current code; missing or obsolete legacy risk labels do not imply `safe`. Keep every consistency finding `needs-review`. These targeted checks are not a new scan and do not advance scan metadata in Fix Backlog.
-- Apply every finding tagged `risk: safe` in the cluster, in dependency order. No need to pause for user input on these.
-- For any `risk: needs-review` finding in the cluster, confirm with the user before touching code:
+### 6.2 Revalidate and apply a whole cluster
 
-  AskUserQuestion:
-    question: "This fix needs a judgment call: {finding description}. Apply it or skip it?"
-    header:   "Needs review"
-    multiSelect: false
-    options:
-      - label: "Apply as suggested"
-        description: "{brief description of the fix}"
-      - label: "Skip"
-        description: "Leave this finding open, don't change this code"
+For a selected unit that touches tests, include these details in its existing whole-unit review before edits, not a separate action picker or approval stage:
 
-  If skipped, this finding's ledger `status` becomes `skipped-by-user` (not `open`), so it stops resurfacing every run. Only re-surface it later if the surrounding code changes enough that the original suggestion may no longer apply.
+- Identify each test change as guarantee-preserving maintenance/mechanical companion or an additive guard tied to this refactor's invariant. Equivalent expression/reference adaptations preserve old assertions; strengthening protection requires the explicit guard scope or a separate test follow-up, never incidental assertion rewriting.
+- Map old to proposed scenarios/inputs, assertions, fixture/snapshot responsibilities, effective layer/environment and important regression/issue context where relevant. Check tags, case IDs, discovery/CI filters, documented references and all shared-fixture consumers. Static mapping is a plan, not verified equivalence. Similar code, case counts, line coverage or a single green run do not establish preserved guarantees or eliminated flakiness.
+- Consolidation/necessary companion replacement must preserve identifiable scenarios and verify mapped replacement/remaining protection before retiring old protection, running relevant valid old/new cases together where the harness permits. Keep layer/environment responsibilities; changing a real external boundary into a fake or moving layers is not inherently equivalent. Do not independently prune allegedly redundant tests, weaken assertions, skip failures or bless snapshots to make green. Production deletion never proves a test obsolete. If guarantees cannot be preserved, pause the unit for an explicit test/behavior decision rather than forcing the refactor through.
+- Distinguish protecting cases from truly unused helper/support code: removal of the latter needs proved lack of consumers and exact approved paths under the ordinary cleanup rules. Retain useful regression context in surviving tests or reviewed changes without a new report/ledger. Necessary companions remain explicit; independent unselected findings require inclusion approval or dependent deferral.
+- Use approved native scoped verification and actual discovery/reporter/assertion evidence to check the final protection and affected consumers. No second full test workflow, automatic framework installation or broad coverage campaign follows. Observe the deferral/retirement rule above; on failure retain actual drafts and earlier verified work, with no closure or code/ledger commit claiming an unverified fix.
 
-- Once the cluster's edits are complete: run tests — stop and inform if tests fail, do not move to the next cluster until resolved. Run lint and formatter.
-- Infer the commit scope from this cluster's files per git.md's Scope inference convention — not this command's six-category taxonomy (architecture/consistency/quality/performance/tests/dependencies), which is a report and selection grouping, not a commit scope.
-- Commit actual tested code changes under the resolved commit policy:
-  refactor({scope}): {brief summary of this cluster's changes}
-  A declined or failed commit follows the pending-work rule; do not mark those changes fixed or continue to the next cluster.
-- Update the ledger for this cluster: actual fixes become `fixed` with the verified code commit in `resolved_commit`; skips become `skipped-by-user` with their decision-context commit/date; confirmed absent issues become `auto-resolved`. A cluster containing only skips/auto-resolutions needs no empty code commit and must not claim a code fix.
-- Persist and read back `.helm/refactor-log.json` using the shared state procedure, preserving all earlier records. Commit the checkpoint under `git-auto-commit` as `chore(refactor): checkpoint cluster {cluster_id}`, including any verified tracked legacy removals in that ledger commit. Verify it before continuing. A declined/failed ledger commit stops here with the exact pending state.
+1. Verify actual branch/checkpoint, clean starting state, effective policy, selected scope, own-state snapshots and prerequisite satisfaction. Re-read current primary/related files and consumers, locating patterns by semantic context rather than old display location alone. Earlier units may change anchors. Unclear identity stays open; proven semantic absence can become obsolete under Step 3 without an empty code commit.
+2. Refresh the exact proposed transformation, invariants, affected surface, risk, guard tests and checks. Resolve all missing review choices for the whole selected coherent unit before touching any member; do not pull in unselected findings. Respect earlier concrete authorizations; a changed proposal requires review of the change. Do not apply safe members first and then ask about dependent risky members.
+3. Run the approved safe baseline/guards, apply only the selected coherent edit, and inspect the complete diff. If a new behavioral change or out-of-scope prerequisite is needed, stop that unit and report it for a separate decision. Never weaken assertions, skip tests to get green, or bury a production bug fix in test cleanup.
+4. Run required scoped formatting/autofix **before** final relevant checks; inspect all resulting changes. Verify each claimed issue actually disappeared, the planned contracts/invariants still hold, and affected unchanged consumers are covered. Use focused per-unit checks and later justified combined checks; do not repeat identical full sweeps per category. Performance claims distinguish actual command/input/result from unmeasured expectations.
+5. Failed/unavailable required checks stop completion, keeping actual drafts and prior work. Do not promise that interruption can never leave a half-edited cluster or auto-revert it. Only verified work proceeds to its code commit under normal commit policy; stage exact approved paths and inspect the complete proposed index, without unrelated files or another workflow's state. Infer type from actual intent (`refactor`, `perf`, `test`, `chore`, etc.) and scope from the real domain/modules per git.md. Never use category labels as scope or conceal behavior changes with `refactor`; preserve genuine formal breaking markers and project policy.
+6. Verify the code commit B and corresponding reviewed inputs/checks. Then mark genuinely verified fixes `resolved` with a native `closure` naming actual B, date, method, evidence and applicable command/scope/outcomes. B may descend from assessed source A; it need not be A's ancestor. Record explicit contextual decisions separately, or semantically proved absence as `obsolete`, without claiming code was fixed. Use the refactor-ledger/shared state procedures for the separate readback/authorized ledger commit C, never C's own future SHA, e.g. `chore(refactor): checkpoint selected unit`. Verify complete current history and the authorized canonical checkpoint, then refresh snapshots. Status-only units need no empty code commit or inapplicable runtime steps, but still require real proof and an authorized checkpoint; static/manual evidence cannot waive an applicable required check. Decline/failure follows the strict pending-work stop.
 
-This is the checkpoint: each cluster is fully tested, committed, and recorded in the ledger before moving to the next one. If the agent stops for any reason after this point, nothing already committed is lost or ambiguous.
+### 6.3 Final affected-surface verification and continuation
 
-### 6.3 Wave handoff
+After selected units, perform justified combined verification of their resulting tree and affected consumers/contracts. Confirm each claimed resolution; a same-run unsuccessful attempt reopens its entry with the false closure removed and truthful evidence retained in assessment/blocker and report. Newly introduced issues get unique open IDs; other follow-ups remain visible outside this run's approval. Persist only meaningful eligible own-state changes through verified authorized checkpoints, never a new autonomous wave or metadata-only commit.
 
-- When the current wave's clusters are all done, check whether clusters remain in this category.
-- If none remain, the category is complete — proceed to 6.4.
-- If clusters remain, report progress plainly: "Wave {N} complete: clusters {list} fixed. {N} clusters remaining in this category." In Claude, continue with a fresh agent session when the host supports it; that session reloads the runtime, current instructions/configuration, exact `{branch}`, and the verified ledger checkpoint before picking up remaining work. Supply selected finding/cluster IDs, dependency order, approvals already given, and the remaining scope in the handoff; do not infer approval to apply every open finding from the ledger alone. In Codex, the parent continues the next wave sequentially and remains the only code/Git/ledger writer. If a fresh session is unavailable, continue from the ledger in the current session or report the exact resume point; never claim a handoff that did not happen.
-- If capacity runs out mid-wave, stop only at the nearest completed cluster boundary — never leave a cluster half-edited. Report the same way as above and hand the remainder to the next wave.
+At verified cluster boundaries, report completed/remaining IDs, dependency order, exact branch and checkpoint, approvals, scope, checks and limitations. A fresh session is used only when actually supported/permitted; it reloads runtime, instructions/policy and the same branch/state before continuing. Codex keeps the parent as serial writer. Missing handoff capability leaves an exact resume point, not a claimed handoff. If interruption occurs mid-unit, preserve and report actual drafts and pending gates. Resuming must reconcile them before further work; no automatic reapplication from ledger state alone.
 
-This replaces "silently completes a few and reports the rest at the end" with "always commits what's done, always states clearly what's left, and always continues from an accurate ledger."
+## Step 7: Finish verified local work
 
-For any finding in this category the user did not select at the category level (Step 5), leave its ledger `status` as `open`.
+Verify code/state checkpoints against the actual current branch and source evidence. Retain meaningful cluster results and truthful checks; incomplete scans or deferred/failed checks do not certify readiness. Assessment-only checkpoints do not claim runtime verification. A true no-op writes/migrates/commits nothing.
 
-Example commits:
-  refactor(orders): extract business logic from controller
-  refactor(auth): remove duplicate helper methods
-  refactor(checkout): update outdated assertions
+Honor local auto-commit and stronger review requirements already applied to each unit. Report drafts, failed/declined commits and missing checks without absorbing user work or advancing unsupported checkpoints. Do not require remote results merely for local completion. Do not offer Integrate/Open PR/Push/Leave-branch choices, publish, promote, create/switch/delete a branch or perform return cleanup. The command ends locally on the same branch; invoke ship separately when ready. Existing retained runs continue only through verified current-branch provenance, not automatic branch selection.
 
-### 6.4 Scoped verification pass
+## Step 8: Report the actual result
 
-After the current category's clusters and checkpoints have been verified, run one lightweight check — reusing the Quick Mode mechanics (Step 4B), but scoped only to the files touched during this Step 6, not the whole repo:
+Distinguish the following in the report:
 
-- Re-check each `fixed` finding's file to confirm the issue is actually gone, not just that an edit was made.
-- Scan the same touched files once more for anything new the fixes themselves may have introduced.
-- Update the ledger accordingly: confirmed fixes stay `fixed`; anything not actually resolved reverts to `open` with a note; any newly introduced issue is appended as a new `open` finding. Persist, read back, and commit any changed verification state through the shared procedure as `chore(refactor): record scoped verification`, under the existing commit policy. No changed data means no extra write. A declined/failed checkpoint goes directly to Step 8, never finalization.
+- Mode and inspected source SHA/worktree inputs, selected/edit/context scope, applicable six-perspective coverage, stack/version and guidance evidence/authority, exclusions and incomplete/unknown reads. Distinguish declared facts, researched guidance, static inferences and actual verification. Backlog has no new-scan claim; targeted/partial work has no whole-project currency claim.
+- Unique finding IDs and coherent units: priority/reason separate from risk/effort/readiness, observed cost/expected benefit, new/carried/semantically obsolete, verified fixes, explicit skips, recurring and residual/unselected/blocked/held work. Identify recorded unknown-priority findings with clarification blockers, any genuinely unrecorded/incomplete scope and carried unconfirmed tiers, actual selection/exclusions and pending decisions; distinguish actual persistence from approval. Avoid duplicate counts across module/category/priority/risk views or for one cross-category transformation.
+- Actual commands, targets and results: baseline/existing failures, guard tests, formatting, focused/final checks, unavailable/deferred/not-configured checks, and performance measurement versus hypothesis. For test edits report preserved/mapped guarantees, actual verification or pending retirement and concrete test-owned follow-ups separately. Never reduce these to a blanket "tests passing" assertion.
+- Exact branch/current branch, effective configuration owner/local commit policy, actual guard/code/ledger commits, pending files/IDs/checkpoints, loaded canonical state path and canonical destination/schema/write status, native evidence, valid or unusable baseline and both root anchors preserved/advanced.
+- Local completion, pending drafts/IDs/checks and the precise current-branch continuation action. No review request, publication, integration, promotion or branch cleanup occurred; ship is a separate later action.
 
-This step is cheap — it only covers files already touched this session, not a fresh full scan — and it's what tells the user honestly whether this run's fixes fully landed or quietly created new small issues.
-
----
-
-## Step 7 — Merge and cleanup
-
-Before offering finalization, require all code and ledger checkpoints committed/verified, no pending drafts or staged changes, passing applicable local checks, and the expected branch. Incomplete work follows the pending-work rules and goes directly to Step 8. A completed scan may have committed its ledger even when no categories were selected; report that accurately. A genuine no-op writes/migrates nothing and may remove only an empty branch created by this invocation, after a safe switch back; never delete a resumed session branch as cleanup.
-
-Offer the same three choices in both Git modes:
-
-  AskUserQuestion:
-    question: "{Refactoring/checkpoint outcome}. What would you like to do next?"
-    header:   "Next step"
-    multiSelect: false
-    options:
-      - label: "Merge to {base_branch}"
-        description: "Integrate only when configured review and CI requirements are satisfied; push is confirmed separately"
-      - label: "Open PR"
-        description: "Publish this committed branch with push confirmation, then attempt a PR or provide manual instructions"
-      - label: "Leave branch"
-        description: "Keep the committed refactor branch locally for review or continuation"
-
-Wait for the user's choice. Resolve required CI access and project review policy before attempting integration. Native CLI/tool approvals do not bypass the workflow gates.
-
-### Required CI gate
-
-Read `{package_root}/prompts/shared/ci.md` and apply its **integration** gate to the exact reviewed tip and **promotion** gate to the exact published source SHA. GitHub Flow retains its PR and configured pre-merge CI policy. In Solo, CI merely existing does not make unpublished-branch remote results mandatory: when no project/provider policy requires pre-integration remote CI, passing applicable local checks permits local integration. The published-base CI gate before promotion remains mandatory when CI applies.
-
-If remote CI is explicitly required for this integration but the branch is unpublished, offer `Publish branch for required checks` or `Leave integration pending`, describing the exact push and preserving its own confirmation. Publishing solely for checks does not require creating a PR in Solo. Verify remote SHA and applicable results; pipeline trigger filters may still leave the gate unavailable. Required remote checks never become optional or satisfied by local tests. An unavailable/failed/pending gate leaves this branch intact for wait/recheck or manual review, without integration, promotion or cleanup.
-
-### Option 1 — Integrate
-
-1. Read the destination's effective configuration and compare it with the invocation policy before mutation. Resolve any conflict; preserve AGENTS.md/CLAUDE.md ownership and settings. Under GitHub Flow, require its PR/review requirements and the pre-integration CI gate to be satisfied. If they are unmet or cannot be checked, retain `{branch}`, report the review/CI handoff, and go to Step 8; never treat this menu choice or auto-commit as a review exemption. Solo retains its documented refactor branch exception and does not acquire a mandatory PR.
-2. Under GitHub Flow, state and use `git-merge-strategy` from the resolved owner (default: squash). Under Solo, use the existing merge-commit behavior unless an explicit project integration instruction says otherwise. Preview the full branch diff and obtain any required integration-commit approval under `git-auto-commit` before mutation. Apply the required CI gate in either mode when applicable. Use the actual selected `{branch}`, not a reconstructed timestamp:
-   - `merge`: switch to `{base_branch}`, then `git merge {branch} --no-ff -m "refactor(project): apply refactoring {timestamp}"`.
-   - `squash`: switch to `{base_branch}`, run `git merge --squash {branch}`, then commit the approved result as `refactor(project): apply refactoring {timestamp}`.
-   - `rebase`: rebase only a private, unpushed branch belonging to this session onto `{base_branch}`, then switch to `{base_branch}` and integrate with `git merge --ff-only {branch}`. A shared/already-pushed branch requires an explicit reviewed rewrite plan instead; leave it intact and report that handoff. Never force-push implicitly.
-3. Stop on any conflict or failed command/commit with the actual current branch/index preserved. Verify successful integration includes the code changes, canonical ledger checkpoints, and tracked legacy removals. Preserve saved SHA provenance after squash/rebase; Step 3 validates it next time instead of assigning an uninspected SHA.
-4. Ask separately before `git push origin {base_branch}`, regardless of auto-commit. Explain the exact branch/commits being published. A decline or push failure ends finalization: no promotion/deletion, report local integration and retained branch in Step 8. If the push succeeds, freeze its exact SHA for the post-push CI gate.
-5. If environments qualify, apply the required CI gate to that published SHA **before** asking which environments to promote. Only a passed/not-applicable gate reaches the picker below. No qualifying environments means no promotion action to gate. Keep this refactor content sync's existing fan-out behavior.
-
-   AskUserQuestion:
-     question: "{base_branch} has been updated. Which environments should receive this refactor? CI: {passed for exact SHA / not applicable}"
-     header:   "Promote to environments"
-     multiSelect: true
-     options: one per qualifying environment, for example:
-       - label: "staging"
-         description: "Merge {base_branch} into staging and push"
-       - label: "production"
-         description: "Merge {base_branch} into production and push"
-
-   Cap at four options, with staging/stage/uat/preprod first, then production/prod, then other names alphabetically. Disclose any remainder for a follow-up selection. For exactly one environment, use a two-option Yes/Skip question that explicitly describes merging and pushing. No selection means no environment changes. The selection authorizes only the described promotion/push targets; keep any separate project-required deployment gates.
-
-   For each selected environment, recheck the base SHA and CI gate, switch safely, merge `{base_branch}` with `--no-ff` and `chore(deploy): promote {base_branch} to {environment} for refactor {timestamp}`, push only after successful merge, and return to `{base_branch}`. Stop on any failure; report completed and pending targets separately and do not continue cleanup on a failed promotion.
-6. Delete the local `{branch}` only if its tip is an ancestor of `{base_branch}` and `git branch -d {branch}` succeeds. Squash may leave its commits outside the base ancestry; retain and report the branch rather than silently substituting `-D`. A remote branch is deleted only if it was pushed and its deletion receives its own push confirmation. Never delete an existing ref with pending or unverified work.
-
-### Option 2 — PR
-
-- Confirm the exact `git push origin {branch}` separately before publishing; selecting PR does not waive the push gate. A decline or failure leaves the local committed branch intact and reports its actual publication status in Step 8. Do not attempt PR creation on a failed push.
-- After a successful push, identify the remote host. On GitHub, use an available authenticated PR interface or check `gh` availability/authentication/repository access before creating a PR against `{base_branch}`. On unsupported hosts or unavailable interfaces, give manual review instructions without claiming a PR exists. Do not change credentials or client settings automatically.
-- The PR title is `refactor(project): apply refactoring {timestamp}`. Its body describes applied categories and points to `.helm/refactor-log.json`. Pass multiline content through a structured argument or a temporary `--body-file`; preserve literal content and newlines. If creation fails, report the actual failure and leave the published branch for manual review. If successful, report the returned URL and attach it to the current task when the host provides a PR attachment tool.
-- PR creation does not merge, promote, or delete the branch. It preserves the configured integration/review policy for later review.
-
-### Option 3 — Leave as-is
-
-Report the exact `{branch}` and verified checkpoint left locally, with remaining finding/cluster IDs and pending review requirements. Do not claim an uncommitted checkpoint is durable.
-
----
-
-## Step 8 — Confirm completion
-
-Report:
-
-─────────────────────────────────
-REFACTORING RESULT
-─────────────────────────────────
-Branch:   {branch} (actual current branch: {current_branch})
-Mode:     {Deep/Quick/Fix Backlog}
-Scanned:  {new_count} new findings, {still_open_count} carried over, {auto_resolved_count} auto-resolved this run
-Applied:
-- Architecture: {N} changes
-- Consistency:  {N} changes
-- Code Quality: {N} changes
-- Performance:  {N} changes
-- Tests:        {N} changes
-- Dependencies: {N} changes
-
-Ledger:         {N} still open, {N} auto-resolved, {N} newly fixed, {N} skipped by user
-Verification:   {N} fixes confirmed resolved, {N} newly introduced issues found
-Commits made:   {N}
-Tests passing:  yes/no/not run
-Configuration:  {memory_file}; effective Git mode and integration strategy
-State:          loaded paths; .helm/refactor-log.json; checkpoint commit and migration status
-Baseline:       {validated / unusable and reason}; targeted backlog validation results
-Pending:        {files, checkpoints, finding/cluster IDs, and required next action, or none}
-CI:             {verified SHA/results / not applicable / blocked and reason}
-Outcome:        {integrated and pushed / integrated locally but unpushed / PR pending / branch left intact / pending / blocked}; distinguish existing commits from drafts and report any partial promotion
-─────────────────────────────────
-
-Sample of fixes applied:
-- {description} — {file}
-- {description} — {file}
-- ... (up to 5 examples, drawn from findings marked `fixed` this run)
-
-For Fix Backlog mode, omit the Scanned line entirely — no scan occurred this run.
+Show up to five representative verified fixes if useful. Static review/source editing does not establish runtime/client success. A no-op, advisory plan, assessment checkpoint, draft, applied fix and completed publication must each be described as what actually occurred.

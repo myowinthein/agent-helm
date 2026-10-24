@@ -2,222 +2,162 @@
 
 ## Before starting
 
-Resolve `{memory_file}` through the shared runtime before any Git mutation or file write. If the resolved owner does not exist (including a fresh project with neither AGENTS.md nor CLAUDE.md), stop: "Run the log workflow first to establish shared project instructions, then re-run manifest." Do not create instruction files or automatically invoke log. Existing bridges, overrides, conflicts, and missing import targets still follow the shared runtime's resolution rules.
+Resolve `{memory_file}` through the shared runtime before any Git mutation or file write. If the resolved owner does not exist, stop: "Run the log workflow first to establish shared project instructions, then re-run manifest." Do not create instruction files, migrate an owner, or automatically invoke log. Existing bridges, overrides, conflicts, and missing import targets follow the runtime's resolution rules.
 
-`/helm:manifest` rewrites README.md from the project's state, so it needs the full merged, stable state — never an in-progress feature branch. Behavior depends on `git-strategy` in {memory_file}'s Project Config (absence defaults to GitHub Flow, per git.md).
-
-Read `{package_root}/prompts/shared/content-sync.md` and apply **Prepare the working branch** with `{branch_template} = docs/manifest-{YYYYMMDD}`. Use the recorded invocation policy, actual `{base_branch}` and unique `{branch}` throughout this run. Scan only after destination ownership/configuration has been revalidated. A no-write exit uses the shared safe empty-branch cleanup; pending drafts or commits retain their branch.
-
----
+Read `{package_root}/prompts/shared/content-sync.md` and record the normal invocation Git policy. Manifest reviews the merged, stable project state. Its read-only preflight precedes **Prepare the current branch**; selected real work still requires that helper's clean-tree, actual main/master base, ownership, local commit and verification rules; publication belongs to ship. Do not borrow log's first-run policy overlay or initialize Git in an unversioned project.
 
 ## Scope
 
-README.md = human-facing documentation (contributors, GitHub visitors, new users).
-Not a changelog. Not a technical spec. Not a deployment manual.
-Write for people reading the project, with clear, scannable explanations. Shared agent instructions for Claude and Codex belong in the resolved project-memory owner.
-Whenever writing to README.md, in any step: use em-dashes sparingly — only when no other punctuation (comma, semicolon, colon, or a new sentence) works as well. When in doubt, restructure the sentence instead.
+The README is an entry point for people evaluating, using or contributing to the project. Explain purpose, prerequisites, the smallest useful getting-started example, common usage, help, contribution and license facts. Link detailed documentation rather than copying a technical specification, dependency inventory, changelog or deployment manual. Include API, configuration or development details only when readers need them here. No compulsory badges.
 
----
+Keep shared Claude and Codex instructions in the resolved owner. A full scan describes investigation breadth, not permission to replace existing writing.
 
-## Step 1 — Assessment
+## Step 1: Read-only preflight and choices
 
-**Determine readme-style:**
+### Discover the target and preserve its context
 
-Check {memory_file} Project Config for `readme-style`.
+Inventory actual README candidates in `.github/`, the root and `docs/`, including alternative formats, case variants and translated/package siblings. GitHub's entry-point priority is `.github`, then root, then `docs`; report the effective entry when unambiguous. Do not guess precedence between competing filenames within one directory or treat every translation as the primary entry.
 
-If `readme-style` is absent:
-  Check whether README.md exists and has content — the question below depends on it.
+Root `README.md` remains the default target, using an existing equivalent filename's actual casing rather than creating a duplicate. Set `{readme_file}` to the chosen path for this invocation only. If another location overrides root on GitHub, root is missing while another candidate exists, candidates are ambiguous, or the developer requests another target, show the candidates and ask which one to maintain before investigation/writes. Use at most four options, grouping a long list behind **Select existing target**. Offer root explicitly; do not silently switch to GitHub's entry or update siblings/translations. Do not add a persistent target setting.
 
-  If README.md exists with content:
-    AskUserQuestion:
-      question: "README.md exists with no known style. Which style should this project use?"
-      header:   "README style"
-      multiSelect: false
-      options:
-        - label: "Standard Readme spec"
-          description: "Enforce the Standard Readme spec structure when writing or updating."
-        - label: "Custom style"
-          description: "Follow the existing README structure — never rewrite into the spec."
+Preserve an explicitly selected alternative format; if the workflow cannot safely author it, stop for a reviewed format/target decision instead of writing Markdown into it. Resolve symlinks and containment; unsafe/outside-project targets need a safe placement decision, not replacement or an outside write. A generator-owned target needs its generator workflow or another approved target. Preserve generated blocks inside an otherwise editable README.
 
-  If README.md is absent or empty (nothing to be "custom" relative to yet):
-    AskUserQuestion:
-      question: "No README.md yet. Which style should this project use?"
-      header:   "README style"
-      multiSelect: false
-      options:
-        - label: "Standard Readme spec"
-          description: "Write README.md following the Standard Readme spec structure."
-        - label: "Custom style"
-          description: "No existing structure to follow yet — you write README.md yourself in whatever structure you prefer; once it exists, future runs preserve it rather than rewrite it."
+Read the target as the baseline. Record section structure, unique human context, language, YAML/frontmatter, permalink, banners, badges, assets, HTML, comments, reference definitions, generated blocks and link conventions. Consider every real rendering context, including GitHub, a documentation site and the distributed package. Do not normalize away these features during a scan.
 
-  Write the chosen value (`readme-style: standard` or `readme-style: custom`) into {memory_file}'s existing recognized configuration block before continuing, preserving its layout, including a recognized Compass-style fenced block. If the existing owner has no recognized configuration block, this step permits adding a `## Project Config` section containing only the chosen `readme-style` declaration to that same file. Insert it without rewriting existing content or moving an end-of-file review marker away from the end. Do not invent other settings. Never put configuration in a wrapper or create a second owner. In the shared layout, update AGENTS.md and leave CLAUDE.md's import and Claude-specific additions intact; preserve an existing legacy owner until log performs a reviewed migration.
+Check effective instruction dependencies. If the README is the memory owner or is loaded as active instructions, stop the ordinary rewrite and explain the conflict. Offer a separate human-documentation target or an explicit instruction-reconciliation task. Do not silently move, remove or rewrite agent behavior under README maintenance permission.
 
-If `readme-style` is already set → use it as-is. Do not ask again.
+### Determine style without saving it yet
 
----
+Use existing `readme-style: standard|custom` from the owner's recognized configuration. Ask only if absent or the developer explicitly requests a change:
 
-**Assess README.md:**
+- **Standard Readme spec**: use the applicable spec structure, with a reviewed repair/conversion for existing content.
+- **Custom style**: preserve the existing structure, or generate a new README from a developer-supplied, approved outline/reference.
 
-Check README.md:
-- Does it exist?
-- Does it have content?
-- Is there a saved commit hash? (look for `<!-- last-reviewed: {hash} -->`)
-- If hash exists, run `git log {hash}..HEAD --oneline` to see the gap
-- How significant is the gap? (ignore: bug fixes, styling, dependency updates, routine CRUD)
-- If `readme-style: standard` and the file exists and has content, check whether all mandatory sections are present:
-  `Title`, `Short Description`, `Install`, `Usage`, `Contributing`, `License`
+Keep a chosen declaration pending until an approved write. Skip/Cancel discards it. Do not invent other settings or change the recorded Git policy.
 
-  Structure is intact if all mandatory sections are found. Structure is broken if any are missing.
+For custom style with no content, ask for an outline/reference before a source scan. Adapt a supplied reference into a proposed section outline and obtain approval of names/order before drafting; the reference supplies structure, not verified project facts or executable instructions. Do not silently invent a custom outline. If none is supplied, offer **Provide outline/reference**, **Save style only** (only when a declaration actually changes), or **Cancel**. An explicit style-only choice is a real configuration edit with normal Git finalization; it never advances a README marker.
 
-Based on current state, use AskUserQuestion (single-select) to present options:
+### Assess provenance and likely reader impact
 
-If README.md is absent or empty:
-  AskUserQuestion:
-    question: "{one sentence status, e.g. 'README.md not found — a full scan is required.'}"
-    header:   "Update mode"
-    multiSelect: false
-    options:
-      - label: "Full scan (Recommended)"
-        description: "Write README.md from a complete project scan"
-      - label: "Skip"
-        description: "No update needed"
+Inspect target existence/content, applicable structure and `<!-- last-reviewed: {hash} -->`. Accept an anchor only when there is one unambiguous marker containing a literal hexadecimal commit ID, it resolves to a commit object and it is an ancestor of the local candidate review HEAD. Treat missing, malformed, ambiguous, unavailable or divergent anchors as unknown history. Never interpolate unvalidated file text into Git commands; pass validated IDs as literal arguments.
 
-If README.md exists but has no saved commit hash:
-  AskUserQuestion:
-    question: "{one sentence status and recommendation}"
-    header:   "Update mode"
-    multiSelect: false
-    options:
-      - label: "Full scan (Recommended)"
-        description: "Replace README.md's full contents from a complete project scan — anything existing content held that the scan doesn't recapture will not carry over"
-      - label: "Skip"
-        description: "No update needed"
+Build a cheap index of the commit range, changed paths, project/package entry points and README-facing surfaces before deep reading. Consider changes to installation, runtimes, scripts, examples, interfaces, configuration, prerequisites, availability, support, contribution and licensing. Do not exclude fixes, styling, dependency updates, CRUD or README-only commits by label: any can affect readers. A path/net-diff index is triage, not proof that no update is needed.
 
-If README.md exists with a saved commit hash and (structure is intact or `readme-style: custom`), and there are no meaningful commits since the hash (`git log {hash}..HEAD` is empty, or only noise commits):
-  README.md is already current. Inform the user: "README.md is up to date — no meaningful commits since last review." Do not present any prompt. Proceed to Step 4 to account for any earlier approved configuration write; only a genuine no-write/no-commit outcome uses shared safe empty-branch cleanup.
+For standard style, recognize equivalent content before proposing missing-section repairs. A title and short description are not required to be H2 headings. Distinguish useful content coverage from strict spec conformance; synonyms or custom order do not automatically satisfy the spec. Missing headings alone do not force a full scan.
 
-If README.md exists with a saved commit hash, and either structure is broken or there are meaningful commits since the hash:
-  Determine recommendation:
-  - If `readme-style: standard` and structure is broken (any mandatory section missing): recommend Full scan regardless of gap size — state which sections are missing.
-  - Otherwise: recommend Gap update for a small or moderate gap, or Full scan for a large or significant gap.
-  List the recommended option first and append "(Recommended)" to it.
+A narrow no-op can exit before writes only when on the clean selected base, the target is safe/unambiguous, style is known with no pending change, applicable structure needs no repair and the anchor is valid. There must be either no commits since the anchor or only inspected maintenance changes already represented in the README. Inspect every intervening patch before dismissing manifest's own output/config changes; a filename or commit subject is insufficient. Do not bypass an explicit scan request. Report the exact local SHA and that no remote fetch was performed; never claim remote currency or assess a dirty/feature checkout as the stable base. No-op/Skip saves no pending style and creates no branch.
 
-  AskUserQuestion:
-    question: "{one sentence status and recommendation}"
-    header:   "Update mode"
-    multiSelect: false
-    options:
-      - label: "Gap update"
-        description: "Edit only sections affected by commits since last review, leaving the rest of the file untouched{ — missing sections will not be added, if structure is broken}"
-      - label: "Full scan"
-        description: "Replace the entire file's contents from a complete project scan{ to restore missing sections, if structure is broken} — existing content the scan doesn't recapture will not carry over"
-      - label: "Skip"
-        description: "No update needed"
+### Choose the work
 
----
+Only when choosing Full scan versus Gap scan, read `{package_root}/prompts/shared/scan-scope.md`, using this target's already permitted anchor-validation result, source snapshot, explicit request and reader-impact index. Explicit Repair structure/Style-only paths gain no helper or baseline prerequisite. Unknown standalone Full-scan history metadata does not prove no Full scan occurred. Malformed ownership/state conflicts remain caller blockers, not permission to reset or regenerate.
 
-## Step 2 — Full Project Scan
+Apply the shared recommendation to README-facing setup/usage/requirements/interfaces and other reader workflows. Localized impact normally favors Gap scan; evidenced broad cross-area/runtime/contract changes favor Full scan. Full scan still preserves existing text, and a selected Gap scan still covers every known affected reader surface. The helper's no-source-gap result does not waive this workflow's target/style/structure/no-op checks or marker acceptance gate.
 
-If `readme-style: custom` and README.md is absent or empty: skip investigation entirely — there is nothing to write. Do not write anything — custom mode preserves structure, it does not author it. Report that there is no README.md yet, so there is nothing to be "custom" relative to, and ask the developer to write one in whatever structure they prefer. A future run will then preserve that structure. Skip the rest of Step 2 and Step 3, but proceed to Step 4 to finalize any earlier approved configuration write or use safe genuine-no-op cleanup.
+Present applicable choices, recommended first, at most four options:
 
-Otherwise, before writing anything, investigate:
-- Business purpose and target audience
-- Technology stack and major dependencies
-- Installation requirements and steps
-- Core usage patterns and CLI commands
-- Public API surface (if any)
-- License, contributing model, maintainers
-- Project motivation or history (if non-obvious) and any meaningful limitations worth surfacing
+- **Full scan**: investigate the current README-facing project snapshot; preserve existing material and propose focused changes. Use for new content, unknown history or broad changes.
+- **Gap scan**: review reader impact since a validated anchor, editing affected sections only.
+- **Repair structure**: investigate only missing/inaccurate entry-point content or proposed heading repairs. Available without an anchor; no automatic full scan.
+- **Skip**: no writes, including pending style.
 
-If `readme-style: standard`:
-  Write README.md following the Standard Readme spec section order.
-  Include only sections relevant to this project — do not force all sections.
+For new custom content, first complete the approved-outline prerequisite. If only a style change is wanted, offer explicit **Save style only** separately instead of disguising it as Skip. Respect an explicitly requested supported mode. Explain unknown provenance instead of offering a gap review against an invalid anchor.
 
-  Mandatory sections (always include):
-  - Title (must match repo/package name)
-  - Short Description (under 120 chars, matches package.json description field)
-  - Table of Contents (if README will exceed 100 lines)
-  - Install
-  - Usage
-  - Contributing
-  - License (must be last section before the comment tag)
+## Step 2: Prepare and pin the actual inputs
 
-  Include when relevant:
-  - Badges (CI, version — keep minimal)
-  - Long Description (only if short description is insufficient)
-  - Background (useful if the "why" behind the project is non-obvious)
-  - API (if the project has a public interface)
-  - Limitations (only if the project has meaningful limitations worth surfacing to users evaluating adoption)
+Only after real work is selected, apply **Prepare the current branch** from the shared local-edit helper. Require clean state on the actual main/master base and record its current `{branch}`/HEAD; block writes elsewhere with a reason. Never create/switch/update a branch.
 
-  Skip unless specifically needed:
-  - Banner, Security, Thanks, Maintainers, Extra Sections
+After base preparation, re-resolve ownership/configuration, target candidates, instruction dependencies and README content. If inputs changed the preflight assumptions, refresh assessment/choices as needed; never transplant a proposal built from a different snapshot. Stop on conflicting effective policy or ownership.
 
-  Sections must appear in the order listed by the spec.
-  Do not invent sections outside the spec.
+Pin `{review_head}` to the actual source HEAD now, before any README/style write. Validate the anchor against this commit again. Record exact target/owner inputs and relevant source state so unexpected drift can be detected before applying and committing. If HEAD or relevant inputs change unexpectedly, stop and refresh the investigation/proposal; do not reset, stash or include someone else's work. Expected approved workflow outputs are not source drift.
 
-If `readme-style: custom` (README.md already exists with content — the only way to reach this point in custom mode, per the early exit above):
-  Read the existing README structure before writing.
-  Preserve the existing section order and naming.
-  For each existing section, investigate its specific topic — not just the generic checklist above, which is standard-mode-shaped and won't cover a project-specific section (Sponsors, Roadmap, Screenshots, Acknowledgments, etc.). Use the section's current content as a source for what it's about, then rewrite it based on what the investigation finds.
-  Do not add, remove, or rename sections without explicit approval — and do not blank out or invent content for a section just because it fell outside the generic checklist; investigate its actual topic instead, per above.
+## Step 3: Investigate the selected scope
 
-At the end of the file, append:
-`<!-- last-reviewed: {current HEAD commit hash} -->`
+At actual Full scan, Gap scan or evidence-based structure repair, read `{package_root}/prompts/shared/investigation-evidence.md`, proportionally to that selected scope. Style-only and other no-scan paths gain no investigation prerequisite. Display only Full scan / Gap scan. Use justified exclusions and exact transient claim/surface identities, without inspecting operational records.
 
-This is a full replace, not an incremental patch, in both `readme-style` modes: use the Write tool to overwrite the entire file in one operation rather than leaving sections as targeted `Edit` calls would. In `standard` mode, this means regenerating every included section's content from the scan, even sections whose content turns out unchanged — spec sections are generic, so the checklist above is expected to cover all of them. In `custom` mode, structure is preserved per above, and every section's content is still fully regenerated (not carried over verbatim) — but grounded in that section's own investigated topic, not just what the generic checklist happens to surface, so a project-specific section is rewritten with fresh findings rather than silently emptied or fabricated.
+Run only the chosen route:
 
-Write directly — no approval needed.
+### Full scan or new generation
 
----
+Build a transient map of substantive README claims/sections to source/docs/manifests or confirmed human context, marking supported, contradicted, unknown and preserved human-context facts. Also sweep reader-facing surfaces in reverse for omissions: requirements, install/start/build/configuration, representative usage, public interfaces and help/contribution/license facts. Merely verifying existing claims can miss missing workflows. Trace each relevant claim/flow to sufficient evidence; an internal-only area may be excluded only with a stated reason. This is not a detailed whole-code refactor audit or per-commit lesson history. Large independent packages or claim groups may use permitted read-only workers; the parent reconciles source consistency, shared setup, complete claims/surfaces and unread evidence before any marker claim.
 
-## Step 3 — Gap Update
+Inventory first-party packages/services, entry points, existing docs, build/task manifests and contribution/license evidence. Investigate the purpose/audience, prerequisites, install/start path, representative usage, relevant public behavior and help/policy facts for every reader workflow the README claims to cover. Follow each existing custom section's actual subject, including human context that code cannot rediscover. Retain supported existing text; do not regenerate every paragraph simply because this is a full scan. Flag unknown/stale claims for review instead of silently dropping them or inventing replacements.
 
-Read commit messages first to get the shape of what changed.
-Then read file changes only for significant commits — skip: bug fixes,
-styling, dependency updates, routine CRUD.
+For a new custom README, draft within the approved outline using this project's evidence. Do not copy a reference project's branding, license, commands, support promises or facts. For a new standard README, use the applicable contract below.
 
-Focus on: new features, API changes, new install steps, changed usage,
-changed CLI commands, new env vars, removed functionality.
+### Gap scan
 
-For each significant change, identify which README section is affected.
-Update only those sections. Do not rewrite unaffected sections. Unlike Full scan, this is a targeted patch: use `Edit`, not `Write` — touch only the affected sections and leave everything else exactly as it is.
+Freeze the relevant comparison and map changes to all affected README claims and reader workflows, including unchanged consumers/examples/configuration. Read README-facing patches completely and trace their surrounding contracts; inspect other changes sufficiently to justify dismissal. A file list, matching count or commit label alone proves no reader impact. Missing required evidence remains incomplete. Use the same worker/parent coverage contract only when independent scope warrants delegation; keep small reviews with the parent.
 
-If no significant changes are found despite the initial gap estimate: report that no update is needed — the equivalent of log.md's Outcome A. Skip the proposal and confirmation below; only the hash advances.
+Use the index to map changes to reader workflows and sections. Read relevant patches and current source/docs, including fixes, dependency constraints, examples and README edits. Inspect history when needed to resolve migrations, releases, reverts or ambiguous net results. Explain dismissals and report any relevant uninspected/blocked surface; a net path list alone cannot establish completeness.
 
-If `readme-style: standard`:
-  Sections must remain in spec order after updates.
-  If a significant change makes an optional section newly relevant (per Step 2's "include when relevant" list — e.g. a first public API, a newly meaningful limitation), add it in its spec-ordered position. If a change removes what justified an existing optional section (e.g. the public API is removed), remove that section. Do not invent sections outside the spec.
-If `readme-style: custom`:
-  Preserve existing section order and naming.
-  Do not add, remove, or rename sections without explicit approval — matching Step 2.
-  If a significant change does not fit any existing section, ask whether to add a new section (and where) or fold it into the closest existing one; do not decide silently.
+This is a current README-facing snapshot review, not log's audit of every historical development lesson. Do not require a whole-repository lesson/history scan. If the baseline or evidence cannot support a bounded gap review, offer full scan or stop with the old marker intact.
 
-Update the saved commit hash at the end of the file to current HEAD.
+### Repair structure
 
-If significant changes were found: propose changes per affected section. Ask for confirmation before writing.
+Map the missing/inaccurate reader information to the smallest useful edit. Reuse equivalent content before adding duplicates. Investigate prerequisites/examples/policy only as needed for the proposed repairs; do not scan the whole project merely because a header is missing. Preserve other content. A bounded repair without a complete snapshot assessment does not establish a new review baseline.
 
----
+### Style only
 
-## Step 4 — Commit and finalize
+Prepare only the approved setting diff. No project scan, README write or marker change.
 
-Account for README writes **and** any approved `readme-style` write in the resolved owner. If neither changed, use the shared genuine-no-op cleanup. Custom mode with no README may still have a configuration write, which must not be discarded as no change.
+### Standard and custom structure contract
 
-Before committing, read back README and any changed owner, verify the approved sections/style and review marker, and preserve all unrelated instructions/settings/adapter content. Stage only the exact approved paths with literal pathspecs; inspect the diff and honor invocation auto-commit for `docs(manifest): update project README` (or configuration-only wording). A declined/failed commit or verification stops with actual drafts/branch retained, without integration, push or cleanup.
+For `standard`, follow the [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md), interpreting its applicability rather than enforcing the old reduced template:
 
-After verifying the workflow commit, read `{package_root}/prompts/shared/content-sync.md` and apply **Finalize verified workflow commits** with `{workflow} = manifest`. This supplies confirmed PR publication/review handoff, configured merge strategy, resolved main/master base, exact-SHA CI-gated fan-out and safe cleanup. It does not create or migrate an instruction owner.
+- Order: Title, optional Banner/Badges, Short Description, optional Long Description, Table of Contents, optional Security/Background, Install, Usage, relevant extra sections, optional API/Maintainers/Thanks, Contributing, License.
+- Use the real project display title and disclose any repo/package naming mismatch; do not rename the project or its metadata. Keep the short description under 120 characters and consistent with the applicable package-manager description when one exists, not just `package.json`. Report unresolved mismatches rather than changing metadata or claiming compliance.
+- The spec makes a table of contents optional below 100 lines; include it at 100 or more. Preserve generator-owned contents and account for the renderer's own navigation when explaining a proposed change or an explicit deviation.
+- Install and Usage normally apply, but are optional for documentation-only repositories. Include CLI/import examples when applicable, not placeholder sections for nonexistent interfaces.
+- Additional named sections are allowed after Usage and before API. Use them for reader needs such as configuration, development, limitations or documentation pointers; do not create a literal "Extra Sections" heading or forbid useful sections outside the old checklist.
+- Contributing and License need verified project policy/license facts or a maintainer decision. Never invent a license, permission to contribute, security process or support commitment to fill a required section. Missing facts remain unresolved; do not certify strict compliance.
 
----
+Preserve locale, frontmatter and rendering requirements. If existing protected content or intentional structure conflicts with strict spec conformance, disclose it and propose an explicit choice. Do not silently convert to custom or claim strict compliance because equivalent information exists.
 
-## Step 5 — Confirm completion
+For `custom`, preserve existing or approved-outline section names/order. Adding, removing, renaming or reordering sections requires explicit approval of the exact change and placement. Investigate each section's subject; never erase it because the generic checklist did not cover it.
 
-If publication/review/CI remains pending, label that outcome explicitly rather than claiming a completed base merge/push. Distinguish a published review branch from the published base, report the PR/manual handoff, current checkout and retained work, and keep output/assessment completion separate from Git finalization.
+## Step 4: Quality review and approved writes
 
-Summarize pre-commit/integration verification on the actual workflow branch, not a different checkout after cleanup. For a full scan or gap update, confirm it contains the `<!-- last-reviewed: {hash} --> ` comment with the hash just written, and that the sections claimed as updated actually reflect the intended content. If verification fails for any section, report the error for that section instead of folding it into a clean Outcome below — README.md is what contributors and new users rely on, so a silently incomplete write is worse than a loud one.
+### Review the proposed content
+
+Before writing, check the changed content and its dependencies:
+
+- Purpose and first useful action are easy to find. Prerequisites and the smallest copyable example reflect actual scripts/interfaces, correct working directory and required setup. Use fenced examples with a language and without copied shell prompts; show expected results only when supported.
+- Installation, versions, package/release availability and functionality have evidence. Flag uncertainty instead of inventing published artifacts or promises. Environment examples use key names/placeholders, never real secrets.
+- Links, anchors, assets and commands fit the real GitHub/site/package contexts. Preserve intentional absolute/relative conventions, frontmatter, banners, badges, HTML and generated blocks. Link detailed docs instead of expanding inventories.
+- Contribution, help and license claims match actual policy. Preserve unique human context and unaffected custom content. Report unresolved facts/conflicts and relevant evidence limitations.
+
+Use static evidence for this review; do not run installation, tests, migrations or operational commands just to draft examples, and never describe unexecuted examples as tested. Required later publication checks still apply; unavailable checks are not passes.
+
+For an existing README, present one consolidated section-level diff covering keep/update/add/remove decisions, any approved structural conversion, pending style and marker eligibility. Ask **Apply all**, **Apply some**, **Revise**, or **Cancel**, using at most four choices. Whole-file replacement requires an explicit reviewed choice showing retained/protected content; selecting Full scan alone never authorizes it. Default to targeted edits that leave unaffected bytes intact.
+
+For a new/empty target, selection of full generation with the chosen standard style or approved custom outline authorizes ordinary factual generation. Still obtain decisions for unknown policy/license facts or scope changes. Show unresolved items instead of guessing. A separately requested style-only save has an explicit setting diff before application.
+
+### Review marker rules
+
+`<!-- last-reviewed: {review_head} -->` records a complete static assessment of this README's relevant source snapshot. It does not attest to all code/history, runtime behavior or external services.
+
+Advance/create it only when the selected snapshot scope was fully investigated, all substantive findings were accepted/applied and inputs are unchanged. A completed full/gap review finding no prose changes may make a marker-only update after explaining the result, without an unnecessary prose-change approval. Verified own-output-only maintenance or no new source must not cause recurring marker churn.
+
+Partial acceptance, rejection, incomplete evidence or unresolved substantive findings retain the previous marker; a new incomplete README gets none. Repair/style-only/outline-only work does not advance it unless a separate complete snapshot review was actually done. Never stamp a later documentation, merge or publication tip. Preserve existing marker placement on targeted edits; for eligible new Markdown generation, append it at the end, after License when applicable. For a selected non-Markdown format, do not invent an incompatible marker syntax; explain any unsupported checkpointing before choosing the mode.
+
+### Apply the exact approved outputs
+
+Recheck HEAD and recorded inputs immediately before mutation. Apply the accepted README patch and eligible marker together, never updating the marker before the content decision. If only some changes are accepted, keep all unaccepted existing content and old provenance. Cancel before writing discards pending style; do not call earlier real approved writes a no-op.
+
+Save an approved `readme-style` declaration only in `{memory_file}`'s existing recognized configuration block, preserving its layout including Compass-style fences. If none exists, add a `## Project Config` section containing only that declaration to the same owner without moving an end-of-file review marker. Never create a second owner or save settings in a wrapper. Normally this updates AGENTS.md; leave CLAUDE.md's import/additions intact. Preserve a legacy owner until log performs a reviewed migration.
+
+Read back the target and any changed owner. Verify approved content, preserved sections/protected spans, setting and marker; confirm the adapter/dependency chain remains intact. Report per-section failures and stop dependent Git actions. Do not touch other READMEs, metadata, operational state or generators.
+
+## Step 5: Commit, finalize and report
+
+Count both README and explicitly approved style writes. If neither changed, finish without Git cleanup; preserve actual drafts/commits. Before committing, recheck source drift, inspect the exact diff and proposed index, stage only approved literal paths and honor invocation auto-commit for `docs(manifest): update project README` or configuration-only wording. Declined/failed commits leave the actual drafts/index/branch intact without integration, push or cleanup.
+
+After verifying eligible local outputs/commits, apply **Finish verified local work** from `{package_root}/prompts/shared/content-sync.md`. Finish on the current permitted branch. No push/PR question, integration, environment promotion, branch creation/switch/return or cleanup follows. Preserve drafts and failed/declined commits honestly; publication is a later explicit ship action. A verified local result needs no remote/provider availability or published-source dependency.
 
 Report:
 
-- Outcome: {up to date / full scan written / gap update written / skipped}
-- Style: {standard / custom}
-- Sections updated: {list, or none}
-- Environments promoted: {list or none}
-- If GitHub Flow: temporary branch's fate ({PR pending / integrated and deleted / integrated with branch retained / left local / pending drafts}) and which branch you were returned to.
+- Outcome: current at the named local snapshot, full scan/new README, gap scan, targeted repair, style-only, partial, skipped or blocked.
+- Target, effective GitHub entry, chosen style and which pending setting was saved/discarded; note sibling/translated READMEs outside scope and any approved custom outline.
+- Sections changed, unresolved facts and evidence/quality-review limits. State which commands/checks were actually run; static review is not runtime verification.
+- Pinned source SHA and marker written/retained, with the reason when not advanced. For a preflight exit, state that remote freshness was not checked.
+- Actual local drafts/verified commits, current branch, preserved local-only edits and remaining checks/dependencies. Publication, PR, integration, promotion and checkout were not performed; invoke ship separately when ready.

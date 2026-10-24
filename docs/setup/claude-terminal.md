@@ -24,7 +24,7 @@ To update:
 /reload-plugins
 ```
 
-Start a fresh session and check the plugin version. If an older cache remains active, inspect the exact loaded path in `/plugin`. Refresh the complete matching package, including the manifest, skills, workflows, prompts, rules, and adapters. Copying only `commands/` no longer works because the adapters load other packaged files. Do not mix versions or guess the latest cache directory by its name.
+Start a fresh session and check the plugin version. If an older cache remains active, inspect the exact loaded path in `/plugin`. Refresh the complete matching package, including the manifest, assets, skills, workflows, prompts, rules and helpers. Copying only `skills/` does not work because the entry points load other packaged files. Do not mix versions or guess the latest cache directory by its name.
 
 To remove:
 
@@ -33,4 +33,4 @@ To remove:
 /reload-plugins
 ```
 
-Removing the plugin does not remove adopted project rules or ledgers. Copy-mode rules remain self-contained. Existing reference-mode pointers require the marketplace checkout to remain available; switch to copies before removing that checkout if those projects should keep working.
+Removing the plugin does not remove adopted project rules or ledgers. Adopted local copies remain self-contained and unchanged until a reviewed adopt update. Unsupported external pointers require the one-time project upgrade before current adoption; no converter runs. An unavailable old target can use explicitly reviewed replacement recovery, without recreating reference mode.
