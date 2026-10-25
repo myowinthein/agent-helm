@@ -6,7 +6,7 @@ Finish the frozen project locally and commit the explicitly reviewed payload, th
 
 Use the recorded source branch/commit and current verified checkpoints; never switch/create a branch. Preserve local names, tags, source remotes, protected instructions/rules/imports, opaque other-owner state and unrelated edits. Inventory additional branches/tags/submodules/LFS/hosted artifacts as captured or excluded; a source payload does not automatically preserve every ref or external object. Never merge unmerged work or clean up to finish. Local source/configuration and explicit project policies remain binding. A private destination and published source SHA are not prerequisites for local preparation.
 
-Normal mode may load only archive's own validated bundle and four prior reports. Plan uses static evidence only, never state or mutations. Review exact files and required local actions before approval; auto-commit/tool permissions never replace archive's explicit payload content/commit approval. Failed/declined work preserves drafts and prior results. Verification deferral remains in effect; no unrun checks become passes.
+Load only archive's own validated bundle and four prior reports. Review exact files and required local actions before approval; auto-commit/tool permissions never replace archive's explicit payload content/commit approval. Failed/declined work preserves drafts and prior results. Verification deferral remains in effect; no unrun checks become passes.
 
 ## Task 3 — Recovery storage and LFS
 

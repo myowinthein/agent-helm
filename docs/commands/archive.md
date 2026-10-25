@@ -9,7 +9,7 @@ has_children: true
 
 Preserve an old project's source, useful working environment, data and recovery documentation, and prepare a reviewed local payload. Invoke ship archive separately to publish/verify the private backup. Five approved phases resume across Claude/Codex sessions. Preserved source, runnable artifacts, offline recovery, offline rebuilds, backups and remote publication have separate evidence and limits.
 
-Claude uses the command names below. In Codex, select the same Helm skill and request the same mode. Both resolve the [existing instruction/configuration owner](../setup/compatibility.html) without rewriting AGENTS.md, CLAUDE.md or Helm settings.
+Claude uses the command names below. In Codex, select the same Helm skill to start the workflow. Both resolve the [existing instruction/configuration owner](../setup/compatibility.html) without rewriting AGENTS.md, CLAUDE.md or Helm settings.
 
 ## Investigation depth and coverage
 
@@ -17,25 +17,21 @@ Step 1 covers each relevant recovery category/component and traces build/runtime
 
 Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
 
-## Modes
+## Usage
 
-| Request | Result |
-|---|---|
-| `archive audit` | Static project/recovery findings and inspected coverage, then stop. |
-| `archive plan` | Also propose restoration/data/docs/storage/check/seal actions, labelling unresolved execution facts. |
-| `archive` or an explicit resume | Follow the five approved report phases on the validated project source. |
+```text
+/helm:archive
+```
 
-Audit/Plan are small exits through existing discovery/planning. They may review labelled dirty/staged/untracked/detached inputs or committed snapshots; without HEAD only advisory review is available. They make no network requests, execute no project code/configuration/checks/containers/dry-runs, access no operational state and write no files/index/refs/reports/cursor. Output stays in conversation. Normal archive work revalidates the actual source/policy and missing approvals.
+Follow the five approved report phases on the validated project source. A resume request follows verified existing progress and completes only pending work; it never starts another restoration automatically.
 
-Only an initial `audit`/`plan` token selects the mode; literal paths in explicitly scoped advisory review use `./audit`, `./plan`, `-- audit` or `-- plan`, including quoted paths with spaces. Ambiguous scopes need resolution. A scoped advisory review never silently becomes a full-project seal.
+Before source-branch confirmation, only local read-only prerequisite/ref inventory and root/progress validation occur. No project execution, network/fetch, checkout or branch/index/ref/file/report writes occur. Local Git inspection suppresses optional index refresh, executable helpers and lazy fetching where supported; unavailable reads remain explicit limits. Step 1 exploration stays local and static. Later actions retain their separate source, runtime/data, report and payload approvals.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Run archive]) --> Mode{Audit or Plan?}
-  Mode -->|yes| Static([Static report; no execution, writes or state])
-  Mode -->|no| Root[Resolve fixed archive root and validate progress]
+  Start([Run archive]) --> Root[Resolve fixed archive root and validate progress]
   Root --> Existing{Proven local payload or existing receipt?}
   Existing -->|yes| Report([Report existing result; no replay or replacement])
   Existing -->|no| Confirm{Proceed on shown branch/HEAD and exclusions?}
@@ -50,19 +46,19 @@ flowchart TD
   Receipt --> Sealed([Report verified backup; optional approved external copy])
 ```
 
-Each normal phase stops for its report approval; the diagram does not grant blanket authorization. A resume continues its actual incomplete step/operation, and a proven completed receipt verifies publication without repeating restoration or cleanup. Failed/declined work preserves actual drafts, refs and earlier verified results.
+Each phase stops for its report approval; the diagram does not grant blanket authorization. A resume continues its actual incomplete step/operation, and a proven completed receipt verifies publication without repeating restoration or cleanup. Failed/declined work preserves actual drafts, refs and earlier verified results.
 
 ## Confirm the source branch
 
-Before a normal pending phase begins, archive shows the current attached branch and full HEAD, unmerged branches/work and other known exclusions from that snapshot, plus unknown coverage. It explains that approved edits/reports and the eventual local payload commit will happen on this branch. Choose **Proceed on this branch / Cancel**. A wrong branch requires a manual switch and rerun; archive never switches for you or absorbs pending work.
+Before a pending phase begins, archive shows the current attached branch and full HEAD, unmerged branches/work and other known exclusions from that snapshot, plus unknown coverage. It explains that approved edits/reports and the eventual local payload commit will happen on this branch. Choose **Proceed on this branch / Cancel**. A wrong branch requires a manual switch and rerun; archive never switches for you or absorbs pending work.
 
 Only prerequisite/ref inventory and read-only root/progress validation precede this gate. Reuse explicit human approval for the same repository, branch, inspected snapshot and preservation scope, including verified expected continuation; saved reports, auto-commit or the command alone are insufficient. Unexpected source/branch changes or material new exclusions require reconfirmation; expected approved archive outputs/commits do not cause repeated questions. This adds no confirmation file or schema field and does not replace later report, runtime/data or payload-commit approvals.
 
-Audit/Plan require no branch confirmation. Proven already-prepared/completed report-only reruns also need no new Proceed question and never replay work or replace files.
+Proven already-prepared/completed report-only reruns need no new Proceed question and never replay work or replace files.
 
 ## The five phases
 
-1. [Explore](archive/1-explore.html): inspect relevant source/packages, versions, data, docs, assets and local Git metadata. Confirm the recovery goal and gaps, with a compact component handoff when useful. Separate supplementary docs from required runtime/build/data assets. Nothing is written before normal report approval.
+1. [Explore](archive/1-explore.html): inspect relevant source/packages, versions, data, docs, assets and local Git metadata. Confirm the recovery goal and gaps, with a compact component handoff when useful. Separate supplementary docs from required runtime/build/data assets. Nothing is written before report approval.
 2. [Restore and Freeze](archive/2-restore-and-freeze.html): approve the restore plan, restore and record actual evidence, offer a developer check, then recommend/select and execute the approved freeze. Cross-check component-specific setup evidence; choose useful container/native/static/data/toolchain outputs for the actual goal. Preserve original safe inputs unless another dataset is explicitly chosen. Cold rehearsal remains optional.
 3. [Postman Collection](archive/3-postman.html): Retain/Repair/Create/Skip useful owned API recovery materials. Keep existing useful paths, cross-check current contracts against implementation and create an environment file only when valuable. Verify only approved appropriate requests against the identified isolated runtime; otherwise report unverified. No applicable API still gets its approved report.
 4. [Documentation](archive/4-documentation.html): preserve useful recovery/build/design/legal/history evidence. Use an archive-specific README for orientation, setup for ordered procedures and metadata for human-readable artifact identities/storage/verification. This does not invoke manifest or use its README style setting. Check protected imports and current references.
@@ -99,7 +95,7 @@ Current runs keep their version-controlled schema-1 state and approved reports u
 └── step5-finalize.md
 ```
 
-Validate the canonical directory/parents, fixed files, schema/context and current fingerprints before continuation. Partial/reports-only/inventory-only evidence is prior work, never a fresh run. Reject symlinks, escaping paths and conflicting occupants. Audit/Plan and switching coding agents open no operational state.
+Validate the canonical directory/parents, fixed files, schema/context and current fingerprints before continuation. Partial/reports-only/inventory-only evidence is prior work, never a fresh run. Reject symlinks, escaping paths and conflicting occupants. Switching coding agents alone never authorizes operational-state access.
 
 An exists-only check for reserved old-bundle names under `.archive/` stops this archive route with [upgrade guidance](../setup/upgrading.html). It never reads old state, chooses between roots, converts, moves, merges or restarts a run. Other commands preserve historical archives opaquely. An ordinary `archive/` asset folder is distinct and remains in place. Existing metadata, including known alternate paths, blocks a false fresh run even when the state bundle is absent.
 
@@ -109,7 +105,7 @@ Local preparation keeps cursor 4/phase prepared with nullable destination/payloa
 
 ## Output files and their purpose
 
-Outputs are conditional on useful recovery needs and exact approval; Audit/Plan create none. Developer docs should explain recovery without requiring the raw workflow reports.
+Outputs are conditional on useful recovery needs and exact approval. Developer docs should explain recovery without requiring the raw workflow reports.
 
 | Output or default path | Audience, format and purpose |
 |---|---|

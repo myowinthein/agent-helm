@@ -9,7 +9,7 @@ nav_order: 4
 
 Write current recovery instructions while retaining useful historical evidence. Reuse verified prior reports and targeted source reads; distinguish current facts, historical claims and unknowns. No invented commands, versions, demo results or future availability.
 
-Normal mode uses prior reports and records this step's approved report only in the [validated run directory](../archive.html#archive-directory-and-existing-projects): canonical `.helm/archive/` only. Current docs reference that actual directory where needed; historical reports remain verbatim. Recovery documentation stays at its approved paths below, outside state storage.
+Use prior reports and record this step's approved report only in the [validated run directory](../archive.html#archive-directory-and-existing-projects): canonical `.helm/archive/` only. Current docs reference that actual directory where needed; historical reports remain verbatim. Recovery documentation stays at its approved paths below, outside state storage.
 
 ## Review before editing
 

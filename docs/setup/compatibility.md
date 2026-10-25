@@ -192,7 +192,7 @@ Normalize finishes locally with recovery evidence and actual record status. Late
 
 ## Archive preservation and recovery
 
-Archive Audit/Plan remain static, with no state/network/execution/writes. Normal pending phases confirm the actual source branch/full HEAD and exclusions, reusing explicit unchanged-scope approval. Approved local edits and the payload stay on that branch without checkout. Current schema-1 state, inventory and five approved reports use only `.helm/archive/`; unsupported old-bundle names trigger an exists-only stop with [upgrade guidance](upgrading.html), without reading or migrating them.
+Archive pending phases confirm the actual source branch/full HEAD and exclusions, reusing explicit unchanged-scope approval. Approved local edits and the payload stay on that branch without checkout. Current schema-1 state, inventory and five approved reports use only `.helm/archive/`; unsupported old-bundle names trigger an exists-only stop with [upgrade guidance](upgrading.html), without reading or migrating them.
 
 Preserve protected instructions/imports/rules and opaque other-owner state. Restoration uses evidenced compatible setup, offers a developer check and selects useful stack-aware freezing without silently capturing post-demo data. API materials support Retain/Repair/Create/Skip; environment files and supplementary-document consolidation are conditional. Archive owns its README contract: orientation in the index, procedures in setup, full identities/provenance/storage/verification in Markdown metadata. Choose per-artifact Git/LFS/explicit local-only storage before the reviewed payload commit.
 

@@ -2,29 +2,25 @@
 
 Preserve a selected old project, its working environment and useful recovery evidence. Source preservation, frozen-runtime recovery, offline rebuilding, backup coverage and archive publication are separate results.
 
-## Before starting: mode and recovery goal
+## Before starting: recovery goal and policy
 
 Apply the shared runtime and resolve `{memory_file}` before Git actions, following bridges, overrides, and recognized configuration blocks. Configuration remains in that owner, normally AGENTS.md through CLAUDE.md's import on Claude or directly on Codex. Archive does not create, move, consolidate, or edit either instruction entry or Helm settings. Its explicitly confirmed local payload uses the current selected source branch; remote backup publication is a separate ship archive action; do not silently apply a normal development branch/commit policy or let auto-commit bypass archive approvals. Resolve conflicts with active project rules before mutation.
 
-- **`archive audit`:** use Step 1's static inventory and report findings, evidence, coverage and recovery gaps, then stop without writing its report/cursor.
-- **`archive plan`:** also use the static planning portions of Steps 2–5 to propose concrete restoration, data, documentation, storage, verification and seal actions. Mark unresolved image/tool/runtime/privacy facts as unknown; do not pretend static discovery makes execution fully determined. Stop in conversation without writing a plan.
-- **`archive` without a mode:** use the existing five approved report phases below. A request to resume follows validated actual progress, never starts another restoration automatically.
+Follow the existing five approved report phases below. A request to resume follows validated actual progress; it never starts another restoration automatically. Pass developer requests and answers unchanged, never as shell code.
 
-Audit/Plan are thin exits through existing discovery/planning, with no new state. They may inspect a clearly labelled branch, committed snapshot, or selected dirty/staged/untracked/detached inputs; without HEAD only static advisory review is available. Reserve `audit`/`plan` as the initial mode token, with `./audit`, `./plan`, `-- audit` or `-- plan` for literal path names in an explicitly scoped advisory review. Handle quoted paths safely and resolve ambiguous scope before dependent work. Advisory scope never silently becomes a complete-project seal. Codex receives the same mode through its skill invocation.
+Before source-branch confirmation, perform only the stated local read-only prerequisite/ref inventory and root/progress validation. No project code/configuration/hooks, collection, analyzers, tests, installers, builds, containers, service requests or dry-runs are executed, and no network/fetch, checkout, branch/index/ref/file/report writes or state migration occurs. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where relevant; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. Unavailable reads leave explicit limits. Step 1 exploration remains local and static; later actions require their own reviewed scope and approval.
 
-Audit/Plan do not execute project code/configuration/hooks, collection, analyzers, tests, installers, builds, containers, service requests or dry-runs. No network/fetch, checkout, branch/index/ref/file/report writes, operational-state access or migration occurs. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where relevant; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. An unavailable read leaves explicit coverage limits. Accepting a review does not silently enter the normal workflow; actual archive work freshly validates the selected source, policy and missing approvals.
-
-For the normal archive path, run from the attached branch representing the complete project. Require a repository with HEAD, no in-progress Git operation, and record the selected source branch/commit. Reconcile pre-existing index/worktree changes before altering them; never reset, stash or absorb them automatically. Inventory unmerged local branches, tags, submodules, LFS and relevant hosted artifacts read-only; state what this source-only seal excludes. Let the developer merge needed source work and rerun, or separately review additional preservation inputs. Never merge on their behalf. Never create or switch branches during this command. Step 5 prepares/commits only the reviewed local payload, retaining names/remotes. It never pushes, opens a PR, cleans up refs or prompts to publish; ship archive later verifies/publishes to private remote main and records its receipt.
+Run from the attached branch representing the complete project. Require a repository with HEAD, no in-progress Git operation, and record the selected source branch/commit. Reconcile pre-existing index/worktree changes before altering them; never reset, stash or absorb them automatically. Inventory unmerged local branches, tags, submodules, LFS and relevant hosted artifacts read-only; state what this source-only seal excludes. Let the developer merge needed source work and rerun, or separately review additional preservation inputs. Never merge on their behalf. Never create or switch branches during this command. Step 5 prepares/commits only the reviewed local payload, retaining names/remotes. It never pushes, opens a PR, cleans up refs or prompts to publish; ship archive later verifies/publishes to private remote main and records its receipt.
 
 Confirm the recovery goal in Step 1: preserved source, a useful frozen demonstration/runtime, and optionally offline runtime recovery or offline rebuild inputs. Record original/last-working versions separately from current vendor support (not checked unless actually established). Prefer restoration over modernization, not automatic upgrades. Container images and version lists do not guarantee future OS/CPU/SDK/license/hardware availability. Scope required features and accepted missing dependencies explicitly.
 
 ## Confirm the archive source branch
 
-Before entering any normal pending phase, perform only the local read-only prerequisite/ref inventory and root/progress validation needed to identify the source and continuation. A proven already-prepared/completed result may report and exit read-only without a new Proceed question. Otherwise show the current attached branch and full HEAD, unmerged branches/work and other known inputs excluded from this source snapshot, and any unknown coverage. Explain that approved archive changes, reports and the eventual local payload commit will be made on this branch; no branch will be created/switched and publication is a separate ship archive action. Existing pending user work still needs reconciliation, not absorption into the snapshot.
+Before entering any pending phase, perform only the local read-only prerequisite/ref inventory and root/progress validation needed to identify the source and continuation. A proven already-prepared/completed result may report and exit read-only without a new Proceed question. Otherwise show the current attached branch and full HEAD, unmerged branches/work and other known inputs excluded from this source snapshot, and any unknown coverage. Explain that approved archive changes, reports and the eventual local payload commit will be made on this branch; no branch will be created/switched and publication is a separate ship archive action. Existing pending user work still needs reconciliation, not absorption into the snapshot.
 
-Ask **Proceed on this branch / Cancel** and wait for an explicit answer before normal step discovery, execution or writes. Reuse direct human approval already covering this same repository, branch, inspected snapshot and preservation scope; the bare command, auto-commit, saved reports, cursor, silence and picker defaults are not that confirmation. Cancel preserves files/index/refs and progress; if the branch is wrong, explain that the developer must switch manually and rerun. Do not create a confirmation file or add a state/schema field.
+Ask **Proceed on this branch / Cancel** and wait for an explicit answer before step discovery, execution or writes. Reuse direct human approval already covering this same repository, branch, inspected snapshot and preservation scope; the bare command, auto-commit, saved reports, cursor, silence and picker defaults are not that confirmation. Cancel preserves files/index/refs and progress; if the branch is wrong, explain that the developer must switch manually and rerun. Do not create a confirmation file or add a state/schema field.
 
-Recheck the confirmed branch/source and scope before dependent actions. Unexpected branch/HEAD changes or materially different exclusions require refreshed evidence and confirmation, never a silent source switch or waived resume validator. Verified expected outputs/commits within the already approved archive plan do not themselves require another branch question; a resumed run must prove that continuity through existing context/checkpoints. Keep all later report, runtime/data and payload-commit approvals separate. Audit/Plan remain read-only and require no archive branch confirmation.
+Recheck the confirmed branch/source and scope before dependent actions. Unexpected branch/HEAD changes or materially different exclusions require refreshed evidence and confirmation, never a silent source switch or waived resume validator. Verified expected outputs/commits within the already approved preservation plan do not themselves require another branch question; a resumed run must prove that continuity through existing context/checkpoints. Keep all later report, runtime/data and payload-commit approvals separate.
 
 ## Preserve agent instructions and existing state
 
@@ -36,7 +32,7 @@ Archive owns only its progress, inventory and five reports within `{archive_root
 
 ## State tracking and safe resume
 
-Only normal archive/resume and explicit ship archive publication continuation use this procedure. `{archive_root}` is always the project-relative `.helm/archive/`. Audit/Plan and agent switches never open operational state.
+Only archive/resume and explicit ship archive publication continuation use this procedure. `{archive_root}` is always the project-relative `.helm/archive/`. Switching agents alone never authorizes operational-state access.
 
 ### Resolve one archive root
 
@@ -56,7 +52,7 @@ Recovery deliverables keep their approved purpose-specific paths, including the 
 
 ### Output purpose and naming
 
-Create only useful applicable outputs under each step's approved plan. Audit/Plan create none. Fixed operational records persist for resume/audit; developer docs explain recovery without requiring raw report reading. No output is secret storage.
+Create only useful applicable outputs under each step's approved plan. Fixed operational records persist for resume/audit; developer docs explain recovery without requiring raw report reading. No output is secret storage.
 
 | Path or output | Format, audience and creation rule |
 |---|---|
@@ -128,7 +124,7 @@ Honor explicit verification deferral throughout. Static planning/documentation a
 
 ## Sequence
 
-After the source-branch confirmation above, normal work starts at the validated pending step/operation in the same `{archive_root}`. The list is the fresh-run order, not an instruction to replay completed phases or invoke ship automatically; a verified prepared/completed report-only exit needs no new branch question. Audit/Plan use only their stated static portions and never resolve/open operational state.
+After the source-branch confirmation above, work starts at the validated pending step/operation in the same `{archive_root}`. The list is the fresh-run order, not an instruction to replay completed phases or invoke ship automatically; a verified prepared/completed report-only exit needs no new branch question.
 
 1. Read `{package_root}/prompts/archive/step1-explore.md` and follow it exactly.
 2. Read `{package_root}/prompts/archive/step2-restore-and-freeze.md` and follow it exactly.
