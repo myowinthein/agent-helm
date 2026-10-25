@@ -36,6 +36,8 @@ Open the address printed by Jekyll, including `/agent-helm/`. Restart the previe
 
 ## Appearance and links
 
+The homepage uses `_layouts/home.html` to wrap the README in `.home-content`. Its title and main section headings have horizontal lines matching GitHub's heading style, using the theme's border colour in light and dark mode. Other pages keep the default heading styles.
+
 The header offers **System**, **Light** and **Dark**. System follows the operating system's colour preference, including changes while the page is open. Explicit choices are saved under `agent-helm-theme` in browser storage and shared across tabs. If storage is blocked, switching still works for the current page. With JavaScript disabled, the control stays hidden and the default theme remains usable.
 
 The selector lives in `_includes/header_custom.html`, its script in `assets/js/theme-switcher.js` and its styles in `_sass/custom/custom.scss`. `_includes/head_custom.html` loads the preference early and retains the existing Mermaid rendering.
