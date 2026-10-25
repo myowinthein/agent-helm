@@ -7,7 +7,7 @@ nav_order: 5
 
 # Step 5: Prepare locally
 
-Finish and commit the reviewed local archive payload, then stop. No private destination, push/PR prompt, branch switching/creation, ref cleanup or remote receipt is required to finish this command. Later run `/helm:ship archive` when ready to publish/verify the private backup.
+Finish and commit the reviewed local archive payload, then stop. No private destination, push/PR prompt, branch switching/creation, ref cleanup or remote receipt is required to finish this command. Later run `/helm:ship` when ready to publish/verify the private backup.
 
 ## Local preparation
 
@@ -31,9 +31,9 @@ Offer **Commit reviewed local archive / Leave uncommitted**. Auto-commit does no
 
 Report the actual payload SHA and stop without a post-commit tracked journal update. Exact source-parent/archive-ID/report/manifest/committed-journal proof identifies this local payload later, never its subject or newest HEAD alone. A rerun with proven preparation replaces nothing. Failed/declined commits leave actual drafts pending rather than claiming complete preparation.
 
-## Publish later through ship archive
+## Publish later through ship's archive backup procedure
 
-Ship archive narrowly validates this bundle and its already-prepared payload. Only it selects/verifies one private destination and separately obtains backup publication approval for the exact payload, recovery/LFS bytes, selected cleanup and receipt. Actual provider review/signing/checks/limits/triggers remain binding. A PR cannot substitute for payload/receipt ancestry. Canonical remote main uses normal fast-forward publication; no force or source-remote replacement.
+Ship's archive backup procedure narrowly validates this bundle and its already-prepared payload. Only it selects/verifies one private destination and separately obtains backup publication approval for the exact payload, recovery/LFS bytes, selected cleanup and receipt. Actual provider review/signing/checks/limits/triggers remain binding. A PR cannot substitute for payload/receipt ancestry. Canonical remote main uses normal fast-forward publication; no force or source-remote replacement.
 
 Publish/read back the pinned payload and verify required bytes before any selected cleanup or receipt. Keep names/remotes by default. Then replace the local-preparation fifth report with the explicitly reviewed factual completion receipt, retaining the prior report in Git history. Commit it with cursor 5/receipt_prepared as a child of the verified payload and publish/read back its exact SHA/tree/ancestry. The local cursor alone is no remote proof; no tracked write follows final receipt verification.
 

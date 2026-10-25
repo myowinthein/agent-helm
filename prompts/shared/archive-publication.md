@@ -1,6 +1,6 @@
 # Publish and verify an archive backup
 
-Loaded only by explicit `ship archive` or an explicitly identified continuation of that same archive publication. Terminal specialized route: no ordinary release/version/tag, feature PR or environment promotion. `ship-method: direct|pr` governs ordinary shipping, not this exact private backup protocol. A PR/squash cannot substitute for verified payload/receipt ancestry; actual required policy may block publication.
+Loaded only after ship's metadata-only archive candidate check and the developer's explicit selection to inspect that bundle for backup, or a verified continuation of the same selected backup. A folder name alone is not preparation or publication approval. This backup procedure is terminal: no ordinary source push, release/version/tag, feature PR or environment promotion follows it. `ship-method: direct|pr` governs ordinary shipping, not this exact private backup protocol. A PR/squash cannot substitute for verified payload/receipt ancestry; actual required policy may block publication.
 
 ## Narrow archive ownership and preflight
 

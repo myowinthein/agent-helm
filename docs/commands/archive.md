@@ -7,7 +7,7 @@ has_children: true
 
 # /helm:archive
 
-Preserve an old project's source, useful working environment, data and recovery documentation, and prepare a reviewed local payload. Invoke ship archive separately to publish/verify the private backup. Five approved phases resume across Claude/Codex sessions. Preserved source, runnable artifacts, offline recovery, offline rebuilds, backups and remote publication have separate evidence and limits.
+Preserve an old project's source, useful working environment, data and recovery documentation, and prepare a reviewed local payload. Run ship later and select archive inspection to review private backup publication. Five approved phases resume across Claude/Codex sessions. Preserved source, runnable artifacts, offline recovery, offline rebuilds, backups and remote publication have separate evidence and limits.
 
 Claude uses the command names below. In Codex, select the same Helm skill to start the workflow. Both resolve the [existing instruction/configuration owner](../setup/compatibility.html) without rewriting AGENTS.md, CLAUDE.md or Helm settings.
 
@@ -40,7 +40,7 @@ flowchart TD
   Restore --> Prepare[Review fifth report, source scope, artifacts and local payload]
   Prepare --> Commit[Explicit local content/commit approval<br/>Verify payload; cursor 4 remains prepared]
   Commit --> Local([Prepared locally; finish without publication prompt])
-  Later([Developer later invokes ship archive]) --> Publish[Review private destination and exact backup plan]
+  Later([Developer later runs ship and selects archive inspection]) --> Publish[Review private destination and exact backup plan]
   Publish --> Payload[Publish and verify pinned payload and required recovery bytes]
   Payload --> Receipt[Only selected cleanup; commit/publish/verify receipt]
   Receipt --> Sealed([Report verified backup; optional approved external copy])
@@ -62,7 +62,7 @@ Proven already-prepared/completed report-only reruns need no new Proceed questio
 2. [Restore and Freeze](archive/2-restore-and-freeze.html): approve the restore plan, restore and record actual evidence, offer a developer check, then recommend/select and execute the approved freeze. Cross-check component-specific setup evidence; choose useful container/native/static/data/toolchain outputs for the actual goal. Preserve original safe inputs unless another dataset is explicitly chosen. Cold rehearsal remains optional.
 3. [Postman Collection](archive/3-postman.html): Retain/Repair/Create/Skip useful owned API recovery materials. Keep existing useful paths, cross-check current contracts against implementation and create an environment file only when valuable. Verify only approved appropriate requests against the identified isolated runtime; otherwise report unverified. No applicable API still gets its approved report.
 4. [Documentation](archive/4-documentation.html): preserve useful recovery/build/design/legal/history evidence. Use an archive-specific README for orientation, setup for ordered procedures and metadata for human-readable artifact identities/storage/verification. This does not invoke manifest or use its README style setting. Check protected imports and current references.
-5. [Finalize](archive/5-finalize.html): choose per-artifact regular Git/LFS/separate-local storage, retain or usefully consolidate supplementary docs, then review/approve and verify the local payload commit. Finish locally; later `ship archive` separately reviews private publication, verifies the backup and handles only selected cleanup, the completion receipt and optional external portable copying.
+5. [Finalize](archive/5-finalize.html): choose per-artifact regular Git/LFS/separate-local storage, retain or usefully consolidate supplementary docs, then review/approve and verify the local payload commit. Finish locally; later `ship` separately reviews private publication, verifies the backup and handles only selected cleanup, the completion receipt and optional external portable copying.
 
 The developer check is feedback, not proof every runtime behavior passed. It can be declined/deferred or the pause omitted under an explicitly authorized unattended plan; silence is not consent. Reuse approval for unchanged concrete actions. Code/config/data changes invalidate only affected capture/verification evidence. These additions keep the five phases and schema 1, and do not invalidate older reports lacking optional handoff/check text.
 
@@ -70,9 +70,9 @@ The developer check is feedback, not proof every runtime behavior passed. It can
 
 Normal archive work needs an attached source branch and HEAD, with pre-existing changes reconciled before alteration and the source-branch confirmation above before pending phases. Recommend the intentional complete project snapshot, usually main/master after needed source work is integrated; another attached branch is allowed when it is the intended snapshot and project policy permits. No branch creation/switching during any archive phase. Unmerged source work is surfaced for developer action, never merged automatically. Other branches/tags/submodules/LFS/hosted resources are explicit captured or excluded inputs; one branch push is not a complete backup of all repository features.
 
-Source remotes/local names remain by default. Archive never offers push/PR or performs ref cleanup. Later explicit ship archive selects one existing private destination, publishes canonical remote main without renaming local master/custom source and preserves normal fast-forward/review/signing/protection/check requirements. Divergence blocks, never force-pushes. Optional cleanup belongs only to that separately reviewed publication protocol.
+Source remotes/local names remain by default. Archive never offers push/PR or performs ref cleanup. Ship's later archive backup procedure selects one existing private destination, publishes canonical remote main without renaming local master/custom source and preserves normal fast-forward/review/signing/protection/check requirements. Divergence blocks, never force-pushes. Optional cleanup belongs only to that separately reviewed publication protocol.
 
-Local payload approval authorizes only that reviewed commit, not a backup push. Ship archive separately reviews publication of the existing pinned payload, required artifacts and later completion receipt, using exact refs/no-follow-tags/readback. It alone performs selected post-backup cleanup and receipt updates in the narrow owning bundle. Tag/ref preservation and external copy actions retain separate scope; auto-commit/cursor never proves publication.
+Local payload approval authorizes only that reviewed commit, not a backup push. Ship's archive backup procedure separately reviews publication of the existing pinned payload, required artifacts and later completion receipt, using exact refs/no-follow-tags/readback. It alone performs selected post-backup cleanup and receipt updates in the narrow owning bundle. Tag/ref preservation and external copy actions retain separate scope; auto-commit/cursor never proves publication.
 
 ## Protected files and progress
 
@@ -101,7 +101,7 @@ An exists-only check for reserved old-bundle names under `.archive/` stops this 
 
 Keep current schema 1, fixed report names, unknown data and verbatim approved historical reports. Before every write, recheck source/branch, supported root, tripwire and latest legitimate output fingerprints. Authorized later outputs can supersede older fingerprints without rewriting reports; unexplained drift blocks work. Missing/unsupported versions are not upgraded automatically.
 
-Local preparation keeps cursor 4/phase prepared with nullable destination/payload fields. Exact committed parent/archive-ID/report/inventory proof identifies the reviewed payload, with no post-commit state-only write. Proven preparation reruns replace nothing or replay services. Only explicit ship archive verifies private payload publication and selected cleanup, then commits/publishes/reads back the completion receipt at cursor 5/receipt_prepared. A cursor alone is not publication proof, and no tracked update follows final receipt verification. Current-format interruptions resume only the proven missing operation; historical unsupported runs require separate maintenance. Portable copies remain separately approved external actions.
+Local preparation keeps cursor 4/phase prepared with nullable destination/payload fields. Exact committed parent/archive-ID/report/inventory proof identifies the reviewed payload, with no post-commit state-only write. Proven preparation reruns replace nothing or replay services. Only ship's archive backup procedure verifies private payload publication and selected cleanup, then commits/publishes/reads back the completion receipt at cursor 5/receipt_prepared. A cursor alone is not publication proof, and no tracked update follows final receipt verification. Current-format interruptions resume only the proven missing operation; historical unsupported runs require separate maintenance. Portable copies remain separately approved external actions.
 
 ## Output files and their purpose
 
@@ -136,7 +136,7 @@ Record actual image IDs/upstream digests where available, stable recoverable tag
 
 Static integrity, build, current run, cold rehearsal and offline rebuild results remain distinct. Honor verification deferral without running deferred checks or claiming Fully Restored. Partial preservation can continue only with its limitations approved. Local-only tarballs are not a verified backup; actual retrievable LFS objects or a verified separate copy are needed for the corresponding backup claim.
 
-In ship archive after verified receipt publication, optionally approve a portable copy to a specific unused external directory: a self-contained Git bundle plus separately available required LFS/submodule/image/data/setup inputs, checksums and omissions. It changes no tracked files/state and creates no scheduler or cloud upload. Missing inputs/copy failure retain the verified seal and an exact copy handoff. A second independent copy is advice unless separately authorized.
+In ship's archive backup procedure after verified receipt publication, optionally approve a portable copy to a specific unused external directory: a self-contained Git bundle plus separately available required LFS/submodule/image/data/setup inputs, checksums and omissions. It changes no tracked files/state and creates no scheduler or cloud upload. Missing inputs/copy failure retain the verified seal and an exact copy handoff. A second independent copy is advice unless separately authorized.
 
 ## See also
 

@@ -31,4 +31,4 @@ At refactor/test's eligible normal owning-state entry, the parent loads the [rea
 
 Report the canonical path, inspected source, actual write/commit status and unperformed checks. New missing ledgers begin with a fresh assessment through their owner, never a fabricated empty scan result. Update the complete package in both clients and start fresh sessions; concurrent writers are unsupported.
 
-Archive is separate: only its invoked workflow or explicit ship archive continuation accesses the canonical `.helm/archive/` bundle. Other state, native client configuration and `.claude/rules/` stay outside this procedure. See [upgrade guidance](https://myowinthein.github.io/agent-helm/docs/setup/upgrading.html) for one-time project maintenance, not a command to run automatically.
+Archive is separate: only its invoked workflow or ship's selected archive backup continuation accesses the canonical `.helm/archive/` bundle. Other state, native client configuration and `.claude/rules/` stay outside this procedure. See [upgrade guidance](https://myowinthein.github.io/agent-helm/docs/setup/upgrading.html) for one-time project maintenance, not a command to run automatically.
