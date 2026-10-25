@@ -46,6 +46,6 @@ Links use normal browser behaviour: same-tab navigation by default, with modifie
 
 ## Setup pages
 
-Setup navigation shows Claude and Codex. Each page uses `_includes/setup-tabs.html` to display horizontal **Desktop app / Terminal** tabs. The four instruction bodies live in `_includes/setup/` and are shared with the existing standalone setup URLs, which remain accessible but are hidden from navigation and search. Technical guides remain linked from the setup homepage and relevant command pages.
+Setup navigation shows Claude and Codex. Each page uses `_includes/setup-tabs.html` to display horizontal **Desktop app / Terminal** tabs. The four instruction bodies live in `_includes/setup/` and are shared with the existing standalone setup URLs, which remain accessible but are hidden from navigation and search. Technical guides retain their existing URLs.
 
 `assets/js/setup-tabs.js` handles tab selection, keyboard navigation and fragment links. It loads only on pages with `setup_tabs: true`; the styles live in `_sass/custom/custom.scss`. Without JavaScript, both sections remain visible. Printed pages include both sets of instructions.

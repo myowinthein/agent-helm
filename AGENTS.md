@@ -40,7 +40,7 @@ Publication: invoke `/helm:ship` in Claude or select ship in Codex. One workflow
 - `_config.yml` + `Gemfile`: Jekyll/GitHub Pages site config; `docs/` files serve as site pages
 - `.github/workflows/docs.yml`: resolves the latest stable Just the Docs release and builds on main pushes, PRs and manual dispatch; only main deploys through GitHub Pages Actions. It builds docs without running plugin/client/test workflows.
 - `_includes/header_custom.html`, `assets/js/theme-switcher.js`, `_sass/custom/custom.scss`: System/Light/Dark selector with a site-specific saved preference; `_includes/head_custom.html` loads it before content renders and retains Mermaid support.
-- `docs/setup/claude.md`, `docs/setup/codex.md`: platform setup pages with horizontal Desktop app / Terminal tabs. `_includes/setup/` owns the four shared instruction bodies, `_includes/setup-tabs.html` renders them and `assets/js/setup-tabs.js` supplies keyboard/fragment navigation. Existing standalone URLs reuse those bodies but stay out of navigation/search; technical guides remain linked from Setup.
+- `docs/setup/claude.md`, `docs/setup/codex.md`: platform setup pages with horizontal Desktop app / Terminal tabs. `_includes/setup/` owns the four shared instruction bodies, `_includes/setup-tabs.html` renders them and `assets/js/setup-tabs.js` supplies keyboard/fragment navigation. Existing standalone URLs reuse those bodies but stay out of navigation/search.
 
 ## Domain Rules
 

@@ -33,23 +33,3 @@ The guides use these names to identify the source, marketplace and plugin.
 | Marketplace | `agent-helm` | Catalog containing the plugin. |
 | Plugin | `helm` | Package containing the ten workflows. |
 | Installation identifier | `helm@agent-helm` | Plugin and marketplace names used together in terminal commands. |
-
-## Start using Helm in a project
-
-Open or connect your project folder, then:
-
-1. Run [log](../commands/log.html) to create or update shared project instructions in `AGENTS.md`, with `CLAUDE.md` pointing to them.
-2. Run [adopt](../commands/adopt.html) if you want to add the shared Git, safety and writing rules to that project.
-
-Installing the plugin makes its commands available; it does not set up project instructions or install project rules automatically. Once the shared instructions are connected, you can switch between Claude and Codex without repeating setup. Removing the plugin leaves project files and adopted rules in place.
-
-Python 3.11+ is preferred for recorded test/refactor work, but it is optional. See [Python ledger helpers](python-helpers.html) for requirements and fallback options. Desktop sessions also need access to the Git checkout and local tools required by the selected work.
-
-If your project used an older Helm version, read the [upgrade guide](upgrading.html) before running the current commands.
-
-## More help
-
-- [Project instructions and compatibility](compatibility.html)
-- [Git and CI behaviour](git-and-ci.html)
-- [Scan investigation and coverage](investigation.html)
-- [Documentation site maintenance](documentation-site.html)
