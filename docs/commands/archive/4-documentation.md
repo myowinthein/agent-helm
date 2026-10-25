@@ -44,4 +44,4 @@ Document runtime tokens as local provisioning instructions/placeholders, never p
 
 ## Report and approval
 
-Report consolidation decisions and protected preservation, exact created/updated/removed paths/reasons, current navigation/reference checks, accepted missing inputs and remaining gaps. No commit or push. Stop for explicit approval before the separately reviewed local payload preparation. Later ship archive owns the private backup publication. See the [archive guide](../archive.html) for progress, partial outcomes and preservation rules.
+Report consolidation decisions and protected preservation, exact created/updated/removed paths/reasons, current navigation/reference checks, accepted missing inputs and remaining gaps. No commit or push. Stop for explicit approval before the separately reviewed local payload preparation. Ship's later archive backup procedure owns the private backup publication. See the [archive guide](../archive.html) for progress, partial outcomes and preservation rules.

@@ -15,7 +15,7 @@ This clean break prepares the next major Helm release. It is not a published rel
 |---|---|
 | Settings | `ship-method: direct|pr` replaces `git-strategy`. Default is `pr` only when genuinely absent; an old key without the new one blocks shipping. `environment-promotion` no longer selects behavior. |
 | Local commands | Editing commands finish on their permitted current branch without workflow branches, push/PR prompts or remote cleanup. Branch eligibility and content approvals remain command-specific. |
-| Shipping | Ordinary ship publishes code and optional selected targets. Explicit `ship release` alone owns SemVer/metadata/tags; `ship promote` remains available. `ship normalize` and `ship archive` own their specialist publication protocols. |
+| Shipping | One ship workflow assesses source/PRs, independent targets, verified history handoffs and selected prepared backups. Ready integrated main/master offers an approved new or same-version release even without a source push; archive backup finishes under its private receipt protocol. |
 | Instructions | AGENTS.md owns shared project instructions; CLAUDE.md imports it. Log still handles first-time existing-file reconciliation through reviewed diffs. |
 | Rule adoption | Shared local copies under `.claude/rules/`; no external-reference conversion or recovery. Only `agent-helm` rule markers are managed. Other markers/files require ordinary foreign-file review. |
 | Ledgers | Only `.helm/refactor-log.json` schema 2 with native evidence, `.helm/test-log.json` schema 3, `.helm/normalize-log.json` schema 1 and `.helm/legal-manifest.json` schema 1. No old reader, converter, path migration or automatic reset. |
@@ -48,6 +48,6 @@ The one-time cleanup is maintenance outside ordinary commands. Their exists-only
 
 ## Release and verification status
 
-A breaking release should use a major version, for example the planned 3.0.0, and scoped Conventional Commits with `!` or a `BREAKING CHANGE:` footer. Release metadata, tag creation and publication still belong to explicit ship release. This implementation does not assert a release or change published identities.
+A breaking release should use a major version, for example the planned 3.0.0, and scoped Conventional Commits with `!` or a `BREAKING CHANGE:` footer. Release metadata, tag creation and publication still belong to ship's release stage. This implementation does not assert a release or change published identities.
 
 Testing remains deferred. Source/diff readback and verified file moves are not plugin tests, native loading, runtime recovery or remote backup verification. Package, documentation and relevant client checks must be considered when testing is resumed; do not claim this change has passed them.

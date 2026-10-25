@@ -77,4 +77,4 @@ Step 5 may move assets only through its reviewed dependency/reference check. It 
 - **Navigation:** approved index and reachable active recovery docs, image/data/config/reference consistency and protected-file exemptions; report gaps rather than claiming unperformed checks.
 - **Gaps:** missing/deferred/unverified inputs, backup and runtime/rebuild limits, exact pending actions.
 
-No commit or push. Present this report and wait for explicit approval before Step 5, which separately approves the local payload commit; only a later explicit ship archive approves private backup publication/receipt and any opt-in ref cleanup.
+No commit or push. Present this report and wait for explicit approval before Step 5, which separately approves the local payload commit; only a later ship invocation's selected archive backup procedure approves private backup publication/receipt and any opt-in ref cleanup.
