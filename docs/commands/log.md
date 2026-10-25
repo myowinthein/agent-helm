@@ -12,7 +12,7 @@ Run `/helm:log` in Claude, or select log from the Helm skill picker in Codex, wh
 
 ## Investigation depth and coverage
 
-Full scan covers every first-party package/topic through representative real workflow tracing, relevant setup/configuration/CI and tests, and review of all existing memory. It is not a line-by-line refactor audit. Gap scan accounts for the exact complete commit range and relevant patches, including merges/reverts/renames/deletions and affected unchanged surfaces; a net diff alone is insufficient. Large independent packages/commit batches may use permitted read-only workers, with parent reconciliation of exact coverage and cross-package knowledge.
+Full scan covers every first-party package/topic through representative real workflow tracing, relevant setup/configuration/CI and tests, and review of all existing memory. It is not a line-by-line code quality review. Gap scan accounts for the exact complete commit range and relevant patches, including merges/reverts/renames/deletions and affected unchanged surfaces; a net diff alone is insufficient. Large independent packages/commit batches may use permitted read-only workers, with parent reconciliation of exact coverage and cross-package knowledge.
 
 Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
 

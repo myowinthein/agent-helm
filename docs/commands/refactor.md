@@ -6,35 +6,31 @@ nav_order: 5
 
 # /helm:refactor
 
-Find worthwhile code improvements, review concrete transformations, and apply selected behavior-preserving work locally on the permitted current branch with resumable checkpoints. Audit and Plan offer static review without execution or writes. A persistent finding history supports continuation, prior decisions and genuine recurrence; it does not prove that an issue can never return.
+Find worthwhile code improvements, review concrete transformations, and apply selected behavior-preserving work locally on the permitted current branch with resumable checkpoints. The initial source-only preview and its report-only exit perform no execution or writes. A persistent finding history supports continuation, prior decisions and genuine recurrence; it does not prove that an issue can never return.
 
-Command names below use Claude notation. In Codex, select the same Helm skill and provide the mode/scope in your request. Both hosts follow the same [configuration ownership and compatibility rules](../setup/compatibility.html).
+Command names below use Claude notation. In Codex, select the same Helm skill to start the workflow. Both hosts follow the same [configuration ownership and compatibility rules](../setup/compatibility.html).
 
 ## Investigation depth and coverage
 
-Full scan reads every eligible human-maintained first-party implementation and test file in full through bounded sections, including scripts/Markdown that implement the product, and inspects relevant configuration/contracts. Gap/Targeted assesses complete affected logical units and evidenced consumers with sufficient surrounding context, without a mandatory whole-file reread for every small change. Full scans prefer permitted read-only subagents for substantial scope; exact assignments, section/depth evidence, no-finding areas and unread remainder return to the parent for reconciliation and cross-module review. No incomplete scan checkpoint becomes eligible merely because coverage was divided among workers.
+Full scan reads every eligible human-maintained first-party implementation and test file in full through bounded sections, including scripts/Markdown that implement the product, and inspects relevant configuration/contracts. Gap scan assesses complete affected logical units and evidenced consumers with sufficient surrounding context, without a mandatory whole-file reread for every small change. Full scans prefer permitted read-only subagents for substantial scope; exact assignments, section/depth evidence, no-finding areas and unread remainder return to the parent for reconciliation and cross-module review. No incomplete scan checkpoint becomes eligible merely because coverage was divided among workers.
 
 Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
 
-## Modes and scope
+## Usage
 
-| Invocation | Result |
-|---|---|
-| `/helm:refactor audit` | Static findings, evidence and coverage. No edit plan required. |
-| `/helm:refactor plan` | Also propose specific edits, invariants, tradeoffs, dependency order and verification. |
-| `/helm:refactor` | Preview first, then choose a recorded assessment/Apply path or report-only/Skip. |
-| `/helm:refactor ./api` | Target a path, package, module or clearly identified feature, with relevant contract/dependency context. |
-| `/helm:refactor plan -- ./web` | Plan targeted work without running tools or changing files. |
+```text
+/helm:refactor
+```
 
-Only an initial `audit` or `plan` token selects that mode. Use `./audit`, `./plan`, `-- audit` or `-- plan` for literal paths; quoted paths with spaces are supported. Ambiguous scopes are resolved before dependent work, never expanded silently.
+Preview first, then choose an eligible Full scan, Gap scan or Fix Backlog, or finish with report-only/Skip. Review findings and proposed transformations, then select and approve the work to apply. Developer answers are passed unchanged and never interpreted as shell code.
 
-Audit/Plan can inspect any branch, an explicitly selected dirty/staged/untracked snapshot, or detached/committed inputs. They identify exactly what was inspected. Without Git HEAD, static review remains available. They do not check out, fetch, create branches, refresh the index, load ledgers, execute project configuration/analyzers/checks/dry-runs, install tools, or write files/reports/state. Output stays in conversation. A later Apply revalidates the actual branch/source/policy and obtains any missing approval.
+Initial source-only preview and its report-only exit can inspect any branch, explicitly selected dirty/staged/untracked inputs or detached/committed snapshots. They identify exactly what was inspected. Without Git HEAD, static source review remains available. These paths do not check out, fetch, create branches, refresh the index, load ledgers or helpers, ask about runtime setup, execute project configuration/analyzers/checks/dry-runs, install tools or write files/reports/state. Output stays in conversation. Recorded work separately revalidates the actual branch/source/policy and obtains any missing approval before state access or edits.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Select mode and scope]) --> Inspect[Read-only inspection of current checkout]
+  Start([Preview project]) --> Inspect[Read-only inspection of current checkout]
   Inspect --> Write{Selected local writes?}
   Write -->|no| Report([Report scope, evidence and limits])
   Write -->|yes| Ready{Clean permitted current branch?}
@@ -52,11 +48,11 @@ Pending writes, declined/failed commits or readback failures stop subsequent edi
 
 A cheap static preview identifies project shape, likely scope, native commands and the current snapshot before a first-run Full scan or writes. Report-only/Skip and true no-ops create no state.
 
-After normal current-branch preparation, the parent prefers the [Python ledger helper](../setup/python-helpers.html) to validate the complete native schema-2 file, then retrieve digest-bound pages across relevant open and closed history. The bundled implementation needs Python 3.11+. If Python/execution is unavailable, offer/reuse Set up Python / Continue without Python / Stop once per run. Approved equivalent tools may meet the same full validation, safe-path, resource, retrieval and preservation checks, including canonical readback. Without equivalent evidence, independent assessment/planning can continue while ledger-dependent edits/writes remain pending. Invalid data, unsafe paths, drift and broken packages still block dependent work. Audit/Plan never invoke it, load state or ask about runtime setup. No helper writer or migration is added. Index rows/pages cannot reconstruct the document; disclose the actual validation method and unperformed automation. Structural success proves no semantic judgment, source currency or passing verification.
+After normal current-branch preparation, the parent prefers the [Python ledger helper](../setup/python-helpers.html) to validate the complete native schema-2 file, then retrieve digest-bound pages across relevant open and closed history. The bundled implementation needs Python 3.11+. If Python/execution is unavailable, offer/reuse Set up Python / Continue without Python / Stop once per run. Approved equivalent tools may meet the same full validation, safe-path, resource, retrieval and preservation checks, including canonical readback. Without equivalent evidence, independent assessment/planning can continue while ledger-dependent edits/writes remain pending. Invalid data, unsafe paths, drift and broken packages still block dependent work. Source-only preview and its report-only exit never invoke it, load state or ask about runtime setup. No helper writer or migration is added. Index rows/pages cannot reconstruct the document; disclose the actual validation method and unperformed automation. Structural success proves no semantic judgment, source currency or passing verification.
 
-Recorded scans/edits need HEAD, a clean attached current main/master base, an established existing current feature branch or an existing current refactor/* branch, no ongoing operation and applicable worktree safety. Establish non-base roles/environment status from actual project/deployment evidence or developer classification; reuse known evidence and ask only when unresolved. Names alone prove neither ownership nor safety. Confirmed non-base environment branches remain Audit/Plan only even with a refactor/* name; unresolved/unsupported roles also block writes. Unrelated untracked files and dirty tracked input remain blockers; no old-ledger preservation/conversion exception exists. Refactor never creates/selects/switches branches or fetches/updates the base. If another branch is needed, the developer changes it outside the command. Revalidate source/policy on the same branch and use only that branch's proven assessment/checkpoints, never transplant a different snapshot.
+Recorded scans/edits need HEAD, a clean attached current main/master base, an established existing current feature branch or an existing current refactor/* branch, no ongoing operation and applicable worktree safety. Establish non-base roles/environment status from actual project/deployment evidence or developer classification; reuse known evidence and ask only when unresolved. Names alone prove neither ownership nor safety. Confirmed non-base environment branches remain source-inspection/report only even with a refactor/* name; unresolved/unsupported roles also block writes. Unrelated untracked files and dirty tracked input remain blockers; no old-ledger preservation/conversion exception exists. Refactor never creates/selects/switches branches or fetches/updates the base. If another branch is needed, the developer changes it outside the command. Revalidate source/policy on the same branch and use only that branch's proven assessment/checkpoints, never transplant a different snapshot.
 
-Recommend targeted cleanup of the feature's relevant areas to keep review scope clear and reduce conflicts, without forcing targeted mode or narrowing an explicit broader request. Preserve behavior and coherent commit boundaries; functionality changes need a separate reviewed scope. Actual script/hook/runtime-target checks and stronger project policy remain binding. Feature checkpoints describe the inspected snapshot/scope, not integrated base; keep the targeted global-field rules and revalidate ancestry/context after later integration or history changes, without fabricated IDs or automatic state merging.
+Recommend bounded changes in the feature's relevant areas when selecting findings, to keep review scope clear and reduce conflicts without narrowing the selected scan. Preserve behavior and coherent commit boundaries; functionality changes need a separate reviewed scope. Actual script/hook/runtime-target checks and stronger project policy remain binding. Feature checkpoints describe the inspected snapshot/scope, not integrated base; keep the Backlog root-anchor rules and revalidate ancestry/context after later integration or history changes, without fabricated IDs or automatic state merging.
 
 ## Source boundaries
 
@@ -85,11 +81,11 @@ The coverage guide is conditional and extensible, not a fixed framework catalog:
 | Data/batch/ML jobs | Data/schema/output meaning, ordering, checkpoints/retries, IO and resources, without silently changing model behavior. |
 | Scripts/configuration/instruction plugins | Invocation/discovery, path/config precedence, shell/data boundaries and consumer-facing instructions. |
 
-Full scan covers all first-party components with applicable checks; Gap scan/targeted retain the evidenced affected surface. No lens is compulsory for every file, no finding quota applies, and no findings is a valid result. Report inapplicable, unknown and incomplete scope honestly.
+Full scan covers all first-party components with applicable checks; Gap scan retains the evidenced affected surface. No lens is compulsory for every file, no finding quota applies, and no findings is a valid result. Report inapplicable, unknown and incomplete scope honestly.
 
 ## Six defined perspectives
 
-Each perspective defines purpose/applicability, inspection responsibilities, qualifying evidence/invariants, permitted remedies and separate follow-ups. The contracts apply within Full scan, Gap scan and targeted scope; Backlog uses them to revalidate selected items without a discovery scan. These are clearer display names for existing category identities; former labels remain accepted filters. Historical raw category values, IDs, decisions and unknown fields are preserved; display renaming alone never authorizes bulk conversion or migration.
+Each perspective defines purpose/applicability, inspection responsibilities, qualifying evidence/invariants, permitted remedies and separate follow-ups. The contracts apply within Full scan and Gap scan; Backlog uses them to revalidate selected items without a discovery scan. These are clearer display names for existing category identities; former labels remain accepted filters. Historical raw category values, IDs, decisions and unknown fields are preserved; display renaming alone never authorizes bulk conversion or migration.
 
 | Perspective (former label) | Purpose and inspection | Permitted scope and boundary |
 |---|---|---|
@@ -130,22 +126,21 @@ Minimal additive characterization/regression guards stay tied to selected invari
 
 Report test-owned gaps in conversation with exact paths/case names where known, the missing guarantee and why a later test task is useful. Refactor can persist its own maintenance remedy, with the protection gap kept separate; it does not persist a test-only gap as refactor work, access test-log or create cross-ledger IDs. Each invoked workflow deduplicates only its own history; rediscovery across separate tasks is acceptable. A separate follow-up alone does not block recording a complete refactor assessment; incomplete inspection still blocks its scan checkpoint, while genuine fully assessed unclear refactor-owned findings can be recorded as unknown with clarification blockers.
 
-## Recorded assessment modes
+## Review choices and recorded coverage
 
-| Mode | Assessment | Schema-2 root anchors |
+| Choice | Assessment | Schema-2 root anchors |
 |---|---|---|
 | Full scan | Complete project inventory, bounded chunk queue and cross-file synthesis across six lenses. | Set `assessed_commit` and `full_scan_commit` only after the entire intended scope is assessed. |
 | Gap scan | Valid baseline changes plus evidenced callers/consumers/tests/configuration/contracts, including bounded local consistency checks. | Advance `assessed_commit` after the defined incremental assessment completes; preserve `full_scan_commit`. |
 | Fix Backlog | Existing selected open findings, revalidated against current code and prerequisites; no discovery scan. | Unchanged. |
-| Targeted assessment | Selected path/package/module/feature plus relevant context, without requiring a prior global baseline. | Both unchanged; out-of-scope findings and decisions preserved. |
 
 Concurrency limits bound simultaneous work, not total Full scan coverage. Queue batches rather than merging everything into oversized chunks. Use permitted read-only workers when available, otherwise cover the same queue sequentially. Parent synthesis and targeted rereads resolve cross-chunk relationships; Claude/Codex do not write in parallel.
 
-At an existing Full scan/Gap scan choice, use the [shared scan-depth selection](../setup/compatibility.html#shared-scan-depth-selection). Use already permitted facts only; Audit/Plan never load operational state. Targeted assessment and Fix Backlog gain no helper/global-baseline prerequisite. Bounded impact normally favors Gap scan; credible broad architecture/runtime/build/contract changes or insufficiently bounded impact favors Full scan. Explicit valid Gap scan still covers the entire affected surface, without a fixed one/two-hop completeness guarantee. Incomplete evidence follows existing checkpoint rules. Local consistency findings never establish global consistency.
+At an existing Full scan/Gap scan choice, use the [shared scan-depth selection](../setup/compatibility.html#shared-scan-depth-selection). Use already permitted facts only; source-only preview and its report-only exit never load operational state. Fix Backlog gains no scan-selection-helper/global-baseline prerequisite. Bounded impact normally favors Gap scan; credible broad architecture/runtime/build/contract changes or insufficiently bounded impact favors Full scan. Explicit valid Gap scan still covers the entire affected surface, without a fixed one/two-hop completeness guarantee. Incomplete evidence follows existing checkpoint rules. Local consistency findings never establish global consistency.
 
-Gap scan requires a literal saved `assessed_commit` identity resolving unambiguously to an available commit object that is an ancestor of the inspected source. An unusable anchor within otherwise valid state offers independently eligible Full scan, Targeted assessment, validated Fix Backlog when entries exist, Report-only and Skip/Cancel, never guessed `HEAD~1`. Keep Report-only distinct from Cancel and preserve more than four choices through paging/chat. A bad root anchor alone does not invalidate proven backlog entries; malformed/unsupported/conflicting ledger data still blocks dependent use.
+Gap scan requires a literal saved `assessed_commit` identity resolving unambiguously to an available commit object that is an ancestor of the inspected source. An unusable anchor within otherwise valid state offers independently eligible Full scan, validated Fix Backlog when entries exist, Report-only and Skip/Cancel, never guessed `HEAD~1`. Keep Report-only distinct from Cancel and preserve more than four choices through paging/chat. A bad root anchor alone does not invalidate proven backlog entries; malformed/unsupported/conflicting ledger data still blocks dependent use.
 
-First runs retain Full scan, targeted, report-only and Skip choices. Age, commit/file counts and Gap scan frequency no longer determine depth. Schema 2 has no active mode/date/count; Current native anchors do not certify past coverage. Only proved bookkeeping effects can be ignored; real code/tests/contracts/configuration remain meaningful. No source gap returns to refactor's own Backlog/no-op rules, preserving explicit reviews and pending work rather than refreshing dates/counters alone.
+First runs retain Full scan, report-only and Skip choices. Age, commit/file counts and Gap scan frequency no longer determine depth. Schema 2 has no active mode/date/count; Current native anchors do not certify past coverage. Only proved bookkeeping effects can be ignored; real code/tests/contracts/configuration remain meaningful. No source gap returns to refactor's own Backlog/no-op rules, preserving explicit reviews and pending work rather than refreshing dates/counters alone.
 
 ## Finding history and state
 
@@ -155,7 +150,7 @@ The [shared state procedure](../setup/compatibility.html#shared-project-state) s
 
 ### Clean schema 2
 
-The owning source specification is `prompts/refactor-ledger.md`, loaded only when normal refactor already permits its own state access. Audit/Plan have no helper prerequisite or state access; shared runtime does not autoload it. This source update does not read or migrate a live ledger.
+The owning source specification is `prompts/refactor-ledger.md`, loaded only when normal refactor already permits its own state access. Source-only preview and its report-only exit have no helper prerequisite or state access; shared runtime does not autoload it. This source update does not read or migrate a live ledger.
 
 | Root field | Purpose |
 |---|---|
@@ -164,7 +159,7 @@ The owning source specification is `prompts/refactor-ledger.md`, loaded only whe
 | `full_scan_commit` | Established latest completed whole-project Full scan source; `null` if unknown. Gap scan preserves it. |
 | `findings` | Ordered stable records across all states; append new findings without rebuilding/reordering history. |
 
-Targeted/Backlog preserve both roots; first targeted state uses explicit `null` anchors. Incomplete/failed coverage writes no incomplete scan checkpoint. Unknown priorities, held decisions and pending remedies do not block an otherwise complete assessment from advancing the appropriate roots. Anchors never certify runtime success or that today's guidance was historically covered. Root mode/date/count fields are removed rather than refreshed for bookkeeping.
+Fix Backlog preserves both roots, including explicit `null` anchors when no complete scan baseline is established. Incomplete/failed coverage writes no incomplete scan checkpoint. Unknown priorities, held decisions and pending remedies do not block an otherwise complete assessment from advancing the appropriate roots. Anchors never certify runtime success or that today's guidance was historically covered. Root mode/date/count fields are removed rather than refreshed for bookkeeping.
 
 | Finding data | Purpose |
 |---|---|
@@ -200,7 +195,7 @@ Only native schema 2 is supported. Preserve an unsupported file and use the [one
 
 ## Priority and transformation risk
 
-Priority describes the present cost of leaving code as is or the concrete benefit of a behavior-preserving improvement. Name who pays, on which supported path, and the mechanism supported by code or developer evidence. Risk, effort and readiness are separate; the same finding keeps its tier across Full scan, Gap scan, targeted and Backlog modes.
+Priority describes the present cost of leaving code as is or the concrete benefit of a behavior-preserving improvement. Name who pays, on which supported path, and the mechanism supported by code or developer evidence. Risk, effort and readiness are separate; the same finding keeps its tier across Full scan, Gap scan and Fix Backlog choices.
 
 | Priority | Criteria and examples |
 |---|---|
@@ -223,7 +218,7 @@ Revalidate applicable carried tiers when presenting/selecting findings. Keep sup
 
 Uncertainty within a supported tier does not prevent ranking, and a High can still need a remedy choice. When missing intent/value prevents ranking a genuine fully assessed refactor-owned problem, record `assessment.priority: unknown` with concrete evidence and a clarification blocker. Name the missing fact and what each answer changes, batching questions and reusing supplied information. Do not invent Low, a provisional ranked tier or a human skip decision. Unknown findings stay held, outside ready/recommended work until clarified.
 
-A complete Full scan/Gap scan may record unknown priorities and advance its appropriate anchors. Pending remedies, decisions and deferred future-fix checks are distinct from coverage gaps. Actual failed reads/uninspected required scope still make the scan incomplete, with no incomplete scan checkpoint or root advancement. Separately chosen eligible Targeted/Backlog or report-only routes remain available without quietly declaring the original scope complete. Audit/Plan show questions as text and stop without operational state or an interactive Apply path.
+A complete Full scan/Gap scan may record unknown priorities and advance its appropriate anchors. Pending remedies, decisions and deferred future-fix checks are distinct from coverage gaps. Actual failed reads/uninspected required scope still make the scan incomplete, with no incomplete scan checkpoint or root advancement. Separately chosen eligible Fix Backlog or report-only routes remain available without quietly declaring the original scope complete. The source-only preview shows questions in conversation and stops without operational state or an interactive Apply path.
 
 ## Select and apply coherent work
 
@@ -238,9 +233,9 @@ Small clear sets go directly to the concrete plan and existing approval, with fr
 | **Choose findings or groups** | IDs, module/behavior/groups or category/priority/risk filters, with exclusions and faithful independent pages/chat. Also provides the route to clarify/resolve/select separately shown held work. |
 | **None** | No Apply work; findings stay open. An already authorized assessment checkpoint remains. This is not Cancel, permanent skip, authorization for another ledger write/migration or an undo request. |
 
-Recommended is based on current evidence, relevance and practical effort/risk/readiness, without changing tiers, quotas or filler. Gap scan/targeted respect the affected/requested scope; Backlog findings are freshly revalidated. Useful cleanup is refactor's purpose, so test's default exclusion of test-cleanup proposals does not apply. Omit an empty Recommended or combine it with All when the two exact sets are identical.
+Recommended is based on current evidence, relevance and practical effort/risk/readiness, without changing tiers, quotas or filler. Gap scan respects its affected surface; Backlog findings are freshly revalidated. Useful cleanup is refactor's purpose, so test's default exclusion of test-cleanup proposals does not apply. Omit an empty Recommended or combine it with All when the two exact sets are identical.
 
-Ready means revalidated evidence, a supported tier, concrete remedy/invariant/verification path and satisfied or explicitly included prerequisites. It does not mean tested, safe or authorized: named remedy choices still need review before edits. Show unusually costly/intrusive, blocked and carried-unconfirmed findings separately, with their true priority or uncertainty, actual reason and explicit exclusions from the listed ready set. Point to important held High work rather than hiding it behind easier recommendations. Choosing held work never bypasses a blocker or authorizes behavior changes; use the existing concrete review/setup/verification gates. Deferred checks retain the existing explicitly authorized draft-only limits. Audit/Plan show recommendations as text and stop without scope/Apply questions or ledger access.
+Ready means revalidated evidence, a supported tier, concrete remedy/invariant/verification path and satisfied or explicitly included prerequisites. It does not mean tested, safe or authorized: named remedy choices still need review before edits. Show unusually costly/intrusive, blocked and carried-unconfirmed findings separately, with their true priority or uncertainty, actual reason and explicit exclusions from the listed ready set. Point to important held High work rather than hiding it behind easier recommendations. Choosing held work never bypasses a blocker or authorizes behavior changes; use the existing concrete review/setup/verification gates. Deferred checks retain the existing explicitly authorized draft-only limits. The source-only preview shows recommendations in conversation and stops without Apply questions or ledger access.
 
 Scope selection is not plan approval. Preserve independent choices above four through paging/chat; no default, silence, timeout or unavailable multi-select selects everything. Show the complete selected plan: exact IDs/paths/companion edits, coherent units, invariants, unresolved choices, dependencies, checks and code/ledger checkpoints. Reuse existing exact authorization or obtain the existing Apply selected plan/Cancel approval, without per-tier/per-item duplicate prompts. Missing choices leave the affected unit pending.
 

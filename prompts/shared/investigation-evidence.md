@@ -4,7 +4,7 @@ Load only when the invoking workflow reaches an actual source/history investigat
 
 ## Scope and vocabulary
 
-Log, manifest, test and refactor use **Full scan** and **Gap scan** in choices, headings and reports. Full scan covers the caller's entire relevant scope at its required depth; Gap scan covers a validated source interval and its evidenced affected surface, including unchanged consumers. Use the current depth labels only; clarify unsupported requests without hijacking a literal path or adding reserved argument tokens. Audit, Plan, Targeted and Fix Backlog are independent mode/scope concepts, not renamed depths. Do not introduce Full/Gap choices into the six specialized workflows.
+Log, manifest, test and refactor use **Full scan** and **Gap scan** in choices, headings and reports. Full scan covers the caller's entire relevant scope at its required depth; Gap scan covers a validated source interval and its evidenced affected surface, including unchanged consumers. Use the current depth labels only; clarify unsupported requests without hijacking a literal path or adding reserved argument tokens. Fix Backlog remains a separate refactor work choice, not a scan depth. Do not introduce Full/Gap choices into the six specialized workflows.
 
 Use [scan-depth selection](scan-scope.md) only where its four callers already choose a depth. This investigation contract adds no age/count thresholds, forced scans or scan counters. An explicit Full scan remains Full scan even without source changes. A new plugin version alone triggers no scan or checkpoint invalidation; known prior coverage gaps can inform the existing recommendation, while unknown history remains unknown. Older checkpoints are historical facts, not proof the new detail contract was satisfied.
 
