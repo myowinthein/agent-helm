@@ -1,6 +1,6 @@
 ---
 title: "Step 1: Explore"
-parent: /helm:archive
+parent: /agent-helm:archive
 grand_parent: Commands
 nav_order: 1
 ---

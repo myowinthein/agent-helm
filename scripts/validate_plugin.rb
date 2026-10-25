@@ -39,7 +39,7 @@ module HelmValidation
     end
     manifest = JSON.parse(read(resource(root, ".claude-plugin/plugin.json")))
     marketplace = JSON.parse(read(resource(root, ".claude-plugin/marketplace.json")))
-    check(manifest.fetch("name") == "helm" && marketplace.fetch("name") == "agent-helm", "Expected plugin helm in marketplace agent-helm")
+    check(manifest.fetch("name") == "agent-helm" && marketplace.fetch("name") == "agent-helm-marketplace", "Expected plugin agent-helm in marketplace agent-helm-marketplace")
     check(manifest.fetch("skills") == "./skills/" && manifest.fetch("commands") == [], "Expose skills only; command auto-discovery creates duplicate entries")
     check(root.glob("commands/**/*.md").empty?, "Legacy command adapters must not be packaged")
     check(manifest.fetch("version").match?(/\A\d+\.\d+\.\d+\z/), "Invalid plugin version")

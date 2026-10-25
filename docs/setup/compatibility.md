@@ -10,11 +10,13 @@ permalink: /docs/setup/compatibility.html
 
 Refactor and test prefer the same [read-only Python ledger helpers](python-helpers.html) on both hosts. The bundled implementation needs Python 3.11+ for complete structural validation and digest-bound retrieval. When Python/execution is unavailable at an eligible normal owning-state step, offer/reuse Set up Python / Continue without Python / Stop once per run. Approved available equivalent tools may satisfy the same complete validation, safe-path, resource, retrieval and preservation checks; without that evidence, dependent work remains pending. Invalid data and package defects cannot be bypassed. Refactor's source-only preview and its report-only exit and unrelated commands load no ledgers/helpers and ask no runtime-setup question. Current refactor schema 2 and test schema 3 remain unchanged; writes, source/semantic checks and approvals stay caller-owned. Copied rules need no Python runtime. See the helper guide for complete-package updates, bounded responses and fallback.
 
-Helm has one workflow body per operation in `workflows/`. Both hosts use portable entries in `skills/` to load the shared runtime and that workflow. The manifest exposes only skills and disables automatic command-directory discovery, preventing duplicate entries while preserving `/helm:<name>` in Claude. Claude's existing invocation policy is retained; Codex's skill entries disable implicit invocation.
+Helm has one workflow body per operation in `workflows/`. Both hosts use portable entries in `skills/` to load the shared runtime and that workflow. The manifest exposes only skills and disables automatic command-directory discovery, preventing duplicate entries with `/agent-helm:<name>` in Claude. Claude's existing invocation policy is retained; Codex's skill entries disable implicit invocation.
 
 ## Current installation
 
-Use the current setup guides for `myowinthein/agent-helm` and `helm@agent-helm` on both clients. The repository/marketplace is agent-helm; the plugin name remains helm. Native rule storage and client instruction formats remain independent of project state. Current workflows do not convert old installations or records. See [breaking changes and one-time upgrade](upgrading.html) before using them in an older project.
+Use the current setup guides for `myowinthein/agent-helm` and `agent-helm@agent-helm-marketplace` on both clients. The repository and plugin are `agent-helm`; the marketplace is `agent-helm-marketplace`. Native rule storage and client instruction formats remain independent of project state. Current workflows do not convert old installations or records. See [breaking changes and one-time upgrade](upgrading.html) before using them in an older project.
+
+Earlier `helm` installations need the [plugin and marketplace name update](upgrading.html#plugin-and-marketplace-names), followed by a fresh session. Existing project files are preserved; installation does not rewrite their commands or rules.
 
 ## Shared scan-depth selection
 

@@ -1,14 +1,14 @@
 ---
-title: /helm:log
+title: /agent-helm:log
 parent: Commands
 nav_order: 2
 ---
 
-# /helm:log
+# /agent-helm:log
 
 Give fresh Claude and Codex sessions useful project context: essential commands, important boundaries, working agreements and lessons the developer has already taught the agent. Log sets up shared `AGENTS.md` and its `CLAUDE.md` import adapter, then maintains that knowledge without replacing task-specific code investigation.
 
-Run `/helm:log` in Claude, or select log from the Helm skill picker in Codex, whenever you want the project instructions reviewed. It analyzes the project, reports findings and updates the instructions through a reviewed proposal. Both hosts use the same owner, preservation rules and review-marker contract. [Compatibility](../setup/compatibility.html) explains overrides, imports and shared rules.
+Run `/agent-helm:log` in Claude, or select log from the Helm skill picker in Codex, whenever you want the project instructions reviewed. It analyzes the project, reports findings and updates the instructions through a reviewed proposal. Both hosts use the same owner, preservation rules and review-marker contract. [Compatibility](../setup/compatibility.html) explains overrides, imports and shared rules.
 
 ## Investigation depth and coverage
 
@@ -154,6 +154,6 @@ Report setup/knowledge results, reviewed snapshot/coverage, eligible/retained ma
 
 ## See also
 
-- [`/helm:adopt`](adopt.html): installs shared rule files and connects their pointers.
-- [`/helm:manifest`](manifest.html): maintains the human-facing README.
+- [`/agent-helm:adopt`](adopt.html): installs shared rule files and connects their pointers.
+- [`/agent-helm:manifest`](manifest.html): maintains the human-facing README.
 - [Compatibility and project instructions](../setup/compatibility.html): current layouts and host boundaries.

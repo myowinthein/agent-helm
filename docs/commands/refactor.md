@@ -1,10 +1,10 @@
 ---
-title: /helm:refactor
+title: /agent-helm:refactor
 parent: Commands
 nav_order: 5
 ---
 
-# /helm:refactor
+# /agent-helm:refactor
 
 Find worthwhile code improvements, review concrete transformations, and apply selected behavior-preserving work locally on the permitted current branch with resumable checkpoints. The initial source-only preview and its report-only exit perform no execution or writes. A persistent finding history supports continuation, prior decisions and genuine recurrence; it does not prove that an issue can never return.
 
@@ -19,7 +19,7 @@ Follow the [shared investigation and exclusion rules](../setup/investigation.htm
 ## Usage
 
 ```text
-/helm:refactor
+/agent-helm:refactor
 ```
 
 Preview first, then choose an eligible Full scan, Gap scan or Fix Backlog, or finish with report-only/Skip. Review findings and proposed transformations, then select and approve the work to apply. Developer answers are passed unchanged and never interpreted as shell code.

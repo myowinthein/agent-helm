@@ -96,7 +96,7 @@ cases.each do |name, scenario|
     before_head = Open3.capture2("git", "rev-parse", "HEAD", chdir: workspace).first.strip
     instructions = "This is a disposable Helm compatibility fixture at #{workspace}. Operate only in this fixture and read the selected skill's packaged resources; no network, external services, global configuration changes, or access to other consumer projects. Follow the workflow's questions and approvals. If interactive questions are unavailable, present the pending question in your final response and stop; never invent an answer."
     prompt = if client == "claude"
-      "/helm:#{scenario.fetch(:command)} #{scenario.fetch(:request)}"
+      "/agent-helm:#{scenario.fetch(:command)} #{scenario.fetch(:request)}"
     else
       "Use $#{scenario.fetch(:command)}. #{scenario.fetch(:request)}"
     end

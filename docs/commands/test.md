@@ -1,10 +1,10 @@
 ---
-title: /helm:test
+title: /agent-helm:test
 parent: Commands
 nav_order: 4
 ---
 
-# /helm:test
+# /agent-helm:test
 
 Owning-state assessment prefers the shared [Python ledger helper](../setup/python-helpers.html) for complete schema-3 validation and digest-bound retrieval of relevant case indexes/full records, including closed history. The bundled implementation needs Python 3.11+. If Python/execution is unavailable, offer/reuse Set up Python / Continue without Python / Stop once per run. Approved equivalent tools may meet the same complete validation, safe-path, resource, retrieval and preservation checks, including canonical readback. Without equivalent evidence, continue independent assessment/planning with ledger-dependent edits/writes pending. Invalid data and broken packages retain their blockers. The helper writes/migrates nothing and proves neither semantic continuity nor passing tests. Existing approved writes still preserve the complete original; pages are not a replacement document. Report the actual validation method and unperformed automation.
 
@@ -25,7 +25,7 @@ Follow the [shared investigation and exclusion rules](../setup/investigation.htm
 ## Usage
 
 ```text
-/helm:test
+/agent-helm:test
 ```
 
 Start with static inventory, choose Gap scan / Full scan / Skip from the available baseline and coverage evidence, then review the findings and proposed cases. Select the cases to write or maintain before approving concrete test/setup changes or an assessment checkpoint. Developer answers are passed unchanged and never interpreted as shell code.

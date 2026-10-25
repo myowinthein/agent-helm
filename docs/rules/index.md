@@ -7,7 +7,7 @@ permalink: /docs/rules
 
 # Rules
 
-Three rule files available through [`/helm:adopt`](commands/adopt.html). They guide Git work, operational safety and clear writing for both Claude and Codex. Each approved rule has one shared local copy; AGENTS.md tells both agents to read it and CLAUDE.md imports the shared owner. Helm workflows also load the bundled rules through their shared runtime.
+Three rule files available through [`/agent-helm:adopt`](commands/adopt.html). They guide Git work, operational safety and clear writing for both Claude and Codex. Each approved rule has one shared local copy; AGENTS.md tells both agents to read it and CLAUDE.md imports the shared owner. Helm workflows also load the bundled rules through their shared runtime.
 
 ## Rule files
 

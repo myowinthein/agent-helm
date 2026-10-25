@@ -21,7 +21,7 @@ Start a fresh session in your project after installing or updating. Type the pre
 | Codex terminal | `$` |
 | Codex desktop | `/` or `$` |
 
-For example, select `log`, `test` or `ship`. In Claude Code, you can also type the full command, such as `/helm:log`. In Codex, choose the Helm skill from the picker to distinguish it from similarly named built-in actions.
+For example, select `log`, `test` or `ship`. In Claude Code, you can also type the full command, such as `/agent-helm:log`. In Codex, choose the Helm skill from the picker to distinguish it from similarly named built-in actions.
 
 ## Plugin names
 
@@ -30,5 +30,5 @@ The guides use these names to identify the source, marketplace and plugin.
 | Name | Value | Purpose |
 |---|---|---|
 | Repository | `myowinthein/agent-helm` | GitHub source used to add the marketplace. |
-| Marketplace | `agent-helm` | Catalog containing the plugin. |
-| Plugin | `helm` | Package containing the ten workflows. |
+| Marketplace | `agent-helm-marketplace` | Catalog containing the plugin. |
+| Plugin | `agent-helm` | Package containing the ten workflows. |

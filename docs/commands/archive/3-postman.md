@@ -1,6 +1,6 @@
 ---
 title: "Step 3: Postman Collection"
-parent: /helm:archive
+parent: /agent-helm:archive
 grand_parent: Commands
 nav_order: 3
 ---
