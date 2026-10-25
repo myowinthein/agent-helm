@@ -1,6 +1,6 @@
 # Step 2 — Restore and Freeze
 
-Restore the approved project scope and preserve its working environment and data for later recovery. Read the verified `{archive_root}/step1-explore.md` and `{archive_root}/files.json` first in normal mode, using only the root validated by the orchestrator; missing/mismatched context stops dependent work. Plan mode uses only static facts already inspected and never opens operational state, executes or writes.
+Restore the approved project scope and preserve its working environment and data for later recovery. Read the verified `{archive_root}/step1-explore.md` and `{archive_root}/files.json` first, using only the root validated by the orchestrator; missing/mismatched context stops dependent work.
 
 Within this same phase, follow **restore plan → restore → actual evidence → offer developer check → freeze recommendation → approved freeze execution**. Initial freeze candidates are provisional. Keep the existing single Step 2 report/checkpoint; no extra phase, state field or setup workflow is introduced. For older reports without a component handoff, recover needed facts from bounded source/config/docs reads before dependent actions.
 
@@ -8,7 +8,7 @@ Within this same phase, follow **restore plan → restore → actual evidence �
 
 For each required component, cross-check existing setup notes against its manifests/locks, scripts, CI, Dockerfiles, version declarations and actual platform. No source always wins: docs, a lockfile or CI can be stale or describe another component. Resolve material conflicts from compatible evidence or a concrete developer choice. Reconstruct missing instructions from inspected inputs and label them reconstructed; do not invent successful commands.
 
-Consult version-matched official guidance only when needed to resolve a real setup/freeze decision. Current upstream advice is not permission to modernize an old project. Audit/Plan make no network requests and leave any needed external research to check. Record and obtain approval for necessary compatible deviations instead of silently upgrading.
+Consult version-matched official guidance only when needed to resolve a real setup/freeze decision. Current upstream advice is not permission to modernize an old project. Record and obtain approval for necessary compatible deviations instead of silently upgrading.
 
 ## Plan before execution
 
@@ -111,4 +111,4 @@ Preserve these sections, keeping factual evidence and unknowns separate:
 - **Restoration Outcome:** Fully Restored / Partially Restored / Buildable But Not Runnable / Blocked / Cannot Be Restored Without Missing Dependencies, with an evidence-based sentence. No full/offline promise from static checks or local startup alone.
 - **Remaining Blockers:** missing artifacts/features, rough versus verified storage route, local-only backup needs and exact next actions.
 
-Normal mode outputs the report and stops for explicit approval before Step 3. Warn when the outcome is not Fully Restored; the developer can approve continuing with stated limitations without certifying unverified recovery. Do not commit or push.
+Present the report and stop for explicit approval before Step 3. Warn when the outcome is not Fully Restored; the developer can approve continuing with stated limitations without certifying unverified recovery. Do not commit or push.

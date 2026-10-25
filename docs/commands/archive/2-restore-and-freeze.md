@@ -9,13 +9,13 @@ nav_order: 2
 
 Restore the approved useful scope and preserve the actual working inputs, without silently upgrading an old project. Frozen source/runtime, offline recovery and offline rebuilding are separate goals. Docker is useful where applicable; mobile, desktop, hardware or proprietary SDK projects may need native inputs that cannot be replaced by a version list.
 
-In normal mode, read the verified Step 1 report and inventory from the [validated run directory](../archive.html#archive-directory-and-existing-projects). Current runs use only `.helm/archive/`; unsupported old bundles stop with upgrade guidance. Record this step's report in that same directory. Recovery artifacts and setup files keep their approved purpose-specific paths.
+Read the verified Step 1 report and inventory from the [validated run directory](../archive.html#archive-directory-and-existing-projects). Current runs use only `.helm/archive/`; unsupported old bundles stop with upgrade guidance. Record this step's report in that same directory. Recovery artifacts and setup files keep their approved purpose-specific paths.
 
 The sequence stays within this phase: **restore plan → restore → actual evidence → offer developer check → freeze recommendation → approved freeze execution**. Initial freeze proposals are provisional. There is no new checkpoint or state field; older reports without a component handoff remain valid, with missing details recovered from scoped source reads.
 
 ## Use reliable setup evidence
 
-Cross-check each component's setup notes, manifests/locks, scripts, CI, Dockerfiles and version declarations against the actual platform. No source always wins; resolve material conflicts through compatible evidence or a concrete developer decision. Reconstruct absent instructions from inspected inputs and label them reconstructed. Consult version-matched official docs only to resolve a real decision, without modernizing by default; Audit/Plan leave external research pending.
+Cross-check each component's setup notes, manifests/locks, scripts, CI, Dockerfiles and version declarations against the actual platform. No source always wins; resolve material conflicts through compatible evidence or a concrete developer decision. Reconstruct absent instructions from inspected inputs and label them reconstructed. Consult version-matched official docs only to resolve a real decision, without modernizing by default.
 
 ## Plan before mutation
 

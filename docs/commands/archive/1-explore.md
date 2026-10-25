@@ -7,9 +7,9 @@ nav_order: 1
 
 # Step 1: Explore
 
-Inspect enough local source, configuration, manifests, data flows and history to decide what should be preserved. No project execution or network contact occurs. Normal mode writes nothing before report approval; Audit/Plan never write reports or progress.
+Inspect enough local source, configuration, manifests, data flows and history to decide what should be preserved. No project execution or network contact occurs. Nothing is written before report approval.
 
-Normal mode first applies the [archive directory rules](../archive.html#archive-directory-and-existing-projects) read-only, then the [source-branch confirmation](../archive.html#confirm-the-source-branch) before entering a pending phase. Show the actual branch/full HEAD, known excluded work and same-branch edit/local-payload effects; obtain Proceed/Cancel or reuse explicit still-applicable approval. This is separate from Step 1 report approval and creates no confirmation state. Proven prepared/completed report-only exits need no new question. A fresh run creates `.helm/archive/` only after Step 1 report approval and baseline capture. Unsupported old bundles stay protected and block archive continuation; see the upgrade guide. Audit/Plan open neither bundle and need no branch confirmation.
+First apply the [archive directory rules](../archive.html#archive-directory-and-existing-projects) read-only, then the [source-branch confirmation](../archive.html#confirm-the-source-branch) before entering a pending phase. Show the actual branch/full HEAD, known excluded work and same-branch edit/local-payload effects; obtain Proceed/Cancel or reuse explicit still-applicable approval. This is separate from Step 1 report approval and creates no confirmation state. Proven prepared/completed report-only exits need no new question. A fresh run creates `.helm/archive/` only after Step 1 report approval and baseline capture. Unsupported old bundles stay protected and block archive continuation; see the upgrade guide.
 
 ## Decisions and evidence
 
@@ -41,4 +41,4 @@ Credential review exposes only inspected paths/key names/types and local evidenc
 
 The report covers overview/stack/architecture, data/integrations, retained docs/assets, Git safety, proposed restoration approach, credential review scope, specific unknowns and an Easy/Medium/Complex/Blocked rating. Confirm the goal and identify Step 2's planned edits, acquisitions, targets, isolation and checks needing resolution.
 
-In normal mode, wait for explicit approval before recording the report/inventory and proceeding. Stop-here/no-write remains available. Audit ends at findings; Plan continues only static proposed actions and then stops without execution, network, files or cursor changes. See the [archive guide](../archive.html) for mode and protected-file rules.
+Wait for explicit approval before recording the report/inventory and proceeding. Stop-here/no-write remains available. See the [archive guide](../archive.html) for approval and protected-file rules.

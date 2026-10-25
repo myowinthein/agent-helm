@@ -11,7 +11,7 @@ Preserve a useful API recovery collection when the project owns a REST, GraphQL 
 
 Owned frontend-hosted routes, serverless/BaaS functions and inbound webhooks qualify when they expose an actual API contract. Direct client-SDK database access or server actions without a stable HTTP contract do not justify inventing endpoints.
 
-Normal mode reads the verified Step 1 and 2 reports and records this step's approved report in the same [validated run directory](../archive.html#archive-directory-and-existing-projects): canonical `.helm/archive/` only. Postman deliverables stay under the approved recovery path, outside state storage.
+Read the verified Step 1 and 2 reports and record this step's approved report in the same [validated run directory](../archive.html#archive-directory-and-existing-projects): canonical `.helm/archive/` only. Postman deliverables stay under the approved recovery path, outside state storage.
 
 ## Reuse and output
 
@@ -42,4 +42,4 @@ When verification is deferred, make no requests/client-script runs and report th
 
 With no owned API, give a short factual report containing `Postman collection generated: no`, the scope/evidence, reason and no-files/no-requests result. Keep normal report approval; never skip silently.
 
-For applicable APIs, report `Postman collection generated: yes/no`, the actual Retain/Repair/Create/Skip outcome, existing collection/spec preservation and paths, discovered/excluded identities, auth setup, exact files, actual verified requests, unverified reasons and limits. A retained unchanged collection may have generated: no; Step 4 uses actual outcomes/paths as well as that fixed flag. Explicit Skip is distinct from no applicable API. No commit/push. Stop for explicit approval before Step 4. See the [archive guide](../archive.html) for modes and protected inputs.
+For applicable APIs, report `Postman collection generated: yes/no`, the actual Retain/Repair/Create/Skip outcome, existing collection/spec preservation and paths, discovered/excluded identities, auth setup, exact files, actual verified requests, unverified reasons and limits. A retained unchanged collection may have generated: no; Step 4 uses actual outcomes/paths as well as that fixed flag. Explicit Skip is distinct from no applicable API. No commit/push. Stop for explicit approval before Step 4. See the [archive guide](../archive.html) for approvals and protected inputs.

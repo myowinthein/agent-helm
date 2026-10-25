@@ -1,6 +1,6 @@
 # Step 4 — Documentation
 
-Make future recovery understandable from preserved evidence, with current instructions and useful history retained. Normal mode reads verified `step1-explore.md`, `step2-restore-and-freeze.md` and `step3-postman.md` within the orchestrator's validated `{archive_root}`; missing/mismatched context stops dependent work. Plan mode proposes changes without operational-state access, executing commands or writing files.
+Make future recovery understandable from preserved evidence, with current instructions and useful history retained. Read verified `step1-explore.md`, `step2-restore-and-freeze.md` and `step3-postman.md` within the orchestrator's validated `{archive_root}`; missing/mismatched context stops dependent work.
 
 ## Preservation and consolidation plan
 
@@ -77,4 +77,4 @@ Step 5 may move assets only through its reviewed dependency/reference check. It 
 - **Navigation:** approved index and reachable active recovery docs, image/data/config/reference consistency and protected-file exemptions; report gaps rather than claiming unperformed checks.
 - **Gaps:** missing/deferred/unverified inputs, backup and runtime/rebuild limits, exact pending actions.
 
-No commit or push. Normal mode outputs this report and waits for explicit approval before Step 5, which separately approves the local payload commit; only a later explicit ship archive approves private backup publication/receipt and any opt-in ref cleanup.
+No commit or push. Present this report and wait for explicit approval before Step 5, which separately approves the local payload commit; only a later explicit ship archive approves private backup publication/receipt and any opt-in ref cleanup.
