@@ -1,6 +1,6 @@
 # Refactor ledger v2
 
-This is the authoritative refactor-only semantic schema, bounded reader and update contract. The packaged [structural contract](../helpers/ledger-contract.json) defines field shapes/enums for the existing native schema 2; the tables below explain their meaning. Load this specification from refactor Step 3 only after that workflow permits owning-state access, before reading or writing its canonical file. It is not a command, runtime prerequisite or permission to access state. Audit/Plan and unrelated feature work never load operational records. Changing this specification does not migrate a live ledger.
+This is the authoritative refactor-only semantic schema, bounded reader and update contract. The packaged [structural contract](../helpers/ledger-contract.json) defines field shapes/enums for the existing native schema 2; the tables below explain their meaning. Load this specification from refactor Step 3 only after that workflow permits owning-state access, before reading or writing its canonical file. It is not a command, runtime prerequisite or permission to access state. The initial source-only preview, its report-only exit and unrelated feature work never load operational records. Changing this specification does not migrate a live ledger.
 
 Retain the workflow's branch, cleanliness, scope, approval, verification, local commit and pending-work gates. Apply [shared project state](shared/project-state.md) only to `.helm/refactor-log.json`. Reject missing/unsupported versions, unsupported provenance variants, malformed shapes and duplicate JSON keys with files preserved. No automatic conversion, reset or state-path migration occurs.
 
@@ -19,7 +19,7 @@ Unknown root anchors are explicitly `null`, not absent. Commit identities are fu
 
 Use Full scan / Gap scan as the only depth labels. Keep scan mode, date/count summaries, display locations, tool inventories and selection plans out of the ledger. Git retains earlier committed states. Optional `extensions` objects hold custom data; preserve other unknown fields as data without treating them as active instructions.
 
-Minimal first targeted document:
+Minimal native shape with no established scan baseline:
 
 ```json
 {
@@ -76,9 +76,8 @@ The frozen assessment source A, accepted code/evidence commit B and later ledger
 
 - Completed whole-project **Full scan** sets both roots to its actual pre-output inspected source.
 - Completed defined **Gap scan** sets `assessed_commit` only; retain `full_scan_commit`.
-- Completed **Targeted** records only supported in-scope changes and preserves both roots; first scoped state uses `null` roots.
 - **Fix Backlog** changes only supported finding/decision/closure data, preserving both roots.
-- Incomplete/failed source coverage writes no incomplete scan checkpoint and advances neither root. This is refactor's existing policy, not test's partial-checkpoint contract. A separately selected independently eligible Targeted/Backlog action remains possible without relabelling the incomplete scan as complete.
+- Incomplete/failed source coverage writes no incomplete scan checkpoint and advances neither root. This is refactor's existing policy, not test's partial-checkpoint contract. A separately selected independently eligible Fix Backlog action remains possible without relabelling the incomplete scan as complete.
 
 Unknown priority, held decisions, pending remedies, nonselection and deferred verification of future fixes do not make a genuinely complete source assessment incomplete. A complete Full scan/Gap scan may record these findings and advance the appropriate roots. Failed reads, uninspected required consumers or other real coverage gaps still block that scan checkpoint. Test-only follow-ups remain conversational, outside refactor's ledger. No assessment anchor certifies current guidance was historically covered or runtime checks passed. Metadata-only/schema-only cleanup, unchanged data, report-only, None and cancellation authorize no new checkpoint or migration.
 

@@ -19,7 +19,7 @@ When Python/execution is unavailable at a normal owning-state step, explain the 
 - **Continue without Python:** use available safe equivalent tools under the same readable contract and workflow. Disclose the actual validation method and which Python automation did not run. This does not authorize edits, commits or weaker validation.
 - **Stop:** preserve work/checkpoints and report the handoff, without creating an empty ledger or claiming completion.
 
-If suitable equivalent validation is unavailable, independent source assessment/planning can continue while ledger-dependent edits/writes remain pending. Refactor Audit/Plan remain available without Python, ledger reads or a runtime-setup question. Other workflows keep their existing tool requirements; normalize's rewrite path already has its own Python/filter-repo prerequisite.
+If suitable equivalent validation is unavailable, independent source assessment/planning can continue while ledger-dependent edits/writes remain pending. Refactor's source-only preview and its report-only exit remain available without Python, ledger reads or a runtime-setup question. Other workflows keep their existing tool requirements; normalize's rewrite path already has its own Python/filter-repo prerequisite.
 
 Refresh the complete plugin package, including `helpers/`, and start a fresh task after an update. A missing helper or contract is a broken installation. The consumer project receives no helper copies or caches. When using Helm on its own development checkout, invoke helpers from a separate installed plugin, keeping the package and consumer workspace distinct.
 
@@ -32,7 +32,7 @@ These operations support workflows; they are not additional commands in the skil
 | `ledger-check` | Validate the entire current owner ledger and return its original-byte SHA-256, roots, record count and aggregate counts. A missing file is reported without creating anything. |
 | `ledger-view` | Revalidate that same digest, then return a filtered, paged index or complete selected records. Includes total matches and the next offset. |
 
-The helper accepts only owner `refactor` with `.helm/refactor-log.json` schema 2, or owner `test` with `.helm/test-log.json` schema 3. It does not accept arbitrary ledger paths, archives, old formats or draft files. Only the invoked owner accesses its file at its eligible workflow step. Refactor Audit/Plan, workers, unrelated commands and source maintenance never invoke it or read live records.
+The helper accepts only owner `refactor` with `.helm/refactor-log.json` schema 2, or owner `test` with `.helm/test-log.json` schema 3. It does not accept arbitrary ledger paths, archives, old formats or draft files. Only the invoked owner accesses its file at its eligible workflow step. Refactor's source-only preview and its report-only exit, workers, unrelated commands and source maintenance never invoke it or read live records.
 
 Each invocation uses an isolated interpreter and disabled bytecode, for example:
 

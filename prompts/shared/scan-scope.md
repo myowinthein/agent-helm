@@ -12,7 +12,7 @@ Use facts the caller was already permitted to obtain in the current mode:
 - Actual inspected source snapshot (or its unavailability), applicable review anchor and its validation result.
 - Cheap relevant impact evidence, known prior-coverage limits and retained requested/backlog work. Missing evidence stays unknown.
 
-This prompt grants no additional reads or writes. Never discover/load another command's state, perform deep history investigation beyond the caller's existing cheap preflight merely to populate a picker, create metadata/configuration, or fetch/hydrate missing objects. Settings/layout preparation, structure/style repair, targeted and backlog paths gain no baseline or helper prerequisite. Read-only recommendations use only that caller mode's permitted facts; in particular, refactor Audit/Plan do not load operational state.
+This prompt grants no additional reads or writes. Never discover/load another command's state, perform deep history investigation beyond the caller's existing cheap preflight merely to populate a picker, create metadata/configuration, or fetch/hydrate missing objects. Settings/layout preparation, structure/style repair and backlog paths gain no baseline or helper prerequisite. Read-only recommendations use only that caller mode's permitted facts; in particular, refactor source-only preview and its report-only exit do not load operational state.
 
 ## Baseline-validity checklist
 
@@ -25,7 +25,7 @@ An absent/malformed/unavailable/divergent review anchor within otherwise valid i
 | Supplied facts | Recommendation |
 |---|---|
 | Explicit supported depth/scope | Honor it under the caller's prerequisites. Explicit Full scan remains Full scan even without a source gap; narrower work stays narrow. An explicit Gap scan request cannot make an unusable anchor valid. |
-| Unusable anchor within otherwise valid inputs | Recommend Full scan of the caller's relevant scope, with its existing repair/targeted/report-only/backlog/Skip alternatives where independently eligible. Do not offer a fictitious Gap scan or bypass a caller blocker. |
+| Unusable anchor within otherwise valid inputs | Recommend Full scan of the caller's relevant scope, with its existing repair/report-only/backlog/Skip alternatives where independently eligible. Do not offer a fictitious Gap scan or bypass a caller blocker. |
 | Valid baseline and bounded evidenced impact | Recommend Gap scan, following the caller's complete affected-surface coverage contract. |
 | Valid baseline and credible broad changes or insufficiently bounded impact/coverage | Recommend Full scan and state the evidence. This is not a silent upgrade or edit approval. |
 | Supported evidence of no source gap | Return that fact to the caller; it alone is not a no-op or completion decision. |
