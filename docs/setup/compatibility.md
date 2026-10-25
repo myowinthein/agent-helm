@@ -182,7 +182,7 @@ Both hosts preserve tag/version identities, metadata and unrelated work, and saf
 
 ## History normalization
 
-Normalize audits the current/requested committed scope, then derives every affected existing local branch from reviewed changed original SHAs. Reuse the existing impact/Apply confirmation, with no new branch picker. One mapping keeps shared IDs consistent; added branches retain unaudited unique messages. Complete local ancestry, exact descendant boundaries, worktree safety and all-or-nothing affected-ref scope remain required. Remote-only/tracking refs and tags stay outside local updates.
+Normalize reviews the current/requested committed messages and exact correction proposals, then derives every affected existing local branch from accepted original SHAs. Reuse the existing impact/Apply confirmation, with no new branch picker. One mapping keeps shared IDs consistent; added branches retain unaudited unique messages. Complete local ancestry, exact descendant boundaries, worktree safety and all-or-nothing affected-ref scope remain required. Remote-only/tracking refs and tags stay outside local updates.
 
 Both hosts distinguish specification validity from project preferences, preserve bodies/trailers and encoding by default, and expose Accept/Edit/Keep/Defer decisions. Git filter-repo is required for mutation, with no automatic filter-branch fallback. A verified self-contained bundle and retained private per-run plan/mapping support complete graph verification and resume. Existing filter-repo metadata may contain composed mappings, so it is not blindly treated as this run's correspondence. Tags keep exact object identities; actual per-branch ancestry is verified separately and may change ship's reachable release boundary.
 

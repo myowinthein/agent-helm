@@ -6,9 +6,9 @@ nav_order: 6
 
 # /helm:normalize
 
-Audit commit messages against your project's convention, review exact replacements, and optionally rewrite all affected local branches together after approval. Message review and coordinated branch rewriting have separate scopes. Existing tags retain their exact objects; remote-tracking refs, stashes, notes and unaffected refs stay outside the rewrite.
+Review commit messages against your project's convention, review exact replacements, and optionally rewrite all affected local branches together after approval. Message review and coordinated branch rewriting have separate scopes. Existing tags retain their exact objects; remote-tracking refs, stashes, notes and unaffected refs stay outside the rewrite.
 
-Command names use Claude notation. In Codex, select normalize from the skill picker and request the same mode in your message. Both hosts resolve the existing instruction owner, normally shared `AGENTS.md` with `CLAUDE.md` importing it, including applicable overrides and existing owners. Normalize never creates, migrates or edits instructions/settings. See [compatibility](../setup/compatibility.html).
+Command names use Claude notation. In Codex, select normalize from the skill picker to start the same workflow. Both hosts resolve the existing instruction owner, normally shared `AGENTS.md` with `CLAUDE.md` importing it, including applicable overrides and existing owners. Normalize never creates, migrates or edits instructions/settings. See [compatibility](../setup/compatibility.html).
 
 ## Investigation depth and coverage
 
@@ -16,29 +16,26 @@ Inspect every unique commit in the frozen requested audit set through full raw m
 
 Follow the [shared investigation and exclusion rules](../setup/investigation.html). Inventories and worker evidence remain transient; inaccessible required material is not silently excluded or marked complete. Finding counts, duration and reasoning effort do not prove coverage.
 
-## Modes
+## Usage
 
-| Request | Result |
-|---|---|
-| `/helm:normalize audit` | Read-only committed-message findings and coverage. |
-| `/helm:normalize plan` | Read-only findings, exact proposed messages, affected-branch scope and impact. |
-| `/helm:normalize` | Review first, then offer a separately approved local rewrite or eligible checkpoint. |
-| Resume a specified normalize run | Inspect its private evidence and actual refs, then offer only missing actions. |
+```text
+/helm:normalize
+```
 
-Audit and Plan can inspect dirty or detached checkouts. They audit committed objects at frozen IDs, excluding uncommitted work, and disclose dirty policy inputs. Detached review needs explicitly named refs or an explicitly requested detached commit; an empty repository reports no committed history. Neither mode runs tests, hooks, project configuration code, the filter backend or its dry-run; neither fetches, refreshes the index, writes files/refs/ledgers, creates a recovery bundle, or migrates state. Inspection disables external diff/textconv and other executable Git helpers/lazy fetching, stopping if local-only reads cannot be guaranteed. Their output stays in the conversation. Missing objects or unresolved policy are reported as coverage limits. A later Apply revalidates inputs and obtains its own authorization.
+Review committed messages and exact correction proposals, then inspect the affected-branch scope and impact before separately approving a local rewrite or eligible checkpoint. To continue prior work, identify its private evidence or verified own record branch/commit; the workflow validates current facts and offers only missing actions without automatically repeating the rewrite.
+
+Initial committed-history review can inspect dirty or detached checkouts. It reads committed objects at frozen IDs, excluding uncommitted work, and discloses dirty policy inputs. Detached review needs explicitly named refs or an explicitly requested detached commit; an empty repository reports no committed history. This review does not run tests, hooks, project configuration code, the filter backend or its dry-run, fetch, refresh the index, load/write ledgers, write files/refs, create a recovery bundle or migrate state. Inspection disables external diff/textconv and other executable Git helpers/lazy fetching, stopping if local-only reads cannot be guaranteed. Output stays in conversation. Missing objects or unresolved policy remain coverage limits. Later impact/checkpoint preparation separately accesses own state under its existing gates; Apply revalidates inputs and obtains its own authorization.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start([Select audit, plan or normal review]) --> Inspect[Inspect committed messages in requested scope]
-  Inspect --> Readonly{Read-only mode?}
-  Readonly -->|yes| Report([Report evidence and coverage])
-  Readonly -->|no| Decisions[Review exact message changes]
+  Start([Review committed history]) --> Inspect[Inspect committed messages in requested scope]
+  Inspect --> Decisions[Review exact message changes]
   Decisions --> Changes{Accepted non-identical corrections?}
   Changes -->|yes| Impact[Detect all affected local branches and exact graph]
   Impact --> Approve{Existing impact warning and Apply confirmation}
-  Approve -->|cancel| Report
+  Approve -->|cancel| Report([Report evidence and coverage])
   Approve -->|approved| Recover[Validate clean local refs and recovery bundle]
   Recover --> Rewrite[Coordinated rewrite and full mapping verification]
   Rewrite --> Ledger
@@ -80,9 +77,9 @@ Formal breaking markers are `!` immediately before the header colon on any type/
 
 ## 3. Review exact decisions and impact
 
-Audit findings identify full original SHAs/messages, evidence/confidence and affected refs without requiring replacement drafts. Plan/Apply adds complete before/after messages bound to that exact original. Choose **Accept**, **Edit**, **Keep** or **Defer**, individually or in coherent visible batches. Accept selects a replacement; separate confirmation still governs rewriting. Edits are revalidated. Kept/deferred noncompliant messages remain findings, with no false full-branch compliance checkpoint. Byte-identical proposals are discarded; no selected replacements means no backend run or rewrite-publication gate.
+Findings identify full original SHAs/messages, evidence/confidence and affected refs. Each proposed correction includes complete before/after messages bound to that exact original. Choose **Accept**, **Edit**, **Keep** or **Defer**, individually or in coherent visible batches. Accept selects a replacement; separate confirmation still governs rewriting. Edits are revalidated. Kept/deferred noncompliant messages remain findings, with no false full-branch compliance checkpoint. Byte-identical proposals are discarded; no selected replacements means no backend run or rewrite-publication gate.
 
-The complete plan shows message-review versus automatically affected rewrite scope, boundaries, selected edits, consistency-only additions, excluded/retained findings, backend, recovery location and ledger/publication dependencies. Default mode with corrections inspects its own existing anchors before this plan; show each proposed remap/date preservation or exact invalidation/reason here, even with auto-commit enabled. Missing/unavailable/malformed state leaves bookkeeping limits/pending actions explicit, never a false completion claim; Audit/Plan still read no ledger. Examples in the existing confirmation are capped at five; all exact changes and the complete branch list remain available. One shared commit receives one consistent decision and mapped ID across every affected branch. Unreviewed unique messages on added branches remain outside compliance claims.
+The complete plan shows message-review versus automatically affected rewrite scope, boundaries, selected edits, consistency-only additions, excluded/retained findings, backend, recovery location and ledger/publication dependencies. With corrections selected, inspect existing own-ledger anchors before this plan; show each proposed remap/date preservation or exact invalidation/reason here, even with auto-commit enabled. Missing/unavailable/malformed state leaves bookkeeping limits/pending actions explicit, never a false completion claim. Examples in the existing confirmation are capped at five; all exact changes and the complete branch list remain available. One shared commit receives one consistent decision and mapped ID across every affected branch. Unreviewed unique messages on added branches remain outside compliance claims.
 
 The existing impact report separates changed messages from descendant IDs and exported commits whose signatures may be lost even if their messages are unchanged. It explains old history retained by remote-only/tracking refs, other clones and preserved refs, notes still pointing at old objects, and potentially stale Helm/submodule/external SHA anchors without reading or editing another workflow's state or external pins. No local branch containing a changed original may be labelled unaffected merely because it was excluded from message review.
 
