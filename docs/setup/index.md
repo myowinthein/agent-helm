@@ -32,4 +32,3 @@ The guides use these names to identify the source, marketplace and plugin.
 | Repository | `myowinthein/agent-helm` | GitHub source used to add the marketplace. |
 | Marketplace | `agent-helm` | Catalog containing the plugin. |
 | Plugin | `helm` | Package containing the ten workflows. |
-| Installation identifier | `helm@agent-helm` | Plugin and marketplace names used together in terminal commands. |
