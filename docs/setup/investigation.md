@@ -1,6 +1,7 @@
 ---
 title: Scan investigation and coverage
 parent: Setup
+nav_exclude: true
 nav_order: 7
 permalink: /docs/setup/investigation.html
 ---

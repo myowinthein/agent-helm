@@ -1,6 +1,7 @@
 ---
 title: Git and CI behavior
 parent: Setup
+nav_exclude: true
 nav_order: 6
 permalink: /docs/setup/git-and-ci.html
 ---
