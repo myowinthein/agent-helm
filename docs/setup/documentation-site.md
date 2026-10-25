@@ -1,6 +1,7 @@
 ---
 title: Documentation site maintenance
 parent: Setup
+nav_exclude: true
 nav_order: 10
 ---
 
@@ -40,3 +41,9 @@ The header offers **System**, **Light** and **Dark**. System follows the operati
 The selector lives in `_includes/header_custom.html`, its script in `assets/js/theme-switcher.js` and its styles in `_sass/custom/custom.scss`. `_includes/head_custom.html` loads the preference early and retains the existing Mermaid rendering.
 
 Links use normal browser behaviour: same-tab navigation by default, with modifier keys, middle-click and context menus left to the reader. The theme's external navigation and auxiliary links explicitly disable forced new tabs. README links remain ordinary Markdown links with absolute documentation URLs so they also work on GitHub and in the distributed plugin package. GitHub controls its own README renderer.
+
+## Setup pages
+
+Setup navigation shows Claude and Codex. Each page uses `_includes/setup-tabs.html` to display horizontal **Desktop app / Terminal** tabs. The four instruction bodies live in `_includes/setup/` and are shared with the existing standalone setup URLs, which remain accessible but are hidden from navigation and search. Technical guides remain linked from the setup homepage and relevant command pages.
+
+`assets/js/setup-tabs.js` handles tab selection, keyboard navigation and fragment links. It loads only on pages with `setup_tabs: true`; the styles live in `_sass/custom/custom.scss`. Without JavaScript, both sections remain visible. Printed pages include both sets of instructions.

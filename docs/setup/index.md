@@ -7,27 +7,49 @@ permalink: /docs/setup/
 
 # Setup
 
-Agent Helm packages the same ten workflows for Claude and Codex. The repository and marketplace are named `agent-helm`; the plugin remains `helm`.
+Agent Helm works with Claude and Codex. For either platform, you can install, update and uninstall the plugin through the desktop app or terminal.
 
-## Install
+Choose [Claude](claude.html) or [Codex](codex.html), then use the **Desktop app** or **Terminal** tab. Desktop menus can vary by app version and operating system. The terminal examples use a Bash-compatible shell with `grep` available.
 
-| Client | Install guide | Invoke a workflow |
+## Run a command
+
+Start a fresh session in your project after installing or updating. Type the prefix in the chat input, then select a Helm command.
+
+| Client | Prefix |
+|---|---|
+| Claude desktop and terminal | `/` |
+| Codex terminal | `$` |
+| Codex desktop | `/` or `$` |
+
+For example, select `log`, `test` or `ship`. In Claude Code, you can also type the full command, such as `/helm:log`. In Codex, choose the Helm skill from the picker to distinguish it from similarly named built-in actions.
+
+## Plugin names
+
+The guides use these names to identify the source, marketplace and plugin.
+
+| Name | Value | Purpose |
 |---|---|---|
-| Claude Code | [Terminal](claude-terminal.html) | `/helm:ship`, `/helm:log`, and the other existing names |
-| Claude Cowork | [Desktop](claude-desktop.html) | Select the Helm command from the `/` picker |
-| Codex CLI | [Terminal](codex-terminal.html) | Open the `$` skill picker and select the Helm workflow |
-| Codex desktop | [Desktop](codex-desktop.html) | Select a Helm skill from the skill picker |
+| Repository | `myowinthein/agent-helm` | GitHub source used to add the marketplace. |
+| Marketplace | `agent-helm` | Catalog containing the plugin. |
+| Plugin | `helm` | Package containing the ten workflows. |
+| Installation identifier | `helm@agent-helm` | Plugin and marketplace names used together in terminal commands. |
 
-Start a fresh session after installing or updating. Existing conversations can retain older workflow instructions. All ten workflow names and descriptions are shared, but tool access depends on the host.
+## Start using Helm in a project
 
-Read [Compatibility and project instructions](compatibility.html) before adopting rules or using the same project from both hosts. Plugin installation makes workflows available; rule adoption is a separate project setup step.
+Open or connect your project folder, then:
 
-Normal recorded refactor/test paths prefer the shared Python 3.11+ read-only ledger helper. When Python/execution is unavailable, offer Set up Python / Continue without Python / Stop once per run; approved available equivalent tools must satisfy the same full validation, retrieval and preservation checks. Without them, dependent work stays pending. Refactor's source-only preview and its report-only exit need no Python or ledger access. See [Python ledger helpers](python-helpers.html) for fallback, bounds and failure handling; Helm never installs the runtime automatically.
+1. Run [log](../commands/log.html) to create or update shared project instructions in `AGENTS.md`, with `CLAUDE.md` pointing to them.
+2. Run [adopt](../commands/adopt.html) if you want to add the shared Git, safety and writing rules to that project.
 
-For an existing installation under the old name, see [Renaming an existing installation](compatibility.html#renaming-an-existing-installation).
+Installing the plugin makes its commands available; it does not set up project instructions or install project rules automatically. Once the shared instructions are connected, you can switch between Claude and Codex without repeating setup. Removing the plugin leaves project files and adopted rules in place.
 
-See [Scan investigation and coverage](investigation.html) for Full scan / Gap scan names, command-specific depth, evidence-based exclusions and read-only worker limits.
+Python 3.11+ is preferred for recorded test/refactor work, but it is optional. See [Python ledger helpers](python-helpers.html) for requirements and fallback options. Desktop sessions also need access to the Git checkout and local tools required by the selected work.
 
-See [breaking changes and one-time upgrade](upgrading.html) before using current workflows in an older project.
+If your project used an older Helm version, read the [upgrade guide](upgrading.html) before running the current commands.
 
-For site contributors, see [documentation site maintenance](documentation-site.html) for Jekyll preview, GitHub Pages Actions deployment and the theme switcher.
+## More help
+
+- [Project instructions and compatibility](compatibility.html)
+- [Git and CI behaviour](git-and-ci.html)
+- [Scan investigation and coverage](investigation.html)
+- [Documentation site maintenance](documentation-site.html)

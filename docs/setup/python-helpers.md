@@ -1,6 +1,7 @@
 ---
 title: Python ledger helpers
 parent: Setup
+nav_exclude: true
 nav_order: 8
 permalink: /docs/setup/python-helpers.html
 ---

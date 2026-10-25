@@ -1,6 +1,7 @@
 ---
 title: Compatibility and project instructions
 parent: Setup
+nav_exclude: true
 nav_order: 5
 permalink: /docs/setup/compatibility.html
 ---

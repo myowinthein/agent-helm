@@ -1,6 +1,7 @@
 ---
 title: Breaking changes and one-time upgrade
 parent: Setup
+nav_exclude: true
 nav_order: 9
 permalink: /docs/setup/upgrading.html
 ---
