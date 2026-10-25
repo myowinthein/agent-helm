@@ -1,10 +1,10 @@
 ---
-title: /helm:legal
+title: /agent-helm:legal
 parent: Commands
 nav_order: 8
 ---
 
-# /helm:legal
+# /agent-helm:legal
 
 Create or maintain selected legal documents from confirmed business facts and the product's actual data flows. Existing legal work receives targeted edits by default. This is drafting assistance, not a compliance guarantee, an exhaustive legal assessment or automatic publication.
 
@@ -204,5 +204,5 @@ State the actual loaded manifest paths and migration outcome, current branch/che
 
 ## See also
 
-- [`/helm:log`](log.html): review project knowledge separately when legal additions affect it.
-- [`/helm:manifest`](manifest.html): maintain README links to actual legal pages when requested.
+- [`/agent-helm:log`](log.html): review project knowledge separately when legal additions affect it.
+- [`/agent-helm:manifest`](manifest.html): maintain README links to actual legal pages when requested.

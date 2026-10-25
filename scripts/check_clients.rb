@@ -8,7 +8,7 @@ require_relative "validate_plugin"
 
 root = Pathname(ARGV.fetch(0, Pathname(__dir__).parent)).realpath
 HelmValidation.validate(root)
-output, status = Open3.capture2e("claude", "--setting-sources", "", "--plugin-dir", root.to_s, "plugin", "details", "helm")
+output, status = Open3.capture2e("claude", "--setting-sources", "", "--plugin-dir", root.to_s, "plugin", "details", "agent-helm")
 HelmValidation.check(status.success?, "Claude inventory failed: #{output}")
 inventories = output.scan(/^\s+(Skills|Commands) \((\d+)\)\s*([^\n]*)/)
 names = inventories.flat_map { |_, count, entries| count.to_i.zero? ? [] : entries.split(", ") }
@@ -18,7 +18,7 @@ puts "Claude: exactly ten Helm entries through native plugin discovery."
 Dir.mktmpdir("helm-client-check-") do |temp|
   env = { "CODEX_HOME" => File.join(temp, "codex") }
   FileUtils.mkdir_p(env.fetch("CODEX_HOME"))
-  [["plugin", "marketplace", "add", root.to_s], ["plugin", "add", "helm@agent-helm"]].each do |args|
+  [["plugin", "marketplace", "add", root.to_s], ["plugin", "add", "agent-helm@agent-helm-marketplace"]].each do |args|
     output, status = Timeout.timeout(45) { Open3.capture2e(env, "codex", *args, chdir: temp) }
     HelmValidation.check(status.success?, "Codex temporary install failed: #{output}")
   end
@@ -42,16 +42,16 @@ Dir.mktmpdir("helm-client-check-") do |temp|
       request.call(1, "initialize", { clientInfo: { name: "helm_discovery_check", version: "1.0.0" }, capabilities: { experimentalApi: true } })
       input.puts(JSON.generate({ jsonrpc: "2.0", method: "initialized" }))
       input.flush
-      result = request.call(2, "plugin/read", { marketplacePath: root.join(".claude-plugin/marketplace.json").to_s, pluginName: "helm" })
+      result = request.call(2, "plugin/read", { marketplacePath: root.join(".claude-plugin/marketplace.json").to_s, pluginName: "agent-helm" })
       plugin = result.fetch("plugin")
-      HelmValidation.check(plugin.fetch("summary").fetch("name") == "helm", "Codex must keep the technical plugin name")
+      HelmValidation.check(plugin.fetch("summary").fetch("name") == "agent-helm", "Codex must use the agent-helm plugin identifier")
       HelmValidation.check(plugin.fetch("summary").fetch("interface").fetch("displayName") == "Agent Helm", "Codex must display Agent Helm")
       %w[logo composerIcon].each do |field|
         path = Pathname(plugin.fetch("summary").fetch("interface").fetch(field)).realpath
         HelmValidation.check(path == root.join("assets/icon.svg").realpath, "Codex resolved a different #{field}: #{path}")
       end
       names = plugin.fetch("skills").map { |skill| skill.fetch("name") }
-      HelmValidation.check(names.sort == HelmValidation::NAMES.map { |name| "helm:#{name}" }, "Codex exposes missing, duplicate, or migrated command entries: #{names}")
+      HelmValidation.check(names.sort == HelmValidation::NAMES.map { |name| "agent-helm:#{name}" }, "Codex exposes missing, duplicate, or migrated command entries: #{names}")
       plugin.fetch("skills").each do |skill|
         path = Pathname(skill.fetch("path")).realpath
         HelmValidation.check(path.to_s.start_with?("#{root}/skills/"), "Codex resolved a different package: #{path}")
@@ -61,8 +61,8 @@ Dir.mktmpdir("helm-client-check-") do |temp|
       result = request.call(3, "skills/list", { cwds: [temp], forceReload: true })
       catalog = result.fetch("data").fetch(0)
       HelmValidation.check(catalog.fetch("errors").empty?, "Codex discovery errors: #{catalog['errors']}")
-      entries = catalog.fetch("skills").select { |skill| skill["pluginId"] == "helm@agent-helm" }
-      HelmValidation.check(entries.map { |skill| skill.fetch("name") }.sort == HelmValidation::NAMES.map { |name| "helm:#{name}" },
+      entries = catalog.fetch("skills").select { |skill| skill["pluginId"] == "agent-helm@agent-helm-marketplace" }
+      HelmValidation.check(entries.map { |skill| skill.fetch("name") }.sort == HelmValidation::NAMES.map { |name| "agent-helm:#{name}" },
                            "Codex session exposes missing, duplicate or migrated commands: #{entries.map { |skill| skill['name'] }}")
       entries.each do |skill|
         entry = Pathname(skill.fetch("path"))

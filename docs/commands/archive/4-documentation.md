@@ -1,6 +1,6 @@
 ---
 title: "Step 4: Documentation"
-parent: /helm:archive
+parent: /agent-helm:archive
 grand_parent: Commands
 nav_order: 4
 ---

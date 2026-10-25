@@ -1,6 +1,6 @@
 ---
 title: "Step 2: Restore and Freeze"
-parent: /helm:archive
+parent: /agent-helm:archive
 grand_parent: Commands
 nav_order: 2
 ---

@@ -1,10 +1,10 @@
 ---
-title: /helm:adopt
+title: /agent-helm:adopt
 parent: Commands
 nav_order: 7
 ---
 
-# /helm:adopt
+# /agent-helm:adopt
 
 Install, update, repair or connect selected Helm rules as shared local copies in `.claude/rules/`. Both agents use those same project files; Claude need not be installed for Codex to read them. External-reference installation is no longer offered; existing references remain until an explicitly reviewed conversion. Adopt preserves project knowledge and configuration. It does no product work, owner migration or release, and owns no operational ledger.
 
@@ -31,7 +31,7 @@ Writing is not a required companion to Git/safety. A healthy pair remains comple
 ## Usage and initial inspection
 
 ```text
-/helm:adopt
+/agent-helm:adopt
 ```
 
 Inspect first, choose intent, then prepare the actual destination and review concrete changes before writing. Developer requests and explicit source requests are passed safely; ambiguous requests are clarified rather than interpreted as shell code.
@@ -104,7 +104,7 @@ Without an already available verified old baseline, an unmodified old copy and a
 
 ### One copy source on both hosts
 
-Default to the actual loaded Helm package resolved through the shared runtime. Verify its .claude-plugin/plugin.json names helm, has a usable numeric version and supplies readable in-package sources for selected copy/update actions and their dependencies; freeze their exact bytes. Missing source blocks the affected source-dependent action, not Keep/connection to valid local copies or unrelated work merely because writing is unselected. No Claude-marketplace preference, guessed cache/home scan, automatic install/update or source mixing. An explicitly supplied alternative package can be reviewed under the same checks; disclose actual loaded/selected differences, including relevant source availability, and never silently fall back from an invalid selected source.
+Default to the actual loaded Helm package resolved through the shared runtime. Verify its .claude-plugin/plugin.json names agent-helm, has a usable numeric version and supplies readable in-package sources for selected copy/update actions and their dependencies; freeze their exact bytes. Missing source blocks the affected source-dependent action, not Keep/connection to valid local copies or unrelated work merely because writing is unselected. No Claude-marketplace preference, guessed cache/home scan, automatic install/update or source mixing. An explicitly supplied alternative package can be reviewed under the same checks; disclose actual loaded/selected differences, including relevant source availability, and never silently fall back from an invalid selected source.
 
 Source paths are temporary copy inputs, never newly generated project dependencies. The installed Rules directives point only to the project-local copies, with no marketplace/cache path, GitHub URL or separate client copy. Plugin updates/uninstalls do not change copied bytes; rerun adopt to review later source updates.
 
@@ -188,5 +188,5 @@ Shared success means **statically connected for the inspected root Helm rules; f
 - [`git.md`](../rules/git.html): configuration, review, commit and publication rules.
 - [`safety.md`](../rules/safety.html): confirmation boundaries and project-owned safety instructions.
 - [`writing.md`](../rules/writing.html): clear, natural prose, exact-content safeguards and research background.
-- [`/helm:log`](log.html): reviewed owner migration and project knowledge.
-- [`/helm:ship`](ship.html): release workflow and environment discovery.
+- [`/agent-helm:log`](log.html): reviewed owner migration and project knowledge.
+- [`/agent-helm:ship`](ship.html): release workflow and environment discovery.

@@ -1,15 +1,15 @@
 ---
-title: /helm:ship
+title: /agent-helm:ship
 parent: Commands
 nav_order: 1
 ---
 
-# /helm:ship
+# /agent-helm:ship
 
 Publish reviewed work, handle verified history or archive handoffs and optionally create a release through one command.
 
 ```text
-/helm:ship
+/agent-helm:ship
 ```
 
 In Codex, select Helm's ship skill. The workflow inspects pending work, presents concrete publication actions and asks for the approval each action needs. It changes no Helm settings and creates no shipping ledger. A push, PR handoff, integration, release and deployment are separate results.
@@ -260,5 +260,5 @@ A narrow clean-state exception accepts only proven pending journal/receipt chang
 
 - [Git and CI behavior](../setup/git-and-ci.html)
 - [Compatibility](../setup/compatibility.html)
-- [`/helm:test`](test.html): coverage and testing workflow.
-- [`/helm:manifest`](manifest.html): broader README maintenance.
+- [`/agent-helm:test`](test.html): coverage and testing workflow.
+- [`/agent-helm:manifest`](manifest.html): broader README maintenance.

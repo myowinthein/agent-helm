@@ -1,10 +1,10 @@
 ---
-title: /helm:env
+title: /agent-helm:env
 parent: Commands
 nav_order: 10
 ---
 
-# /helm:env
+# /agent-helm:env
 
 Audit environment files, `.gitignore` and relevant project code/configuration, then choose which fixes to apply. The eleven checks cover loading/sync gaps, references, secrets/placeholders, hardcoded values, formatting and Git protection. Files are compared by purpose and actual loader behavior, preserving intentional differences between services and overrides.
 
@@ -167,5 +167,5 @@ Report scoped coverage and verified resolved, retained/intentional, skipped, unc
 
 ## See also
 
-- [`/helm:ship`](ship.html): env audits can identify configuration prerequisites before release, with runtime verification reported separately.
-- [`/helm:refactor`](refactor.html): broader code quality review.
+- [`/agent-helm:ship`](ship.html): env audits can identify configuration prerequisites before release, with runtime verification reported separately.
+- [`/agent-helm:refactor`](refactor.html): broader code quality review.

@@ -11,7 +11,7 @@ HelmValidation.check(root.glob("commands/**/*.md").empty?, "Remove unused legacy
 HelmValidation.check(JSON.parse(HelmValidation.read(root.join(".claude-plugin/marketplace.json"))).fetch("plugins").none? { |entry| entry.key?("files") },
                      "Remove the ignored marketplace files allowlist")
 manifest = JSON.parse(HelmValidation.read(root.join(".claude-plugin/plugin.json")))
-HelmValidation.check(manifest.fetch("name") == "helm", "Keep the technical plugin name unchanged")
+HelmValidation.check(manifest.fetch("name") == "agent-helm", "Plugin name must match the project slug")
 HelmValidation.check(manifest.fetch("displayName") == "Agent Helm", "Claude must display Agent Helm")
 HelmValidation.check(manifest.fetch("interface").fetch("displayName") == manifest.fetch("displayName"), "Codex and Claude must use the same display name")
 HelmValidation.check(HelmValidation.read(root.join("README.md")).match?(/^# Agent Helm$/), "README heading must use the product display name")

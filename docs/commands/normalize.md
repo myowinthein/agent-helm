@@ -1,10 +1,10 @@
 ---
-title: /helm:normalize
+title: /agent-helm:normalize
 parent: Commands
 nav_order: 6
 ---
 
-# /helm:normalize
+# /agent-helm:normalize
 
 Review commit messages against your project's convention, review exact replacements, and optionally rewrite all affected local branches together after approval. Message review and coordinated branch rewriting have separate scopes. Existing tags retain their exact objects; remote-tracking refs, stashes, notes and unaffected refs stay outside the rewrite.
 
@@ -19,7 +19,7 @@ Follow the [shared investigation and exclusion rules](../setup/investigation.htm
 ## Usage
 
 ```text
-/helm:normalize
+/agent-helm:normalize
 ```
 
 Review committed messages and exact correction proposals, then inspect the affected-branch scope and impact before separately approving a local rewrite or eligible checkpoint. To continue prior work, identify its private evidence or verified own record branch/commit; the workflow validates current facts and offers only missing actions without automatically repeating the rewrite.
@@ -131,7 +131,7 @@ Recheck canonical bytes/source and the unsupported-path tripwire; write/read bac
 
 Normalize never pushes, prompts to publish, opens a PR, creates/selects/switches/deletes a branch or tags/promotes. Finish on the same current branch at its verified rewritten tip with actual local checkpoint/commit status and recovery path. A clean scan or record-only run does not create a recovery directory merely for handoff. A verified local checkpoint may refer to unpublished source commits.
 
-When the work is ready, run `/helm:ship` and retain the reported private recovery path. Ship recognizes that handoff or asks for its exact evidence, then validates the identified old/new graph/map and bundle, reviews all included work and exact remote mappings, and checks fresh remote history against the approved originals. Already committed unfinished work on a selected branch would also be published, so it remains visible in that review. The live normalize ledger stays outside ship's access; identified committed record deltas are narrow provenance only.
+When the work is ready, run `/agent-helm:ship` and retain the reported private recovery path. Ship recognizes that handoff or asks for its exact evidence, then validates the identified old/new graph/map and bundle, reviews all included work and exact remote mappings, and checks fresh remote history against the approved originals. Already committed unfinished work on a selected branch would also be published, so it remains visible in that review. The live normalize ledger stays outside ship's access; identified committed record deltas are narrow provenance only.
 
 Ship's specialist route is independent of ordinary direct/pr preference. Replacing published IDs requires explicit fixed-lease force approval; only-unpublished corrections may permit normal updates. A PR cannot replace remote history. Prefer a bounded atomic multi-ref push with no follow-tags, use fixed per-ref expectations, stop moved/uncontained refs and never refresh a rejected lease to overwrite new work. Sequential fallback needs separate approval. Read back every destination, retain partial successes/recovery evidence and leave protected/unknown targets pending. The history procedure creates no tag or version. After fully verified publication, ship can separately offer a main release using the proven mapped prior-release boundary; normalization-only IDs are not unreleased product changes.
 

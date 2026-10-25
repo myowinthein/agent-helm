@@ -1,12 +1,12 @@
 {
-  "name": "agent-helm",
+  "name": "agent-helm-marketplace",
   "owner": {
     "name": "Myo Win Thein",
     "url": "https://github.com/myowinthein"
   },
   "plugins": [
     {
-      "name": "helm",
+      "name": "agent-helm",
       "version": "2.22.3",
       "source": "./",
       "description": "A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.",

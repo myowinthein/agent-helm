@@ -22,9 +22,17 @@ This clean break prepares the next major Helm release. It is not a published rel
 | Ledgers | Only `.helm/refactor-log.json` schema 2 with native evidence, `.helm/test-log.json` schema 3, `.helm/normalize-log.json` schema 1 and `.helm/legal-manifest.json` schema 1. No old reader, converter, path migration or automatic reset. |
 | Archive state | Only current schema-1 `.helm/archive/` bundles can resume. Old `.archive/` bundles remain protected historical evidence and stop archive routes with manual guidance. |
 | Scan requests | Use Full scan / Gap scan. Old Deep/Quick/Catch Up/Gap update aliases are removed; clarify unsupported requests without changing literal paths. |
-| Package discovery | The ten skills are the only entry points. The plugin remains `helm`; the repository/marketplace is `agent-helm`. |
+| Package discovery | The ten skills are the only entry points. The plugin and repository are `agent-helm`; the marketplace is `agent-helm-marketplace`. |
 
 `base-branch-role` and `development-branch` were never implemented and are not removed features. `.claude-plugin/` and `.claude/rules/` are active formats, not obsolete state directories. Database migrations and normal client compatibility remain supported. Git history, existing tags and old release records are not rewritten to relabel changes.
+
+## Plugin and marketplace names
+
+The plugin is now `agent-helm` in marketplace `agent-helm-marketplace`, installed as `agent-helm@agent-helm-marketplace`. Claude commands use `/agent-helm:<command>`, such as `/agent-helm:log`. The repository remains `myowinthein/agent-helm`.
+
+If your client still has `helm@agent-helm`, remove that earlier plugin and its old `agent-helm` marketplace through the client's plugin manager. Match the original installation scope and preserve plugin data when offered. Confirm the old marketplace belongs to this repository and no other installed plugin depends on it before removing it. Then follow the [Claude](claude.html) or [Codex](codex.html) setup guide to add the repository again and install the new identity. Start a fresh session afterward.
+
+This client update does not remove or migrate project instructions, copied rules, ledgers, archives or recovery assets. Review any project-owned instructions or automation that still use the old command prefix separately; the package provides no command aliases or automatic project-file conversion.
 
 ## One-time project preparation
 
@@ -35,7 +43,7 @@ Keep an exact private recoverable copy of affected files and the current working
 3. For a chosen fresh start, back up and remove the exact old refactor/test ledgers, including canonical copies if selected. This forgets recorded findings and skip/defer/accepted-risk choices. Do not create empty replacements; the next owning run performs a fresh assessment.
 4. Move legal/normalize records unchanged only after proving their ownership, valid current schema and safe destination. Conflicting/malformed/unsupported copies require explicit handling. A location change does not establish fresh compliance or legal review.
 5. Keep AGENTS/CLAUDE project knowledge, README/legal text, review markers and custom templates. Request Full scans later rather than restamping markers. Preserve custom/lawyer-reviewed clauses through reviewed updates.
-6. Update both complete client installations through their documented update process, disable duplicate old marketplace entries and begin fresh sessions. No global client-setting changes or cache deletion are part of project cleanup.
+6. Follow the plugin-name update above when replacing an earlier installation, install complete packages in both clients and begin fresh sessions. No global client-setting edits or cache deletion are part of project cleanup.
 
 Use exact-file before-images and readback, never a whole-home backup or blanket `.claude/`/`.helm/` deletion. Stage only authorized paths under the actual local commit policy, preserving unrelated work. Failed actions retain actual drafts and the exact retry plan; do not invent rollback or completion.
 

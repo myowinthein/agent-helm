@@ -1,10 +1,10 @@
 ---
-title: /helm:manifest
+title: /agent-helm:manifest
 parent: Commands
 nav_order: 3
 ---
 
-# /helm:manifest
+# /agent-helm:manifest
 
 Keep a project's README useful to people evaluating, using or contributing to it. Review the current project, update reader-facing changes since a saved review, or repair specific content/structure gaps. Full scans preserve existing writing and propose a reviewed diff instead of replacing the file automatically.
 

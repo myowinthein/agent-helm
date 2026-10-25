@@ -1,11 +1,11 @@
 ---
-title: /helm:archive
+title: /agent-helm:archive
 parent: Commands
 nav_order: 9
 has_children: true
 ---
 
-# /helm:archive
+# /agent-helm:archive
 
 Preserve an old project's source, useful working environment, data and recovery documentation, and prepare a reviewed local payload. Run ship later and select archive inspection to review private backup publication. Five approved phases resume across Claude/Codex sessions. Preserved source, runnable artifacts, offline recovery, offline rebuilds, backups and remote publication have separate evidence and limits.
 
@@ -20,7 +20,7 @@ Follow the [shared investigation and exclusion rules](../setup/investigation.htm
 ## Usage
 
 ```text
-/helm:archive
+/agent-helm:archive
 ```
 
 Follow the five approved report phases on the validated project source. A resume request follows verified existing progress and completes only pending work; it never starts another restoration automatically.

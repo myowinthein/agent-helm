@@ -148,7 +148,7 @@ Independent of ship method and team size.
 Determine deployment triggers and targets from repository configuration and applicable provider settings. Do not assume a pipeline or deployment exists because a branch/tag exists or these rules are loaded. Unavailable evidence leaves deployment behavior unknown, not absent or safe.
 
 - A configured push trigger may deploy updates to `{base_branch}` or other explicitly configured branches.
-- A configured tag trigger may deploy a matching SemVer tag, including one created through /helm:ship.
+- A configured tag trigger may deploy a matching SemVer tag, including one created through /agent-helm:ship.
 - Both may be configured (for example, push → staging and tag → production), or neither. Report only verified behavior and preserve project-specific deployment approvals.
 
 ---

@@ -1,13 +1,13 @@
 ---
 title: "Step 5: Finalize"
-parent: /helm:archive
+parent: /agent-helm:archive
 grand_parent: Commands
 nav_order: 5
 ---
 
 # Step 5: Prepare locally
 
-Finish and commit the reviewed local archive payload, then stop. No private destination, push/PR prompt, branch switching/creation, ref cleanup or remote receipt is required to finish this command. Later run `/helm:ship` when ready to publish/verify the private backup.
+Finish and commit the reviewed local archive payload, then stop. No private destination, push/PR prompt, branch switching/creation, ref cleanup or remote receipt is required to finish this command. Later run `/agent-helm:ship` when ready to publish/verify the private backup.
 
 ## Local preparation
 
