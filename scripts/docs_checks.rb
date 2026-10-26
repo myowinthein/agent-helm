@@ -27,4 +27,36 @@ module HelmDocs
   def options(config)
     { disable_external: true, swap_urls: url_swaps(config), checks: %w[Html Images Scripts Links] }
   end
+
+  # Check built fallback markup. Visibility, keyboard, redirects and print need a browser.
+  def check_setup(directory, config)
+    require "nokogiri"
+    require "pathname"
+    root = Pathname(directory)
+    baseurl = config.fetch("baseurl", "").to_s.sub(%r{/+\z}, "")
+    %w[claude codex].each do |platform|
+      path = root.join("docs/setup/#{platform}.html")
+      raise "Setup contract: missing #{platform} page" unless path.file?
+      page = Nokogiri::HTML(path.read)
+      %w[desktop terminal].each do |method|
+        panel = page.at_css("[data-setup-panel][id='#{method}']")
+        unless panel && !panel.key?("hidden") && !panel["style"].to_s.match?(/display\s*:\s*none|visibility\s*:\s*hidden/i)
+          raise "Setup contract: #{platform}/#{method} is unavailable without JavaScript"
+        end
+        %w[install update uninstall].each do |section|
+          unless panel.at_css("[id='#{method}-#{section}']")
+            raise "Setup contract: missing #{platform}/#{method} #{section} anchor"
+          end
+        end
+        legacy_path = root.join("docs/setup/#{platform}-#{method}.html")
+        raise "Setup contract: missing #{platform}-#{method} redirect" unless legacy_path.file?
+        legacy = Nokogiri::HTML(legacy_path.read)
+        link = legacy.at_css("a#setup-destination")
+        expected = "#{baseurl}/docs/setup/#{platform}.html##{method}"
+        unless link && link["href"] == expected
+          raise "Setup contract: incorrect #{platform}-#{method} fallback destination"
+        end
+      end
+    end
+  end
 end
