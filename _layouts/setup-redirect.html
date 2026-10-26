@@ -1,0 +1,24 @@
+{% assign destination = page.setup_target | relative_url %}
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en' }}">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ page.title | escape }} | {{ site.title | escape }}</title>
+    <link rel="canonical" href="{{ page.setup_target | absolute_url }}">
+  </head>
+  <body>
+    <p>This guide has moved to <a id="setup-destination" href="{{ destination }}#{{ page.setup_tab }}">{{ page.title | escape }}</a>.</p>
+    <script>
+      (() => {
+        const link = document.getElementById('setup-destination');
+        const destination = new URL(link.href);
+        const section = window.location.hash.slice(1).replace(/^(desktop|terminal)-/, '');
+        if (['install', 'update', 'uninstall'].includes(section)) {
+          destination.hash += `-${section}`;
+        }
+        link.href = destination.href;
+        window.location.replace(destination.href);
+      })();
+    </script>
+  </body>
+</html>

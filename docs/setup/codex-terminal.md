@@ -1,12 +1,9 @@
 ---
+layout: setup-redirect
 title: Codex terminal
-parent: Setup
-nav_order: 3
 permalink: /docs/setup/codex-terminal.html
 nav_exclude: true
 search_exclude: true
+setup_target: /docs/setup/codex.html
+setup_tab: terminal
 ---
-
-# Codex terminal
-
-{% include setup/codex-terminal.md %}

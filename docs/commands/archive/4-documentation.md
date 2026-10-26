@@ -1,47 +1,50 @@
 ---
 title: "Step 4: Documentation"
-parent: /agent-helm:archive
+parent: archive
 grand_parent: Commands
 nav_order: 4
 ---
 
 # Step 4: Documentation
 
-Write current recovery instructions while retaining useful historical evidence. Reuse verified prior reports and targeted source reads; distinguish current facts, historical claims and unknowns. No invented commands, versions, demo results or future availability.
+Make the preserved project understandable to someone opening it later. The entry point explains where to begin, the setup gives ordered recovery commands and the metadata records exactly what was captured.
 
-Use prior reports and record this step's approved report only in the [validated run directory](../archive.html#archive-directory-and-existing-projects): canonical `.helm/archive/` only. Current docs reference that actual directory where needed; historical reports remain verbatim. Recovery documentation stays at its approved paths below, outside state storage.
+## Flow
 
-## Review before editing
+```mermaid
+flowchart TD
+  Start(["API-materials report approved"]) --> Inventory["Review existing documentation<br/>and verified recovery evidence"]
+  Inventory --> Plan["Propose focused outputs<br/>and any consolidation"]
+  Plan --> Approval{"Approve the editing plan?"}
+  Approval -->|Revise| Plan
+  Approval -->|Stop| End(["Keep prior work"])
+  Approval -->|Yes| Write["Update the index, setup and<br/>artifact metadata where useful"]
+  Write --> Check["Verify links, paths,<br/>commands and preserved context"]
+  Check --> Report["Present the phase report<br/>for approval"]
+  Report --> Next(["Save approved progress;<br/>continue to local preparation"])
+```
 
-Inventory docs by purpose and show a coherent per-file Keep/Update/Merge/Archive/Remove plan. Keep/link useful content by default, including build/CI/deployment notes, runbooks, architectural decisions, changelogs, contributor context, LICENSE/NOTICE and generated docs that may not be regenerable. Being old or public-facing is not a removal reason by itself.
+## Keep useful documentation
 
-Only remove/merge/move through a specific reviewed value/reference decision. A tracked-file removal preserves Git history but may make evidence harder to discover; disclose it. Reuse exact unchanged approval, while preserving all protected files and imports. No secrets, private records, real credentials or production endpoints in generated docs.
+Accurate setup, domain and API information is kept and linked. Design decisions, build notes, changelogs and useful history remain available; LICENSE/NOTICE and legal documents are preserved. Outdated or duplicate material gets a proposed focused repair or consolidation rather than automatic deletion.
 
-## Recovery outputs
+Before editing, you review exact Keep/Update/Merge/Archive/Remove actions and reasons. Agent instruction files, their imports, adopted rules and operational Helm state are protected. A conflicting output path needs an agreed alternative, not an overwritten instruction file.
 
-| Output | Contents and restraint |
+## Give each output a clear purpose
+
+| Default output | What belongs there |
 |---|---|
-| Archive index, normally `README.md` | Orientation: source/snapshot/status, purpose/stack/goal, supported recovery entry, requirements/data/limits and links. Preserve useful content; a fresh rewrite needs its reviewed content/value plan. |
-| Setup reference, normally `docs/setup.md` | Ordered developer procedure: source/config/tools, load or native preparation, database-engine startup as needed, restore data before consumers, run/demo/API/stop and limits. Link full artifact identities in metadata while retaining executable command arguments. |
-| Inventory snapshot, normally `docs/archive-metadata.md` | Human-readable Markdown tables: source/snapshot, full artifact identities/platforms/checksums/byte sizes/provenance/storage, data classification, actual API outcome/paths, scoped verification dates/platforms and omissions. No new JSON schema or duplicate command manual. |
-| Optional `docs/historical-notes.md` | Useful separately labelled context when beneficial; no forced wholesale merge of every historical document. |
+| `README.md` | Archive orientation: purpose, source snapshot, selected goal, quickest recovery route, requirements, limitations and useful links. |
+| `docs/setup.md` | Actual ordered configuration, image/runtime preparation, data restore, run/demo and stop procedures. |
+| `docs/archive-metadata.md` | Artifact paths, identities, platforms, sizes, checksums, provenance, storage, verification and missing inputs. |
+| Optional `docs/historical-notes.md` | Useful historical context that benefits from a separate home. |
 
-Check protected imports before writing any required output. An imported README/setup/metadata target stays byte-for-byte at its path; choose an approved unused alternate output and update recovery references, or stop for instruction reconciliation. Do not extract content/repoint imports or edit AGENTS.md/CLAUDE.md ownership/settings. Opaque Helm state/rules stay in place and are exempt from recovery navigation.
+Existing suitable locations can be retained. The README uses archive-specific information needs, independently of [manifest](../manifest.html) and `readme-style`. It links to the full procedure instead of copying setup commands and raw phase reports into the entry point.
 
-Archive uses its own README information contract, independent of manifest and `readme-style`, without invoking manifest or introducing a shared README helper. Adapt the useful existing structure to include the last working state, quickest supported recovery route, platform/runtime/artifact requirements, data presence/classification/missing inputs, verified versus unknown behavior and links to setup/metadata/API/retained supplementary docs. Preserve the licence and state maintenance/support intent only when confirmed.
+The setup carries forward evidenced commands from Step 2 and actual API-material paths from Step 3. The metadata holds full identity tables so other pages can link to them. Missing inputs and unrun checks remain visible; the docs do not promise a published backup before ship verifies it.
 
-Separate snapshot date from actual verification dates/platforms. Step 4 precedes the payload and ship receipt: do not claim a published backup or insert an unqualified permanent publication status requiring a post-seal edit. Link the actual persistent run directory only when it is a valid tracked target; do not create a dangling link to a future Step 5 report. Use a plain path until a target exists.
+## What happens next
 
-Setup uses the actual paths chosen earlier and carries approved Step 2 commands unchanged where accurate. Legitimate later configuration/asset changes update current instructions and inventory/checkpoints, while old approved reports stay verbatim. Record missing native SDK/binary inputs explicitly; version documentation alone is not a working freeze.
+Static review checks the recovery navigation, paths, configuration and command order against the preserved evidence. It does not execute the app merely to write documentation.
 
-The metadata inventory owns full artifact identity tables; setup links them and keeps the ordered instructions useful for the selected container/native/static/library approach. Metadata reflects the checked recovery snapshot rather than duplicating raw AI reports. Record actual retained/repaired/created/skipped API files: `Postman collection generated: no` alone does not imply no API or useful collection.
-
-## Reference and navigation verification
-
-Read back the approved index and follow links to active recovery docs. Check actual image/data/config/build/script/spec references and restore ordering against preserved evidence, not only file existence. Later Step 5 asset moves must update that same dependency wiring before sealing. Protected instructions/rules/state never become orphan-cleanup targets.
-
-Document runtime tokens as local provisioning instructions/placeholders, never persisted values. Report actual static/build/run/data/cold-rehearsal/offline-rebuild evidence and unrun/deferred checks separately. No tests/builds/API execution is implied by documentation writing.
-
-## Report and approval
-
-Report consolidation decisions and protected preservation, exact created/updated/removed paths/reasons, current navigation/reference checks, accepted missing inputs and remaining gaps. No commit or push. Stop for explicit approval before the separately reviewed local payload preparation. Ship's later archive backup procedure owns the private backup publication. See the [archive guide](../archive.html) for progress, partial outcomes and preservation rules.
+You review the actual files, consolidation decisions and gaps. Approval saves `step4-documentation.md` under `.helm/archive/` and continues to [Step 5: Prepare locally](5-finalize.html). Earlier approved reports remain unchanged. No commit or push happens in this phase.

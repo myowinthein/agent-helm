@@ -109,7 +109,7 @@ Consistent commit messages make it easier to understand what changed and follow 
 normalize
 ```
 
-It reviews the commit history and suggests corrections using Conventional Commits. After I approve, it saves recovery evidence and rewrites the affected local branches together. Publishing those changes happens later through [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html).
+It reviews the commit history and suggests corrections using Conventional Commits. After I approve, it saves recovery evidence and rewrites the affected local branches together. Publishing those changes happens later through [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-normalized-history).
 
 ### Ship
 
@@ -129,7 +129,7 @@ Old projects can become difficult to run as tools change and setup details are f
 archive
 ```
 
-It reviews the project and proposes a preservation plan. After I approve each stage, it helps restore and freeze the setup, then prepares the necessary data and recovery instructions. I use [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html) later when I’m ready to back it up.
+It reviews the project and proposes a preservation plan. After I approve each stage, it helps restore and freeze the setup, then prepares the necessary data and recovery instructions. I use [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-an-archive-backup) later when I’m ready to back it up.
 
 ## Help me improve it
 

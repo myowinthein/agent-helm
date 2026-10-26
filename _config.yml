@@ -1,4 +1,4 @@
-title: agent-helm
+title: Agent Helm
 description: A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.
 url: "https://myowinthein.github.io"
 baseurl: "/agent-helm"
@@ -17,7 +17,7 @@ nav_external_links:
     url: https://github.com/myowinthein/agent-helm
     hide_icon: false
 
-footer_content: "agent-helm &mdash; MIT License"
+footer_content: "Agent Helm &mdash; MIT License"
 
 plugins:
   - jekyll-seo-tag

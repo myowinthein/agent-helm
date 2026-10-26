@@ -1,12 +1,9 @@
 ---
-title: Claude desktop and Cowork
-parent: Setup
-nav_order: 2
+layout: setup-redirect
+title: Claude desktop app
 permalink: /docs/setup/claude-desktop.html
 nav_exclude: true
 search_exclude: true
+setup_target: /docs/setup/claude.html
+setup_tab: desktop
 ---
-
-# Claude desktop app
-
-{% include setup/claude-desktop.md %}
