@@ -53,6 +53,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - Normalize rewrites all affected existing local branches together under its reviewed plan, preserving tags/excluded refs and private recovery proof. Ship's history protocol publishes that proof with fixed leases; it never discovers rewrite scope by reading the live normalize ledger.
 - Archive prepares a reviewed local payload in the current canonical `.helm/archive/` bundle. Ship separately publishes/verifies the private payload and receipt. Historical `.archive/` bundles remain protected; no automatic relocation or replay.
 - Adopt installs reviewed local rule copies; it does not convert external pointers or merge rule bodies. Legal preserves existing clauses by default and requires exact legal content/commit approval, independently of auto-commit.
+- Adopt must stop without writes in this Helm source checkout, its nested directories or a Helm package installation. This project reads the maintained `rules/` sources directly; do not create adopted copies or repoint its instructions to them. Test adoption in a separate consumer fixture outside those roots. This restriction also applies when the invoked installed workflow is older than this checkout.
 
 ## Behavior Rules
 

@@ -16,13 +16,19 @@ adopt
 
 Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
 
-You can preview existing rules on any checkout. Git-backed installation and updates require a clean **main or master** branch. A fresh folder without Git history can receive uncommitted files without initializing a repository.
+You can preview existing rules in a consumer checkout. Git-backed installation and updates require a clean **main or master** branch. A fresh consumer folder without Git history can receive uncommitted files without initializing a repository.
+
+Adopt stops without changes when the target is Helm's own source project, a nested directory inside it, or a loaded/selected Helm package installation. It checks physical paths plus package identity and layout, so renamed checkouts and symlink aliases are covered; a folder name alone does not trigger the guard. A consumer containing Helm as a separate dependency can still adopt at its own project root when that target is outside all protected roots. Unresolved material identity or path ambiguity stops adoption for clarification.
+
+This source project already loads its maintained `rules/` files directly. Adopting here could install stale copies from an older loaded package and redirect project instructions to them. Use ordinary authorized development to maintain the sources, and a separate consumer fixture outside the protected roots to test adoption. The guard leaves existing rules and pointers untouched and offers no Continue anyway option.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start(["Start adopt"]) --> Inspect["Check the project, instruction<br/>connections and existing rules"]
+  Start(["Start adopt"]) --> Guard{"Helm source or<br/>installation target?"}
+  Guard -->|Yes| Stop(["Explain and stop<br/>without changes"])
+  Guard -->|No| Inspect["Check the project, instruction<br/>connections and existing rules"]
   Inspect --> Compare["Compare each rule with<br/>the loaded Helm package"]
   Compare --> Needed{"Changes needed?"}
   Needed -->|No| Current(["Report existing rules<br/>and connectivity"])
