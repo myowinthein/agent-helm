@@ -6,7 +6,7 @@ nav_order: 7
 
 # legal
 
-Draft or maintain practical legal documents from the project's source, existing documentation and confirmed facts. Legal reads first, prepares a useful document set, asks only for essential missing information and brings the content to one consolidated review. It needs no legal-template service or second AI reviewer.
+Draft or maintain practical legal documents from the project's source, existing documentation and confirmed facts. Legal asks only for essential missing information, writes complete drafts as uncommitted project files and gives concise file links for review in your editor or Markdown preview. It needs no legal-template service or second AI reviewer.
 
 ## Start the command
 
@@ -28,14 +28,13 @@ flowchart TD
   Needed -->|Yes| Draft["Prepare useful documents<br/>with existing conventions"]
   Draft --> Facts{"Essential missing facts?"}
   Facts -->|Yes| Ask["Ask one consolidated batch;<br/>resolve or hold affected documents"]
-  Facts -->|No| Review["Review exact content, document set,<br/>paths, dates and commit together"]
-  Ask --> Review
-  Review --> Approval{"Write and commit / Write uncommitted<br/>Revise / Cancel"}
+  Facts -->|No| Files["Write and read back complete<br/>uncommitted document files"]
+  Ask --> Files
+  Files --> Review["Short summary and file links;<br/>developer reviews in editor"]
+  Review --> Approval{"Commit / Revise / Leave uncommitted"}
   Approval -->|Revise| Draft
-  Approval -->|Cancel| End
-  Approval -->|Write uncommitted| Files["Write and verify documents;<br/>leave manifest unchanged"]
-  Files --> End
-  Approval -->|Write and commit| Save["Write and verify documents,<br/>record eligible provenance and commit"]
+  Approval -->|Leave uncommitted| End
+  Approval -->|Commit| Save["Recheck reviewed files,<br/>record eligible provenance and commit"]
   Save --> End
 ```
 
@@ -60,13 +59,13 @@ Investigation follows the project's actual data flows. An external favicon warra
 
 The command proposes the smallest useful set, rather than asking you to choose every type before drafting. Privacy/storage notices and specific disclaimers can follow inspected behavior. Terms, refund policies and EULAs need your request or an existing approved policy to maintain; detecting payments does not authorize invented refund or contract terms. All six types remain available on request.
 
-The final review lets you accept, exclude or revise the proposed documents together with their wording. Recommendations distinguish useful documents from identified requirements and uncertain suggestions. Existing suitable coverage avoids duplicates. With no signals or no relevant source changes/gaps, legal can report a no-write result without another exit question; you can still request drafting or broader review. Neither result certifies legal currency or absence of legal need.
+The invocation authorizes ordinary in-scope uncommitted drafting. You review the written files, request revisions or exclude documents from the final commit. Recommendations distinguish useful documents from identified requirements and uncertain suggestions. Existing suitable coverage avoids duplicates. With no signals or no relevant source changes/gaps, legal can report a no-write result without another exit question; you can still request drafting or broader review. Neither result certifies legal currency or absence of legal need.
 
 ## Draft from confirmed facts
 
 Existing approved wording is maintained through targeted edits. New documents default to source evidence, confirmed facts and relevant primary sources. A supplied trusted baseline remains supported, but there is no routine template-choice question. Templates never prove your practices or establish commercial choices.
 
-Output follows existing legal locations, language and supported Markdown, MDX or HTML conventions, falling back to `legal/` Markdown when needed. Paths, locale and baseline appear in the final review, without separate routine setup approvals. Routing, navigation, store submissions and operational controls remain separately authorized work.
+Output follows existing legal locations, language and supported Markdown, MDX or HTML conventions, falling back to `legal/` Markdown when needed. Complete drafts are written there without a routine pre-write approval. Existing custom/lawyer-reviewed clauses and unrelated work are preserved; wholesale replacement or protected-clause removal still needs its specific owner decision. Routing, navigation, store submissions and operational controls remain separately authorized work.
 
 Legal reuses intended-public project contacts or your explicit confirmation. Author/Git metadata alone is only a lead. It never requests your home address. A postal-address question needs an identified applicable requirement and asks only for a suitable intended-public contact arrangement, whose legal sufficiency is not assumed. Refusal is respected. Public issues can handle general questions; private privacy requests need a suitable private route.
 
@@ -86,15 +85,19 @@ Held preliminary documents stay in conversation unless you request a separate no
 
 ## Review before committing
 
-Before canonical writes, you see complete new content or exact existing diffs, what is kept or removed, a short **Claim or clause / Basis / Confirmation or gap** table, defaults used, paths, dates, held work and the proposed manifest/commit. Existing Foreign or lawyer-reviewed content receives its exact review in this same step. Nothing is silently replaced.
+Read the actual uncommitted documents in your editor or Markdown preview. Chat shows file paths/links, meaningful changes and important unresolved issues. Full document bodies and diffs are not pasted into chat, question cards or approval-presentation tool output unless requested. The complete files and their Git diffs remain available for review; opening a file is not approval.
+
+The agent reads back the written files internally, checks their important claims against evidence and briefly identifies the exact commit paths, subject and proposed manifest updates. A compact **Claim or clause / Basis / Confirmation or gap** table is used only when helpful. No new report file or preview tool is required. If files cannot be made readable, commit approval stays pending.
 
 A separate drafting critique runs only if you request one, with any necessary authorization for sharing private material. There is no recurring critique picker, second-model requirement or blanket lawyer-consultation prerequisite. Concrete unresolved legal questions remain visible; neither another AI nor your approval establishes legal validity.
 
-Choose **Write and commit / Write uncommitted / Revise / Cancel** once for that exact proposal. You can exclude documents or request changes; changed content is reviewed before writing. Approval covers the shown document set, exact text, paths and dates, plus the manifest/local commit only for Write and commit. Automatic commits do not bypass this decision, and the unchanged approved unit needs no second commit question. Cancel preserves canonical inputs; actual prior work and failed writes are never automatically cleaned up.
+Choose **Commit / Revise / Leave uncommitted** for the actual reviewed files. Commit accepts their exact content and dates plus the identified manifest/local commit plan; automatic commits never bypass this approval. Revise updates drafts and returns concise links/change summaries for review. Leave uncommitted, cancellation or stopping after writes keeps draft files intact and the prior manifest unchanged. No automatic cleanup or rollback follows.
+
+You may edit drafts yourself before approving. The agent re-reads those files, reassesses material changes and binds the commit to what you actually approved; it never restores an older generated copy over your edits. A changed scope/content needs any missing explicit approval, while a valid approval of the actual edited files can be reused. The unchanged approved unit needs no second commit question.
 
 ## Your result
 
-Approved files are written and compared with the reviewed content before state or staging. Only accepted complete substantive changes receive source provenance in `.helm/legal-manifest.json` under Write and commit. Write uncommitted writes the approved documents and preserves the prior manifest. Cosmetic work retains dates/provenance.
+Written drafts are checked before being presented, then rechecked against the reviewed content before state or staging. Only accepted complete substantive changes receive source provenance in `.helm/legal-manifest.json` after Commit approval. Leaving drafts uncommitted preserves the prior manifest. Proposed dates in complete uncommitted drafts do not imply acceptance or publication; incomplete and cosmetic work retain dates/provenance.
 
 The result counts public documents separately from the internal manifest. It reports the source snapshot, actual checks, confirmed facts, specific gaps and researched/unassessed scopes without claiming legal certification. No new profile, mode, schema or third-party service is introduced.
 
