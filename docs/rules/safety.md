@@ -39,6 +39,31 @@ After success or an uncertain result, the agent checks what actually happened. F
 
 Secret values and private records must not leak through chat, logs, Git or unapproved uploads. Necessary private handling stays within its authorized task. Delegated work receives the same or narrower scope; workers cannot approve new effects.
 
+## Maintaining command outputs
+
+A command's editable outputs can be maintained during ordinary authorized development. You do not need to run log for every corrected path, manifest for every README update or test for every regression test. Keep changes tied to the current task, preserve custom content and verify affected behavior and references. Changing instructions never lets an agent grant itself new authority.
+
+The shipped `rules/safety.md` is the policy source; this guide explains it. All ten commands keep their own scope and stronger approvals:
+
+| Command | Outputs and maintenance boundary |
+|---|---|
+| [adopt](../commands/adopt.html) | Local rule copies, version-origin comments, instruction pointers and limited bootstrap. Explicit local customization is allowed; keep origin metadata and compare actual bodies on later updates. Installation, replacement and connection follow adopt's review. |
+| [archive](../commands/archive.html) | Recovery docs, setup/configuration, API collections/specs, storage wiring and assets. Working sources stay editable; known snapshot-bound corrections need explicit preservation scope and consistent references. Captured images/data/builds, phase reports, inventories, payloads and receipts remain protected evidence. |
+| [env](../commands/env.html) | Safe templates, code reading variables and project ignore rules. Keep placeholders/nonsecret defaults and verify loader/ignore effects. Real local values need exact authority and stay out of chat/Git; provisioning and untracking retain their separate approvals. |
+| [legal](../commands/legal.html) | Legal sources and separately authorized integration. Cosmetic edits retain meaning, dates and provenance; substantive claims need reviewed scope. Every public legal-document commit needs exact content/commit approval. Only legal updates its assessment record. |
+| [log](../commands/log.html) | Shared instructions/configuration and Claude imports/additions. Factual targeted corrections are allowed. Policy/settings need actual authorization; broad layout reconciliation and completed-review markers follow log. |
+| [manifest](../commands/manifest.html) | The selected README and explicitly chosen style preference. Maintain relevant verified content while preserving rendering/custom sections and the old review marker. Actual generated blocks follow their producer; full review checkpoints follow manifest. |
+| [normalize](../commands/normalize.html) | Reviewed history plus private maps, recovery bundles and its ledger. Run-owned evidence follows normalize and its ship handoff. Explicit private-commit amendments still follow Git policy, without making old correspondence current. Secret removal from history is a separate task. |
+| [refactor](../commands/refactor.html) | Implementation/configuration and approved companion tests/guards. Ordinary maintenance preserves intended behavior and protection. Refactor alone records its findings and verified closures. |
+| [ship](../commands/ship.html) | Version/companion metadata, current README version mentions, established changelog and release notes. Version changes need explicit or declared lifecycle authority; development never triggers a bump automatically. Prepared candidates, tags, publication and archive receipts retain ship's gates. |
+| [test](../commands/test.html) | Tests, fixtures/mocks, replay inputs, snapshots/visual references, setup/scripts and owning dependency files. Maintain intended guarantees and review setup effects. Removing, skipping or weakening protection needs justified scope and verification; tool-produced coverage/performance/mutation results and the case ledger cannot be hand-edited into success. |
+
+Classify each file or block by its actual role. An agent-written test or Postman example is usually editable source; a file actually owned by a generator is regenerated from its inputs. A working API specification and a captured recovery artifact need different treatment even if their names look similar. Intentional behavior changes can justify reviewed snapshot updates; an unexplained failure cannot.
+
+Ordinary edits preserve review/version markers and historical evidence without claiming a fresh assessment. Report specific known affected references, renames/deletions or recovery limits in the task handoff. Do not open live ledgers/archive bundles to discover dependencies, add a persistent stale flag or automatically run another command. On its next run, the owning command checks actual current content and provenance, preserving useful intervening edits rather than replacing them because Helm originally created the file.
+
+Existing adopted rule copies receive this policy only through a reviewed adopt update. No new setting, sidecar or plugin dependency is required for the copied rules.
+
 ## Host capabilities
 
 The agent verifies only the access needed for the task. Access to a folder does not establish database identity, provider credentials or a working test environment. Missing access blocks the affected operation; drafts and prior successful work are preserved.
