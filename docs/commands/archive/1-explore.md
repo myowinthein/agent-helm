@@ -1,44 +1,47 @@
 ---
 title: "Step 1: Explore"
-parent: /agent-helm:archive
+parent: archive
 grand_parent: Commands
 nav_order: 1
 ---
 
 # Step 1: Explore
 
-Inspect enough local source, configuration, manifests, data flows and history to decide what should be preserved. No project execution or network contact occurs. Nothing is written before report approval.
+Understand what must be preserved before trying to restore the project. This phase uses local source and metadata inspection, without running the app or contacting services.
 
-First apply the [archive directory rules](../archive.html#archive-directory-and-existing-projects) read-only, then the [source-branch confirmation](../archive.html#confirm-the-source-branch) before entering a pending phase. Show the actual branch/full HEAD, known excluded work and same-branch edit/local-payload effects; obtain Proceed/Cancel or reuse explicit still-applicable approval. This is separate from Step 1 report approval and creates no confirmation state. Proven prepared/completed report-only exits need no new question. A fresh run creates `.helm/archive/` only after Step 1 report approval and baseline capture. Unsupported old bundles stay protected and block archive continuation; see the upgrade guide.
+## Flow
 
-## Decisions and evidence
+```mermaid
+flowchart TD
+  Start(["Source branch confirmed"]) --> Inventory["Inspect components, setup,<br/>data and recovery materials"]
+  Inventory --> Scope["Agree recovery goals;<br/>identify missing and excluded inputs"]
+  Scope --> Report["Present findings and<br/>the proposed restoration approach"]
+  Report --> Approval{"Approve the report?"}
+  Approval -->|Revise| Report
+  Approval -->|Stop| End(["Leave exploration unsaved"])
+  Approval -->|Yes| Save["Save report and initial<br/>file inventory"]
+  Save --> Next(["Continue to Restore and Freeze"])
+```
 
-Read-only exploration follows the [shared investigation and exclusion contract](../../setup/investigation.html). Inventory exact recovery categories/components independently of familiar hotspots; trace required relationships and keep excluded versus inaccessible evidence separate. Permitted workers return inspected identities/depth, cross-topic dependencies, no-finding areas and unread remainder, with parent reconciliation. No new persistent inventory/report, generic Full/Gap mode or change to phase approvals is introduced.
+## What gets discovered
 
+The review follows each relevant component's build, runtime, data and service dependencies. It identifies:
 
-- Identify project name/domain, packages, architecture, authentication and useful demonstration/run/build paths.
-- Confirm the recovery goal: preserved source, frozen runtime/demo, offline runtime recovery and/or offline rebuild inputs.
-- Record original/last-working runtime, package/lock/SDK/toolchain/platform evidence. Current vendor support stays not checked unless established; no automatic modernization.
-- Classify required/optional external services and runtime side effects, env key names, jobs and isolation questions.
-- Inventory database/file/blob/model/dataset inputs, available synthetic/sanitized sources, provenance/sensitivity and regeneration gaps. A repository dump or localhost address is not safety proof.
-- Retain useful setup/build/deploy/design/legal/history/API evidence and identify protected instruction imports before proposing output paths.
-- Distinguish supplementary BA/design/history documents from application assets and required build/runtime/data inputs. External material uses known safe references or supplied exact local paths; no personal-drive crawl or token-bearing links.
-- Estimate artifact sizes/storage needs without claiming provider access or quota.
+- Purpose, architecture, key flows and a useful demonstration scope.
+- Last-known-working stack, native lockfiles, platform/toolchain constraints and missing inputs.
+- Databases, files, uploads, datasets, fixtures and possible recovery sources, with provenance and sensitivity concerns.
+- Required external integrations, configuration key names and isolation questions.
+- Existing setup notes, API materials, build outputs and useful design/history documents.
+- Other branches, tags, submodules, LFS objects or hosted resources that the selected source snapshot may not preserve.
 
-For multiple components, the existing Setup & Restoration Approach report section can include a compact handoff: role, required/optional status, evidenced setup source, config/data inputs, dependencies and unresolved gaps. This is useful context, not a new mandatory file or schema. Later steps reconstruct missing details from scoped evidence for older reports.
+It distinguishes supplementary BA/design material from assets needed to build or run the app. Secret values and real user data are not copied into the report. Cached remote refs are not treated as fresh provider evidence.
 
-Use bounded package/data-flow reads and targeted follow-ups, not repeated whole-project reading. Missing reads and coverage limits remain visible. Vendor/generated exclusions require evidence, including whether files are tracked/custom or part of the build context.
+## Agree the preservation goal
 
-## Git and credentials
+Choose the useful scope: source preservation, a runnable demonstration, offline runtime recovery or offline rebuild inputs. Missing SDKs, licensed tools, hardware, data or services remain explicit limitations. Archive does not silently modernize the project or merge another branch to fill gaps.
 
-Record literal `Project name:`, `Archiving from:` and full `Source commit:` fields. Normal work uses the actual attached project branch; an explicitly scoped advisory review can label dirty/staged/untracked/detached inputs or lack of HEAD without initializing Git.
+## What happens next
 
-Compare local ref tips/dates and ahead/behind metadata first, then relevant likely alternative branch content. Remote-tracking information is cached, never a remote-freshness claim. Report unmerged work and tags/submodules/LFS/hosted resources excluded from a source-only seal; never merge or select another source automatically.
+The report describes confirmed facts, uncertainties, restoration complexity and the recommended next step. You can revise it, approve it or stop without saving.
 
-Credential review exposes only inspected paths/key names/types and local evidence, with values/fragments/private records removed before output. List uncovered surfaces; none found in that scope is not a secret-free certificate. No credential liveness testing.
-
-## Report and stop
-
-The report covers overview/stack/architecture, data/integrations, retained docs/assets, Git safety, proposed restoration approach, credential review scope, specific unknowns and an Easy/Medium/Complex/Blocked rating. Confirm the goal and identify Step 2's planned edits, acquisitions, targets, isolation and checks needing resolution.
-
-Wait for explicit approval before recording the report/inventory and proceeding. Stop-here/no-write remains available. See the [archive guide](../archive.html) for approval and protected-file rules.
+Only after approval does a fresh run create `.helm/archive/`, save `step1-explore.md`, capture its baseline inventory in `files.json` and record progress in `state.json`. [Step 2: Restore and freeze](2-restore-and-freeze.html) uses those findings to propose the actual restoration work.

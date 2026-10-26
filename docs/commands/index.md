@@ -1,10 +1,10 @@
 ---
 title: Commands
-nav_order: 2
+nav_order: 3
 has_children: true
 permalink: /docs/commands
 ---
 
 # Commands
 
-Choose a workflow for the task you want to do with your agent. In Claude, use `/agent-helm:<command>`; in Codex, select the matching Helm skill.
+Guides to using Agent Helm at different points during project development. Each command page explains how to start, what happens along the way and what results to expect.

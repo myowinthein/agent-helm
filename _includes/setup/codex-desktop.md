@@ -4,7 +4,7 @@
 2. Choose **Add → Add a marketplace**. Enter `myowinthein/agent-helm` in **Source**, then click **Add marketplace**.
 3. Select **Personal** and find the Helm marketplace. Click **+** beside Helm to install it. It may appear as `agent-helm` or **Agent Helm**.
 4. Open Helm under **Installed**. Check its **Version** and that all ten skills are enabled.
-5. Start a fresh chat in your project workspace. Type `$` and select a Helm workflow, such as `log`, `test` or `ship`. You can also use `/` in the desktop app.
+5. Start a fresh chat in your project workspace. Type `$` and select a Helm workflow, such as `log`, `test` or `ship`.
 
 ## Update
 

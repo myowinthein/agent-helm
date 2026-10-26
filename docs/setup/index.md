@@ -1,6 +1,6 @@
 ---
 title: Setup
-nav_order: 4
+nav_order: 2
 has_children: true
 permalink: /docs/setup/
 ---
@@ -9,19 +9,18 @@ permalink: /docs/setup/
 
 Agent Helm works with Claude and Codex. For either platform, you can install, update and uninstall the plugin through the desktop app or terminal.
 
-Choose [Claude](claude.html) or [Codex](codex.html), then use the **Desktop app** or **Terminal** tab. Desktop menus can vary by app version and operating system. The terminal examples use a Bash-compatible shell with `grep` available.
+The desktop guides were tested on macOS. The steps should be similar on other supported operating systems, though menus and buttons may move as the apps are updated. The terminal examples use a Bash-compatible shell with `grep` available.
 
 ## Run a command
 
-Start a fresh session in your project after installing or updating. Type the prefix in the chat input, then select a Helm command.
+Type the prefix in the chat input, then select an Agent Helm command.
 
-| Client | Prefix |
-|---|---|
-| Claude desktop and terminal | `/` |
-| Codex terminal | `$` |
-| Codex desktop | `/` or `$` |
+| Client | Prefix | Example |
+|---|---|---|
+| Claude desktop and terminal | `/` | `/agent-helm:log` |
+| Codex desktop and terminal | `$` | `$log` |
 
-For example, select `log`, `test` or `ship`. In Claude Code, you can also type the full command, such as `/agent-helm:log`. In Codex, choose the Helm skill from the picker to distinguish it from similarly named built-in actions.
+Elsewhere, command names appear without prefixes, such as `log`. Bare command blocks identify workflows rather than copy-and-run examples. Use the prefix above in your client's chat input, not your shell.
 
 ## Plugin names
 
