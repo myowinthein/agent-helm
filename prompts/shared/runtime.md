@@ -26,6 +26,10 @@ For a fresh project with neither file, the proposed shared owner is root `AGENTS
 
 Adopt uses one project-local copy per selected rule and no external-reference conversion. Unsupported external pointers stop with upgrade guidance. Only log performs reviewed first-time owner reconciliation; preserve current entry/override behavior and unknown imports. New setups propose Git, safety and writing; existing setups add writing only through its separately accepted file/pointer proposal.
 
+## Output maintenance
+
+Apply the safety rules' [Maintaining workflow outputs](../../rules/safety.md#maintaining-workflow-outputs) policy and ten-workflow output map when planning writes or maintaining existing results. Editable project content may receive targeted authorized development changes without invoking its creating command. The selected workflow still owns its narrower write scope and stronger gates; the map grants no cross-workflow state access, implicit workflow invocation or authority to rewrite provenance. Revalidate actual existing content under the owning procedure before replacing it.
+
 ## Questions and authorization
 
 Before the first human question, read [Question mechanism (QM)](question-mechanism.md) once and use it for all questions in the selected workflow and its supporting prompts. Each workflow's Question points map selects Single, Multi, Input or Review; its body still owns when to ask, prerequisites, exact choices, approval scope and exits. QM centralizes native tool routing, supported equivalents for capability gaps, ordered recovery from confirmed presentation failures, asynchronous waiting and one conversational baseline for Claude, Codex and future hosts. It grants no state access, execution, new approval stage or permission to change client modes/settings. No question means no QM setup question or capability probe.
