@@ -6,7 +6,7 @@ nav_order: 7
 
 # legal
 
-Prepare or maintain legal documents that fit the project's actual service and practices. Legal reviews the source, asks for material business facts and drafts the documents you choose from confirmed information.
+Draft or maintain practical legal documents from the project's source, existing documentation and confirmed facts. Legal reads first, prepares a useful document set, asks only for essential missing information and brings the content to one consolidated review. It needs no legal-template service or second AI reviewer.
 
 ## Start the command
 
@@ -22,16 +22,20 @@ Start on a clean **main or master** branch. Legal reads shared instructions with
 
 ```mermaid
 flowchart TD
-  Start(["Start legal"]) --> Profile["Confirm the service and markets;<br/>inspect processing and existing docs"]
-  Profile --> Scope{"Draft or review documents?"}
-  Scope -->|Source-only review or exit| End(["Report the assessed scope and gaps"])
-  Scope -->|Yes| Select["Choose relevant documents<br/>and locales"]
-  Select --> Facts["Confirm missing facts,<br/>contact, baseline and output paths"]
-  Facts --> Draft["Draft focused changes and<br/>review important claims"]
-  Draft --> Approval{"Approve content<br/>and commit?"}
+  Start(["Start legal"]) --> Inspect["Inspect source, context<br/>and existing documents"]
+  Inspect --> Needed{"Useful changes?"}
+  Needed -->|No| End(["Report the scoped result and gaps"])
+  Needed -->|Yes| Draft["Prepare useful documents<br/>with existing conventions"]
+  Draft --> Facts{"Essential missing facts?"}
+  Facts -->|Yes| Ask["Ask one consolidated batch;<br/>resolve or hold affected documents"]
+  Facts -->|No| Review["Review exact content, document set,<br/>paths, dates and commit together"]
+  Ask --> Review
+  Review --> Approval{"Write and commit / Write uncommitted<br/>Revise / Cancel"}
   Approval -->|Revise| Draft
-  Approval -->|Leave uncommitted| End
-  Approval -->|Yes| Save["Verify accepted documents,<br/>record eligible provenance and commit"]
+  Approval -->|Cancel| End
+  Approval -->|Write uncommitted| Files["Write and verify documents;<br/>leave manifest unchanged"]
+  Files --> End
+  Approval -->|Write and commit| Save["Write and verify documents,<br/>record eligible provenance and commit"]
   Save --> End
 ```
 
@@ -39,11 +43,11 @@ flowchart TD
 
 The command scopes the product or service, which may include several related packages. It checks accounts, data flows, integrations, tracking, payments and existing policies, then distinguishes observed implementation from inference and facts you need to confirm.
 
-Questions focus on material gaps: the operator, served markets, audience, roles, providers, retention, contacts or commercial choices relevant to the selected documents. An installed SDK does not prove production use, and the repository's location does not establish governing law.
+Existing project information and your supplied answers come first. There is no standard business, country or markets interview. If omitting or narrowing a claim would still leave an essential factual gap, legal batches the missing questions together. A genuinely new contradiction can require a focused follow-up. It does not invent facts from dependency names or infer domicile from a repository location.
 
-Current primary legal or store sources are consulted when applicability depends on them. Existing translations and store disclosure requirements are considered when relevant. Unreviewed locales and missing implementation controls remain visible; writing a policy does not implement consent, deletion or publication.
+Investigation follows the project's actual data flows. An external favicon warrants describing its browser request; it does not trigger an audit of the portfolio serving it. Provider logging is not assumed absent just because the project has no analytics. Targeted primary research checks claims and concrete legal/store questions when relevant, without requiring global legal clearance. Writing a notice implements no consent, deletion or publication mechanism.
 
-## Choose documents
+## Prepare the useful documents
 
 | Document | When it may be useful |
 |---|---|
@@ -54,29 +58,45 @@ Current primary legal or store sources are consulted when applicability depends 
 | EULA | Document an approved end-user licensing arrangement compatible with existing licenses. |
 | Disclaimer | Address specific relevant advice, content or AI limitations. |
 
-Recommendations explain whether a document is required by an identified rule, useful, uncertain or not applicable. They are not a requirement to generate all six. Existing policies can already cover a need; other legal needs outside these types are reported as follow-ups.
+The command proposes the smallest useful set, rather than asking you to choose every type before drafting. Privacy/storage notices and specific disclaimers can follow inspected behavior. Terms, refund policies and EULAs need your request or an existing approved policy to maintain; detecting payments does not authorize invented refund or contract terms. All six types remain available on request.
 
-With no detected signals, you can exit or supply facts for further review. When existing applicable documents have no identified source changes or gaps, you can finish a source-only review or review them anyway. Neither exit certifies legal or business currency.
+The final review lets you accept, exclude or revise the proposed documents together with their wording. Recommendations distinguish useful documents from identified requirements and uncertain suggestions. Existing suitable coverage avoids duplicates. With no signals or no relevant source changes/gaps, legal can report a no-write result without another exit question; you can still request drafting or broader review. Neither result certifies legal currency or absence of legal need.
 
 ## Draft from confirmed facts
 
-Existing approved wording is maintained through targeted edits by default. For new drafting, you can supply an approved document or suitable trusted template, or use confirmed facts and applicable primary sources. Templates provide candidate wording, never proof of your practices or permission to copy another company's policy.
+Existing approved wording is maintained through targeted edits. New documents default to source evidence, confirmed facts and relevant primary sources. A supplied trusted baseline remains supported, but there is no routine template-choice question. Templates never prove your practices or establish commercial choices.
 
-Output follows the project's actual Markdown, MDX or HTML conventions and existing legal locations. The chosen contact must be real, public and suitable; private rights requests should not default to a public issue tracker. Routing, navigation, store submissions and operational controls are separate work.
+Output follows existing legal locations, language and supported Markdown, MDX or HTML conventions, falling back to `legal/` Markdown when needed. Paths, locale and baseline appear in the final review, without separate routine setup approvals. Routing, navigation, store submissions and operational controls remain separately authorized work.
 
-Material unknowns keep affected documents preliminary. Drafts normally stay in the conversation; writing an incomplete draft requires an explicitly chosen separate nonpublic path. Complete documents can proceed independently of blocked ones.
+Legal reuses intended-public project contacts or your explicit confirmation. Author/Git metadata alone is only a lead. It never requests your home address. A postal-address question needs an identified applicable requirement and asks only for a suitable intended-public contact arrangement, whose legal sufficiency is not assumed. Refusal is respected. Public issues can handle general questions; private privacy requests need a suitable private route.
+
+## Handle gaps precisely
+
+| Situation | Action |
+|---|---|
+| Unsupported optional promise or unrequested commercial choice | Omit it and report a relevant open decision. |
+| Verified implementation supports narrower useful wording | Describe that behavior without inventing off-code facts. |
+| Indispensable missing fact or an identified applicable requirement | Ask in the essential-facts batch; show the basis for a claimed requirement. |
+| Known false claim, unresolved indispensable omission or harmful clause replacement | Hold only the affected document. |
+| Legal sufficiency or provider/deployment detail not assessed | State the actual limit; do not equate uncertainty with a known violation or global clearance. |
+
+A complete source-based document truthfully covers its purpose at the inspected snapshot, with confirmed owner facts and no known indispensable omission. This does not establish compliance, enforceability or sufficiency in every jurisdiction. Known obligations cannot be hidden by calling them unassessed. Free, solo or unregistered projects receive proportionate drafting assistance, not an automatic exemption or a business-compliance interview.
+
+Held preliminary documents stay in conversation unless you request a separate nonpublic file. They receive no public date or manifest update. Unaffected complete documents can proceed with held work clearly excluded.
 
 ## Review before committing
 
-You see the proposed content or diff, what is kept or removed, and a short **Claim or clause / Basis / Confirmation or gap** table for important facts and promises. This makes invented retention periods, unsupported security claims or unconfirmed liability choices easier to catch.
+Before canonical writes, you see complete new content or exact existing diffs, what is kept or removed, a short **Claim or clause / Basis / Confirmation or gap** table, defaults used, paths, dates, held work and the proposed manifest/commit. Existing Foreign or lawyer-reviewed content receives its exact review in this same step. Nothing is silently replaced.
 
-An optional separate drafting critique can check omissions and contradictions. It is not a compliance score or legal approval. Specific unresolved decisions needing qualified legal review are identified, rather than hidden behind generic reassurance.
+A separate drafting critique runs only if you request one, with any necessary authorization for sharing private material. There is no recurring critique picker, second-model requirement or blanket lawyer-consultation prerequisite. Concrete unresolved legal questions remain visible; neither another AI nor your approval establishes legal validity.
 
-Choose **Commit reviewed legal documents** or **Leave uncommitted** after reviewing the exact output and proposed record changes. Automatic commits never bypass this decision. Dates and provenance are not refreshed for incomplete, rejected or merely cosmetic work.
+Choose **Write and commit / Write uncommitted / Revise / Cancel** once for that exact proposal. You can exclude documents or request changes; changed content is reviewed before writing. Approval covers the shown document set, exact text, paths and dates, plus the manifest/local commit only for Write and commit. Automatic commits do not bypass this decision, and the unchanged approved unit needs no second commit question. Cancel preserves canonical inputs; actual prior work and failed writes are never automatically cleaned up.
 
 ## Your result
 
-You get the selected documents, confirmed facts, unresolved decisions and any integration or locale gaps. Only accepted complete substantive document changes receive source provenance in `.helm/legal-manifest.json` after commit approval. Leaving drafts uncommitted preserves the prior manifest.
+Approved files are written and compared with the reviewed content before state or staging. Only accepted complete substantive changes receive source provenance in `.helm/legal-manifest.json` under Write and commit. Write uncommitted writes the approved documents and preserves the prior manifest. Cosmetic work retains dates/provenance.
+
+The result counts public documents separately from the internal manifest. It reports the source snapshot, actual checks, confirmed facts, specific gaps and researched/unassessed scopes without claiming legal certification. No new profile, mode, schema or third-party service is introduced.
 
 On the next run, legal distinguishes source changes from business, provider and legal freshness; an unchanged commit does not establish that all four remain current. Unsupported state blocks dependent work without automatic conversion or reset.
 

@@ -1,6 +1,6 @@
 ---
 name: legal
-description: Create or maintain selected legal documents from confirmed business facts and actual data flows
+description: Draft or maintain practical legal documents from project evidence with essential questions and one consolidated review
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the legal workflow](../../workflows/legal.md).
