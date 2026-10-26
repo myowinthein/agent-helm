@@ -25,6 +25,11 @@ task :ledger_test do
   sh "python3", "-I", "-B", "scripts/test_ledger.py"
 end
 
+desc "Test smoke fixture preconditions and preservation assertions without models"
+task :smoke_support_test do
+  ruby "scripts/test_smoke_support.rb"
+end
+
 desc "Check plugin packaging, normalize mechanics and documentation"
-task test: %i[plugin_test normalize_test ledger_test docs_test]
+task test: %i[plugin_test normalize_test ledger_test smoke_support_test docs_test]
 task default: :test

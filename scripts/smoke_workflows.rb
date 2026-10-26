@@ -7,6 +7,7 @@ require "open3"
 require "pathname"
 require "timeout"
 require "tmpdir"
+require_relative "smoke_support"
 
 client = ARGV.fetch(0, "codex")
 abort "Usage: ruby scripts/smoke_workflows.rb [codex|claude] [case]" unless %w[codex claude].include?(client)
@@ -15,7 +16,7 @@ root = Pathname(__dir__).parent.realpath
 standard = "# Fixture\n\n## Project Config\n\nship-method: direct\ngit-auto-commit: false\nreadme-style: custom\n"
 cases = {
   "conflicting-config" => {
-    files: { "CLAUDE.md" => standard, "AGENTS.md" => standard.sub("direct", "pr") },
+    files: HelmSmoke.configuration_conflict(standard).fetch(:files),
     command: "env", request: "Audit the environment configuration.", unchanged: true
   },
   "custom-memory-wrapper" => {
@@ -36,10 +37,7 @@ cases = {
     files: { "CLAUDE.md" => standard, "prompts/archive/step1-explore.md" => "DECOY: this is a consumer document, not the installed archive procedure.\n" },
     command: "archive", request: "Begin the archive workflow. I have not approved any step yet.", unchanged: true
   },
-  "normalize-first-gate" => {
-    files: { "CLAUDE.md" => standard }, command: "normalize",
-    request: "Begin normalization. I have not accepted the risk warning or authorized a history rewrite.", unchanged: true
-  },
+  "normalize-first-gate" => HelmSmoke.normalize_gate(standard),
   "codex-claude-owner-stop" => {
     files: { "CLAUDE.md" => standard }, command: "adopt",
     request: "Inspect adoption. Preserve the existing instruction owner; no layout change is approved.", unchanged: true
@@ -67,13 +65,8 @@ cases.delete("shadowed-adopt-entry") unless client == "codex"
 abort "Unknown case: #{selected}" if selected && !cases.key?(selected)
 cases.select! { |name, _| name == selected } if selected
 
-snapshot = lambda do |workspace|
-  workspace.glob("**/*", File::FNM_DOTMATCH).reject { |path| path.to_s.include?("/.git/") || path.directory? || path.symlink? }.to_h do |path|
-    [path.relative_path_from(workspace).to_s, Digest::SHA256.file(path).hexdigest]
-  end
-end
-
 cases.each do |name, scenario|
+  HelmSmoke.validate_preconditions!(name, scenario)
   Dir.mktmpdir("helm-#{client}-#{name}-") do |temp|
     workspace = Pathname(temp).join("consumer project")
     workspace.mkpath
@@ -87,18 +80,26 @@ cases.each do |name, scenario|
       skill.parent.mkpath
       skill.make_symlink(root.join("skills", scenario.fetch(:command)))
     end
-    [["git", "init", "--quiet", "--initial-branch=main"], ["git", "add", "."],
-     ["git", "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", "chore(fixture): initialize"]].each do |command|
-      output, status = Open3.capture2e(*command, chdir: workspace)
-      raise output unless status.success?
+    HelmSmoke.git(workspace, "init", "--quiet", "--initial-branch=main")
+    HelmSmoke.git(workspace, "add", ".")
+    HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", scenario.fetch(:initial_message, "chore(fixture): initialize"))
+    before = HelmSmoke.snapshot(workspace)
+    before_git = HelmSmoke.git_state(workspace)
+    approved = {}
+    request = scenario.fetch(:request)
+    unless scenario.fetch(:unchanged)
+      approved["AGENTS.md"] = HelmSmoke.connected_owner(scenario.fetch(:files).fetch("AGENTS.md"))
+      version = scenario.fetch(:rules_version, JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version"))
+      %w[git.md safety.md].each do |rule|
+        approved[".claude/rules/#{rule}"] = "<!-- helm-rule: agent-helm@v#{version} -->\n" + root.join("rules", rule).read
+      end
+      request += "\n\nI approve exactly this final AGENTS.md content; preserve all other content and rule markers:\n```markdown\n#{approved.fetch('AGENTS.md')}```"
     end
-    before = snapshot.call(workspace)
-    before_head = Open3.capture2("git", "rev-parse", "HEAD", chdir: workspace).first.strip
     instructions = "This is a disposable Helm compatibility fixture at #{workspace}. Operate only in this fixture and read the selected skill's packaged resources; no network, external services, global configuration changes, or access to other consumer projects. Follow the workflow's questions and approvals. If interactive questions are unavailable, present the pending question in your final response and stop; never invent an answer."
     prompt = if client == "claude"
-      "/agent-helm:#{scenario.fetch(:command)} #{scenario.fetch(:request)}"
+      "/agent-helm:#{scenario.fetch(:command)} #{request}"
     else
-      "Use $#{scenario.fetch(:command)}. #{scenario.fetch(:request)}"
+      "Use $#{scenario.fetch(:command)}. #{request}"
     end
     command = if client == "claude"
       ["claude", "--plugin-dir", root.to_s, "--setting-sources", "", "--strict-mcp-config", "--model", "claude-opus-5-5", "--effort", "high",
@@ -108,7 +109,7 @@ cases.each do |name, scenario|
       ["codex", "exec", "--ephemeral", "--sandbox", "workspace-write", "--json", "--cd", workspace.to_s, "#{instructions}\n\n#{prompt}"]
     end
     stdout = stderr = status = nil
-    Timeout.timeout(240) { stdout, stderr, status = Open3.capture3(*command, chdir: workspace, stdin_data: "") }
+    Timeout.timeout(240) { stdout, stderr, status = Open3.capture3(HelmSmoke.environment, *command, chdir: workspace, stdin_data: "") }
     raise "#{name}: #{client} failed: #{stderr.to_s[-2000..]}" unless status.success?
     if client == "claude"
       result = JSON.parse(stdout)
@@ -122,24 +123,19 @@ cases.each do |name, scenario|
       answer = events.filter_map { |event| event.dig("item", "text") if event.dig("item", "type") == "agent_message" }.join("\n")
     end
     raise "#{name}: no final answer" if answer.to_s.strip.empty?
-    if scenario.fetch(:unchanged)
-      raise "#{name}: modified files before the pending gate" unless snapshot.call(workspace) == before
-    else
-      raise "#{name}: changed the existing memory owner" unless Digest::SHA256.file(workspace.join("CLAUDE.md")).hexdigest == before.fetch("CLAUDE.md")
+    HelmSmoke.assert_files_unchanged!(workspace, before, approved)
+    unless scenario.fetch(:unchanged)
       %w[git.md safety.md].each do |rule|
-        path = workspace.join(".claude/rules", rule)
-        raise "#{name}: missing copied #{rule}" unless path.file?
-        version = scenario.fetch(:rules_version, JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version"))
-        raise "#{name}: copied different rules" unless path.read == "<!-- helm-rule: agent-helm@v#{version} -->\n" + root.join("rules", rule).read
+        path = ".claude/rules/#{rule}"
+        raise "#{name}: copied different rules" unless HelmSmoke.read_regular(workspace, path) == approved.fetch(path).b
       end
-      owner = workspace.join("AGENTS.md")
-      raise "#{name}: missing shared owner" unless owner.file?
-      raise "#{name}: missing explicit copied-rule pointers" unless owner.read.include?(".claude/rules/git.md") && owner.read.include?(".claude/rules/safety.md")
-      raise "#{name}: missing Claude import" unless workspace.join("CLAUDE.md").read.include?("@AGENTS.md")
+      raise "#{name}: changed approved shared owner" unless HelmSmoke.read_regular(workspace, "AGENTS.md") == approved.fetch("AGENTS.md").b
+      raise "#{name}: missing Claude import" unless HelmSmoke.read_regular(workspace, "CLAUDE.md").include?("@AGENTS.md")
     end
-    head = Open3.capture2("git", "rev-parse", "HEAD", chdir: workspace).first.strip
-    branches = Open3.capture2("git", "branch", "--format=%(refname:short)", chdir: workspace).first.lines.map(&:strip)
-    raise "#{name}: unexpected commit or branch mutation" unless head == before_head && branches == ["main"]
+    HelmSmoke.assert_git_unchanged!(workspace, before_git)
+    if scenario[:expected_proposal]
+      raise "#{name}: corrected message proposal missing" unless answer.include?(scenario.fetch(:expected_proposal))
+    end
     raise "#{name}: wrapper owner not identified" if name == "custom-memory-wrapper" && !answer.include?("AGENTS.md")
     if name == "conflicting-config"
       raise "#{name}: configuration conflict not reported: #{answer}" unless %w[CLAUDE.md AGENTS.md direct pr].all? { |value| answer.include?(value) }
