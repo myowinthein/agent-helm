@@ -15,6 +15,11 @@ task :docs_test do
   HTMLProofer.check_directory("./_site", disable_external: true, swap_urls: swaps, checks: %w[Html Images Scripts Links]).run
 end
 
-desc "Check plugin packaging and documentation"
-task test: %i[plugin_test docs_test]
+desc "Test pure normalize checks and semantic coverage selection with synthetic inputs"
+task :normalize_test do
+  sh "python3", "-I", "-B", "scripts/test_normalize.py"
+end
+
+desc "Check plugin packaging, normalize mechanics and documentation"
+task test: %i[plugin_test normalize_test docs_test]
 task default: :test

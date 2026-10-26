@@ -6,7 +6,7 @@ Apply only when the invoked workflow owns the selected file. State is shared by 
 |---|---|---|
 | refactor | `.helm/refactor-log.json` | 2, native provenance only |
 | test | `.helm/test-log.json` | 3 |
-| normalize | `.helm/normalize-log.json` | 1 |
+| normalize | `.helm/normalize-log.json` | 2, semantic baseline/policy/contract evidence |
 | legal | `.helm/legal-manifest.json` | 1 |
 
 ## Resolve and validate
@@ -19,7 +19,7 @@ Reject symlinked files/directories, escaping paths and conflicting occupants. St
 
 Keep complete input validation and bounded working views separate: do not dump every record into model context, truncate the document or drop unmatched history. The owner defines IDs, evidence, scopes, anchors and eligible checkpoints. Missing commit objects, stale context and malformed identities have distinct outcomes; never manufacture provenance or passing checks.
 
-At refactor/test's eligible normal owning-state entry, the parent loads the [read-only ledger helper](ledger-helper.md) and prefers its packaged `ledger-check` / digest-bound `ledger-view` interface for complete structural validation and bounded retrieval. Its [contract](../../helpers/ledger-contract.json) defines the existing schemas' structural shapes, not a new ledger version. The bundled implementation needs Python 3.11+; if Python/execution is unavailable, offer/reuse the reference's run-scoped Set up Python / Continue without Python / Stop choice. Approved available equivalent tools may satisfy the same complete validation, safe-path, digest/retrieval and preservation checks. Without that evidence, dependent edits/writes remain pending; manual views are advisory. Invalid/unsupported inputs, limits, drift and broken packages cannot be bypassed by fallback. No helper or ledger access is added to source-only inspection, runtime loading or unrelated commands. Legal/normalize retain their existing validation; semantic/source/approval checks remain owner responsibilities. This interface adds no writer.
+At refactor/test's eligible normal owning-state entry, the parent loads the [read-only ledger helper](ledger-helper.md) and prefers its packaged `ledger-check` / digest-bound `ledger-view` interface for complete structural validation and bounded retrieval. Its [contract](../../helpers/ledger-contract.json) defines the existing schemas' structural shapes, not a new ledger version. The bundled implementation needs Python 3.11+; if Python/execution is unavailable, offer/reuse the reference's run-scoped Set up Python / Continue without Python / Stop choice. Approved available equivalent tools may satisfy the same complete validation, safe-path, digest/retrieval and preservation checks. Without that evidence, dependent edits/writes remain pending; manual views are advisory. Invalid/unsupported inputs, limits, drift and broken packages cannot be bypassed by fallback. No helper or ledger access is added to source-only inspection, runtime loading or unrelated commands. Legal retains its owning validation; normalize uses its separate [review contract](../normalize-review.md). Semantic/source/approval checks remain owner responsibilities. Neither helper interface adds a writer.
 
 ## Write current state
 
