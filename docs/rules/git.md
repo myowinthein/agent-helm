@@ -14,6 +14,8 @@ Use [adopt](../commands/adopt.html) to install it together with [Safety](safety.
 
 In the shared layout, settings live in `AGENTS.md`, while `CLAUDE.md` imports it. The agent follows actual imports, nested instructions and applicable overrides rather than assuming every root file owns the settings. Conflicting or invalid settings block the actions that depend on them.
 
+New `## Project Config` sections use one `- key: value` bullet per setting for readable Markdown. Existing plain declarations and recognized fenced configuration remain supported and keep their format. All three formats resolve the same settings and conflict checks.
+
 | Setting | Default | Purpose |
 |---|---|---|
 | `ship-method` | `pr` | `direct` pushes reviewed work; `pr` creates or reuses PR/MR handoffs through ship. |

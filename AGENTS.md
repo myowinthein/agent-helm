@@ -8,10 +8,10 @@ Plugin name: `agent-helm`. Marketplace: `agent-helm-marketplace`. Workflow chang
 
 ## Project Config
 
-ship-method: direct
-git-auto-commit: true
-git-merge-strategy: squash
-readme-style: custom
+- ship-method: direct
+- git-auto-commit: true
+- git-merge-strategy: squash
+- readme-style: custom
 
 ## Dev Commands
 

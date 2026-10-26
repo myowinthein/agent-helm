@@ -66,6 +66,8 @@ The proposal explains what changed and why it will help future sessions. You can
 
 You get the verified instruction files, a summary of changes and any unresolved knowledge. Log reports the instruction file's size and aims to keep it focused, without deleting useful context to meet a quota. Missing Helm preferences are collected during setup and saved only through the approved change.
 
+New Project Config sections use one `- key: value` bullet per setting. Existing plain, bullet-list or fenced configuration keeps its format unless you request a change.
+
 The `last-reviewed` comment identifies the source snapshot assessed. It advances only after a complete review and acceptance of all substantive findings. Partial acceptance keeps the earlier marker; layout changes alone do not advance it. A genuine no-change result leaves files untouched and reports local currency, without claiming the remote was checked.
 
 Eligible changes follow your local commit policy. Log finishes on the same branch and keeps no separate ledger. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish when ready.
