@@ -2,6 +2,8 @@
 
 Load only at refactor Step 3 or test Step 2 when the invoked owner permits its own state access, including that owner's later authorized pre-write/readback checks. The parent alone invokes it. Refactor's source-only preview and its report-only exit, workers, source investigations, unrelated commands and agent switches never invoke it or load ledgers. This is an explicit packaged read-only operation in those eligible owner paths, not permission to execute project code or override source-inspection boundaries.
 
+Inherit the caller's QM map: unavailable-runtime choices are Single; missing setup facts are Input; actual setup effects need the existing concrete Review. Loading QM grants no helper or ledger access.
+
 ## Runtime and package
 
 Prefer an available **Python 3.11+** interpreter for the bundled helper in the current execution environment, which may differ between terminal, desktop and Cowork. Resolve `python3`, `python` or Windows `py -3` as appropriate; do not install Python/packages or change permissions/global settings automatically. The helper self-checks its minimum version. It uses only the standard library and performs no writes, Git/subprocess calls, network requests or consumer-code imports. Python is not mandatory for the workflow when the approved equivalent-tool fallback below can satisfy the same ledger checks.

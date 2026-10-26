@@ -103,17 +103,53 @@ Dir.mktmpdir("helm-package-") do |temp|
     icon.binwrite(original)
   end
 
-  missing = installation.join("prompts/archive/step1-explore.md")
-  original = missing.read
-  missing.delete
-  begin
-    HelmValidation.validate(installation)
-    raise "Missing archive prompt was accepted"
-  rescue RuntimeError => error
-    raise unless error.message.include?("Missing packaged resource")
-  ensure
-    missing.write(original)
+  %w[prompts/archive/step1-explore.md prompts/shared/question-mechanism.md].each do |path|
+    missing = installation.join(path)
+    original = missing.read
+    missing.delete
+    begin
+      HelmValidation.validate(installation)
+      raise "Missing supporting prompt was accepted: #{path}"
+    rescue RuntimeError => error
+      raise unless error.message.include?("Missing packaged resource")
+    ensure
+      missing.write(original)
+    end
   end
+
+  workflow = installation.join("workflows/log.md")
+  original_workflow = workflow.read
+  {
+    "missing QM map" => original_workflow.sub("## Question points", "## Unmapped questions"),
+    "missing QM reference" => original_workflow.sub("[QM](../prompts/shared/question-mechanism.md)", "the native picker"),
+    "Claude-only question" => original_workflow + "\nAskUserQuestion:\n",
+    "Codex-only question" => original_workflow + "\nrequest_user_input_async\n",
+    "native selection field" => original_workflow + "\nmultiSelect: true\n"
+  }.each do |label, text|
+    workflow.write(text)
+    rejected = begin
+      HelmValidation.validate(installation)
+      false
+    rescue RuntimeError => error
+      error.message.start_with?("Workflow must ")
+    ensure
+      workflow.write(original_workflow)
+    end
+    HelmValidation.check(rejected, "Validator accepted a #{label}")
+  end
+
+  runtime_path = installation.join("prompts/shared/runtime.md")
+  original_runtime = runtime_path.read
+  runtime_path.write(original_runtime.sub("[Question mechanism (QM)](question-mechanism.md)", "native questions"))
+  rejected = begin
+    HelmValidation.validate(installation)
+    false
+  rescue RuntimeError => error
+    error.message == "Shared runtime must load QM before human questions"
+  ensure
+    runtime_path.write(original_runtime)
+  end
+  HelmValidation.check(rejected, "Validator accepted an unreachable shared QM")
 
   link = installation.join("prompts/shared/runtime.md")
   runtime = link.read
@@ -168,4 +204,4 @@ Dir.mktmpdir("helm-package-") do |temp|
   HelmValidation.check(workspace.children.empty?, "Relocation tests left consumer files behind")
 end
 
-puts "Passed shared-SVG, relocated-package, missing-resource, path-containment, and real Git-archive checks."
+puts "Passed shared-SVG, shared-QM routing, relocated-package, missing-resource, path-containment, and real Git-archive checks."

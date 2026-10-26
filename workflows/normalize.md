@@ -2,6 +2,18 @@
 
 Review commit messages against the project's effective policy, review exact replacements, and optionally rewrite all affected local branches together after explicit approval. Message-review scope and the resulting rewrite scope are distinct. Preserve all existing tags, remote-tracking refs, stashes, notes, and unaffected refs. Both hosts follow this workflow; inspection, local rewriting and ledger commits have separate authorization. This command never publishes; invoke ship separately when ready.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Missing named review refs, policy/intent facts or identified recovery evidence | Input; Single for evidenced interpretations. No routine branch-scope picker. |
+| Exact per-message Accept / Edit / Keep / Defer | Single beside each complete before/after message, preserving independent decisions in any coherent batch; Edit → Input for exact wording. This selects wording, not a rewrite. |
+| All-affected-branch rewrite and disclosed ledger-anchor maintenance | Review of the complete impact plan, separately from message selection. No subset picker for affected branches. |
+| Meaningful no-rewrite checkpoint, changed invalidation or missing local commit approval | Review of the actual record delta/subject; no question or write for bookkeeping-only no-ops. |
+| Identified partial-run continuation | Input for missing provenance, then Review only for the missing actions lacking valid approval. |
+
 ## Before starting: scope and policy
 
 Read the shared runtime, resolve `{memory_file}`, active overrides and local `git-auto-commit` (absent means off), signing and ref-update policy before dependent actions. Never edit instruction entries or Helm settings. The current attached branch is the eligible local ledger destination, whether base, feature or environment, under actual project restrictions. Ship method and merge strategy neither choose the rewrite set nor require a bookkeeping branch.

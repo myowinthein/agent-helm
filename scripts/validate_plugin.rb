@@ -79,6 +79,11 @@ module HelmValidation
     check(groups.all? { |names| names.sort == NAMES }, "Expected the same ten skills and workflows")
 
     NAMES.each do |name|
+      workflow = read(resource(root, "workflows/#{name}.md"))
+      check(workflow.include?("## Question points") && workflow.include?("[QM](../prompts/shared/question-mechanism.md)"),
+            "Workflow must map its question points to shared QM: #{name}")
+      check(!workflow.match?(/\b(?:AskUserQuestion|request_user_input(?:_async)?|multiSelect)\b/),
+            "Workflow must use shared QM instead of native question fields: #{name}")
       skill = resource(root, "skills/#{name}/SKILL.md")
       metadata = frontmatter(skill)
       check(metadata["name"] == name, "Skill name does not match its directory: #{name}")
@@ -102,7 +107,10 @@ module HelmValidation
       read(file).scan(%r{\{package_root\}/([\w./-]+\.md)}).flatten.each { |path| resource(root, path) }
     end
     check(root.glob("prompts/archive/step*.md").length == 5, "Archive steps must stay separate from discoverable entry points")
-    %w[rules/git.md rules/safety.md rules/writing.md prompts/shared/runtime.md prompts/shared/project-state.md].each { |path| resource(root, path) }
+    %w[rules/git.md rules/safety.md rules/writing.md prompts/shared/runtime.md prompts/shared/project-state.md
+       prompts/shared/question-mechanism.md].each { |path| resource(root, path) }
+    check(read(root.join("prompts/shared/runtime.md")).include?("[Question mechanism (QM)](question-mechanism.md)"),
+          "Shared runtime must load QM before human questions")
     %w[helpers/helm.py helpers/helm_lib/__init__.py helpers/helm_lib/common.py helpers/helm_lib/ledger.py
        helpers/ledger-contract.json prompts/shared/ledger-helper.md].each { |path| resource(root, path) }
     contract = JSON.parse(read(resource(root, "helpers/ledger-contract.json")))

@@ -1,5 +1,17 @@
 # manifest
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| README target, format/placement conflict or instruction dependency | Single for known safe alternatives; Input for a custom target. |
+| Missing/requested README style and eligible scan/repair/style-only route | Single, preserving Save style only and Cancel as distinct outcomes. |
+| Custom outline/reference and unknown contribution/license facts | Input; the proposed outline's names/order require Review before drafting. |
+| Existing README/content conversion and pending style diff | Review; Apply some → Multi, Revise → Input. Full scan alone grants no replacement approval. |
+| Local commit when invocation policy requires approval | Review of the actual README/configuration diff and subject. |
+
 ## Before starting
 
 Resolve `{memory_file}` through the shared runtime before any Git mutation or file write. If the resolved owner does not exist, stop: "Run the log workflow first to establish shared project instructions, then re-run manifest." Do not create instruction files, migrate an owner, or automatically invoke log. Existing bridges, overrides, conflicts, and missing import targets follow the runtime's resolution rules.

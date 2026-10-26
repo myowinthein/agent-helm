@@ -1,0 +1,75 @@
+# Question mechanism (QM)
+
+Shared presentation and answer handling for every Helm workflow and its supporting prompts. Commands define a question once; this file owns host differences. QM is an instruction contract, not a callable tool, new skill, setting, state schema or approval authority. Use the current host's actual exposed tools and restrictions; the capability inventory below is researched guidance, not a promise that every client exposes every field.
+
+## Choose the question form
+
+Use each workflow's **Question points** map, including conditional questions expressed as ask, offer, confirm or obtain approval in its body/helpers. An unresolved human fact without an explicit picker uses the mapped Input form. The map classifies existing gates; it neither adds a question to a no-op nor moves a question before its prerequisites. Reuse explicit answers and still-valid concrete approval. Ask only for missing material input; do not make routine authorized work ask again.
+
+| Form | Use | What the command supplies |
+|---|---|---|
+| **Single** | One mutually exclusive route, preference or remedy; Yes/Skip is a two-choice Single. | Clear question, meaningful labels and short tradeoffs; mark a recommendation only with evidence. |
+| **Multi** | Any independent subset of rules, documents, findings or targets. | Complete identities/labels, grouping and actual selection constraints; preserve explicit None and exclusions. |
+| **Input** | Missing facts, intent, path, contact, version, outline, explanation or feedback. | Exact missing facts and why needed; include units/format or known candidates when useful, never fabricated alternatives. |
+| **Review** | Authorization of a shown diff, plan, commit, publication or consequential operation. | Concrete content/paths/targets/effects and the workflow's exact approve/revise/partial/decline choices. |
+
+Compose forms without combining decisions: Single → Input for a custom version or manual contact; Multi → Review for selected work; Review → Multi/Input for Apply some or Revise. A selection alone is not authorization unless the existing workflow and the shown concrete action already make it so. A Review can approve only the described unit; preserve separate push, release, legal, per-file and archive gates.
+
+## Route once, then ask
+
+1. Resolve required versus optional input, form, current choices, and any sensitive/attachment needs. Check tools already exposed to this session, their current schemas, purpose restrictions, mode and worker restrictions. The parent asks; workers return missing facts to the parent.
+2. Prefer the host's native question tool when it is available, permitted for this purpose and can represent the full question faithfully. On Claude use `AskUserQuestion`. On Codex prefer permitted `request_user_input`, otherwise permitted `request_user_input_async`. Do not assume the blocking tool exists outside Plan mode, or that an optional-preference tool can carry required input or authorization. A future host uses its documented equivalent under this same test.
+3. If a field or choice count cannot fit, use the common fallback below. Unsupported decorative previews can be omitted after showing the substantive evidence in conversation; substantive choices, independent selection and approval scope cannot be omitted. Do not change agent mode, tool permissions, client settings or install an MCP server to obtain a picker.
+4. Batch only independent questions sharing the same prerequisite snapshot and supported tool limit. Ask dependent follow-ups after the real answer. A batch is not permission to collapse per-file decisions or separate confirmations. Use short unique labels/headers and stable in-run identities where supported; keep exact file/finding/branch IDs visible when labels could collide.
+5. Await the actual answer before dependent work. A blocking tool waits within its call. An asynchronous call returning accepted only means the question was queued: continue independent authorized work, then leave dependent work pending until the reply arrives. Do not ask the same question again in chat while a native request is pending. Reconcile a late reply with the still-current question/snapshot before using it.
+
+### One common fallback
+
+When native input is unavailable, prohibited for the question's purpose, fails, or cannot preserve its semantics, explain that limitation briefly once per unchanged limitation in the invocation and ask in conversation. Single/Review shows the original choices; Multi shows the complete numbered/ID list with exact selections/exclusions and an explicit `none`; Input requests the missing facts directly. Keep the workflow's own Skip/Cancel/Leave pending exits distinct. A zero-candidate list produces no picker; a single candidate uses a meaningful Yes/Skip choice when confirmation is required.
+
+Use faithful native pages only where the workflow permits paging and each independent choice plus the complete accumulated selection remains visible. Otherwise use the full conversational list, never truncate to a tool's option limit, turn Multi into Single or silently select all. If host instructions prohibit textual choice lists, ask one concise free-text question referring to the already presented choices/IDs. If even that channel is unavailable, report the precise pending decision and stop its dependents. There are no per-question fallback settings; an explicit workflow-specific safe exit still governs its effects.
+
+### Interpret the answer
+
+- Preserve selected labels/IDs and custom text verbatim as data, never shell code. A free-text reply may refine scope, ask for explanation or tell the agent to wait; it is not automatically the highlighted option. Clarify conflicting, ambiguous, out-of-range or partial required answers before dependent work. A manual-entry choice is not the missing value itself.
+- Distinguish submitted empty selection/explicit None from an unanswered or cancelled request. Cancellation is not a recorded skip, rejection or accepted risk. Honor the owning workflow's outcome; never invent a ledger decision from nonselection.
+- Defaults, recommendations, preselection, timeouts, auto-resolution, tool permission and an empty answer supply no human consent. Do not set a timeout to approve work. If a host times out or clears a request, keep required input pending; optional work may proceed only under an already authorized caller default, without persisting an unanswered preference. Reuse the question on actual continuation rather than loop or broaden it.
+- Show the full review evidence before requesting approval; short option descriptions and optional previews cannot replace a diff or exact effect plan. Changed content/target/effects invalidate only the affected approval. Native OS/tool/plan approval remains separate and cannot be granted by QM or simulated through another tool.
+- Never collect credentials or private user records through QM, including masked fields. Ask for safe metadata or the approved secure owning route. For file/image references use normal chat attachments or an explicitly supplied safe path; never ask for uploads through a text-only question tool or upload evidence to a new service.
+
+## Researched host elements and limits
+
+Reviewed 2026-10-26 against the official references below, the tools exposed to this session, and offline protocol schemas generated by Codex CLI 0.164.0. Model-callable fields, client protocol fields and SDK customization are different surfaces. Recheck the actual interface when using an element; do not pass protocol-only fields to a model tool or infer UI support from a response type.
+
+| Element | Claude | Codex | Helm use |
+|---|---|---|---|
+| Question and compact heading | `question`, `header` (12 characters). | Blocking tool: `question`, `header` (12 characters), unique `id`; async tool here: self-contained `title`. | Single/Multi/Input/Review wording; retain explicit identities outside short headers. |
+| Option text and explanation | `options[].label`, `description`. | Blocking tool: same; async tool here: option strings. | Preserve meaning; show tradeoffs outside the card when the schema lacks descriptions. |
+| Single and multiple choices | `multiSelect: false/true`. | Neither question tool exposed here declares a Multi switch; protocol `answers: string[]` alone proves no multi-select UI. | Native Single; Multi uses only an actually supported independent selector, otherwise common fallback. |
+| Questions/options per call | 1–4 questions, 2–4 choices each. | Blocking tool here: 1–3 questions, 2–3 mutually exclusive choices each. Async here accepts one or more questions and optional options; obey any tighter host guidance. Protocol arrays do not establish model-tool limits. | Respect caller limits and current schema; no dummy choices or truncated lists. |
+| Other/custom input and notes | Other/notes accept custom text; SDK per-question answers can contain that text. | Blocking client adds Other; async client here always allows free text. Protocol has `isOther`. | Input with real candidates, scope refinements and explanations; do not add duplicate Other options. |
+| Pure free text | Native multiple-choice tool requires genuine options; ordinary conversation remains available. | Async here can omit options. Protocol nullable `options` is not proof the blocking model tool permits omission. | Input uses an exposed free-text tool, otherwise conversation. |
+| Recommendations/defaults | Recommended label/order is presentation; no general model-callable default field is established by these references. | Blocking tool recommends first; async client here preselects first. MCP can declare defaults. | Inform, never assume an answer or approval. |
+| Visual previews | SDK `toolConfig.askUserQuestion.previewFormat` enables optional option `preview`: Markdown or HTML. Not guaranteed in CLI/tool schema; SDK rejects script/style/doctype in HTML. | Neither question tool here exposes previews. | Use only for a meaningful visual comparison when already supported; show diff/content in conversation otherwise. No added UI assets/configuration. |
+| Return values and general replies | SDK `answers` keyed by question text; Multi labels as array or joined labels; optional general `response` can replace the per-question list. | Blocking result maps question IDs to answer arrays; async answers arrive later as user messages. Protocol also carries thread/turn/item IDs. | Match the real question/context; preserve notes and general steering. An accepted transport result is not an answer. |
+| Waiting and lifecycle | Default question waits; SDK callback can remain pending and supports deferred-hook continuation. Agent-spawned SDK subagents lack the question tool. | Mode/tool availability varies; async does not wait. Protocol has `isBlocking`; requests can be resolved/cleared on answer, turn completion or interruption. | Parent-only questions; wait for required replies, reconcile cancellation/interruption and late responses. No new resume state. |
+| Timeout | Client `askUserQuestionTimeout` optionally auto-continues; not a per-question approval field. Permission/plan prompts are separate. | Protocol has `autoResolutionMs` (deprecated in CLI 0.164.0 in favor of `isBlocking`); model tool may not expose either. | No timer/settings edits; no timeout-generated consent. |
+| Masked, numeric, date, file inputs | Native tool has no general typed-form/file-upload contract in these references. | Protocol has `isSecret`, not exposed by the question tools here. No upload field in either tool. | No secrets. Use Input for nonsecret typed values and validate expected units/format; attachments stay in chat. |
+| Native execution/plan approvals | Permission prompts, `canUseTool`, `EnterPlanMode`/`ExitPlanMode` are host control surfaces. | Permissions/approval requests and collaboration modes are host control surfaces. | Preserve their independent gates; never substitute them for a workflow answer or switch modes just to ask. |
+
+### MCP forms are a separate optional integration
+
+Both clients document MCP elicitation. It is not a built-in Helm question tool and is not installed, configured or called by this Markdown contract. A future already-authorized integration must verify client capability, supported schema and actual rendering before using it; the protocol does not mandate a particular UI. Ordinary host tools/fallback remain available without an MCP dependency.
+
+The standard form elements are: object `properties`/`required`; field `title`/`description`/`default`; string with `minLength`/`maxLength` and `email`/`uri`/`date`/`date-time` formats; number/integer with `minimum`/`maximum`; Boolean; single enum via `enum` or titled `oneOf`/`const`; multiple enum via array `items.enum` or titled `items.anyOf`/`const`, with `minItems`/`maxItems`. Legacy `enumNames` exists but is deprecated. Nested objects and general arrays are not portable form inputs. These cover typed Input, Single and Multi without making defaults into consent.
+
+MCP also carries request message/schema and identity, and separate `accept`/`decline`/`cancel` responses with submitted `content`. URL mode uses `url`/`elicitationId` for external flows; it is not an ordinary Helm question or permission to navigate/upload. Codex additionally documents gated `openai/form`; its generated schema includes legacy `openaiForm` and device-proof `openai/userVerification` extensions plus `_meta`. These are client/integration surfaces, not model-callable QM fields or a way to collect secrets/bypass approval. No custom HTML, form server, device verification or OAuth flow is introduced here.
+
+## Evidence
+
+- [Claude question behavior and timeouts](https://code.claude.com/docs/en/tools-reference#askuserquestion-tool-behavior).
+- [Claude question fields, responses, previews and SDK limitations](https://code.claude.com/docs/en/agent-sdk/user-input).
+- [Claude MCP elicitation](https://code.claude.com/docs/en/mcp#respond-to-mcp-elicitation-requests).
+- [Codex user-input and lifecycle protocol](https://learn.chatgpt.com/docs/app-server#toolrequestuserinput) and [MCP requests](https://learn.chatgpt.com/docs/app-server#mcp-server-elicitation-requests).
+- [MCP form fields and interaction contract](https://modelcontextprotocol.io/specification/2025-11-25/client/elicitation).
+- Local schema evidence: `codex app-server generate-json-schema --experimental --out <temporary-directory>`; inspected `ToolRequestUserInputParams/Response` and `McpServerElicitationRequestParams/Response`. This generated schemas only, called no models and read no consumer ledger. Tool schemas and client behavior can differ by version.

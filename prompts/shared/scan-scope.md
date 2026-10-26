@@ -42,7 +42,7 @@ With a valid anchor, explicitly requested Gap scan can cover broad changes compl
 
 Explain briefly: recommended existing mode, observed reason, actual review scope/limits and independently eligible alternatives. For example: "Gap scan recommended: the validated range affects one reader workflow; Full scan or Skip is also available." Do not fabricate counts, prior coverage or a no-change result.
 
-Reuse explicit mode selections; otherwise use the caller's existing question/fallback. Preserve independent choices above the native four-option limit through existing paging/chat, never merging report-only with Cancel or silently truncating choices. A recommendation, default, silence or timeout is not consent.
+Reuse explicit mode selections; otherwise use the caller's QM Single and its common fallback. Respect the caller's four-choice limit and the current host's potentially tighter limits; preserve all independent choices through permitted paging or the complete-list fallback, never merging report-only with Cancel or silently truncating choices. A recommendation, default, silence or timeout is not consent.
 
 Full scan is a review scope, not permission to replace files, run every test or execute effects. The caller alone owns investigation depth, branch/safety/approval gates, no-op handling and persistence: log/manifest retain their acceptance-and-marker rules; test retains separate assessment/case-closure checkpoints; refactor retains its scan/backlog history. This helper changes none of them and is not automatically loaded by the shared runtime.
 

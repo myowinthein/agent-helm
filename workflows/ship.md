@@ -2,6 +2,22 @@
 
 Publish reviewed work through one workflow: inspect pending work, use verified history-replacement or private archive procedures when applicable, handle selected branch targets and offer an approved release on ready main/master. Publication, PR handoff, integration, release and deployment remain separate outcomes. Never publish registry packages or upload release assets automatically.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and in the selected publication/provider helpers; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Missing source/role/destination/product/stream/version/private-evidence identity | Input or Single for actual candidates; never infer scope from divergence or a branch prefix. |
+| Conflicting special routes or prepared-candidate status/resume | Single; archive inspection itself uses its existing Review before bundle access. |
+| Base preparation commit, exact source push/helper/PR creation and target action | Review of each concrete operation, reusing only sufficient same-action approval. |
+| Optional targets | Multi with None / Finish; Single Yes/Skip for one target. Target selection precedes exact action Review when not already concrete. |
+| Release / Skip / Choose another version / relevant Use 1.0.0 | Review of the shown release plan; custom/initial version → Input, then refresh Review. |
+| No configured test framework, supported sequential publication or hosted release | Review with the existing explicit proceed/leave-pending choices; failed/unavailable required checks remain blockers. |
+| History publication and archive payload/receipt publication | Separate Review of the exact selected protocol, fixed expectations and effects. |
+| Archive destination/privacy facts, preservation/cleanup, portable copy | Input for safe identity/paths; Single for retention route, Multi for independent candidates, then Review of exact effects. |
+| CI wait/recheck versus pending and missing resume operations | Single for wait/pending; Review only for missing mutations lacking valid approval. |
+
 ## Before starting: policy and permissions
 
 Apply the shared runtime and resolve effective instructions and `{memory_file}`. Resolve only the settings/capabilities needed by the selected work: `ship-method` (`direct`/`pr`, default pr; retired-key leftovers follow the Git rules' stop guard), independent `git-merge-strategy` (default squash), applicable base identity and provider policy. Freeze/recheck invocation policy; never write settings or migrate instruction ownership. Read `{package_root}/prompts/shared/ci.md` and `release-providers.md` before their gates. Independent optional targets have no tier ordering. Pass developer requests and answers unchanged, never as shell code.
@@ -157,7 +173,7 @@ After verified Git publication, offer **Create hosted release** / **Skip** for a
 
 ### Select optional targets after core publication
 
-After Step 1 core publication/handoff is verified (or its already-published no-op is proven), offer one complete selector with explicit **None / Finish**. Do not start target work before this choice. Preserve prior explicit selection of the same reviewed plan without asking again. No candidates means no question; one uses Yes/Skip, 2–4 use a picker, more use a complete numbered conversational multi-selection. Never truncate or preselect production/main as consent.
+After Step 1 core publication/handoff is verified (or its already-published no-op is proven), offer one QM Multi with explicit **None / Finish**. Do not start target work before this choice. Preserve prior explicit selection of the same reviewed plan without asking again. No candidates means no question; one uses QM Single Yes/Skip, 2–4 use native Multi when supported, more use QM's complete-list fallback. Never truncate or preselect production/main as consent.
 
 | Original current role | Optional targets |
 |---|---|

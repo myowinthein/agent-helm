@@ -2,6 +2,20 @@
 
 Preserve a selected old project, its working environment and useful recovery evidence. Source preservation, frozen-runtime recovery, offline rebuilding, backup coverage and archive publication are separate results.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and throughout all five supporting steps; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Actual source branch/full HEAD and excluded work | Review Proceed on this branch / Cancel before pending phases. |
+| Recovery goal/features, optional offline goals and missing setup/data facts | Single for alternative goals/data routes; Multi for independent optional scope; Input for missing nonsecret facts/safe supplied paths. |
+| Each phase's proposed actions and exact report | Review at its existing separate plan/report gates. No combined blanket approval across phases. |
+| Restoration feedback/developer check and freeze approach | Single Check / Decline / Defer as applicable, then Input for feedback and Single for actual freeze alternatives; execution retains Review. |
+| API materials Retain / Repair / Create / Skip and useful optional companions | Single per actual artifact; independent optional outputs use Multi within the reviewed phase plan. |
+| Protected output alternatives, documentation/consolidation, storage per artifact | Single for safe placements/storage routes; Input for custom paths; Review for exact content/moves/exclusions. |
+| Cold rehearsal, requests/imports, image exports, service stops and local payload commit | Review of the exact existing action/target gate. Local preparation never asks to publish. |
+
 ## Before starting: recovery goal and policy
 
 Apply the shared runtime and resolve `{memory_file}` before Git actions, following bridges, overrides, and recognized configuration blocks. Configuration remains in that owner, normally AGENTS.md through CLAUDE.md's import on Claude or directly on Codex. Archive does not create, move, consolidate, or edit either instruction entry or Helm settings. Its explicitly confirmed local payload uses the current selected source branch; remote backup publication is separately approved through ship; do not silently apply a normal development branch/commit policy or let auto-commit bypass archive approvals. Resolve conflicts with active project rules before mutation.

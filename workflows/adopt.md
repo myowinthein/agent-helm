@@ -2,6 +2,18 @@
 
 Install or update selected Helm rules as shared local copies in `.claude/rules/`. Claude and Codex use the same files. External installation/cache/GitHub references are unsupported; preserve any such pointers and stop with upgrade guidance before dependent writes. This command has no reference-mode converter or unavailable-external-target recovery.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Ambiguous project/adoption root or supplied copy source | Single for known candidates; Input for an explicit safe path or missing facts. |
+| Non-project directory confirmation | Review of the named directory and proposed effect. |
+| Applicable install/connect/update/keep route; optional writing | Single; independent rule selection uses Multi, preserving the Git/safety dependency. |
+| Foreign overwrite, managed replacement, rollback or repair | Review per named file with its actual diff/version; never replace separate decisions with one bulk answer. |
+| Pointer/adapter changes and local commit when approval is missing | Review, reusing the exact per-file/plan approval where already sufficient. |
+
 ## Rule catalog and selection
 
 Use this catalog for inventory, source validation, per-file decisions, copy/update, pointer handling and reporting. `{name}` is a catalog filename, never an arbitrary path. Do not infer a fixed two-rule installation from older copies or examples.
@@ -64,11 +76,10 @@ Decide based on what is present:
 - **Empty directory** (no project markers and no other files) → proceed silently. This is a plausible fresh-project setup with nothing to clobber.
 - **Non-empty but no project markers** → this is the suspicious case (a populated folder that isn't a project — possibly the wrong directory). Confirm before writing:
 
-  AskUserQuestion:
+  QM Review:
     question: "This directory has files but does not look like a project (no .git, no {adopt_file}, no recognised manifest). Continue anyway?"
     header:   "Confirm"
-    multiSelect: false
-    options:
+    choices:
       - label: "Continue"
         description: "Adopt rules here anyway"
       - label: "Cancel"
@@ -207,11 +218,10 @@ Record the action as `connected` (or `already connected`), not as a rule copy/up
 
 For each selected Foreign file, collect the answer before any mutation. If at least one overwrite was selected, include a proposed action for a missing or outdated required companion in the same reviewed plan, using the explicit per-rule Apply/Skip questions; it must not disappear merely because the aggregate state is CONFLICT. Writing is independent and never an automatic companion. Preserve newer managed companion rules unless their rollback was explicitly approved. Never bundle a companion write into approval to overwrite a different file.
 
-AskUserQuestion:
+QM Review:
   question: "{file} already exists and was not created by helm. Overwrite it with the plugin's version?"
   header:   "Foreign file"
-  multiSelect: false
-  options:
+  choices:
     - label: "Overwrite"
       description: "Replace it with the helm version — adds the marker and the local ## Rules entry"
     - label: "Skip"

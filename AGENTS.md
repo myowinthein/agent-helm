@@ -28,6 +28,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 
 - `skills/*/SKILL.md` are the only ten discoverable entry points. They resolve the loaded package's `prompts/shared/runtime.md` and canonical `workflows/*.md`; each `agents/openai.yaml` disables implicit invocation.
 - `prompts/shared/runtime.md` owns package/workspace resolution and host boundaries. `content-sync.md` owns shared local-edit Git steps; `project-layout.md` owns log's shared instruction setup.
+- `prompts/shared/question-mechanism.md` owns native question routing and one common fallback. All ten workflows map their question points to Single, Multi, Input or Review; keep client-specific fields out of workflow bodies.
 - `prompts/shared/scan-scope.md` recommends Full scan / Gap scan only at an existing choice. `investigation-evidence.md` defines transient source/commit inventories and coverage; neither is runtime-autoloaded or grants state access.
 - `helpers/helm.py`, `helpers/helm_lib/` and `helpers/ledger-contract.json` implement read-only validation and digest-bound retrieval. Python 3.11+ and standard library only; no writer, project-code execution or network. `prompts/shared/ledger-helper.md` owns invocation and the checked fallback when Python is unavailable.
 - `prompts/refactor-ledger.md` defines refactor's native provenance and checkpoint semantics. `prompts/shared/project-state.md` defines owning-workflow access and preservation.

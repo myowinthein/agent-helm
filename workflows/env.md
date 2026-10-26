@@ -2,6 +2,19 @@
 
 Audit environment files, `.gitignore` and relevant project code/configuration, then apply only approved fixes. Preserve intentional differences between services, modes and local overrides.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Unresolved loader/file role, environment branch or intended key behavior | Input using paths/key names only; Single for evidenced alternatives. Never request secret values. |
+| Env files and .gitignore target selection | Multi for both independent targets; Single Work through findings / Skip for one. |
+| Coherent redacted fix/template plan | Review; Choose changes → Multi by finding IDs, Revise → Input. |
+| Duplicate assignments or existing-key conflicts | Single for exact safe location/action alternatives; Input for missing nonsecret intent. Resolve before the unit's Review. |
+| Exact untracking operation | Separate Review preserving local files and explaining history limits. |
+| Local commit when invocation policy requires approval | Review of committable paths only; local env inputs remain unstaged. |
+
 ## Before starting
 
 Apply the shared runtime's instruction/configuration resolution first. Read effective Helm settings from `{memory_file}` when present, including bridges, overrides and recognized fenced configuration; genuinely absent settings use the Git rules' defaults. Env never creates/migrates an instruction owner, writes settings to AGENTS.md/CLAUDE.md, invokes log, or reads/writes/migrates operational Helm state. It owns no ledger or review marker.

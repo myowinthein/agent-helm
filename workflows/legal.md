@@ -2,6 +2,21 @@
 
 Create or maintain selected legal documents from confirmed business facts and an evidence-based data profile. Support privacy-policy, terms, cookie-policy, refund-policy, eula and disclaimer; these are drafting starting points, not a compliance guarantee or an exhaustive legal assessment.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Service/operator scope, output package or locale candidates | Single; Input when the missing scope cannot be selected from actual candidates. |
+| Business facts, practices, commercial choices and qualified-review decisions | Input, batching independent missing facts; Single only for actual alternatives. No invented legal defaults. |
+| No-drafting/source-only exit versus continued review | Single. |
+| Applicable documents | Multi in the existing core/additional groups; Single Generate or review / Skip for one candidate. |
+| Drafting baseline and public contact | Single for genuine candidates/routes, then Input for a supplied baseline/manual contact. |
+| Output path/format or explicitly requested nonpublic preliminary draft | Review of the proposed target; Input for custom placement. |
+| Optional critique | Single; any external sharing needs its existing concrete Review. |
+| Foreign replacement and complete legal content/manifest/commit | Review with exact content and the mandatory commit decision, independently of auto-commit. |
+
 ## Before starting
 
 Apply the shared runtime and resolve effective instructions, `{memory_file}` and invocation policy without changing either instruction file. Read configuration through the existing owner/bridges on both hosts; never create settings, a profile file or another command's state. Legal document commits always require explicit approval, regardless of `git-auto-commit`.
@@ -12,7 +27,7 @@ Read `{package_root}/prompts/shared/content-sync.md`. This workflow uses its nor
 
 Before Git mutations, perform only a cheap, read-only inventory of project/package metadata, likely legal-page locations and current checkout status. Identify the requested product and cancellation intent. If scope is ambiguous, ask which legal service/operator is being reviewed; related frontend, backend and workers may form one service. An output package is a separate choice, not the boundary of its data processing. Do not fully scan/classify documents on this preliminary checkout or treat it as the merged source. Cancellation here creates no branch or files.
 
-For dynamic scope/output/locale lists, use 2–4 picker options, a direct confirmation for one candidate, or list **all** candidates with paths in conversation when there are more than four. Wait for an exact selection; never truncate or invent a one-option picker. Follow the shared runtime's free-text fallback on both hosts. Reuse supplied answers when their facts remain valid.
+For dynamic scope/output/locale lists, use QM Single with 2–4 choices, a direct confirmation for one candidate, or QM's complete-list fallback when there are more than four. Wait for an exact selection; never truncate or invent a one-option picker. Reuse supplied answers when their facts remain valid.
 
 Apply **Prepare the current branch** from the shared local-edit helper. Require the actual main/master base and clean eligible inputs; otherwise block writes with a reason. No branch creation/switch/update occurs. Re-resolve instructions/configuration, confirm scope and pin `{review_head}` to actual inspected HEAD before document writes. Retain source/document/state snapshots for drift checks and never absorb unrelated work.
 
@@ -73,7 +88,7 @@ Classify each supported document as required by an identified applicable law/sto
 
 All choices are opt-in. Show applicability, existing path/locale, origin, source status and material confirmation gaps. Recommend applicable missing documents or evidenced review work; label uncertain candidates as review suggestions, not established requirements. Foreign files are not automatically recommended for replacement; source-unchanged files receive no regeneration nudge without another identified gap. Developers may explicitly request any of the six types even if the scan did not flag it.
 
-Group candidates into core (privacy/terms/eula/disclaimer, up to four) and additional (cookie/refund, up to two). Omit empty questions. For one candidate use Generate or review / Skip, with a recommendation only when supported; for 2–4 use multi-select with explicit none/free-text support. For any expanded dynamic list over four, use the complete numbered conversational fallback, including paths/locales. Wait for the actual selection. No selection writes no documents/state.
+Group candidates into core (privacy/terms/eula/disclaimer, up to four) and additional (cookie/refund, up to two). Omit empty questions. For one candidate use QM Single Generate or review / Skip, with a recommendation only when supported; for 2–4 use QM Multi with explicit none/free-text support. For any expanded dynamic list over four, use QM's complete-list fallback, including paths/locales. Wait for the actual selection. No selection writes no documents/state.
 
 Resolve only selected documents' remaining facts: actual legal identity/address where applicable, roles, retention periods or criteria, provider/transfer facts, contact, approved commercial policies, language and output. Material unknowns stop that affected canonical-ready document. Offer a preliminary draft in conversation by default; write one only on explicit request to a separate, confirmed nonpublic path. Label it as incomplete there, never promote it into public legal routes or advance the manifest/public dates/provenance for it. Unaffected complete documents can proceed as separately reviewed units without implying the blocked ones were completed.
 
@@ -91,7 +106,7 @@ Templates supply structure and candidate wording, not evidence of processing, im
 
 Discover existing policy/contact pages and intended public support/privacy channels, then deduplicate candidate values. Verify or obtain developer confirmation that the chosen contact is real, public and appropriate. Author metadata is only a lead; never publish a personal address by inference. Privacy requests need a suitable private channel. A public repository issue tracker is visibly public and must not be the default for private data/rights requests; use it only for explicitly approved public general questions alongside any required private channel.
 
-With no candidates ask for the actual contact in conversation and wait. With one offer that candidate and Enter manually; with 2–4 offer each and accept free text; with more than four list every candidate and wait for a number/exact value/manual contact. A manual-entry selection alone is not a contact. Resolve document-specific channels where needed. Never invent an email, address, URL or placeholder, or claim a contact route works without evidence/attestation.
+With no candidates use QM Input for the actual contact and wait. With one use QM Single for that candidate and Enter manually; with 2–4 offer each and accept free text; larger lists use QM's complete-list fallback. Manual entry uses QM Input; choosing that route alone is not a contact. Resolve document-specific channels where needed. Never invent an email, address, URL or placeholder, or claim a contact route works without evidence/attestation.
 
 ### Output and integration
 
