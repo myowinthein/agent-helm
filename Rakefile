@@ -1,4 +1,5 @@
 require "rake"
+require_relative "scripts/docs_checks"
 
 desc "Validate shared workflows and exported package contents"
 task :plugin_test do
@@ -10,9 +11,8 @@ task :docs_test do
   require "html-proofer"
   require "yaml"
   ruby Gem.bin_path("jekyll", "jekyll"), "build"
-  baseurl = YAML.safe_load_file("_config.yml").fetch("baseurl", "").to_s
-  swaps = baseurl.empty? ? {} : { /\A#{Regexp.escape(baseurl)}\// => "/" }
-  HTMLProofer.check_directory("./_site", disable_external: true, swap_urls: swaps, checks: %w[Html Images Scripts Links]).run
+  config = YAML.safe_load_file("_config.yml")
+  HTMLProofer.check_directory("./_site", HelmDocs.options(config)).run
 end
 
 desc "Test pure normalize checks and semantic coverage selection with synthetic inputs"
@@ -30,6 +30,11 @@ task :smoke_support_test do
   ruby "scripts/test_smoke_support.rb"
 end
 
-desc "Check plugin packaging, normalize mechanics and documentation"
-task test: %i[plugin_test normalize_test ledger_test smoke_support_test docs_test]
+desc "Test offline validation of absolute own-site links and images"
+task :docs_links_test do
+  ruby "scripts/test_docs_links.rb"
+end
+
+desc "Check plugin packaging, helpers, smoke assertions and documentation"
+task test: %i[plugin_test normalize_test ledger_test smoke_support_test docs_links_test docs_test]
 task default: :test
