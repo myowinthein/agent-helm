@@ -66,9 +66,13 @@ module HelmValidation
           dimensions.map(&:to_f).uniq.length == 1, "Plugin icon must have square numeric dimensions of at least 48 pixels")
     check(svg.attributes["viewBox"] == "0 0 #{dimensions.join(' ')}", "Plugin icon viewBox must match its dimensions")
     check(document.doctype.nil?, "Plugin icon must not declare external entities")
+    check(REXML::XPath.match(document, "//processing-instruction()").none? { |node| node.target.downcase == "xml-stylesheet" },
+          "Plugin icon must use presentation attributes, not stylesheets")
     document.elements.each("//*") do |element|
       check(!%w[image script foreignObject].include?(element.name), "Plugin icon must contain only static vector artwork")
+      check(element.name.downcase != "style", "Plugin icon must use presentation attributes, not stylesheets")
       element.attributes.each_attribute do |attribute|
+        check(attribute.name.downcase != "style", "Plugin icon must use presentation attributes, not inline CSS")
         check(!attribute.name.start_with?("on") && attribute.name != "href" && !attribute.value.include?("url("),
               "Plugin icon must not execute code or load external resources")
       end
