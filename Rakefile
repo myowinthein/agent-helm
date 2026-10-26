@@ -13,6 +13,8 @@ task :docs_test do
   ruby Gem.bin_path("jekyll", "jekyll"), "build"
   config = YAML.safe_load_file("_config.yml")
   HTMLProofer.check_directory("./_site", HelmDocs.options(config)).run
+  HelmDocs.check_setup("./_site", config)
+  puts "Passed setup fallback destinations and panel markup contracts; browser checks remain separate."
 end
 
 desc "Test pure normalize checks and semantic coverage selection with synthetic inputs"

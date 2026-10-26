@@ -8,6 +8,54 @@ require_relative "docs_checks"
 CONFIG = { "url" => "https://docs.example.invalid", "baseurl" => "/agent-helm" }.freeze
 PREFIX = "https://docs.example.invalid/agent-helm"
 
+def verify_setup_contracts
+  files = {}
+  %w[claude codex].each do |platform|
+    files["#{platform}.html"] = %w[desktop terminal].map do |method|
+      headings = %w[install update uninstall].map { |section| %(<h2 id="#{method}-#{section}">#{section}</h2>) }.join
+      %(<section id="#{method}" data-setup-panel>#{headings}</section>)
+    end.join
+    %w[desktop terminal].each do |method|
+      files["#{platform}-#{method}.html"] = %(<a id="setup-destination" href="/agent-helm/docs/setup/#{platform}.html##{method}">Setup</a>)
+    end
+  end
+  mutations = { "valid setup fallbacks" => ->(_) {} }
+  %w[claude codex].each do |platform|
+    %w[desktop terminal].each do |method|
+      mutations["wrong #{platform}-#{method} destination"] = ->(copy) { copy["#{platform}-#{method}.html"].sub!("##{method}", "#wrong") }
+    end
+  end
+  mutations.merge!(
+    "missing legacy page" => ->(copy) { copy.delete("claude-desktop.html") },
+    "missing fallback link" => ->(copy) { copy["codex-terminal.html"] = "<p>Moved</p>" },
+    "hidden no-JavaScript panel" => ->(copy) { copy["claude.html"].sub!("data-setup-panel", "data-setup-panel hidden") },
+    "inline-hidden no-JavaScript panel" => ->(copy) { copy["codex.html"].sub!("data-setup-panel", 'data-setup-panel style="display:none"') },
+    "missing section anchor" => ->(copy) { copy["codex.html"].sub!("terminal-update", "removed") }
+  )
+  mutations.each do |name, mutate|
+    Dir.mktmpdir("helm-setup-html-") do |temporary|
+      copy = files.transform_values(&:dup)
+      mutate.call(copy)
+      copy.each do |filename, body|
+        path = Pathname(temporary).join("docs/setup", filename)
+        path.parent.mkpath
+        path.write(body)
+      end
+      error = nil
+      begin
+        HelmDocs.check_setup(temporary, CONFIG)
+      rescue RuntimeError => caught
+        raise unless caught.message.start_with?("Setup contract:")
+        error = caught
+      end
+      raise "#{name}: incorrect setup checker outcome" unless error.nil? == (name == "valid setup fallbacks")
+      puts "PASS setup HTML: #{name}"
+    end
+  end
+end
+
+verify_setup_contracts
+
 def html(body)
   "<!doctype html><html><head><title>Synthetic site</title></head><body>#{body}</body></html>"
 end
