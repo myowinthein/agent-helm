@@ -56,7 +56,9 @@ Include applicable sections:
 
 ### Inventory snapshot, normally docs/archive-metadata.md
 
-Keep a human-readable Markdown inventory, without a new JSON schema/profile file: name/snapshot date/purpose/source branch+commit; selected recovery goal and complexity; actual stack/platform/toolchain; restoration outcome; scoped verification dates/platforms/results and developer-check outcome when recorded; unique artifact paths/full identities/digests/SHA-256/byte sizes/provenance/storage and verification scope; data classification/consistency and source paths; `Postman collection generated: yes/no` plus actual API outcome/retained paths; approved index/setup/spec paths; rough versus verified storage route/backup omissions; support unknowns and missing runtime/rebuild inputs. Keep full artifact identity tables here and link them from setup; this is neither a second command manual nor a dump of AI reports. Approved reports remain historical evidence, while this inventory reflects the current checked recovery snapshot. Final receipt publication is verified later, not invented here.
+Keep a human-readable Markdown inventory, without a new JSON schema/profile file: name/snapshot date/purpose/source branch+commit; selected recovery goal and complexity; actual stack/platform/toolchain; restoration outcome; scoped verification dates/platforms/results and developer-check outcome when recorded; unique artifact paths/full identities/digests/SHA-256/byte sizes/provenance/storage and verification scope; data classification/consistency and source paths; `Postman collection generated: yes/no` plus actual API outcome/retained paths; approved index/setup/spec paths; rough versus verified storage route/backup omissions; support unknowns and missing runtime/rebuild inputs.
+
+Keep full artifact identity tables here and link them from setup; this is neither a second command manual nor a dump of AI reports. Approved reports remain historical evidence, while this inventory reflects the current checked recovery snapshot. Final receipt publication is verified later, not invented here.
 
 ### Optional docs/historical-notes.md
 

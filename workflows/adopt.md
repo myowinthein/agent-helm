@@ -44,7 +44,9 @@ Adopt owns no operational state. Do not inspect, create, stage, or migrate `.hel
 
 ## Before starting: scope and policy, without Git preparation
 
-State the invocation directory, enclosing Git/workspace root if available, and `{adoption_root}`. Resolve entries and `.claude/rules/` relative to the selected adoption root, and Git operations in its verified enclosing working tree. Pointer text resolves from the referring owner: for an allowed in-project non-root owner compute/review the relative path to those same physical local copies, rather than creating another rule directory (for example `../.claude/rules/git.md`). An external owner requiring a write outside the selected project remains blocked for placement reconciliation; no outside write or implicit owner move. An existing unambiguous owner or explicit project selection may establish scope. Otherwise, if a nested package and repository root are both plausible, ask which project to adopt into before dependent work; never silently use the shell directory or Git root. Inspect relevant ancestor/nested entries, `.claude/CLAUDE.md`, `CLAUDE.local.md` and active overrides when they affect that scope. Do not scan global settings/instructions or claim all nested/custom rules are shared.
+State the invocation directory, enclosing Git/workspace root if available, and `{adoption_root}`. Resolve entries and `.claude/rules/` relative to the selected adoption root, and Git operations in its verified enclosing working tree. Pointer text resolves from the referring owner: for an allowed in-project non-root owner compute/review the relative path to those same physical local copies, rather than creating another rule directory (for example `../.claude/rules/git.md`). An external owner requiring a write outside the selected project remains blocked for placement reconciliation; no outside write or implicit owner move.
+
+An existing unambiguous owner or explicit project selection may establish scope. Otherwise, if a nested package and repository root are both plausible, ask which project to adopt into before dependent work; never silently use the shell directory or Git root. Inspect relevant ancestor/nested entries, `.claude/CLAUDE.md`, `CLAUDE.local.md` and active overrides when they affect that scope. Do not scan global settings/instructions or claim all nested/custom rules are shared.
 
 Resolve local `git-auto-commit` (default false), effective ownership/bridges/overrides and applicable project instructions before writes. Ship settings do not select an adoption branch or publication flow. Missing entries mean absent settings, not absent Git history; never create declarations merely to apply defaults.
 
@@ -105,7 +107,9 @@ For a marked local copy, remove **only** the recognized first marker line and it
 - **Unknown:** comparison/source/read unavailable. Preserve the file, report the limitation, and allow only otherwise valid Keep/connection actions until a source-dependent action can be reviewed.
 - **Absent / foreign:** retain those per-file distinctions and review replacements individually. Unknown markers remain foreign; an existing filename or recorded version alone never establishes ownership or permits overwrite.
 
-Show an authoritative raw before/after diff before each content-changing replacement when the old body is readable; unavailable-target recovery instead shows the complete proposal with its explicit unknown-source approval below. A short secondary summary may explain changed Git, commit, safety, CI or ownership obligations, but never substitutes for the diff. Different/uncertain marked copies offer explicit **Replace / Keep / Cancel** per file; an ahead rollback needs its separately described version choice too. Keep preserves bytes and any existing pointer. No automatic or model-generated policy merge, no batched approval replacing per-file decisions, no new provenance ledger/hash fields. Real updates with differing bodies therefore require per-file review, even with an older Helm marker.
+Show an authoritative raw before/after diff before each content-changing replacement when the old body is readable; unavailable-target recovery instead shows the complete proposal with its explicit unknown-source approval below. A short secondary summary may explain changed Git, commit, safety, CI or ownership obligations, but never substitutes for the diff.
+
+Different/uncertain marked copies offer explicit **Replace / Keep / Cancel** per file; an ahead rollback needs its separately described version choice too. Keep preserves bytes and any existing pointer. No automatic or model-generated policy merge, no batched approval replacing per-file decisions, no new provenance ledger/hash fields. Real updates with differing bodies therefore require per-file review, even with an older Helm marker.
 
 Report Fresh (no files/pointers), Update (managed local copies), Conflict (foreign files/competing targets) and Repair (missing local dependencies) as display summaries. Unsupported external pointers stop for explicit maintenance outside adopt. Preserve the exact per-rule evidence and requested scope.
 
@@ -131,7 +135,9 @@ Use only applicable choices, with no one-option picker and at most four independ
 | Foreign local files selected for adoption | Review each selected foreign file / Cancel. Show Overwrite/Skip per file, plus independently reviewed required-companion repairs when an actual overwrite is selected. |
 | External references | Stop with upgrade guidance; preserve pointers and installations. |
 
-Keep/Cancel/no action exits without Git preparation or new entries. If all foreign files are skipped and no independent writing addition or valid connection was explicitly approved, write nothing, including adapters/companion repairs; this is not a complete shared Helm installation. An explicitly accepted writing-only addition can proceed under its own exact reviewed scope, without silently installing/repairing the skipped Git/safety pair or claiming its coverage. For partial ordinary local repairs, preserve each Skip and existing pointers; add no pointer to an uninstalled foreign file. Broken/shared-version dependencies stop the affected plan before writes. Do not rename/delete existing files or add client-specific rule copies to make the table look complete.
+Keep/Cancel/no action exits without Git preparation or new entries. If all foreign files are skipped and no independent writing addition or valid connection was explicitly approved, write nothing, including adapters/companion repairs; this is not a complete shared Helm installation. An explicitly accepted writing-only addition can proceed under its own exact reviewed scope, without silently installing/repairing the skipped Git/safety pair or claiming its coverage.
+
+For partial ordinary local repairs, preserve each Skip and existing pointers; add no pointer to an uninstalled foreign file. Broken/shared-version dependencies stop the affected plan before writes. Do not rename/delete existing files or add client-specific rule copies to make the table look complete.
 
 ## Step 4 — Execute
 
@@ -147,7 +153,9 @@ Require the current actual main/master base for Git-backed writes; block elsewhe
 
 Before local writes, re-read the actual entries, owner, chains, relevant overrides/native project entries and effective settings. Reapply all layout/sanity/scope gates. Conflicting ownership/policy/dependencies stop without writes. Rebuild Steps 2–3's rows/diffs on this destination; collect concrete per-file decisions here, never use approvals from a different branch/HEAD/input snapshot. If the selected intent no longer makes sense, show the difference and obtain the missing decision, or exit unchanged without branch cleanup. Reuse an already concrete approval only for the exact same destination/snapshot/actions. Freeze invocation policy: newly installed rule text cannot silently govern this run's finalization or weaken active safety rules.
 
-Snapshot the relevant entry/override/source/rule bytes and absent targets on this destination. Before any write, check each exact planned path for ignore status, existing tracked/untracked occupants, case-insensitive filename/directory collisions, non-file targets and symlinked/escaping destinations. New untracked files explicitly in the plan are expected, not a blanket blocker. Unexpected occupants invalidate the plan. Ignored outputs needed for a committed installation must be reported for explicit resolution or leave the action blocked, never force-added or accompanied by an unapproved `.gitignore` edit. Do not commit pointers to required ignored/untracked rule files omitted from the same approved local installation. Without Git, disclose that tracking/ignore checks are unavailable rather than inventing a pass; entry/rule preservation and target checks still apply.
+Snapshot the relevant entry/override/source/rule bytes and absent targets on this destination. Before any write, check each exact planned path for ignore status, existing tracked/untracked occupants, case-insensitive filename/directory collisions, non-file targets and symlinked/escaping destinations. New untracked files explicitly in the plan are expected, not a blanket blocker. Unexpected occupants invalidate the plan.
+
+Ignored outputs needed for a committed installation must be reported for explicit resolution or leave the action blocked, never force-added or accompanied by an unapproved `.gitignore` edit. Do not commit pointers to required ignored/untracked rule files omitted from the same approved local installation. Without Git, disclose that tracking/ignore checks are unavailable rather than inventing a pass; entry/rule preservation and target checks still apply.
 
 ### Plan before mutation
 
@@ -176,7 +184,7 @@ Copy/update and connection patch only approved exact Helm pointer spans in the o
   - Prepend exactly `<!-- helm-rule: agent-helm@v{current_version} -->` followed by `\n`, then the unchanged source bytes. Do not normalize source line endings or add another blank line.
   - Write to `.claude/rules/{name}`.
 - Read back each approved copy and verify exact marker/body before patching pointers. Then update {adopt_file}'s `## Rules` section and approved adapter/bridge (see above), read back the resulting chains, using this root-owner snippet for a full install (adjust only the reviewed relative path for an allowed non-root owner):
-  ```
+  ```markdown
   ## Rules
 
   This project follows the rules shipped in agent-helm:
@@ -231,7 +239,9 @@ If every foreign file was skipped and no independent writing addition or valid c
 
 After applying the reviewed plan, read back every written entry/rule and follow both applicable root chains. Verify each selected/established required local rule, expected new source bytes/markers and kept-copy snapshots. A new shared adapter imports AGENTS.md without duplicated Rules/settings. Preserve knowledge, settings, review markers, existing adapters, custom/skipped entries and active overrides. The Git/safety pair remains complete where selected; absent unselected writing is not a defect. A partial install reports missing dependencies and never claims both hosts connected. Unsupported external pointers cannot pass this gate; there is no conversion outcome. No unexpected deletion or unrelated pointer change is permitted.
 
-This gate proves **static inspected-root Helm connectivity**, not actual native startup loading, model compliance, or parity of custom/global/nested rules. Preserve the AGENTS.md owner, real CLAUDE.md adapter and explicit Codex read-and-follow directives; do not inline rule bodies into the owner. Claude's native rule discovery and Codex's explicit reads differ. Relevant known import-depth/trust/exclusion/override issues must be reported, never bypassed by editing client settings. Codex's discovered startup instructions have a configurable combined byte limit (32 KiB by default); if already inspected instructions approach/exceed that default, warn that tail directives may be truncated. A small owner is not proof it fits after other instructions, and no fixed default is a universal failure gate. Do not read/write global settings solely to quantify the budget. Recommend a fresh session after instruction changes; native/runtime loading remains unverified unless separately observed, never assumed from readable paths.
+This gate proves **static inspected-root Helm connectivity**, not actual native startup loading, model compliance, or parity of custom/global/nested rules. Preserve the AGENTS.md owner, real CLAUDE.md adapter and explicit Codex read-and-follow directives; do not inline rule bodies into the owner. Claude's native rule discovery and Codex's explicit reads differ. Relevant known import-depth/trust/exclusion/override issues must be reported, never bypassed by editing client settings.
+
+Codex's discovered startup instructions have a configurable combined byte limit (32 KiB by default); if already inspected instructions approach/exceed that default, warn that tail directives may be truncated. A small owner is not proof it fits after other instructions, and no fixed default is a universal failure gate. Do not read/write global settings solely to quantify the budget. Recommend a fresh session after instruction changes; native/runtime loading remains unverified unless separately observed, never assumed from readable paths.
 
 Any write, read-back, content, directive, or preservation failure blocks Step 5 local commit. Report the actual pending files and branch; keep remaining originals intact. Successful verification is required **before** any local commit; Step 6 only summarizes that evidence. Recheck approved outputs/policy before staging/commit; no branch change occurs.
 
@@ -245,7 +255,9 @@ Failed/declined writes, verification or commits preserve actual files/index/curr
 
 Use the invocation's resolved `git-auto-commit`: true permits the scoped adoption commit silently; false/missing requires approval for the exact diff. If declined, stop with pending files, without integration or cleanup. Never interpret commit approval as push approval.
 
-Stage only the exact approved owner, entry/adapter/bridge and local-rule paths using literal pathspecs, for example `git --literal-pathspecs add -- {approved_paths}`. This workflow has no rule-file deletion action; unexpected staged deletions block the commit for reconciliation. Resolve those paths from the selected adoption root into the verified Git working tree's path namespace, especially for nested projects; never accidentally stage the root's similarly named files. Do not stage whole directories, operational state, unrelated changes or client settings. Inspect the staged diff against the verified plan before committing. Commit with a scoped Conventional Commit such as `chore(adopt): install shared Helm rules`, then verify the commit contains exactly the approved changes. A partial install's message/report must describe its actual coverage.
+Stage only the exact approved owner, entry/adapter/bridge and local-rule paths using literal pathspecs, for example `git --literal-pathspecs add -- {approved_paths}`. This workflow has no rule-file deletion action; unexpected staged deletions block the commit for reconciliation. Resolve those paths from the selected adoption root into the verified Git working tree's path namespace, especially for nested projects; never accidentally stage the root's similarly named files. Do not stage whole directories, operational state, unrelated changes or client settings.
+
+Inspect the staged diff against the verified plan before committing. Commit with a scoped Conventional Commit such as `chore(adopt): install shared Helm rules`, then verify the commit contains exactly the approved changes. A partial install's message/report must describe its actual coverage.
 
 ### Verify and finish locally
 
@@ -270,7 +282,7 @@ Print outcome.
 Use the complete-outcome templates below only after the relevant installation and finalization gates pass. A verified local installation can complete without publication; incomplete rule connectivity, unapproved edits or failed required local verification remain pending.
 
 For a local-rule connection on either host:
-```
+```text
 ADOPT COMPLETE — {statically connected / already statically connected}
 - Entry:    {adopt_file} — {created / updated / unchanged}
 - Owner:    {memory_file} — preserved
@@ -280,7 +292,7 @@ ADOPT COMPLETE — {statically connected / already statically connected}
 ```
 
 For Copy/Update:
-```
+```text
 ADOPT COMPLETE — static installation verified
 - {written_name} {written / updated} → .claude/rules/{written_name} (v{current_version})
 - {skipped_name} skipped (foreign, unchanged; not installed)
@@ -293,7 +305,7 @@ Include one written/updated line per file actually written, and one skipped line
 For a blocked/pending/partial outcome, do not print an unqualified ADOPT COMPLETE. List missing/skipped rules, affected entries and actual branch, local draft/commit status, verification limits and remaining action. Distinguish verified local installation from required local review/checks still pending. Publication is a separate later ship action. Do not stamp a partial install or broken reference as both agents connected.
 
 For No-change (prepared destination verified or explicitly scoped current-checkout snapshot):
-```
+```text
 ADOPT NO CHANGES — {current-checkout snapshot / verified prepared destination}
 - {name}: marker v{actual_marker_version}; body {equivalent / different / unknown}; source {path/version or unavailable}; preserved
 - Git: {same current branch / no repository; no branch creation or cleanup}

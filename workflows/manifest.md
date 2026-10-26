@@ -18,7 +18,9 @@ Keep shared Claude and Codex instructions in the resolved owner. A full scan des
 
 Inventory actual README candidates in `.github/`, the root and `docs/`, including alternative formats, case variants and translated/package siblings. GitHub's entry-point priority is `.github`, then root, then `docs`; report the effective entry when unambiguous. Do not guess precedence between competing filenames within one directory or treat every translation as the primary entry.
 
-Root `README.md` remains the default target, using an existing equivalent filename's actual casing rather than creating a duplicate. Set `{readme_file}` to the chosen path for this invocation only. If another location overrides root on GitHub, root is missing while another candidate exists, candidates are ambiguous, or the developer requests another target, show the candidates and ask which one to maintain before investigation/writes. Use at most four options, grouping a long list behind **Select existing target**. Offer root explicitly; do not silently switch to GitHub's entry or update siblings/translations. Do not add a persistent target setting.
+Root `README.md` remains the default target, using an existing equivalent filename's actual casing rather than creating a duplicate. Set `{readme_file}` to the chosen path for this invocation only.
+
+If another location overrides root on GitHub, root is missing while another candidate exists, candidates are ambiguous, or the developer requests another target, show the candidates and ask which one to maintain before investigation/writes. Use at most four options, grouping a long list behind **Select existing target**. Offer root explicitly; do not silently switch to GitHub's entry or update siblings/translations. Do not add a persistent target setting.
 
 Preserve an explicitly selected alternative format; if the workflow cannot safely author it, stop for a reviewed format/target decision instead of writing Markdown into it. Resolve symlinks and containment; unsafe/outside-project targets need a safe placement decision, not replacement or an outside write. A generator-owned target needs its generator workflow or another approved target. Preserve generated blocks inside an otherwise editable README.
 
@@ -45,7 +47,9 @@ Build a cheap index of the commit range, changed paths, project/package entry po
 
 For standard style, recognize equivalent content before proposing missing-section repairs. A title and short description are not required to be H2 headings. Distinguish useful content coverage from strict spec conformance; synonyms or custom order do not automatically satisfy the spec. Missing headings alone do not force a full scan.
 
-A narrow no-op can exit before writes only when on the clean selected base, the target is safe/unambiguous, style is known with no pending change, applicable structure needs no repair and the anchor is valid. There must be either no commits since the anchor or only inspected maintenance changes already represented in the README. Inspect every intervening patch before dismissing manifest's own output/config changes; a filename or commit subject is insufficient. Do not bypass an explicit scan request. Report the exact local SHA and that no remote fetch was performed; never claim remote currency or assess a dirty/feature checkout as the stable base. No-op/Skip saves no pending style and creates no branch.
+A narrow no-op can exit before writes only when on the clean selected base, the target is safe/unambiguous, style is known with no pending change, applicable structure needs no repair and the anchor is valid. There must be either no commits since the anchor or only inspected maintenance changes already represented in the README. Inspect every intervening patch before dismissing manifest's own output/config changes; a filename or commit subject is insufficient.
+
+Do not bypass an explicit scan request. Report the exact local SHA and that no remote fetch was performed; never claim remote currency or assess a dirty/feature checkout as the stable base. No-op/Skip saves no pending style and creates no branch.
 
 ### Choose the work
 
@@ -78,7 +82,9 @@ Run only the chosen route:
 
 ### Full scan or new generation
 
-Build a transient map of substantive README claims/sections to source/docs/manifests or confirmed human context, marking supported, contradicted, unknown and preserved human-context facts. Also sweep reader-facing surfaces in reverse for omissions: requirements, install/start/build/configuration, representative usage, public interfaces and help/contribution/license facts. Merely verifying existing claims can miss missing workflows. Trace each relevant claim/flow to sufficient evidence; an internal-only area may be excluded only with a stated reason. This is not a detailed whole-code quality review or per-commit lesson history. Large independent packages or claim groups may use permitted read-only workers; the parent reconciles source consistency, shared setup, complete claims/surfaces and unread evidence before any marker claim.
+Build a transient map of substantive README claims/sections to source/docs/manifests or confirmed human context, marking supported, contradicted, unknown and preserved human-context facts. Also sweep reader-facing surfaces in reverse for omissions: requirements, install/start/build/configuration, representative usage, public interfaces and help/contribution/license facts. Merely verifying existing claims can miss missing workflows. Trace each relevant claim/flow to sufficient evidence; an internal-only area may be excluded only with a stated reason. This is not a detailed whole-code quality review or per-commit lesson history.
+
+Large independent packages or claim groups may use permitted read-only workers; the parent reconciles source consistency, shared setup, complete claims/surfaces and unread evidence before any marker claim.
 
 Inventory first-party packages/services, entry points, existing docs, build/task manifests and contribution/license evidence. Investigate the purpose/audience, prerequisites, install/start path, representative usage, relevant public behavior and help/policy facts for every reader workflow the README claims to cover. Follow each existing custom section's actual subject, including human context that code cannot rediscover. Retain supported existing text; do not regenerate every paragraph simply because this is a full scan. Flag unknown/stale claims for review instead of silently dropping them or inventing replacements.
 
@@ -146,7 +152,7 @@ Recheck HEAD and recorded inputs immediately before mutation. Apply the accepted
 
 Save an approved `readme-style` declaration only in `{memory_file}`'s existing recognized configuration block, preserving its layout including Compass-style fences. If none exists, add a `## Project Config` section containing only that declaration to the same owner without moving an end-of-file review marker. Never create a second owner or save settings in a wrapper. Normally this updates AGENTS.md; leave CLAUDE.md's import/additions intact. Preserve a legacy owner until log performs a reviewed migration.
 
-Read back the target and any changed owner. Verify approved content, preserved sections/protected spans, setting and marker; confirm the adapter/dependency chain remains intact. Report per-section failures and stop dependent Git actions. Do not touch other READMEs, metadata, operational state or generators.
+Read back the full actual changed content in the target and any changed owner before committing; filenames/diffstat alone are insufficient. Verify approved content, preserved sections/protected spans, setting and marker; confirm the adapter/dependency chain remains intact. Report per-section failures and stop dependent Git actions. Do not touch other READMEs, metadata, operational state or generators.
 
 ## Step 5: Commit, finalize and report
 

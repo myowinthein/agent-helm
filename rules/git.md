@@ -62,7 +62,7 @@ Absence defaults to off — ask for confirmation before committing.
 When active:
 - Commit a completed coherent unit without another question when authorized by this setting. Read-only work, no-ops and an explicit commit deferral create no commit; incomplete/gated work stays pending.
 - Inspect the entire index and exact intended diff before staging. Use literal, exact approved paths, e.g. `git --literal-pathspecs add -- {approved_paths}`; never blindly add directories or use `git add -A`. Preserve unrelated staged/unstaged/untracked files and user hunks, including in shared files. If separation cannot be done without disturbing them, leave the affected commit pending rather than absorbing, resetting or stashing user work.
-- Review the staged result, follow scoped Conventional Commits and verify the commit contains only the intended change. A logical unit is one coherent, independently reviewable change, not every small edit.
+- Read the full changed content and staged diff; filenames/diffstat alone are not content review. Check the exact outgoing subject against resolved project/user policy, using scoped Conventional Commits as Helm's default. After committing, verify the actual subject and paths through Git. A logical unit is one coherent, independently reviewable change, not every small edit.
 - Commit approval or auto-commit never approves publication; apply the Publication contract below.
 
 **Exception:** safety.md's bounded commits, including generated legal documents and their integration commits, always require concrete content/commit approval. Reuse that known approval for the same action; auto-commit alone cannot supply it.
@@ -148,7 +148,7 @@ Independent of ship method and team size.
 Determine deployment triggers and targets from repository configuration and applicable provider settings. Do not assume a pipeline or deployment exists because a branch/tag exists or these rules are loaded. Unavailable evidence leaves deployment behavior unknown, not absent or safe.
 
 - A configured push trigger may deploy updates to `{base_branch}` or other explicitly configured branches.
-- A configured tag trigger may deploy a matching SemVer tag, including one created through /agent-helm:ship.
+- A configured tag trigger may deploy a matching SemVer tag, including one created through `ship`.
 - Both may be configured (for example, push → staging and tag → production), or neither. Report only verified behavior and preserve project-specific deployment approvals.
 
 ---
