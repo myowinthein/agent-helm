@@ -40,22 +40,43 @@ Generated legal documents and their integration commits always need concrete con
 
 ## Conventional Commits
 
-Helm's default format is:
+The rule is based on [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/). It separates the specification baseline from Helm's defaults; explicit project or user commit policy takes precedence.
+
+Helm's default format is below. `[!]` means an optional `!`, not literal brackets:
 
 ```text
-type(scope): description
+type(scope)[!]: description
+
+[optional body]
+
+[optional footer(s)]
 ```
 
-For example:
+Use a short description of the change. A body is optional and can contain several paragraphs. Separate the body and footer section from the preceding section with a blank line. Footers can appear directly after the header when there is no body.
+
+Each footer uses `Token: value` or `Token #value`. Tokens replace spaces with hyphens, except `BREAKING CHANGE`. Multiple footers and multiline values are allowed; the next valid token/separator pair starts another footer. Read message fields case-insensitively, except uppercase breaking footer tokens.
+
+For example, an ordinary header and a breaking header are:
 
 ```text
 fix(payment): handle expired cards
-docs(setup): clarify installation steps
+feat(auth)!: replace sessions with JWT
 ```
 
-Common types include `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`, `ci`, `build` and `revert`. Scope identifies the changed module or domain. Helm requires it, although the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) makes it optional. Explicit project or user commit policy takes precedence.
+Any type can mark a breaking change with `!`, a `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer, or both. With `!`, the header description must explain the break; the breaking footer is optional. A breaking footer without a body looks like this:
 
-Use `!` or a `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer for breaking changes. [Ship](../commands/ship.html) uses complete messages when proposing a version; loading this rule does not rewrite existing history.
+```text
+refactor(auth): replace the session store
+
+BREAKING CHANGE: existing sessions must be renewed
+Refs #123
+```
+
+The specification requires `feat` for new features and `fix` for bug fixes, while allowing other types. Helm's default type set is `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`, `ci`, `build` and `revert`.
+
+Scope identifies the changed module or domain. Helm requires lowercase scopes, prefers one dominant area, allows short comma-separated scopes for inseparable work and uses `project`/`core` for broad changes. Those are Helm conventions; the specification makes scope optional.
+
+[Ship](../commands/ship.html) reads complete messages when proposing a version. Breaking changes propose major for stable versions, with an explicit project decision for 0.x; nonbreaking `feat` proposes minor and `fix`/`perf` patch. The `perf` mapping is Helm policy, not a specification requirement. Other types have no automatic bump; mixed history and reverts need contextual review. Loading the rule does not authorize history edits.
 
 ## Quality checks
 
