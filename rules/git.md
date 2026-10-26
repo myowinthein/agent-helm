@@ -101,14 +101,27 @@ These apply independently of ship method.
 
 ## Conventional Commits
 
-All commits must follow this format:
-  type(scope): description
+Based on [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), with the following specification baseline and Helm conventions.
 
-  [optional body]
+**Specification baseline:**
 
-  [optional footer]
+- **Header:** a noun type, optional parenthesized noun scope identifying a codebase section, optional `!`, then a required colon and space before a short description of the changes. Use `feat` for new features and `fix` for bug fixes; other types are allowed.
+- **Body:** optional and free-form, including multiple paragraphs; begin it one blank line after the description.
+- **Footers:** optional, one or more, after a blank line following the body or header. Each uses a word token in `Token: value` or `Token #value`. Hyphenate token whitespace, except in `BREAKING CHANGE`. Values may contain spaces and newlines; the next valid token/separator pair starts another footer.
+- **Breaking changes:** any type may use `!` immediately before `:`, a `BREAKING CHANGE: description` footer, or both. `BREAKING-CHANGE` is a synonymous footer token. With `!`, the header description must explain the break; the breaking footer is optional.
+- **Case:** interpret message fields case-insensitively, except that breaking footer tokens must be uppercase.
 
-**Types:** `feat` (feature), `fix` (bug), `refactor` (neither feature nor fix), `revert`, `test`, `docs`, `chore` (maintenance/dependencies/tooling), `style` (format only), `perf`, `ci`, `build`.
+**Helm conventions:** Explicit project or user commit policy takes precedence over these defaults. Helm commits use the scoped format below; `[!]` means an optional `!`, not literal brackets:
+
+```text
+type(scope)[!]: description
+
+[optional body]
+
+[optional footer(s)]
+```
+
+**Types:** Helm's default type set is `feat` (feature), `fix` (bug), `refactor` (neither feature nor fix), `revert`, `test`, `docs`, `chore` (maintenance/dependencies/tooling), `style` (format only), `perf`, `ci`, `build`. This is Helm policy, not an exhaustive specification list.
 
 **Scope:** Required by Helm policy (optional in the external specification). Use the module/folder/domain, e.g. `fix(payment): resolve stripe timeout`. Historical/upstream unscoped commits may be specification-valid but Helm-noncompliant. Loading rules never authorizes history edits; normalization needs its own reviewed task.
 
@@ -116,12 +129,16 @@ All commits must follow this format:
 
 **Scope inference:** use the actual changed module/folder/domain, never a workflow's report category or priority (e.g. `architecture`, `high-priority`). Apply the dominant/multi/cross-cutting choices above; lowercase, one word or hyphenated per scope.
 
-**Breaking changes:**
-  feat(auth)!: replace session with JWT
+**Examples:** `fix(payment): handle expired cards` needs no body or footer. `feat(auth)!: replace sessions with JWT` flags a break in the header. A footer can flag a break without `!` or a body:
 
-  BREAKING CHANGE: all existing sessions invalidated
+```text
+refactor(auth): replace the session store
 
-The approved release stage reads full messages: `!` on any type/optional scope or an uppercase `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer is a breaking candidate, proposing major for stable versions and explicitly resolving the project's 0.x policy. Nonbreaking feat proposes minor, fix/perf patch. Other types have no automatic bump, but may receive an explicitly chosen release; mixed history and reverts need contextual review. Empty ranges do not create another release. Scoped types and Conventional Commits case rules apply; do not rewrite history to calculate a version.
+BREAKING CHANGE: existing sessions must be renewed
+Refs #123
+```
+
+**Helm release policy:** The approved release stage reads full messages. A breaking candidate on any type proposes major for stable versions and explicitly resolves the project's 0.x policy. Nonbreaking feat proposes minor, fix/perf patch; `perf`'s patch mapping is a Helm choice. Other types have no automatic bump, but may receive an explicitly chosen release; mixed history and reverts need contextual review. Empty ranges do not create another release. Do not rewrite history to calculate a version.
 
 ---
 
