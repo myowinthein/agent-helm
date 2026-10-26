@@ -32,13 +32,27 @@ Use this catalog for inventory, source validation, per-file decisions, copy/upda
 
 ## Read-only preflight
 
-Inspect first, then choose a local installation/update, copied-rule connection, repair, Keep or Cancel. Prepare Git only when the chosen action needs writes.
+Resolve the selected adoption root under **Before starting** and apply **Source-project and installation guard** before rule-selection, installation/connection proposals, sanity-check Continue or Git preparation. Inspect an eligible consumer first, then choose a local installation/update, copied-rule connection, repair, Keep or Cancel. Prepare Git only when the chosen action needs writes.
 
 Pass developer requests and answers safely and unchanged, never as shell code. An explicit source location is evidence to validate under Step 2, not permission to install/update plugins or change client settings. Clarify ambiguous requests before dependent work.
 
 The initial preview permits dirty/staged/untracked files, feature branches, detached checkouts and no repository/HEAD. Label the inspected working tree, branch/SHA when available, adoption root and limitations. Assess this checkout, not an unseen base/upstream. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where inspection might refresh the index; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. Unavailable reads are unknown, not empty results.
 
 Static preflight executes no project code, hooks, dynamic configuration, tests/discovery, linters, builds, installs or services. It performs no fetch, checkout, branch/index/ref/file/report-artifact write, publication or state access. Keep output in conversation. Report layout/source blockers and safe independent observations without following broken chains or escalating to writes. Keep/Cancel/no-action exits leave Git untouched. A later write requires the destination preparation and fresh plan in Step 4.
+
+## Source-project and installation guard
+
+Adopt is for consumer projects. It must not install copied rules or change instruction pointers inside Helm's own source project or a Helm package installation, even when the loaded package is older or newer than the target. Source rules are maintained directly through authorized development; adoption could instead activate stale copies and competing rule sources.
+
+Use only read-only path/metadata and bundled-source evidence before any proposal or mutation:
+
+- Resolve the selected adoption root and relevant enclosing workspace/project/Git roots to their physical paths, including existing symlinked parents. Compare with the actual loaded `{package_root}` and any selected alternative `{rule_source_root}` once resolved. A target at or below either package root is blocked. Do not traverse unresolved/unsafe paths or infer containment from a string prefix.
+- At the selected root and its already identified enclosing workspace/project/Git roots, check for Helm's own package identity: a readable `.claude-plugin/plugin.json` with `name: agent-helm`, together with its canonical `workflows/adopt.md`, `skills/adopt/SKILL.md`, `prompts/shared/runtime.md` and catalog `rules/` sources. This also identifies renamed checkouts, clones, forks retaining that identity, and nested targets inside them; a nested `.git` never bypasses a proven containing Helm source root. Version equality, a particular remote or matching rule bytes are not prerequisites. Inspect this known layout only, without a directory crawl, client-cache search or operational-state access.
+- A folder named `agent-helm`, existing adopted `.claude/rules/` copies, or an unrelated plugin project is not sufficient evidence. A consumer merely containing Helm as a nested dependency/package remains eligible when the actual adoption target is outside all protected roots. A disposable consumer fixture must likewise be outside the protected source/installation roots.
+- On a protected target, explain the observed path/identity and stop without writes, Git preparation, copied-rule creation, instruction/bootstrap/pointer edits or cleanup. State that this source project should load its maintained source rules directly, or that an installation is not a consumer project; direct testing to a separate consumer fixture. Do not offer Continue anyway, a version override or automatic relocation/update/removal of existing copies.
+- If relevant identity, containment or symlink evidence leaves a material ambiguity, report the unresolved target and stop dependent adoption rather than treating it as an ordinary non-project directory. Resolve only the missing scope facts through the existing clarification path; no bypass approval or new persistent record is introduced.
+
+Reapply this guard after a target/source change and at the existing destination recheck before any write. It adds no restriction on ordinary authorized maintenance of Helm source files and invokes no other workflow.
 
 ## Entry files and host scope
 
@@ -154,7 +168,7 @@ For partial ordinary local repairs, preserve each Skip and existing pointers; ad
 
 ### Prepare only the selected write, then replan
 
-Keep/Cancel and an already-connected/content-equivalent no-action outcome stop without checkout/fetch/branch creation. For a selected write, check preliminary target containment, symlinks, collisions and ignore status before Git preparation; repeat on the actual destination below. These checks do not authorize changes.
+Keep/Cancel and an already-connected/content-equivalent no-action outcome stop without checkout/fetch/branch creation. For a selected write, reapply **Source-project and installation guard** with the actual target and selected copy source, then check preliminary target containment, symlinks, collisions and ignore status before Git preparation; repeat on the actual destination below. These checks do not authorize changes.
 
 Only **no repository or no HEAD** skips Git preparation: freeze the selected project's snapshots and later leave files uncommitted, without initializing Git or inventing a base. Preserve existing originals; Git recovery may not exist. A repository with HEAD still requires current-base write eligibility even with no instruction files.
 
