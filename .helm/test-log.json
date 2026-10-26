@@ -1,0 +1,546 @@
+{
+  "schema_version": 3,
+  "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+  "full_scan_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+  "cases": [
+    {
+      "id": "g-24eb63fb-bb89-48ff-9536-68837c401ff6",
+      "expected": "Actual HTMLProofer checks configured own-origin absolute targets and hashes/images offline with exact boundaries; external sites remain unfetched and README URLs stay absolute.",
+      "basis": [
+        "Rakefile:14",
+        "Rakefile:15",
+        "README.md",
+        "scripts/test_plugin.rb:22"
+      ],
+      "paths": [
+        "Rakefile",
+        "README.md"
+      ],
+      "priority": "medium",
+      "reason": "Required absolute own-site README links and images are skipped as external, allowing broken onboarding destinations to pass offline checks.",
+      "action": "improve",
+      "layer": "integration",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+    },
+    {
+      "id": "g-25493c4a-ba00-47e2-912e-a73a40c33a7a",
+      "expected": "Fictional legal drafts preserve custom clauses, use file-based concise review and retain uncommitted drafts without ledger/commit changes when commit approval is withheld.",
+      "basis": [
+        "workflows/legal.md:18",
+        "workflows/legal.md:193"
+      ],
+      "paths": [
+        "workflows/legal.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "medium",
+      "reason": "Unapproved local legal commits or lost drafts/custom clauses are meaningful but recoverable; no behavioral scenario protects the special completion gate.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "bounded model fixture with approved draft paths required; no legal validity claim"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-25bbc7ac-dde4-4d13-998a-08196233214b",
+      "expected": "Host-specific Single/Multi/Input/Review preserves exact scope, exclusions and pending authorization without duplicates, truncation or timeout consent.",
+      "basis": [
+        "prompts/shared/question-mechanism.md",
+        "prompts/shared/runtime.md"
+      ],
+      "paths": [
+        "prompts/shared/question-mechanism.md",
+        "prompts/shared/runtime.md"
+      ],
+      "priority": "medium",
+      "reason": "Host capability differences can lose choices, duplicate a pending question or confuse selection with approval; packaging checks prove routing references only.",
+      "action": "manual",
+      "layer": "manual",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "explicit host/tool scenarios and separate actual UI/human acceptance plan required"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-5bd8c9f8-2c65-408a-ba75-6413770a7bea",
+      "expected": "Unaccounted remote movement or mismatched proof blocks history publication without replacing fixed leases; partial success resumes only exact missing actions and preserves published refs.",
+      "basis": [
+        "prompts/shared/history-publication.md",
+        "workflows/ship.md",
+        "prompts/shared/ci.md"
+      ],
+      "paths": [
+        "prompts/shared/history-publication.md",
+        "workflows/ship.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "high",
+      "reason": "Replacing expectations after remote movement or replaying publication can overwrite shared work; no behavioral fixture protects the fixed-lease and resume contracts.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "isolated mock/local-remote model fixture plan required; no real provider writes"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-883157be-d653-4d08-b856-3cccf54c7a00",
+      "expected": "Keyboard/focus/ARIA/panels, hash navigation, four old setup URLs and no-JS/print access have relevant behavioral tests.",
+      "basis": [
+        "assets/js/setup-tabs.js",
+        "_includes/setup-tabs.html",
+        "_layouts/setup-redirect.html"
+      ],
+      "paths": [
+        "assets/js/setup-tabs.js",
+        "_includes/setup-tabs.html",
+        "_layouts/setup-redirect.html"
+      ],
+      "priority": "medium",
+      "reason": "Setup navigation, keyboard/focus state and old setup links are supported reader paths but have no JavaScript behavior tests.",
+      "action": "add",
+      "layer": "browser",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "JS/browser runner and target plan not selected"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-8c0379a5-7d26-4667-9ad9-958879d0455b",
+      "expected": "Shared assertions detect symlink identity, staged-index, ref and relevant repo-config changes without following links or weakening existing exact-content checks.",
+      "basis": [
+        "scripts/smoke_workflows.rb:70",
+        "scripts/smoke_workflows.rb:140",
+        "scripts/smoke_layout.rb:55"
+      ],
+      "paths": [
+        "scripts/smoke_layout.rb",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "medium",
+      "reason": "Current smoke snapshots omit symlinks or Git state, allowing meaningful unauthorized local changes to escape the assertions.",
+      "action": "improve",
+      "layer": "unit/integration",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+    },
+    {
+      "id": "g-8fd9f54e-cb13-4eb1-b831-e11b049d4ee6",
+      "expected": "Prepared/completed/tampered synthetic archive proofs distinguish local payload from remote receipt, preserve protected inputs, and stop rather than replay restoration, cleanup or publication.",
+      "basis": [
+        "workflows/archive.md",
+        "prompts/archive/step5-finalize.md",
+        "prompts/shared/archive-publication.md"
+      ],
+      "paths": [
+        "workflows/archive.md",
+        "prompts/archive/step5-finalize.md",
+        "prompts/shared/archive-publication.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "high",
+      "reason": "Replaying archive restoration or cleanup after uncertain progress can destroy preservation inputs; current smoke coverage stops before these recovery paths.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "synthetic bundle/remote/model fixture and phase limits required; no live bundle access"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-bbdbcac6-97c7-418d-8eeb-5ac6504e40b6",
+      "expected": "Saved/invalid settings, System/explicit mode, storage failure and cross-tab resets preserve expected theme and selector behavior.",
+      "basis": [
+        "assets/js/theme-switcher.js",
+        "_includes/head_custom.html",
+        "_includes/header_custom.html"
+      ],
+      "paths": [
+        "assets/js/theme-switcher.js",
+        "_includes/head_custom.html",
+        "_includes/header_custom.html"
+      ],
+      "priority": "medium",
+      "reason": "Theme persistence, OS following and storage failure handling are supported behavior but only static assets and links are checked.",
+      "action": "add",
+      "layer": "browser",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "JS/browser runner and target plan not selected"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-daa628c1-c3d1-43e4-8700-4fc49e22b534",
+      "expected": "Named configuration-conflict fixtures contain conflicting current settings; normalize-gate fixture has a real noncompliant message. Offline self-checks reject vacuous fixture setup.",
+      "basis": [
+        "scripts/smoke_layout.rb:15",
+        "scripts/smoke_layout.rb:30",
+        "scripts/smoke_workflows.rb:39",
+        "scripts/smoke_workflows.rb:90"
+      ],
+      "paths": [
+        "scripts/smoke_layout.rb",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "medium",
+      "reason": "Two existing fixtures do not establish their named conditions, so a failed setup or legitimate no-op can invalidate the claimed gate check.",
+      "action": "improve",
+      "layer": "unit/integration",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+    },
+    {
+      "id": "g-daf74878-bc26-4dd7-bb67-a1f6188f91e0",
+      "expected": "Offset greater than zero without the first page digest is rejected, as documented; current implementation appears to allow it.",
+      "basis": [
+        "prompts/normalize-review.md:9",
+        "helpers/normalize_check.py:227",
+        "scripts/test_normalize.py:188"
+      ],
+      "paths": [
+        "helpers/normalize_check.py",
+        "scripts/test_normalize.py"
+      ],
+      "priority": "medium",
+      "reason": "The documented continuation digest requirement is not enforced for nonzero offsets; mixed-input pages can yield inconsistent review membership.",
+      "action": "improve",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "verification",
+        "note": "helper repair requires separate explicit scope; static finding, no failing test executed"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-dbf5aee1-b8b3-4db3-ad3f-fee6a09bc959",
+      "expected": "External stylesheet import/reference mutations are rejected by the package validator, not only references in attributes.",
+      "basis": [
+        "scripts/validate_plugin.rb:69",
+        "scripts/test_plugin.rb:78"
+      ],
+      "paths": [
+        "scripts/validate_plugin.rb",
+        "scripts/test_plugin.rb"
+      ],
+      "priority": "medium",
+      "reason": "Stylesheet resource references are not inspected by the current SVG validator; the no-external-resource check lacks protection for this form.",
+      "action": "improve",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "verification",
+        "note": "negative reproduction and explicit validator repair plan needed; no rendering/network result claimed"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-de1ca2e5-a51a-447e-861c-c8b059572a22",
+      "expected": "Approved synthetic multi-branch/merge rewrite preserves unique unaudited messages, metadata, tags/excluded refs/remotes and independently usable recovery/mapping.",
+      "basis": [
+        "workflows/normalize.md:65",
+        "workflows/normalize.md:118",
+        "scripts/test_normalize.py"
+      ],
+      "paths": [
+        "workflows/normalize.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "high",
+      "reason": "An incomplete or widened multi-ref rewrite can damage history and its recovery proof; existing unit and first-gate cases never verify an approved rewrite.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "explicit synthetic Git/backend/model/cost execution plan required"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-e3f7b84f-4167-42c5-845d-dc40e0d1d31a",
+      "expected": "Native refactor-v2/test-v3 shapes, strict errors, unknown exact values, all-state digest-bound paging and filter boundaries have direct behavioral tests.",
+      "basis": [
+        "helpers/helm_lib/ledger.py:33",
+        "helpers/helm_lib/ledger.py:125",
+        "helpers/ledger-contract.json"
+      ],
+      "paths": [
+        "helpers/helm_lib/ledger.py",
+        "helpers/ledger-contract.json"
+      ],
+      "priority": "medium",
+      "reason": "Package checks verify helper presence, not validation or retrieval behavior; accepting malformed state or omitting records can produce an incorrect assessment.",
+      "action": "add",
+      "layer": "integration",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+    },
+    {
+      "id": "g-e9ce1673-2390-4848-a4b9-06a968330236",
+      "expected": "Actual deprecations/breaks override labels; prerelease normal baselines, equal-precedence builds, resets and candidate-specific resume produce correct proposals without unapproved writes.",
+      "basis": [
+        "workflows/ship.md:111",
+        "workflows/ship.md:143",
+        "workflows/ship.md:250"
+      ],
+      "paths": [
+        "workflows/ship.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "medium",
+      "reason": "Commit labels, prerelease baselines or build ties can produce unsuitable version proposals; the new guidance has no behavioral proposal/resume cases.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "bounded model fixture with mocked read-only provider evidence required"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-ebf3bc8e-7d78-4fac-86ee-5bf31a26948d",
+      "expected": "Published flow diagrams render with readable labels in the selected browser; static source/link checks do not prove runtime diagram display.",
+      "basis": [
+        "_includes/head_custom.html",
+        "docs/commands/ship.md",
+        "docs/commands/test.md"
+      ],
+      "paths": [
+        "_includes/head_custom.html",
+        "docs/commands/ship.md",
+        "docs/commands/test.md"
+      ],
+      "priority": "low",
+      "reason": "Static Markdown/link validation does not establish that browser-generated flow diagrams are visible and readable; text remains available if rendering fails.",
+      "action": "manual",
+      "layer": "manual",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "optional scoped browser/manual evidence not performed"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-eebf4a68-3edb-4098-91e6-332ec3940cb3",
+      "expected": "Synthetic consumers prove no-follow/legacy-path isolation, package separation, no writes and safe missing-state results.",
+      "basis": [
+        "helpers/helm_lib/common.py:77",
+        "helpers/helm_lib/ledger.py:211"
+      ],
+      "paths": [
+        "helpers/helm.py",
+        "helpers/helm_lib/common.py",
+        "helpers/helm_lib/ledger.py"
+      ],
+      "priority": "medium",
+      "reason": "No direct test exercises the shared helper's path and read-only guards; a regression can use the wrong record or contaminate a normal assessment.",
+      "action": "add",
+      "layer": "integration",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+    },
+    {
+      "id": "g-f068eb49-412f-4ab7-a904-324085b93db7",
+      "expected": "Synthetic canaries never enter tool/chat output while useful key/path audit information is retained and input files/Git stay unchanged.",
+      "basis": [
+        "workflows/env.md:26",
+        "workflows/env.md:42",
+        "scripts/smoke_workflows.rb:17"
+      ],
+      "paths": [
+        "workflows/env.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "high",
+      "reason": "An env audit that emits a real credential exposes it irreversibly; current env smoke fixtures contain no canaries or complete output checks.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "bounded model and complete tool-output trace test plan required"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-f50b70cf-281f-4e4a-b41a-01a1dea1a8a4",
+      "expected": "Targeted accepted updates preserve unaccepted/custom content, imports/frontmatter/absolute URLs and old review markers.",
+      "basis": [
+        "workflows/log.md:112",
+        "workflows/log.md:172",
+        "workflows/manifest.md:134",
+        "workflows/manifest.md:157"
+      ],
+      "paths": [
+        "workflows/log.md",
+        "workflows/manifest.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "medium",
+      "reason": "Partial content approval must not overwrite useful human text or manufacture review provenance; current layout tests do not cover these updates.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "bounded model fixture plan required"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-f5c94102-f3a2-43bb-95a0-6356db646f22",
+      "expected": "Protected source/install roots stop; customized managed copies kept byte-for-byte; writing-only approval leaves unselected Git/safety files intact.",
+      "basis": [
+        "workflows/adopt.md:45",
+        "workflows/adopt.md:128",
+        "workflows/adopt.md:163"
+      ],
+      "paths": [
+        "workflows/adopt.md",
+        "scripts/smoke_workflows.rb",
+        "scripts/smoke_layout.rb"
+      ],
+      "priority": "medium",
+      "reason": "Wrong adoption scope or replacement can overwrite customized local instructions; current equivalent-copy fixtures do not exercise these routes.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "bounded model fixture plan required"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    },
+    {
+      "id": "g-fbb1c7d3-f05b-42df-8985-96840f9723d6",
+      "expected": "Refactor preview reads no state; deferred/failed verification preserves test protections and open findings; test/refactor A/B/C provenance and held decisions remain faithful.",
+      "basis": [
+        "workflows/refactor.md:25",
+        "workflows/refactor.md:265",
+        "workflows/test.md"
+      ],
+      "paths": [
+        "workflows/refactor.md",
+        "workflows/test.md",
+        "scripts/smoke_workflows.rb"
+      ],
+      "priority": "medium",
+      "reason": "Source assessment can be mistaken for verified closure or retirement permission; these meaningful local provenance and protection boundaries lack workflow scenarios.",
+      "action": "add",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "blocker": {
+        "kind": "execution",
+        "note": "bounded model execution fixtures and expected state transitions required"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
+        "date": "2026-10-27",
+        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      }
+    }
+  ]
+}
