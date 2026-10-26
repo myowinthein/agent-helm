@@ -37,11 +37,23 @@ flowchart TD
 
 ## Review messages first
 
-The default message-review scope is the current local branch. You can explicitly request other named branches or all local branches. The review inspects full messages and relevant supporting changes, using project instructions and compatible commitlint configuration before Helm's Conventional Commits defaults.
+The default message-review scope is the current local branch. You can explicitly request other named branches, all local branches, a bounded range or a full-history reassessment. Policy comes from project instructions and compatible statically inspected commitlint configuration before Helm's defaults. No project config or custom lint plugin is executed to discover rules.
 
 Accepted messages stay unchanged. Proposals distinguish valid messages outside project policy, invalid messages and unresolved intent. You see exact replacements and choose **Accept**, **Edit**, **Keep** or **Defer**. Changes normally affect only the subject; bodies, trailers, references and breaking information are preserved unless their edits are explicitly shown.
 
 Approving a message is separate from approving the history rewrite. Corrections that could affect a later [ship](ship.html#optional-versioned-release) version proposal are explained during review.
+
+### Code-assisted checks and incremental review
+
+A packaged standard-library Python helper checks supported formatting rules locally and returns bounded commit IDs and diagnostics. It receives JSON through stdin and has no Git, file, network or state-writing access. A formatting pass never means the message is semantically correct.
+
+The agent still reads every full message requiring new semantic review, including bodies and trailers, and relevant changes when intent needs them. A valid-looking message such as `feat(auth): fix login typo` still needs that assessment. Syntax failures, keywords and file paths cannot filter away the remaining messages.
+
+The first review covers the requested history. Later reviews can reuse a schema-2 baseline only when its full ancestor coverage, effective policy and review contract match. Newly reachable commits, including merged side-history, still need review. Missing, incompatible or invalidated baselines require full review. Shared commit IDs are reviewed once, while one branch's baseline cannot hide another branch's unproven coverage.
+
+Results distinguish **syntax checked**, **newly semantically reviewed**, **reused semantic coverage** and **not reviewed**. A bounded range leaves older history explicitly unreviewed unless a proven baseline covers it; it cannot create a full-history checkpoint by itself. An explicit full-history request reassesses the history. A formatting-only request creates no semantic checkpoint. No extra routine picker or project setting is added.
+
+If Python or helper execution is unavailable, equivalent bounded tooling or manual review preserves the same coverage requirements without automatic installation. Savings depend on actual reusable coverage or an explicitly narrower request; the first full semantic review still requires reading its messages.
 
 ## Which branches change?
 
@@ -67,6 +79,8 @@ Verification checks messages, trees, topology, metadata, shared mappings and pre
 
 You get the local old/new branch tips, message results, tag-ancestry effects and the exact private recovery path. Keep that path: a fresh ship session may need you to identify it.
 
-`.helm/normalize-log.json` records truthful message-review coverage on the same current branch under your local commit policy. Rewriting a branch for consistency does not claim its unique messages were reviewed. Kept or deferred findings cannot be hidden by a new checkpoint. A genuine no-change review creates no housekeeping commit.
+`.helm/normalize-log.json` uses schema 2 to record a full semantic baseline, effective-policy fingerprint and review-contract version on the same current branch under your local commit policy. Only normalize may validate its own record early to select reusable coverage. Rewriting a branch for consistency does not claim its unique messages were reviewed. Kept or deferred findings cannot be hidden by a new checkpoint. Reusing a baseline without new coverage leaves its anchor/date unchanged and creates no housekeeping commit.
+
+Schema 1 is unsupported, with no compatibility reader, conversion or automatic reset. An unsupported record blocks reuse and dependent mutation; independent full read-only message review remains available. Updating the plugin's source never inspects or changes live records. Existing tags and historical ledger blobs remain unchanged.
 
 Normalize never pushes or opens a PR. When ready, run [ship](ship.html#publish-normalized-history) with the identified private evidence. It separately reviews all included committed work and any required history replacement. Unfinished work already committed on a published tip would travel too; a PR cannot substitute for replacing remote history.

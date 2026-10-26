@@ -103,7 +103,8 @@ Dir.mktmpdir("helm-package-") do |temp|
     icon.binwrite(original)
   end
 
-  %w[prompts/archive/step1-explore.md prompts/shared/question-mechanism.md].each do |path|
+  %w[prompts/archive/step1-explore.md prompts/shared/question-mechanism.md
+     prompts/normalize-review.md helpers/normalize_check.py].each do |path|
     missing = installation.join(path)
     original = missing.read
     missing.delete

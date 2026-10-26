@@ -1,6 +1,6 @@
 ---
 name: normalize
-description: Review commit messages and exact corrections, then rewrite all affected local branches together after approval
+description: Check commit formatting, review intent with reusable schema-2 coverage, then rewrite all affected local branches together after approval
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the normalize workflow](../../workflows/normalize.md).

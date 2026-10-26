@@ -2,7 +2,7 @@
 
 ## Project Identity
 
-Agent Helm is a workflow plugin for Claude and Codex. Its ten portable skills load Markdown workflows; Python provides read-only ledger helpers, Ruby scripts check packaging and client discovery, and Jekyll publishes the documentation site.
+Agent Helm is a workflow plugin for Claude and Codex. Its ten portable skills load Markdown workflows; Python provides read-only ledger helpers and normalize checks, Ruby scripts check packaging and client discovery, and Jekyll publishes the documentation site.
 
 Plugin name: `agent-helm`. Marketplace: `agent-helm-marketplace`. Workflow changes affect installed consumers; changes to copied rules also affect projects that adopt those updates.
 
@@ -19,9 +19,10 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 
 - `ruby scripts/test_plugin.rb`: offline package, relocation and Git-export checks in temporary repositories; does not execute Python helpers or call models.
 - `ruby scripts/check_clients.rb`: native discovery through installed Claude/Codex CLIs, including Codex's actual `skills/list`; uses temporary installations and calls no models.
+- `python3 -I -B scripts/test_normalize.py`: offline normalize mechanics tests with synthetic messages, graphs and schema-2 records; no real history or live state access.
 - `bundle install`: install the docs dependencies from `Gemfile` and `Gemfile.lock`.
 - `bundle exec jekyll serve`: preview the docs site.
-- `bundle exec rake test`: package checks plus a Jekyll build and HTMLProofer checks for internal links, HTML, images and scripts. Remote-theme resolution may need network access.
+- `bundle exec rake test`: package and normalize mechanics checks plus a Jekyll build and HTMLProofer checks for internal links, HTML, images and scripts. Remote-theme resolution may need network access.
 - `ruby scripts/smoke_layout.rb [codex|claude] [case ...]` and `ruby scripts/smoke_workflows.rb [codex|claude] [case]`: optional behavioral checks that call signed-in models in disposable projects. Review their model, usage and execution effects separately from offline checks.
 
 ## Architecture Pointers
@@ -44,13 +45,14 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 ## Domain Rules
 
 - Use bare Helm command names in general prose and examples. Keep literal platform invocation syntax in platform setup instructions and `docs/setup/index.md`.
-- Operational records live under `.helm/`: refactor schema 2, test schema 3, normalize/legal schema 1. Only the invoked owning workflow accesses its record. Source maintenance leaves live records and protected legacy paths opaque; unsupported state has no automatic migration/reset.
+- Operational records live under `.helm/`: refactor/normalize schema 2, test schema 3, legal schema 1. Only the invoked owning workflow accesses its record. Source maintenance leaves live records and protected legacy paths opaque; unsupported state has no automatic migration/reset.
 - Refactor/test helpers load lazily at their eligible owning-state steps. Source-only previews require no helper or Python setup. Maintaining this repo uses a separate installed package rather than treating the checkout as both package and consumer.
 - A source assessment, human selection, edit approval, verified fix and publication are separate results. Preserve stable identities, unknown fields, human decisions and useful closed history; skip/defer/accepted risk does not mean resolved. Follow the owning workflow rather than inventing schema fields or shared cross-ledger access.
 - Full scan / Gap scan applies only to log, manifest, test and refactor, with different coverage/checkpoint contracts. Refactor Full scan reads eligible implementation/tests in full; log traces representative flows across all packages/topics. Incomplete review never becomes a complete checkpoint.
 - Refactor preserves behavior and existing test guarantees; test owns missing/stronger protection and independent tooling/strategy work. Neither invokes the other automatically. Required deferred checks remain unverified.
 - Local editing workflows finish on their permitted current branch. Ship alone publishes reviewed work and optional independently selected targets, then separately offers a release on ready integrated main/master. Source publication or a PR handoff does not prove integration, release or deployment.
 - Normalize rewrites all affected existing local branches together under its reviewed plan, preserving tags/excluded refs and private recovery proof. Ship's history protocol publishes that proof with fixed leases; it never discovers rewrite scope by reading the live normalize ledger.
+- Normalize uses the pure stdin/stdout `helpers/normalize_check.py` for mechanical checks and graph selection, separately from the refactor/test ledger helper. `prompts/normalize-review.md` owns schema-2 semantic baselines, effective-policy fingerprints and review-contract compatibility. The owning entry may validate its own record early for incremental selection; syntax pass never grants semantic coverage. The helper has no Git/file/network access or writer. Test it with `python3 -I -B scripts/test_normalize.py`; unsupported schema 1 has no compatibility reader or migration.
 - Archive prepares a reviewed local payload in the current canonical `.helm/archive/` bundle. Ship separately publishes/verifies the private payload and receipt. Historical `.archive/` bundles remain protected; no automatic relocation or replay.
 - Adopt installs reviewed local rule copies; it does not convert external pointers or merge rule bodies. Legal writes complete uncommitted source-based drafts for editor/Markdown review, keeps chat to file links and important changes/gaps, and asks once for Commit / Revise / Leave uncommitted. Preserve existing clauses and distinguish concrete omissions from unassessed legal sufficiency; never require home-address intake or a second model. Exact legal content/commit approval remains independent of auto-commit; only approved commits advance its manifest.
 - Adopt must stop without writes in this Helm source checkout, its nested directories or a Helm package installation. This project reads the maintained `rules/` sources directly; do not create adopted copies or repoint its instructions to them. Test adoption in a separate consumer fixture outside those roots. This restriction also applies when the invoked installed workflow is older than this checkout.
