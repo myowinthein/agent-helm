@@ -204,6 +204,33 @@ class NormalizeTests(unittest.TestCase):
         with self.assertRaises(mod.Invalid):
             mod.execute(payload, "check")
 
+    def test_continuations_require_a_matching_digest_for_each_operation(self):
+        payload = {"policy": policy(), "tips": {"main": oid(2)}, "commits": [
+            {"id": oid(1), "parents": [], "message": "fix(api): first"},
+            {"id": oid(2), "parents": [oid(1)], "message": "fix(api): second"}]}
+        for operation in ("check", "plan"):
+            with self.subTest(operation=operation):
+                first = mod.execute(payload, operation, limit=1)
+                for missing_or_wrong in (None, "", "0" * 64):
+                    with self.subTest(digest=missing_or_wrong), self.assertRaises(mod.Invalid):
+                        mod.execute(payload, operation, offset=1, expected_digest=missing_or_wrong)
+                last = mod.execute(payload, operation, offset=1, expected_digest=first["input_digest"])
+                self.assertEqual(last["records"], mod.execute(payload, operation)["records"][1:])
+                self.assertIsNone(last["next_offset"])
+
+                # Exercise argparse and its safe error boundary, not only execute().
+                command = [sys.executable, "-I", "-B", str(HELPER), operation, "--offset", "1"]
+                rejected = subprocess.run(command, input=json.dumps(payload), text=True,
+                                          capture_output=True, check=False)
+                self.assertEqual(rejected.returncode, 2)
+                self.assertEqual(json.loads(rejected.stdout), {
+                    "interface_version": 1, "error": "Invalid or unsupported normalize input"})
+                self.assertEqual(rejected.stderr, "")
+                accepted = subprocess.run(command + ["--expect-digest", first["input_digest"]],
+                                          input=json.dumps(payload), text=True, capture_output=True, check=False)
+                self.assertEqual(accepted.returncode, 0, accepted.stderr)
+                self.assertEqual(json.loads(accepted.stdout), last)
+
     def test_cli_parse_failure_never_echoes_input(self):
         for data in ('{"private":"SYNTHETIC_SENTINEL",', '{"policy":null,"policy":null}', '{"policy":NaN}'):
             run = subprocess.run([sys.executable, "-I", "-B", str(HELPER), "check"], input=data,

@@ -228,6 +228,7 @@ def execute(payload, operation, offset=0, limit=100, expected_digest=None):
     require(isinstance(payload, dict), "Expected JSON object")
     require(type(offset) is int and offset >= 0 and type(limit) is int and 1 <= limit <= 200,
             "Invalid page bounds")
+    require(offset == 0 or expected_digest is not None, "Continuation requires the first page digest")
     fingerprint, unsupported = policy_info(payload.get("policy"))
     identity = digest({"operation": operation, "payload": payload})
     require(expected_digest is None or expected_digest == identity, "Input changed between pages")
@@ -268,7 +269,7 @@ def main():
     parser.add_argument("operation", choices=("check", "plan"))
     parser.add_argument("--offset", type=int, default=0)
     parser.add_argument("--limit", type=int, default=100)
-    parser.add_argument("--expect-digest")
+    parser.add_argument("--expect-digest", help="First page input_digest; required when --offset is greater than zero")
     args = parser.parse_args()
     try:
         raw = sys.stdin.buffer.read(MAX_BYTES + 1)
