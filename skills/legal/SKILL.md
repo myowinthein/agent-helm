@@ -1,6 +1,6 @@
 ---
 name: legal
-description: Draft or maintain practical legal documents from project evidence with essential questions and one consolidated review
+description: Write practical legal drafts to project files for editor review, with essential questions and explicit commit approval
 ---
 
 Read and apply [the shared runtime](../../prompts/shared/runtime.md), then follow [the legal workflow](../../workflows/legal.md).
