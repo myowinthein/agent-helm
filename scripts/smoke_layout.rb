@@ -7,6 +7,7 @@ require "pathname"
 require "tempfile"
 require "timeout"
 require "tmpdir"
+require_relative "smoke_support"
 
 client = ARGV.fetch(0, "codex")
 abort "Usage: ruby scripts/smoke_layout.rb [codex|claude] [case ...]" unless %w[codex claude].include?(client)
@@ -27,7 +28,7 @@ cases = {
   "partial-adapter-migration" => { files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter + reference_rules + claude_only }, expected: { "AGENTS.md" => shared + reference_rules, "CLAUDE.md" => adapter + claude_only } },
   "partial-adapter-adopt-stop" => { command: "adopt", files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter + reference_rules + claude_only }, pending: %w[log], request: "Run adopt. The adapter still owns shared Rules; I have not approved migration." },
   "independent-awaiting-approval" => { files: { "AGENTS.md" => shared, "CLAUDE.md" => "## Extra agreement\n\nKeep the daily retention preference.\n" + claude_only }, pending: %w[AGENTS.md CLAUDE.md retention], request: "Run log. No migration or reconciliation diff has been approved; show the comparison and pending choices, then stop." },
-  "configuration-conflict" => { files: { "AGENTS.md" => shared, "CLAUDE.md" => shared.sub("solo", "github-flow") }, pending: %w[solo github-flow], request: "Run log. I have not chosen which conflicting configuration to keep." },
+  "configuration-conflict" => HelmSmoke.configuration_conflict(shared).merge(request: "Run log. I have not chosen which conflicting configuration to keep."),
   "shadowed-entry" => { files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter, "AGENTS.override.md" => "# Local override\n\nDo not connect this override to the persistent project entry.\n" }, pending: %w[AGENTS.override.md], request: "Run log and establish shared project instructions." },
   "cancel-migration" => { files: { "CLAUDE.md" => shared }, request: "Run log. At the layout migration choice, choose Cancel. Do not run a knowledge scan." },
   "fresh-no-git" => { files: {}, no_git: true, fresh: true, request: "Run log. I approve the full scan and creating both root entries. Choose direct shipping and no automatic commits. No special safety risks apply to this fictional Markdown-only project. Do not initialize Git, invent a review hash, or create rules." },
@@ -47,18 +48,11 @@ abort "Unknown cases: #{unknown.join(", ")}" unless unknown.empty?
 cases.select! { |name, _| selected.include?(name) } unless selected.empty?
 
 def git(workspace, *args)
-  output, status = Open3.capture2e("git", *args, chdir: workspace)
-  raise output unless status.success?
-  output.strip
-end
-
-def snapshot(workspace)
-  workspace.glob("**/*", File::FNM_DOTMATCH).reject { |p| p.directory? || p.to_s.include?("/.git/") }.to_h do |p|
-    [p.relative_path_from(workspace).to_s, p.symlink? ? "symlink:#{p.readlink}" : Digest::SHA256.file(p).hexdigest]
-  end
+  HelmSmoke.git(workspace, *args).strip
 end
 
 cases.each do |name, scenario|
+  HelmSmoke.validate_preconditions!(name, scenario)
   Dir.mktmpdir("helm-layout-#{client}-#{name}-") do |temp|
     workspace = Pathname(temp).join("consumer project")
     workspace.mkpath
@@ -77,10 +71,19 @@ cases.each do |name, scenario|
       git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "--allow-empty", "-m", "docs(fixture): record review marker only")
       before_head = git(workspace, "rev-parse", "HEAD")
     end
-    before = snapshot(workspace)
+    before = HelmSmoke.snapshot(workspace)
+    before_git = HelmSmoke.git_state(workspace)
     expected = scenario.fetch(:expected, {}).transform_values { |contents| contents.gsub("{review_hash}", review_hash.to_s) }
+    if scenario[:copy]
+      expected["AGENTS.md"] = HelmSmoke.connected_owner(files.fetch("AGENTS.md").gsub("{review_hash}", review_hash.to_s))
+      version = JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version")
+      %w[git.md safety.md].each do |rule|
+        expected[".claude/rules/#{rule}"] = "<!-- helm-rule: agent-helm@v#{version} -->\n" + root.join("rules", rule).read
+      end
+    end
     approved = expected.map { |path, contents| "#{path}:\n```markdown\n#{contents}```" }.join("\n\n")
     request = scenario[:request] || "Run log. I approve exactly the following final file contents for the layout migration/adapter creation. Preserve all other files. Skip any subsequent knowledge scan, investigation or gap update.\n\n#{approved}"
+    request += "\n\nI approve exactly these file contents; preserve all other files:\n\n#{approved}" if scenario[:copy]
     operation = scenario.fetch(:command, "log")
     instructions = "This is a disposable fictional fixture at #{workspace}. Operate only in it and read the selected packaged workflow/resources. Do not access real projects, network, external services or global settings. Do not commit, push or initialize Git; stop finalization with files uncommitted as explicitly requested by this fixture's user. Follow actual workflow questions; present unanswered choices and stop instead of inventing approval. Explicit approvals of exact final contents in the request authorize only that transformation."
     prompt = "#{instructions}\n\nRead #{root.join('skills', operation, 'SKILL.md')} and execute that Helm workflow with this request:\n\n#{request}"
@@ -93,7 +96,7 @@ cases.each do |name, scenario|
     end
     Tempfile.create("helm-layout-output") do |stdout|
       Tempfile.create("helm-layout-errors") do |stderr|
-        pid = Process.spawn(*args, chdir: workspace, in: File::NULL, out: stdout, err: stderr, pgroup: true)
+        pid = Process.spawn(HelmSmoke.environment, *args, chdir: workspace, in: File::NULL, out: stdout, err: stderr, pgroup: true)
         begin
           _, status = Timeout.timeout(300) { Process.wait2(pid) }
         rescue Timeout::Error
@@ -115,39 +118,25 @@ cases.each do |name, scenario|
         end
         raise "#{name}: no final response" if answer.to_s.strip.empty?
         expected.each do |path, contents|
-          raise "#{name}: wrong #{path}: #{workspace.join(path).read rescue 'missing'}\nResponse: #{answer}" unless workspace.join(path).file? && workspace.join(path).read == contents
+          raise "#{name}: wrong #{path}" unless HelmSmoke.read_regular(workspace, path) == contents.b
         end
         if scenario[:fresh]
-          owner = workspace.join("AGENTS.md"); entry = workspace.join("CLAUDE.md")
-          raise "#{name}: missing shared layout: #{answer}" unless owner.file? && entry.file? && entry.read.lines.map(&:strip).include?("@AGENTS.md")
-          raise "#{name}: missing project identity" unless owner.read.include?("## Project Identity")
-          raise "#{name}: invented review marker" if owner.read.include?("last-reviewed:")
-          raise "#{name}: wrong config" unless owner.read.include?("ship-method: direct")
-          expected = %w[AGENTS.md CLAUDE.md].to_h { |p| [p, workspace.join(p).read] }
+          owner = HelmSmoke.read_regular(workspace, "AGENTS.md")
+          entry = HelmSmoke.read_regular(workspace, "CLAUDE.md")
+          raise "#{name}: missing shared layout" unless entry.lines.map(&:strip).include?("@AGENTS.md")
+          raise "#{name}: missing project identity" unless owner.include?("## Project Identity")
+          raise "#{name}: invented review marker" if owner.include?("last-reviewed:")
+          raise "#{name}: wrong config" unless owner.include?("ship-method: direct")
+          expected = { "AGENTS.md" => owner, "CLAUDE.md" => entry }
         end
-        if scenario[:copy]
-          owner = workspace.join("AGENTS.md").read
-          original = files.fetch("AGENTS.md").gsub("{review_hash}", review_hash.to_s)
-          raise "#{name}: changed original shared knowledge" unless owner.start_with?(original)
-          raise "#{name}: missing/duplicated rule pointers" unless owner.scan(/^## Rules$/).length == 1 && %w[git.md safety.md].all? { |rule| owner.include?(".claude/rules/#{rule}") }
-          expected["AGENTS.md"] = owner
-          version = JSON.parse(root.join(".claude-plugin/plugin.json").read).fetch("version")
-          %w[git.md safety.md].each do |rule|
-            contents = "<!-- helm-rule: agent-helm@v#{version} -->\n" + root.join("rules", rule).read
-            path = ".claude/rules/#{rule}"
-            raise "#{name}: wrong copied #{rule}" unless workspace.join(path).read == contents
-            expected[path] = contents
-          end
-        end
-        after = snapshot(workspace)
-        expected_snapshot = before.merge(expected.transform_values { |text| Digest::SHA256.hexdigest(text) })
-        raise "#{name}: unexpected file writes: #{(after.keys | expected_snapshot.keys).select { |k| after[k] != expected_snapshot[k] }}" unless after == expected_snapshot
+        HelmSmoke.assert_files_unchanged!(workspace, before, expected)
         Array(scenario[:pending]).each { |value| raise "#{name}: pending issue not reported: #{answer}" unless answer.include?(value) }
         if scenario[:no_git]
           raise "#{name}: initialized Git" if workspace.join(".git").exist?
         else
           raise "#{name}: changed HEAD or branches" unless git(workspace, "rev-parse", "HEAD") == before_head && git(workspace, "branch", "--format=%(refname:short)") == "main"
         end
+        HelmSmoke.assert_git_unchanged!(workspace, before_git)
         puts "PASS #{client}: #{name} (exact files, preserved inputs and Git state)"
       end
     end
