@@ -73,7 +73,8 @@ module HelmValidation
       check(element.name.downcase != "style", "Plugin icon must use presentation attributes, not stylesheets")
       element.attributes.each_attribute do |attribute|
         check(attribute.name.downcase != "style", "Plugin icon must use presentation attributes, not inline CSS")
-        check(!attribute.name.start_with?("on") && attribute.name != "href" && !attribute.value.include?("url("),
+        # This icon subset uses unescaped presentation values, never CSS resources.
+        check(!attribute.name.start_with?("on") && attribute.name != "href" && !attribute.value.match?(/url\s*\(|\\/i),
               "Plugin icon must not execute code or load external resources")
       end
     end
