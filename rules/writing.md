@@ -36,16 +36,26 @@ Write clear, useful, natural prose for the reader and task. Prefer simple, appro
 
 ## Structure and punctuation
 
-- Use connected paragraphs for explanations. Use numbered steps for sequences, bullets for parallel items and tables for useful comparisons. Scale headings and formatting to the content; short answers rarely need several sections.
-- Put optional supporting detail after the main answer or link to existing reliable documentation. Keep essential warnings and decision context beside the relevant action. Do not create files or move content just to shorten a response, or replace a complete answer with an offer to explain more.
+- Choose structure that helps the reader understand, find or act on the content. Keep explanations connected and separate ideas into paragraphs. No element or visual variety quota is required; formatting does not justify extra content or unrelated restyling.
+- Use syntax the destination and project support. Prefer native Markdown in Markdown files and meaningful semantic elements when authoring HTML; use readable plain-text structure where markup does not render. Do not add dependencies, scripts or styling merely to enable formatting.
+- Use descriptive headings that reflect section hierarchy, not a desired font size. Distinguish navigable sections from short run-in labels; bold labels can fit project conventions but do not replace real section headings. Short answers rarely need several sections. Reuse existing navigation rather than duplicating an automatic contents list.
+- Use numbered lists when order matters, bullets for parallel items and term–description pairs for definitions or options. Keep related items consistent and nesting purposeful. Use supported task lists for actionable work, marking completion only when established.
+- Use tables for shared attributes or relationships readers need to compare. Give columns meaningful headers and keep cells concise; use prose or lists when a grid obscures the information. Tables are not page-layout tools.
+- Use inline code for exact identifiers, paths, commands and literal values. Separate longer code, commands, configuration and output into code/preformatted blocks, labelled appropriately where supported. Keep excerpts exact and useful, distinguish input from output and identify placeholders.
+- Use bold or italic sparingly for meaningful emphasis, terminology or established conventions such as UI labels. Avoid emphasising whole paragraphs or repeatedly highlighting ordinary text.
+- Clearly distinguish quotations and retain their wording, attribution and source context. For useful notes or warnings, follow the project's existing callout convention; a labelled plain sentence works without special rendering. Do not add callouts merely to decorate routine explanation.
+- Use descriptive links for useful destinations and supporting sources when attribution or verification is needed. Footnotes can hold supporting references or asides where they render; they are not a place to bury required information.
+- Use images, figures or diagrams when showing the information helps more than prose alone. Provide text alternatives appropriate to their purpose and captions or explanations where useful; do not make essential meaning depend solely on seeing the visual. This authorises no new asset creation outside the task or unverified accessibility claim.
+- Put optional supporting detail after the main answer, link to existing reliable documentation or use clearly labelled collapsible details where supported. Keep essential warnings, required steps and decision context visible beside the relevant action. Do not create files or move content just to shorten a response, or replace a complete answer with an offer to explain more.
+- Use specialised markup for keys, abbreviations, math, subscript/superscript, dates or edits only when the subject and renderer warrant it. Thematic breaks can mark meaningful transitions or follow an established layout; avoid adding them mechanically between every section. This is no requirement to introduce HTML controls or redesign a page.
 - Default to avoiding em dashes in newly written prose. Use a full stop, comma or colon, or rewrite the sentence. Do not substitute spaced hyphens, double hyphens or en dashes as a workaround.
 - Keep meaningful punctuation and Unicode, including hyphens, minus signs, ranges, names and exact syntax. This is not an ASCII-only rule.
-- Avoid decorative ellipses, excessive exclamation marks, emoji and repeated bold emphasis unless the requested medium or project voice calls for them.
+- Avoid decorative ellipses, excessive exclamation marks and emoji unless the requested medium or project voice calls for them.
 
 ## Global readers
 
 - Avoid unexplained idioms, culture-specific references, double negatives, ambiguous pronouns and long stacks of nouns. Use literal wording and clear references.
-- Make important actors, conditions and next actions explicit. Keep dates, numbers, time zones and units unambiguous where relevant, and use descriptive link text.
+- Make important actors, conditions and next actions explicit. Keep dates, numbers, time zones and units unambiguous where relevant.
 - Natural contractions can fit the voice; spell them out when meaning could be misread. Do not remove articles or necessary context merely to shorten text.
 
 ## Preserve exact content
@@ -83,4 +93,4 @@ For a hypothetical editor, the reader asks whether it works offline:
 
 ## Before delivering
 
-Make a short silent revision: check that the answer comes first, each detail serves the reader's purpose and ideas connect without filler. Confirm that requested content, necessary explanations, material facts, qualifications, warnings and required formats survived. Do not add an editing report, extra files, approval requests or tooling just to apply this rule.
+Make a short silent revision: check that the answer comes first, each detail serves the reader's purpose, ideas connect without filler and formatting suits the destination. Confirm that requested content, necessary explanations, material facts, qualifications, warnings and required formats survived. Do not add an editing report, extra files, approval requests or tooling just to apply this rule.
