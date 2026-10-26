@@ -14,14 +14,40 @@
       ],
       "paths": [
         "Rakefile",
-        "README.md"
+        "README.md",
+        "scripts/docs_checks.rb",
+        "scripts/test_docs_links.rb"
       ],
       "priority": "medium",
       "reason": "Required absolute own-site README links and images are skipped as external, allowing broken onboarding destinations to pass offline checks.",
       "action": "improve",
       "layer": "integration",
-      "state": "open",
-      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      "state": "resolved",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "tests": [
+        "scripts/test_docs_links.rb::own missing absolute file",
+        "scripts/test_docs_links.rb::own missing absolute fragment",
+        "scripts/test_docs_links.rb::own missing absolute image",
+        "scripts/test_docs_links.rb::repeated baseurl is stripped only once",
+        "scripts/test_docs_links.rb::external image stays unfetched",
+        "Rakefile::docs_test"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_docs_links.rb::own missing absolute file",
+          "scripts/test_docs_links.rb::own missing absolute fragment",
+          "scripts/test_docs_links.rb::own missing absolute image",
+          "scripts/test_docs_links.rb::repeated baseurl is stripped only once",
+          "scripts/test_docs_links.rb::external image stays unfetched",
+          "Rakefile::docs_test"
+        ],
+        "method": "runtime",
+        "outcome": "All 24 docs-link scenarios passed; the combined suite passed and checked 212 internal site links. Missing own-site files/fragments/images fail, external/lookalike URLs remain unfetched, and README absolute URLs are preserved.",
+        "commit": "8ce74b6f00039768bf34620f928826b2fd743645",
+        "command": "BUNDLE_VERSION=4.0.22 BUNDLE_FROZEN=true bundle _4.0.22_ exec ruby scripts/test_docs_links.rb",
+        "scope": "Synthetic sites using actual HTMLProofer with external validation forbidden; canonical configured origin/baseurl and host-filesystem path behavior. Combined rake test also built and checked the actual site."
+      }
     },
     {
       "id": "g-25493c4a-ba00-47e2-912e-a73a40c33a7a",
@@ -149,14 +175,46 @@
       ],
       "paths": [
         "scripts/smoke_layout.rb",
-        "scripts/smoke_workflows.rb"
+        "scripts/smoke_workflows.rb",
+        "scripts/smoke_support.rb",
+        "scripts/test_smoke_support.rb"
       ],
       "priority": "medium",
       "reason": "Current smoke snapshots omit symlinks or Git state, allowing meaningful unauthorized local changes to escape the assertions.",
       "action": "improve",
       "layer": "unit/integration",
-      "state": "open",
-      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      "state": "resolved",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "tests": [
+        "scripts/test_smoke_support.rb::symlink directories are recorded without following their targets",
+        "scripts/test_smoke_support.rb::staged-only content changes are rejected even with an unchanged worktree",
+        "scripts/test_smoke_support.rb::index flag-only mutations are rejected",
+        "scripts/test_smoke_support.rb::added branches and tags are rejected",
+        "scripts/test_smoke_support.rb::local config changes fail without exposing their values",
+        "scripts/test_smoke_support.rb::approving a child cannot replace an existing link or file parent",
+        "scripts/test_smoke_support.rb::connection approval is fixed before output and rejects appended instructions",
+        "scripts/test_smoke_support.rb::artifact reads reject linked leaves and ancestors without revealing outside data",
+        "scripts/test_smoke_support.rb::artifact reads and snapshots preserve Unicode and CRLF bytes"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_smoke_support.rb::symlink directories are recorded without following their targets",
+          "scripts/test_smoke_support.rb::staged-only content changes are rejected even with an unchanged worktree",
+          "scripts/test_smoke_support.rb::index flag-only mutations are rejected",
+          "scripts/test_smoke_support.rb::added branches and tags are rejected",
+          "scripts/test_smoke_support.rb::local config changes fail without exposing their values",
+          "scripts/test_smoke_support.rb::approving a child cannot replace an existing link or file parent",
+          "scripts/test_smoke_support.rb::connection approval is fixed before output and rejects appended instructions",
+          "scripts/test_smoke_support.rb::artifact reads reject linked leaves and ancestors without revealing outside data",
+          "scripts/test_smoke_support.rb::artifact reads and snapshots preserve Unicode and CRLF bytes"
+        ],
+        "method": "runtime",
+        "outcome": "All 20 smoke-support scenarios passed, including flag-only and staged-only changes, links, added/moved refs, local config, protected parents, unapproved appended instructions and byte fidelity. Both live-script syntax checks passed.",
+        "commit": "5b1eaee6015aaf973678c682ad85751f991605e4",
+        "command": "ruby scripts/test_smoke_support.rb",
+        "scope": "Offline synthetic file/link/index/ref/config and approval-boundary mutations with positive controls; contained binary artifact reads. No live client models or real repositories."
+      }
     },
     {
       "id": "g-8fd9f54e-cb13-4eb1-b831-e11b049d4ee6",
@@ -230,14 +288,34 @@
       ],
       "paths": [
         "scripts/smoke_layout.rb",
-        "scripts/smoke_workflows.rb"
+        "scripts/smoke_workflows.rb",
+        "scripts/smoke_support.rb",
+        "scripts/test_smoke_support.rb"
       ],
       "priority": "medium",
       "reason": "Two existing fixtures do not establish their named conditions, so a failed setup or legitimate no-op can invalidate the claimed gate check.",
       "action": "improve",
       "layer": "unit/integration",
-      "state": "open",
-      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      "state": "resolved",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "tests": [
+        "scripts/test_smoke_support.rb::current configuration conflict has different recognized values",
+        "scripts/test_smoke_support.rb::vacuous configuration fixtures fail before any model call",
+        "scripts/test_smoke_support.rb::normalize fixture commits an actual non-Conventional subject"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_smoke_support.rb::current configuration conflict has different recognized values",
+          "scripts/test_smoke_support.rb::vacuous configuration fixtures fail before any model call",
+          "scripts/test_smoke_support.rb::normalize fixture commits an actual non-Conventional subject"
+        ],
+        "method": "runtime",
+        "outcome": "All 20 smoke-support scenarios passed. Fixtures now use conflicting direct/pr settings and a genuinely non-Conventional initial message with an exact correction expectation; live model gate behavior was not executed.",
+        "commit": "5b1eaee6015aaf973678c682ad85751f991605e4",
+        "command": "ruby scripts/test_smoke_support.rb",
+        "scope": "Offline fixture construction/precondition checks and an actual disposable Git commit; no Claude or Codex model invocation."
+      }
     },
     {
       "id": "g-daf74878-bc26-4dd7-bb67-a1f6188f91e0",
@@ -335,14 +413,39 @@
       ],
       "paths": [
         "helpers/helm_lib/ledger.py",
-        "helpers/ledger-contract.json"
+        "helpers/ledger-contract.json",
+        "scripts/test_ledger.py"
       ],
       "priority": "medium",
       "reason": "Package checks verify helper presence, not validation or retrieval behavior; accepting malformed state or omitting records can produce an incorrect assessment.",
       "action": "add",
       "layer": "integration",
-      "state": "open",
-      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      "state": "resolved",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "tests": [
+        "scripts/test_ledger.py::LedgerTests.test_test_shape_identity_paths_dates_and_closures_are_validated",
+        "scripts/test_ledger.py::LedgerTests.test_refactor_provenance_references_cycles_and_closures_are_validated",
+        "scripts/test_ledger.py::LedgerTests.test_unknown_values_and_exact_numbers_survive_full_retrieval_unchanged",
+        "scripts/test_ledger.py::LedgerTests.test_filter_or_within_and_across_keys_and_path_boundaries",
+        "scripts/test_ledger.py::LedgerTests.test_digest_is_required_and_changes_or_disappearance_conflict",
+        "scripts/test_ledger.py::LedgerTests.test_resource_limits_fail_instead_of_truncating"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_ledger.py::LedgerTests.test_test_shape_identity_paths_dates_and_closures_are_validated",
+          "scripts/test_ledger.py::LedgerTests.test_refactor_provenance_references_cycles_and_closures_are_validated",
+          "scripts/test_ledger.py::LedgerTests.test_unknown_values_and_exact_numbers_survive_full_retrieval_unchanged",
+          "scripts/test_ledger.py::LedgerTests.test_filter_or_within_and_across_keys_and_path_boundaries",
+          "scripts/test_ledger.py::LedgerTests.test_digest_is_required_and_changes_or_disappearance_conflict",
+          "scripts/test_ledger.py::LedgerTests.test_resource_limits_fail_instead_of_truncating"
+        ],
+        "method": "runtime",
+        "outcome": "The 22-test ledger suite passed, including selected validation, lifecycle, retrieval and resource assertions. Helper results remain separate from source review, execution and authorization.",
+        "commit": "1ef2de4325a1adb977d009fd4d917542e9b8c321",
+        "command": "python3 -I -B scripts/test_ledger.py",
+        "scope": "Native schema-2 refactor/schema-3 test fixtures, safe invalid-input/state diagnostics, all-state retrieval, unknown exact values, filtering, digest binding and bounded resource failures."
+      }
     },
     {
       "id": "g-e9ce1673-2390-4848-a4b9-06a968330236",
@@ -413,14 +516,37 @@
       "paths": [
         "helpers/helm.py",
         "helpers/helm_lib/common.py",
-        "helpers/helm_lib/ledger.py"
+        "helpers/helm_lib/ledger.py",
+        "scripts/test_ledger.py"
       ],
       "priority": "medium",
       "reason": "No direct test exercises the shared helper's path and read-only guards; a regression can use the wrong record or contaminate a normal assessment.",
       "action": "add",
       "layer": "integration",
-      "state": "open",
-      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      "state": "resolved",
+      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "tests": [
+        "scripts/test_ledger.py::LedgerTests.test_missing_state_creates_nothing",
+        "scripts/test_ledger.py::LedgerTests.test_symlinked_canonical_file_and_parent_are_rejected_before_open",
+        "scripts/test_ledger.py::LedgerTests.test_each_legacy_location_blocks_without_opening_its_bytes",
+        "scripts/test_ledger.py::LedgerTests.test_file_replacement_during_open_returns_conflict_not_contents",
+        "scripts/test_ledger.py::LedgerTests.test_parent_replacement_during_open_returns_conflict_not_contents"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_ledger.py::LedgerTests.test_missing_state_creates_nothing",
+          "scripts/test_ledger.py::LedgerTests.test_symlinked_canonical_file_and_parent_are_rejected_before_open",
+          "scripts/test_ledger.py::LedgerTests.test_each_legacy_location_blocks_without_opening_its_bytes",
+          "scripts/test_ledger.py::LedgerTests.test_file_replacement_during_open_returns_conflict_not_contents",
+          "scripts/test_ledger.py::LedgerTests.test_parent_replacement_during_open_returns_conflict_not_contents"
+        ],
+        "method": "runtime",
+        "outcome": "The 22-test ledger suite passed, including selected isolation, no-write and conflict assertions.",
+        "commit": "1ef2de4325a1adb977d009fd4d917542e9b8c321",
+        "command": "python3 -I -B scripts/test_ledger.py",
+        "scope": "Disposable synthetic consumers outside the package; missing-state, owner isolation, package boundaries, no-follow paths, unchanged inputs and deterministic in-flight replacement checks. No live records."
+      }
     },
     {
       "id": "g-f068eb49-412f-4ab7-a904-324085b93db7",
