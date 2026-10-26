@@ -68,13 +68,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "bounded model fixture with approved draft paths required; no legal validity claim"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Dedicated legal model suite was not selected. Draft-only acceptance using fictional facts, preserved clauses and unchanged ledger/index/HEAD is planned in scripts/acceptance-plan.md; not executed and no legal-validity claim."
       }
     },
     {
@@ -96,13 +90,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "explicit host/tool scenarios and separate actual UI/human acceptance plan required"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Manual Single/Multi/Input/Review, long-list fallback, render failure and unanswered-question scenarios are planned in scripts/acceptance-plan.md. Actual Claude/Codex host UI checks and attributable human acceptance remain pending."
       }
     },
     {
@@ -126,13 +114,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "isolated mock/local-remote model fixture plan required; no real provider writes"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Two targeted local-remote publication scenarios are planned in scripts/acceptance-plan.md. Reviewed provider isolation, fixed-lease movement and partial-success/resume execution remain pending; no real publication is selected."
       }
     },
     {
@@ -156,14 +138,13 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "JS/browser runner and target plan not selected"
+        "note": "Static setup fallback links/panel markup passed ten synthetic scenarios and the actual built-site check at e3cf323917fc3a21e5e0462279ddb608bd9debe7. Keyboard/focus/ARIA, runtime fragment redirects, actual no-JavaScript visibility and print remain unexecuted; manual plan is in scripts/acceptance-plan.md."
       },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
-      }
+      "tests": [
+        "scripts/test_docs_links.rb::verify_setup_contracts",
+        "scripts/docs_checks.rb::HelmDocs.check_setup",
+        "Rakefile::docs_test"
+      ]
     },
     {
       "id": "g-8c0379a5-7d26-4667-9ad9-958879d0455b",
@@ -238,13 +219,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "synthetic bundle/remote/model fixture and phase limits required; no live bundle access"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Synthetic tamper-stop and completed-no-replay acceptance scenarios for archive/ship backup are planned in scripts/acceptance-plan.md. Fixture proofs, isolated local remotes and bounded execution remain pending; no live bundle access."
       }
     },
     {
@@ -268,13 +243,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "JS/browser runner and target plan not selected"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Manual theme/storage/system/cross-tab acceptance is planned in scripts/acceptance-plan.md; not executed. A new browser/DOM framework was not selected."
       }
     },
     {
@@ -333,17 +302,23 @@
       "reason": "The documented continuation digest requirement is not enforced for nonzero offsets; mixed-input pages can yield inconsistent review membership.",
       "action": "improve",
       "layer": "unit",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "verification",
-        "note": "helper repair requires separate explicit scope; static finding, no failing test executed"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      "tests": [
+        "scripts/test_normalize.py::NormalizeTests.test_continuations_require_a_matching_digest_for_each_operation",
+        "scripts/test_normalize.py::NormalizeTests.test_digest_bound_pages_reconcile_all_ids"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_normalize.py::NormalizeTests.test_continuations_require_a_matching_digest_for_each_operation",
+          "scripts/test_normalize.py::NormalizeTests.test_digest_bound_pages_reconcile_all_ids"
+        ],
+        "method": "runtime",
+        "outcome": "Regression failed for check/plan function and CLI before the guard; all 26 normalize tests and the combined rake suite now pass. Nonzero offsets need the first-page digest, including safe CLI rejection; first pages and matching-digest continuations remain valid.",
+        "commit": "71864449de3ed65c3d7e5a453572b61b31235d3c",
+        "command": "python3 -I -B scripts/test_normalize.py",
+        "scope": "Synthetic message/graph inputs, both helper operations and isolated CLI subprocesses; no actual Git history or normalize state."
       }
     },
     {
@@ -361,17 +336,35 @@
       "reason": "Stylesheet resource references are not inspected by the current SVG validator; the no-external-resource check lacks protection for this form.",
       "action": "improve",
       "layer": "unit",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "verification",
-        "note": "negative reproduction and explicit validator repair plan needed; no rendering/network result claimed"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+      "tests": [
+        "scripts/test_plugin.rb::stylesheet import",
+        "scripts/test_plugin.rb::stylesheet URL import",
+        "scripts/test_plugin.rb::prefixed stylesheet",
+        "scripts/test_plugin.rb::uppercase stylesheet",
+        "scripts/test_plugin.rb::escaped inline CSS resource",
+        "scripts/test_plugin.rb::stylesheet processing instruction",
+        "scripts/test_plugin.rb::uppercase paint resource",
+        "scripts/test_plugin.rb::escaped paint resource"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_plugin.rb::stylesheet import",
+          "scripts/test_plugin.rb::stylesheet URL import",
+          "scripts/test_plugin.rb::prefixed stylesheet",
+          "scripts/test_plugin.rb::uppercase stylesheet",
+          "scripts/test_plugin.rb::escaped inline CSS resource",
+          "scripts/test_plugin.rb::stylesheet processing instruction",
+          "scripts/test_plugin.rb::uppercase paint resource",
+          "scripts/test_plugin.rb::escaped paint resource"
+        ],
+        "method": "runtime",
+        "outcome": "Stylesheet-import and uppercase resource regressions failed before their guards. Package checks and the combined rake suite pass with eight added icon mutations. CSS elements/attributes/instructions and uppercase/escaped presentation resource functions are rejected for the intended reason; the unchanged icon remains valid. No renderer/network security certification.",
+        "commit": "f617959b3affc7fad66021a97eacb4f146a8a6e3",
+        "command": "ruby scripts/test_plugin.rb",
+        "scope": "Mutated temporary package copies, real static icon, relocated package and Git-export checks; no external resource fetching or live workflow models."
       }
     },
     {
@@ -394,13 +387,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "explicit synthetic Git/backend/model/cost execution plan required"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Synthetic end-to-end rewrite/recovery fixture is planned in scripts/acceptance-plan.md; backend, bounded model execution and independent recovery verification remain pending. The pure message helper does not own these Git effects."
       }
     },
     {
@@ -467,13 +454,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "bounded model fixture with mocked read-only provider evidence required"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Duplicate SemVer parser/routine model matrix was not selected. Concrete release-proposal acceptance rubric is in scripts/acceptance-plan.md; actual model proposal behavior remains unverified."
       }
     },
     {
@@ -497,13 +478,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "optional scoped browser/manual evidence not performed"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "One-browser Mermaid SVG/readability check is planned in scripts/acceptance-plan.md after diagram/loader changes. It was not executed; static site/link checks do not establish client rendering."
       }
     },
     {
@@ -568,13 +543,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "bounded model and complete tool-output trace test plan required"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Opt-in confidentiality test is planned in scripts/acceptance-plan.md. Complete exposed trace capture, scanner regressions, a synthetic live leak positive control and enforced execution limits/isolation are still required; no workflow model test was run."
       }
     },
     {
@@ -599,13 +568,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "bounded model fixture plan required"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Separate exact-output log/manifest partial-update scenarios are planned in scripts/acceptance-plan.md, reusing approved-output support. Fixture implementation and bounded model execution remain pending."
       }
     },
     {
@@ -629,13 +592,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "bounded model fixture plan required"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Opt-in guarded/custom-copy/writing-only scenarios are planned in scripts/acceptance-plan.md. Exact selected-rule output mapping and bounded model execution remain pending; no adoption into this checkout is selected."
       }
     },
     {
@@ -659,13 +616,7 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "bounded model execution fixtures and expected state transitions required"
-      },
-      "decision": {
-        "type": "deferred",
-        "note": "Developer requested P1–P5 first and discussion of P6–P20 afterward; no repair, setup or execution choice for this finding is approved.",
-        "date": "2026-10-27",
-        "commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2"
+        "note": "Standalone harness was not selected. Shared trace/state scenarios for zero-state preview and failed/deferred verification/provenance are planned in scripts/acceptance-plan.md; they remain unexecuted and helper validation is not equivalent protection."
       }
     }
   ]
