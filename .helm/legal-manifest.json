@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {
+      "file": "docs/legal/privacy.md",
+      "generated_at": "2026-10-27",
+      "generated_at_commit": "c16b63730f6d23bcd24cf6f06fa68eddd55778b6"
+    },
+    {
+      "file": "docs/legal/disclaimer.md",
+      "generated_at": "2026-10-27",
+      "generated_at_commit": "c16b63730f6d23bcd24cf6f06fa68eddd55778b6"
+    }
+  ]
+}
