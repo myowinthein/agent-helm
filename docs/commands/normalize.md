@@ -6,7 +6,7 @@ nav_order: 8
 
 # normalize
 
-Review commit messages and correct approved ones using the project's commit convention. Normalize rewrites affected local branches together so a shared original commit maps to the same new commit across those branches.
+Review commit messages and correct approved ones using the project's commit convention, with one final approval of the exact messages and complete rewrite impact. Normalize rewrites affected local branches together so a shared original commit maps to the same new commit across those branches.
 
 ## Start the command
 
@@ -23,13 +23,14 @@ Read-only review can inspect committed history with a dirty or detached checkout
 ```mermaid
 flowchart TD
   Start(["Start normalize"]) --> Audit["Resolve commit policy and<br/>review the requested history"]
-  Audit --> Messages["Review exact message proposals:<br/>Accept, Edit, Keep or Defer"]
-  Messages --> Changed{"Any selected corrections?"}
+  Audit --> Messages["Prepare exact message proposals<br/>and resolve requested edits/subsets"]
+  Messages --> Changed{"Any proposed corrections?"}
   Changed -->|No| Record["Record meaningful proven coverage<br/>only when eligible and authorized"]
   Changed -->|Yes| Impact["Show all affected local branches,<br/>ID changes, risks and recovery plan"]
-  Impact --> Approval{"Apply the reviewed rewrite?"}
-  Approval -->|No| End(["Report the local result"])
-  Approval -->|Yes| Backup["Verify private recovery bundle<br/>and required tools"]
+  Impact --> Approval{"Apply these messages<br/>and their complete rewrite plan?"}
+  Approval -->|Edit/change selection| Messages
+  Approval -->|Cancel/keep review only| End(["Report the local result"])
+  Approval -->|Apply| Backup["Recheck inputs and tools;<br/>verify private recovery bundle"]
   Backup --> Rewrite["Rewrite once and verify<br/>all affected commits and refs"]
   Rewrite --> Record
   Record --> End
@@ -39,9 +40,9 @@ flowchart TD
 
 The default message-review scope is the current local branch. You can explicitly request other named branches, all local branches, a bounded range or a full-history reassessment. Policy comes from project instructions and compatible statically inspected commitlint configuration before Helm's defaults. No project config or custom lint plugin is executed to discover rules.
 
-Accepted messages stay unchanged. Proposals distinguish valid messages outside project policy, invalid messages and unresolved intent. You see exact replacements and choose **Accept**, **Edit**, **Keep** or **Defer**. Changes normally affect only the subject; bodies, trailers, references and breaking information are preserved unless their edits are explicitly shown.
+Accepted messages stay unchanged. Proposals distinguish valid messages outside project policy, invalid messages and unresolved intent. There is no mandatory wording-approval round before the action review. If you request edits/subsets or clarification is needed, **Accept**, **Edit**, **Keep** or **Defer** can settle individual messages first. Those choices alone authorize no rewrite. Changes normally affect only the subject; bodies, trailers, references and breaking information are preserved unless their edits are explicitly shown.
 
-Approving a message is separate from approving the history rewrite. Corrections that could affect a later [ship](ship.html#optional-versioned-release) version proposal are explained during review.
+The final **Apply reviewed rewrite** accepts the displayed messages and authorizes their complete local rewrite plan together. Corrections that could affect a later [ship](ship.html#optional-versioned-release) version proposal are explained in that review.
 
 ### Code-assisted checks and incremental review
 
@@ -69,9 +70,11 @@ Remote-only branches, remote-tracking refs, tags, stashes, notes and other clone
 
 ## Approve and verify the rewrite
 
-The impact plan lists all affected branches, exact message changes, descendant IDs, possible signature loss and recovery location. If a required branch is held by another worktree, ancestry is incomplete or policy forbids the rewrite, the coordinated apply stops rather than omitting that branch.
+The impact plan lists all affected branches, exact message changes, descendant IDs, possible signature loss, tag ancestry, recovery location and checkpoint/commit effects. These headline effects appear beside the final Apply choice, with the complete message plan available. Read-only checks identify known blockers before offering Apply. If a required branch is held by another worktree, ancestry is incomplete or policy forbids the rewrite, the coordinated apply stops rather than omitting that branch.
 
-After approval, normalize requires **git-filter-repo and Python**, creates a verified self-contained Git bundle and retains private plan/mapping evidence outside the checkout. Missing tools leave a manual setup handoff; they are not installed automatically.
+Choose **Apply reviewed rewrite**, **Edit or change selection**, or **Cancel/keep review only**. Edits/subsets refresh the text and relevant impact before Apply. After Apply, normalize revalidates the approved inputs and proceeds without another confirmation when they match. A changed replacement message or other material plan change requires showing the revised plan and obtaining fresh approval; repeating the same effects in a shorter summary does not. Existing checkpoint commit policy and stronger required approvals remain separate, and cancellation writes no record or recovery files.
+
+Apply requires **git-filter-repo and Python**; missing tools leave a manual setup handoff and are not installed automatically. After approval, normalize creates a verified self-contained Git bundle and retains private plan/mapping evidence outside the checkout.
 
 Verification checks messages, trees, topology, metadata, shared mappings and preserved refs. A backend exit code alone is not completion. Failed or interrupted work keeps actual results and recovery evidence for reconciliation rather than blindly rerunning the rewrite.
 

@@ -27,7 +27,7 @@ The helper validates the graph and each selected branch independently. Reuse req
 
 The result provides counts, per-branch reuse/fallback reasons and a digest-bound page of IDs requiring semantic review, in parent-before-child order. Empty remaining work with a valid baseline is a no-op, not a fresh full scan/date. Review all selected IDs to the existing depth. A deliberately bounded requested range may intersect this selection after exact set reconciliation; excluded/unreviewed history must remain explicit and cannot create a full-prefix checkpoint without a proven older prefix. No heuristic or path summary can silently remove an ID. Report syntax checked, newly semantically reviewed, reused prior semantic coverage and not reviewed separately.
 
-This optimization affects message-review work only. All-affected-branch detection, complete descendant graphs, recovery, tag preservation, rewrite approvals and later ship publication retain their full contracts. The pure helper neither authorizes rewriting nor validates the all-branch rewrite graph.
+This optimization affects message-review work only. The workflow's one final rewrite approval requires the exact messages and complete impact together; optional earlier wording choices authorize no rewrite. All-affected-branch detection, complete descendant graphs, recovery, tag preservation, checkpoint commit policy and later ship publication retain their full contracts. The pure helper neither authorizes rewriting nor validates the all-branch rewrite graph.
 
 ## Schema 2
 
