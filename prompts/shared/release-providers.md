@@ -1,5 +1,7 @@
 # Release provider procedures
 
+Use ship's QM map for user decisions: Input for missing repository/channel facts, Single for supported provider alternatives, and Review for exact PR/MR or hosted-release writes. Provider permission prompts remain separate from workflow authorization.
+
 Read when ship requests provider inspection, CI evidence, an approved PR/MR handoff or hosted release. These procedures do not invoke another workflow or grant writes. Apply the caller's `ci.md`, instruction ownership, exact-SHA policy and confirmations. Ship alone loads this guide; other workflows retain their existing CI procedures.
 
 ## Identity and capability binding

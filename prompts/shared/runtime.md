@@ -28,9 +28,7 @@ Adopt uses one project-local copy per selected rule and no external-reference co
 
 ## Questions and authorization
 
-`AskUserQuestion` blocks in shared workflows describe the question, choices, and whether multiple selections are allowed. In Claude, use AskUserQuestion when available. In Codex or another host, use an available question interface only if it can represent the question faithfully; otherwise show the choices in ordinary conversation and wait for the user's reply. Do not assume a plan-only input tool exists in other modes.
-
-Preserve free-text answers, including the Claude Other response, and an explicit `none` for an empty multi-selection. A missing answer, timeout, default selection, unavailable tool, or ambiguous reply is not consent. Clarify ambiguous selections before dependent work. Do not choose all options to approximate an unsupported multi-select. Retain the workflows' existing option limits and grouping on Claude; plain chat can present those same choices.
+Before the first human question, read [Question mechanism (QM)](question-mechanism.md) once and use it for all questions in the selected workflow and its supporting prompts. Each workflow's Question points map selects Single, Multi, Input or Review; its body still owns when to ask, prerequisites, exact choices, approval scope and exits. QM centralizes native tool routing, current capability limits, asynchronous waiting and one faithful fallback for Claude, Codex and future hosts. It grants no state access, execution, new approval stage or permission to change client modes/settings. No question means no QM setup question or capability probe.
 
 Keep every workflow confirmation, cancellation, no-op, and cleanup path. Reuse authorization already given for the same described action; do not add another approval on top of a workflow's own confirmation. Host sandbox/tool approvals are separate technical permissions and do not answer a workflow question. Conversely, a workflow confirmation cannot bypass host restrictions. Do not pre-approve shell, push, history rewrite, publication, or deployment tools through skill metadata.
 

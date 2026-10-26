@@ -2,6 +2,20 @@
 
 Assess important project behaviors, review existing and missing tests, and write or maintain approved cases using the project's actual stack and conventions. Gap scan and Full scan share this workflow on Claude and Codex. Assessment currency, executed verification, remaining gaps, and Git publication are separate outcomes.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Eligible Full scan / Gap scan / Skip and unavailable-Python route | Single; runtime setup effects still need their existing Review. |
+| Missing branch role, expected behavior, impact, requirements or manual criteria | Input; unclear behavior uses Single Clarify / Characterize current behavior / Defer, then Input as needed. |
+| Recommended / All ready proposals / Choose / None | Single; Choose → Multi by case IDs/groups/tiers/exclusions. |
+| Case maintenance action, conflicting tools or runner/setup alternatives | Single for real alternatives; Input for intent. Selection does not approve removal, replacement or installation. |
+| Assessment-only record, selected cases/setup and mapped replacement guarantees | Review of the existing complete plan; preserve separately required setup/side-effect approval. |
+| Required manual acceptance and actual defer/accepted-risk reasons | Input for human evidence/reason; Review for a decision whose effects require authorization. No automatic sign-off. |
+| Local setup/case/ledger commits when approval is missing | Review of the exact completed unit under invocation policy. |
+
 ## Before starting: scope and boundaries
 
 Read the shared runtime and resolve `{memory_file}`, instruction bridges/overrides, recognized configuration and `git-auto-commit` (default false) before dependent local writes. Publication settings do not select this workflow's branch or completion. Never create, migrate or edit instruction entries or Helm settings.
@@ -151,7 +165,7 @@ The parent reconciles exact assignments, duplicate findings and cross-cutting be
 
 When this workflow reaches a Full scan / Gap scan depth choice, read `{package_root}/prompts/shared/scan-scope.md` using only its already permitted request, source/anchor-validation result, impact evidence and prior-coverage facts. The helper grants no additional state access or execution permission.
 
-Default choices remain Gap scan / Full scan / Skip when the incremental baseline is usable. Preserve the existing Full scan recommendation for no tests, no established prior Full scan, unusable baseline or insufficient/broad impact evidence. The separate Full-scan anchor is this workflow's prior-coverage fact, not a shared schema invariant or a reason to interpret log/manifest's unknown Full-scan history as proof no Full scan occurred. A local unknown may instead need clarification or case reassessment. No counters, fixed file counts or Git-distance thresholds are introduced. Malformed/conflicting state still blocks dependent work under Step 2; Full scan never bypasses its reviewed rebuild/reset rules. Retained backlog, schema-3 case selection and assessment/closure checkpoints keep their existing contracts. Keep native questions within four options, with runtime's faithful fallback.
+Default choices remain Gap scan / Full scan / Skip when the incremental baseline is usable. Preserve the existing Full scan recommendation for no tests, no established prior Full scan, unusable baseline or insufficient/broad impact evidence. The separate Full-scan anchor is this workflow's prior-coverage fact, not a shared schema invariant or a reason to interpret log/manifest's unknown Full-scan history as proof no Full scan occurred. A local unknown may instead need clarification or case reassessment. No counters, fixed file counts or Git-distance thresholds are introduced. Malformed/conflicting state still blocks dependent work under Step 2; Full scan never bypasses its reviewed rebuild/reset rules. Retained backlog, schema-3 case selection and assessment/closure checkpoints keep their existing contracts. Use QM Single within the workflow's four-choice limit and the current host's supported limits/fallback.
 
 When no relevant changes are found, say "No new relevant changes found since {snapshot}; {retained open findings and evidence limits}." Offer relevant backlog work, reassessment or Skip when findings remain. Never say "tests are up to date" merely because a diff is empty or a prior Full scan ran. A genuine no-op exits without preparation, refreshed provenance, migration or an empty ledger commit.
 
@@ -249,7 +263,7 @@ Use the same selection semantics for Full scan and Gap scan. For a small clear s
 3. **Choose cases or groups**: IDs, module/behavior/category or tier filters, exclusions, supported independent picker pages or chat. Do not force whole-module selection or assume native multi-select exists.
 4. **None**: no test/setup edits; gaps remain recorded if an assessment-only write is authorized. This is not Cancel or permission to write the ledger.
 
-Keep blocked, unknown-intent and expensive/intrusive work visible separately. Include it only through explicit selection and concrete reviewed setup/limits/manual requirements, not silently through Recommended/All. A recommendation/default is never selection or authorization. Follow runtime's faithful-interface/chat fallback; silence, timeout, missing answer or unsupported multi-select never means all.
+Keep blocked, unknown-intent and expensive/intrusive work visible separately. Include it only through explicit selection and concrete reviewed setup/limits/manual requirements, not silently through Recommended/All. A recommendation/default is never selection or authorization. Use QM's faithful native routing/common fallback; silence, timeout, missing answer or unsupported multi-select never means all.
 
 Before approval, resolve prerequisites and coherent replacement/fixture mappings. List required dependent edits as required by the selected IDs; do not silently add independent unselected cases. Each case keeps its own priority; sequence an indivisible unit by its highest-priority member without relabelling the others. If a prerequisite is excluded, explain and revise/defer dependents. Explicit maintenance requests remain eligible even when ordinary risk recommendations omit cleanup.
 

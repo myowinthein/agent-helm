@@ -2,6 +2,8 @@
 
 For log, manifest, env, legal and test. Apply only when the invoking workflow selects a write. This helper never loads another command's state and never publishes. Adopt and refactor use the same local-only boundary through their own preparation; normalize owns its coordinated existing-ref rewrite.
 
+Inherit the caller's QM map: unresolved branch-role facts use Input, and any missing local commit approval uses Review of the exact diff/paths/subject. No new branch or commit question follows already sufficient authorization.
+
 ## Prepare the current branch
 
 Resolve the effective instruction/configuration owner and applicable local commit policy (`git-auto-commit`, default false). Record current/original branch and starting HEAD. Resolve the actual main/master `{base_branch}` from instructions/default branch/refs. Log, manifest and legal require that current base. Env and test also allow an established existing current feature branch or a confirmed current environment branch; test additionally allows an established existing current maintenance branch. These are caller-specific eligibility rules, not new configuration settings. Otherwise report why writes are blocked and offer only the caller's read-only path. Do not fetch, pull, update, create, select or switch branches. A missing/ambiguous base or detached/no-HEAD checkout blocks writes, except log's explicit non-Git bootstrap, which skips Git rather than initializing it.

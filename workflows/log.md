@@ -1,5 +1,18 @@
 # log
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Missing scope/ownership facts or developer lessons | Input; Single for evidenced alternative interpretations. |
+| Full scan / Gap scan / Skip or layout-only route | Single. |
+| Missing Helm preferences | Independent Single questions, batched when supported; answers remain pending configuration. |
+| Layout baseline and conflicting desired policy | Single; Input for a custom resolution. |
+| Layout diff, knowledge/configuration diff and new safety wording | Review; Apply some → Multi, Revise → Input. Preserve separate completed phases. |
+| Local commit when invocation policy requires approval | Review of the exact completed diff, paths and subject. |
+
 ## Ownership, scope and preservation
 
 Analyze the project when the developer invokes log, report the findings and update the project instructions through the review below. Read `{package_root}/prompts/shared/project-layout.md` and perform its read-only preflight. Resolve both hosts' effective entries, chains, overrides, existing configuration and any conflicts before Git mutations. Shared setup uses root AGENTS.md as owner and a real CLAUDE.md importing `@AGENTS.md`. A pointer-only entry is not an incomplete knowledge document. Preserve personal/global/nested instructions and external targets; an unconnected root override stops setup on either host.

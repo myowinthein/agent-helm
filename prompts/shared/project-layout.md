@@ -2,6 +2,8 @@
 
 Apply this procedure only as part of `log`. Other Helm workflows resolve and preserve the existing memory owner; they do not invoke a migration.
 
+Inherit log's QM map: baseline reconciliation is Single, missing ownership facts are Input, and every required exact layout diff is Review. Preserve separate phase/commit gates and reuse sufficient approval.
+
 ## Destination
 
 Successful shared setup has two real root files:

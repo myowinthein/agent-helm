@@ -2,6 +2,20 @@
 
 Find worthwhile code improvements and apply selected, behavior-preserving transformations in bounded units. Claude and Codex use the same assessment, review, verification, and resumable local procedure. A finding, an attempted edit, a verified fix, and publication are separate outcomes.
 
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Preview/report-only and eligible Full scan / Gap scan / Fix Backlog / Skip routes | Single, preserving independently eligible exits and complete choices. |
+| Unresolved branch role, improvement value, intent, remedy or blocker | Input; Single for evidenced remedy alternatives. No speculative value or safe label. |
+| Unavailable Python path in the owning-state helper | Single Set up Python / Continue without Python / Stop; actual setup effects require their existing Review. |
+| Recommended / All listed ready / Choose / None | Single; Choose → Multi by exact IDs/groups/filters/exclusions. |
+| Whole selected coherent unit, prerequisites, companions, guards and checks | Review; Input for revisions. Resolve needs-review choices before editing any member. |
+| Actual skip/defer/accepted-risk decisions | Single only when a decision is needed; Input for its human reason/context. Nonselection is not a decision. |
+| Eligible assessment/code/closure commits when approval is missing | Review of the exact checkpoint or code unit under invocation policy; no duplicate approval. |
+
 ## Before starting: scope and policy
 
 Read the shared runtime and resolve `{memory_file}`, bridges/overrides, recognized configuration and local `git-auto-commit` policy (default false) before dependent writes. Ship method does not select a branch or finalization route here. Never change instruction/configuration ownership or Helm settings.
@@ -224,7 +238,7 @@ For a small clear set, go straight to the exact plan and existing approval, acce
 
 Risk/effort/readiness help choose a useful per-run set, not lower a tier. Refactoring's useful cleanup remains eligible; do not copy test's default exclusion of test-cleanup proposals. Distinguish concrete small benefit from cosmetic churn. High-cost/intrusive is explained by the actual coordination, tradeoff, diff or required setup/effects, not an arbitrary size threshold; resolving it uses the existing concrete review/verification gates, never a new universal approval stage. Deferred/unavailable checks remain blockers to verified completion, with only explicitly authorized drafts under the existing policy. The source-only preview shows recommendations in conversation and stops without an Apply picker or ledger access.
 
-Selection/filtering is scope, not approval. Preserve independent choices above four through runtime's paging/chat fallback; defaults, silence, timeout and unsupported multi-select do not mean all. Reuse an existing exact selection/approval rather than asking again; changed scope/semantics still needs a decision. Before editing, show the complete selected plan with IDs, exact paths/companion changes, units, invariants, unresolved remedy choices, prerequisites, checks and code/ledger checkpoint scope. Use the existing Apply selected plan/Cancel approval only when missing, without per-tier/per-finding duplicate prompts. Missing decision answers leave that unit pending.
+Selection/filtering is scope, not approval. Preserve independent choices above four through QM's faithful paging/common fallback; defaults, silence, timeout and unsupported multi-select do not mean all. Reuse an existing exact selection/approval rather than asking again; changed scope/semantics still needs a decision. Before editing, show the complete selected plan with IDs, exact paths/companion changes, units, invariants, unresolved remedy choices, prerequisites, checks and code/ledger checkpoint scope. Use the existing QM Review Apply selected plan/Cancel only when missing, without per-tier/per-finding duplicate prompts. Missing decision answers leave that unit pending.
 
 Construct **one dependency plan across all selected categories**, recomputing bounded logical units on current code. Verify each dependency ID, current state and actual satisfaction; a historical resolved label alone is not proof. Dangling/cyclic/skipped/unselected prerequisites cannot be ignored.
 

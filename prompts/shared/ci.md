@@ -2,6 +2,8 @@
 
 Apply only to the action requested by the invoking workflow. Reading this procedure does not run checks or authorize publication.
 
+Use the caller's QM map: wait/recheck versus leave pending is Single; any permitted concrete publication-for-checks action is Review. Local-only callers still offer no push/PR, and no answer waives a required result.
+
 ## Determine the applicable gate
 
 Record the action, source branch and exact source SHA. Inspect project CI configuration, active instructions and applicable provider protection/review requirements. Absence of `.github/workflows/`, or a non-GitHub remote, does not establish that CI is absent. Unknown policy/access is a capability gap, not a successful or not-applicable check.
