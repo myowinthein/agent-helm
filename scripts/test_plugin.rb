@@ -88,6 +88,12 @@ Dir.mktmpdir("helm-package-") do |temp|
     "script" => original.sub("</svg>", "<script>alert(1)</script></svg>"),
     "event handler" => original.sub("<svg ", '<svg onload="alert(1)" '),
     "external paint" => original.sub('fill="#35251f"', 'fill="url(https://example.com/paint.svg#colour)"'),
+    "stylesheet import" => original.sub("</svg>", '<style>@import "https://example.invalid/icon.css";</style></svg>'),
+    "stylesheet URL import" => original.sub("</svg>", '<style>@import url(https://example.invalid/icon.css);</style></svg>'),
+    "prefixed stylesheet" => original.sub("</svg>", '<s:style xmlns:s="http://www.w3.org/2000/svg">@import "icon.css";</s:style></svg>'),
+    "uppercase stylesheet" => original.sub("</svg>", '<STYLE>@import "icon.css";</STYLE></svg>'),
+    "escaped inline CSS resource" => original.sub('<svg ', '<svg style="fill:u\\72l(https://example.invalid/paint.svg)" '),
+    "stylesheet processing instruction" => '<?xml-stylesheet type="text/css" href="https://example.invalid/icon.css"?>' + original,
     "document type" => '<!DOCTYPE svg [<!ENTITY colour "red">]>' + original,
     "external resource" => original.sub("</svg>", '<use href="https://example.com/icon.svg#spokes"/></svg>'),
     "oversized file" => original.ljust(5 * 1024 * 1024 + 1, " ")
