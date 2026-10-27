@@ -57,6 +57,8 @@ Default scope is the current local branch. Request named branches, all local bra
 
 Accepted messages stay unchanged. Corrections normally affect subjects; bodies, trailers and breaking information are preserved unless their edits are shown. Unclear intent needs clarification.
 
+Within the reviewed scope, normalize prepares corrections for published and unpublished history without a separate permission-to-prepare question. Explicit edit limits, such as unpublished-only or a release boundary, are respected. Missing or conflicting scope facts still need clarification.
+
 Wording and subset choices authorize no rewrite. Final approval covers exact messages and their complete impact, including effects on [ship](ship.html#optional-versioned-release)'s version proposal.
 
 ### Code-assisted checks and incremental review
@@ -77,7 +79,7 @@ The rewrite preserves remote-tracking refs from after any approved preparation, 
 
 Review exact messages, affected branches, ID and tag effects, recovery location and record/commit changes. A blocked branch or incomplete history stops the coordinated rewrite.
 
-The separate final decision is **Apply reviewed rewrite / Edit or change selection / Cancel/keep review only**. Team readiness authorizes no rewrite or push. The unchanged rewrite plan is not asked twice; material changes return for review. Cancellation creates no recovery artifacts or record.
+The normal approval flow has two gates: team readiness, then **Apply reviewed rewrite / Edit or change selection / Cancel/keep review only** after the exact message and impact review. Readiness authorizes no rewrite or push. The unchanged rewrite plan is not asked twice; material changes return for review. Actual fetch/local-branch preparation retains its separate approval when needed. Cancellation creates no recovery artifacts or record.
 
 Apply requires **git-filter-repo and Python**. After approval, verify a private recovery bundle outside the checkout, rewrite once and check messages, trees, topology, metadata and preserved refs. Failure leaves actual results for reconciliation, not a blind retry.
 
