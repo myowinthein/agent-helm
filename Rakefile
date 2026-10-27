@@ -36,6 +36,7 @@ desc "Test complete model traces and acceptance oracles without calling models"
 task :acceptance_support_test do
   ruby "scripts/test_acceptance_support.rb"
   ruby "scripts/test_git_acceptance.rb"
+  ruby "scripts/test_acceptance_oracles.rb"
 end
 
 desc "Test offline validation of absolute own-site links and images"
