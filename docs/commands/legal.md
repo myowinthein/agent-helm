@@ -16,15 +16,15 @@ legal
 
 Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
 
-Start on clean **main or master**. Legal commits need explicit content and commit approval, even with auto-commit enabled.
+Start on clean **main or master**. Commits containing legal document text need explicit content and commit approval, even with auto-commit enabled.
 
 ## Flow
 
 ```mermaid
 flowchart TD
   Start(["Start legal"]) --> Inspect["Inspect source, context<br/>and existing documents"]
-  Inspect --> Needed{"Useful changes?"}
-  Needed -->|No| End(["Report the scoped result and gaps"])
+  Inspect --> Needed{"Document changes?"}
+  Needed -->|No| End(["Report the result, gaps<br/>and any record-only changes"])
   Needed -->|Yes| Draft["Prepare useful documents<br/>with existing conventions"]
   Draft --> Facts{"Essential missing facts?"}
   Facts -->|Yes| Ask["Ask one consolidated batch;<br/>resolve or hold affected documents"]
@@ -63,6 +63,12 @@ Follow existing locations and language. Preserve approved custom or lawyer-revie
 
 Routing, consent controls, navigation and store submissions are separate implementation work.
 
+## Reconcile missing recorded documents
+
+Legal checks the current files/Git snapshot, current conversation, existing project documents and references, then relevant local Git history as needed. It automatically corrects a confirmed move's recorded path or removes a confirmed deleted document's entry, preserving historical assessment dates/source IDs. It asks where a file went only after relevant investigation cannot resolve it; uncertain records stay intact. This never deletes an actual legal document.
+
+No cleanup approval is added. With drafts, record repairs join the existing content commit or stay uncommitted with the drafts. Record-only work follows auto-commit or existing commit authorization; otherwise it stays uncommitted. Explicit read-only requests remain read-only.
+
 ## Handle gaps precisely
 
 Omit optional unsupported promises, narrow claims or ask about indispensable missing facts. A known material problem holds the affected document while other complete drafts may proceed. Incomplete preliminary wording stays off public routes.
@@ -77,6 +83,6 @@ Choose **Commit / Revise / Leave uncommitted**. Approval covers actual content, 
 
 ## Your result
 
-You get document links, gaps and local commit or draft status. Only approved complete substantive changes advance `.helm/legal-manifest.json`; cosmetic edits and uncommitted drafts do not.
+You get document links, gaps, record repairs and local commit or draft status. Only approved complete substantive document changes refresh assessment dates/source IDs in `.helm/legal-manifest.json`; path/removal reconciliation makes no new legal assessment.
 
 Unchanged source does not prove business or legal freshness. Work stays on the same branch; use [ship](ship.html) for publication.
