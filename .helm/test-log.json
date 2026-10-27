@@ -64,11 +64,21 @@
       "reason": "Unapproved local legal commits or lost drafts/custom clauses are meaningful but recoverable; no behavioral scenario protects the special completion gate.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Dedicated legal model suite was not selected. Draft-only acceptance using fictional facts, preserved clauses and unchanged ledger/index/HEAD is planned in scripts/acceptance-plan.md; not executed and no legal-validity claim."
+      "tests": [
+        "scripts/smoke_acceptance.rb::legal-draft-only"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/smoke_acceptance.rb::legal-draft-only"
+        ],
+        "method": "runtime",
+        "outcome": "The live legal workflow wrote the complete exact approved fictional TERMS.md correction, preserved its custom clause, returned a concise file review without dumping the document, and retained the uncommitted draft with ledger/index/HEAD unchanged despite auto-commit being enabled.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/smoke_acceptance.rb legal-draft-only",
+        "scope": "Fictional sufficient facts and an existing owner-approved baseline only; Leave uncommitted explicitly selected. No real legal documents, personal data or legal-validity claim. Claude Sonnet 5.5 / High metadata verified; bounded complete trace."
       }
     },
     {
@@ -90,8 +100,12 @@
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
       "blocker": {
         "kind": "execution",
-        "note": "Manual Single/Multi/Input/Review, long-list fallback, render failure and unanswered-question scenarios are planned in scripts/acceptance-plan.md. Actual Claude/Codex host UI checks and attributable human acceptance remain pending."
-      }
+        "note": "Headless Claude Sonnet 5.5 / High Multi fallback passed with all nine independent choices, exactly one pending question and unchanged files/Git without an answer. Native Claude/Codex Single/Multi/Input/Review, picker interaction and render-failure recovery remain unverified. CUA rejected inspection of com.openai.codex for safety reasons; no workaround attempted. The optional human rendering question has no answer, so no native pass, consent or sign-off is recorded."
+      },
+      "tests": [
+        "scripts/smoke_acceptance.rb::qm-headless-fallback",
+        "scripts/acceptance-plan.md::Browser and host acceptance"
+      ]
     },
     {
       "id": "g-5bd8c9f8-2c65-408a-ba75-6413770a7bea",
@@ -110,11 +124,25 @@
       "reason": "Replacing expectations after remote movement or replaying publication can overwrite shared work; no behavioral fixture protects the fixed-lease and resume contracts.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Two targeted local-remote publication scenarios are planned in scripts/acceptance-plan.md. Reviewed provider isolation, fixed-lease movement and partial-success/resume execution remain pending; no real publication is selected."
+      "tests": [
+        "scripts/test_git_acceptance.rb",
+        "scripts/smoke_acceptance.rb::history-remote-moved",
+        "scripts/smoke_acceptance.rb::history-partial-resume"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_git_acceptance.rb",
+          "scripts/smoke_acceptance.rb::history-remote-moved",
+          "scripts/smoke_acceptance.rb::history-partial-resume"
+        ],
+        "method": "runtime",
+        "outcome": "The live moved-remote case inspected actual remote IDs and stopped the whole set without pushes or replacing original proof/expectations. The partial-success case verified already-published main and updated only feature with the original fixed lease. Independent remote readback and a reviewed local pre-receive recorder confirmed exactly the expected updates; original proof/maps remained intact.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/test_git_acceptance.rb; ruby scripts/smoke_acceptance.rb history-remote-moved; ruby scripts/smoke_acceptance.rb history-partial-resume",
+        "scope": "Owned local bare remotes and a controller-prepared actual git-filter-repo rewrite with independently verified synthetic handoff, not this project or hosted provider/CI/deployment behavior. Claude Sonnet 5.5 / High metadata verified; bounded complete traces."
       }
     },
     {
@@ -134,17 +162,27 @@
       "reason": "Setup navigation, keyboard/focus state and old setup links are supported reader paths but have no JavaScript behavior tests.",
       "action": "add",
       "layer": "browser",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Static setup fallback links/panel markup passed ten synthetic scenarios and the actual built-site check at e3cf323917fc3a21e5e0462279ddb608bd9debe7. Keyboard/focus/ARIA, runtime fragment redirects, actual no-JavaScript visibility and print remain unexecuted; manual plan is in scripts/acceptance-plan.md."
-      },
       "tests": [
         "scripts/test_docs_links.rb::verify_setup_contracts",
         "scripts/docs_checks.rb::HelmDocs.check_setup",
-        "Rakefile::docs_test"
-      ]
+        "Rakefile::docs_test",
+        "scripts/acceptance-plan.md::Browser and host acceptance"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_docs_links.rb::verify_setup_contracts",
+          "scripts/docs_checks.rb::HelmDocs.check_setup",
+          "scripts/acceptance-plan.md::Browser and host acceptance"
+        ],
+        "method": "runtime",
+        "outcome": "Real Chrome passed both setup pages: click, ArrowLeft/Right wrap, Home/End, focus ring and ARIA/panel agreement; twelve nested fragments and twelve legacy redirects; actual JavaScript-disabled content and print preview. Static setup regressions and built-site checks also passed.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "BUNDLE_VERSION=4.0.22 BUNDLE_FROZEN=true bundle _4.0.22_ exec rake test; CUA Chrome setup clicks/keyboard/fragments, DevTools Disable JavaScript/reload and print preview",
+        "scope": "Current built source on Chrome/macOS, 2026-10-27. Browser version unavailable because browser policy blocked chrome://version. No browser matrix or human usability sign-off."
+      }
     },
     {
       "id": "g-8c0379a5-7d26-4667-9ad9-958879d0455b",
@@ -215,11 +253,27 @@
       "reason": "Replaying archive restoration or cleanup after uncertain progress can destroy preservation inputs; current smoke coverage stops before these recovery paths.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Synthetic tamper-stop and completed-no-replay acceptance scenarios for archive/ship backup are planned in scripts/acceptance-plan.md. Fixture proofs, isolated local remotes and bounded execution remain pending; no live bundle access."
+      "tests": [
+        "scripts/test_git_acceptance.rb",
+        "scripts/smoke_acceptance.rb::archive-tampered-report",
+        "scripts/smoke_acceptance.rb::archive-completed-no-replay",
+        "scripts/smoke_acceptance.rb::ship-completed-backup-no-replay"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_git_acceptance.rb",
+          "scripts/smoke_acceptance.rb::archive-tampered-report",
+          "scripts/smoke_acceptance.rb::archive-completed-no-replay",
+          "scripts/smoke_acceptance.rb::ship-completed-backup-no-replay"
+        ],
+        "method": "runtime",
+        "outcome": "Live archive inspection discovered the unannounced report hash mismatch and stopped without changes. Completed archive and ship-backup resumes inspected actual remote receipt/payload evidence and left all files, refs and configuration unchanged without replaying restore, cleanup or publication. Offline controls also reject changed protected inputs.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/test_git_acceptance.rb; ruby scripts/smoke_acceptance.rb archive-tampered-report; ruby scripts/smoke_acceptance.rb archive-completed-no-replay; ruby scripts/smoke_acceptance.rb ship-completed-backup-no-replay",
+        "scope": "Current schema-1 synthetic source-only bundles and owned local bare remotes; no real archive, service, database, LFS, provider or recovery certification. Claude Sonnet 5.5 / High metadata verified; bounded complete traces."
       }
     },
     {
@@ -239,11 +293,23 @@
       "reason": "Theme persistence, OS following and storage failure handling are supported behavior but only static assets and links are checked.",
       "action": "add",
       "layer": "browser",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Manual theme/storage/system/cross-tab acceptance is planned in scripts/acceptance-plan.md; not executed. A new browser/DOM framework was not selected."
+      "tests": [
+        "scripts/browser_acceptance.py",
+        "scripts/acceptance-plan.md::Browser and host acceptance"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/browser_acceptance.py",
+          "scripts/acceptance-plan.md::Browser and host acceptance"
+        ],
+        "method": "runtime",
+        "outcome": "Real Chrome passed explicit Light/Dark/System, saved reload and invalid preference, cross-tab change/remove/clear, and switching despite an injected localStorage SecurityError before the actual script. Actual DevTools media emulation verified System follows changes while explicit Light remains fixed; emulation and site preference were restored.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "python3 -I -B -u scripts/browser_acceptance.py; CUA Chrome theme controls/reloads/cross-tab checks and DevTools prefers-color-scheme emulation",
+        "scope": "Current Chrome/macOS, 2026-10-27. Blocked-storage evidence uses API fault injection, not a changed browser privacy setting. No browser support matrix or human sign-off."
       }
     },
     {
@@ -383,11 +449,25 @@
       "reason": "An incomplete or widened multi-ref rewrite can damage history and its recovery proof; existing unit and first-gate cases never verify an approved rewrite.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Synthetic end-to-end rewrite/recovery fixture is planned in scripts/acceptance-plan.md; backend, bounded model execution and independent recovery verification remain pending. The pure message helper does not own these Git effects."
+      "tests": [
+        "scripts/git_acceptance.rb",
+        "scripts/test_git_acceptance.rb",
+        "scripts/smoke_acceptance.rb::normalize-rewrite"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/git_acceptance.rb",
+          "scripts/test_git_acceptance.rb",
+          "scripts/smoke_acceptance.rb::normalize-rewrite"
+        ],
+        "method": "runtime",
+        "outcome": "A live workflow used the actual rewrite backend on a disposable shared multi-branch merge graph. Independent correspondence checks preserved ordered parents, trees, metadata, unique unaudited messages, annotated tag, excluded ref and configuration. Recovery verified in an empty independent repository, including required branch/tag identities. The main-only schema-2 checkpoint certified only the reviewed prefix.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/test_git_acceptance.rb; ruby scripts/smoke_acceptance.rb normalize-rewrite",
+        "scope": "Synthetic unsigned SHA-1 graph only; Claude Sonnet 5.5 / High, verified model metadata, bounded complete trace. No real project history, tags, remote operations or operational normalize ledger was accessed."
       }
     },
     {
@@ -450,11 +530,21 @@
       "reason": "Commit labels, prerelease baselines or build ties can produce unsuitable version proposals; the new guidance has no behavioral proposal/resume cases.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Duplicate SemVer parser/routine model matrix was not selected. Concrete release-proposal acceptance rubric is in scripts/acceptance-plan.md; actual model proposal behavior remains unverified."
+      "tests": [
+        "scripts/smoke_acceptance.rb::release-proposal-rubric"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/smoke_acceptance.rb::release-proposal-rubric"
+        ],
+        "method": "runtime",
+        "outcome": "The live model inspected actual ship source and returned all eight expected rubric answers: mislabeled public break, public deprecation, prerelease normal baseline, major reset, equal build precedence, distinct tag identity, unchanged incomplete candidate reuse and rejection of changed published payload reuse. Fixture files/Git remained exact.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/smoke_acceptance.rb release-proposal-rubric",
+        "scope": "Read-only hypothetical proposal reasoning, not full ship/release execution or a duplicate SemVer parser. No version, tag, provider or publication effects. Claude Sonnet 5.5 / High metadata verified; bounded complete trace."
       }
     },
     {
@@ -474,11 +564,25 @@
       "reason": "Static Markdown/link validation does not establish that browser-generated flow diagrams are visible and readable; text remains available if rendering fails.",
       "action": "manual",
       "layer": "manual",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "One-browser Mermaid SVG/readability check is planned in scripts/acceptance-plan.md after diagram/loader changes. It was not executed; static site/link checks do not establish client rendering."
+      "tests": [
+        "scripts/acceptance-plan.md::Browser and host acceptance",
+        "docs/commands/ship.md",
+        "docs/commands/test.md"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/acceptance-plan.md::Browser and host acceptance",
+          "docs/commands/ship.md",
+          "docs/commands/test.md"
+        ],
+        "method": "runtime",
+        "outcome": "Both actual built command pages rendered Mermaid SVG with eleven node labels per page and no parse-error replacement. DOM label checks and screenshots showed readable labels and intact surrounding instructions.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "CUA Chrome navigation to built docs/commands/ship.html and test.html; inspect rendered .mermaid svg .nodeLabel and screenshots",
+        "scope": "Current Chrome/macOS on 2026-10-27 only; browser version unavailable because browser policy blocked chrome://version. Automated observed rendering, not human sign-off or browser compatibility certification."
       }
     },
     {
@@ -539,11 +643,27 @@
       "reason": "An env audit that emits a real credential exposes it irreversibly; current env smoke fixtures contain no canaries or complete output checks.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Opt-in confidentiality test is planned in scripts/acceptance-plan.md. Complete exposed trace capture, scanner regressions, a synthetic live leak positive control and enforced execution limits/isolation are still required; no workflow model test was run."
+      "tests": [
+        "scripts/test_acceptance_support.rb",
+        "scripts/smoke_acceptance.rb::sandbox-boundary-control",
+        "scripts/smoke_acceptance.rb::trace-positive-control",
+        "scripts/smoke_acceptance.rb::env-confidentiality"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_acceptance_support.rb",
+          "scripts/smoke_acceptance.rb::sandbox-boundary-control",
+          "scripts/smoke_acceptance.rb::trace-positive-control",
+          "scripts/smoke_acceptance.rb::env-confidentiality"
+        ],
+        "method": "runtime",
+        "outcome": "Offline controls rejected malformed/incomplete/wrong-model traces and raw/partial/JSON-escaped/base64/hex disclosures. The live synthetic positive control was detected. The actual env audit exposed useful API_TOKEN/path output without the canary and preserved fixture bytes/Git. A separate owned boundary probe observed sandbox read/write denial.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/test_acceptance_support.rb; ruby scripts/smoke_acceptance.rb sandbox-boundary-control; ruby scripts/smoke_acceptance.rb trace-positive-control; ruby scripts/smoke_acceptance.rb env-confidentiality",
+        "scope": "Isolated fictional consumers; complete exposed Claude Sonnet 5.5 / High traces with returned model metadata verified, $1 cap and 240-second timeout per invocation. No real credentials; bounded encoding controls are not proof against hidden channels or every encoding."
       }
     },
     {
@@ -564,11 +684,23 @@
       "reason": "Partial content approval must not overwrite useful human text or manufacture review provenance; current layout tests do not cover these updates.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Separate exact-output log/manifest partial-update scenarios are planned in scripts/acceptance-plan.md, reusing approved-output support. Fixture implementation and bounded model execution remain pending."
+      "tests": [
+        "scripts/smoke_acceptance.rb::log-partial-update",
+        "scripts/smoke_acceptance.rb::manifest-partial-update"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/smoke_acceptance.rb::log-partial-update",
+          "scripts/smoke_acceptance.rb::manifest-partial-update"
+        ],
+        "method": "runtime",
+        "outcome": "Both live targeted updates matched predeclared complete expected bytes. Custom notes, shared wrapper/import, configuration, README frontmatter/absolute URL and historical review markers were preserved, as were all other fixture bytes and Git state; no complete-scan provenance or commit was invented.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/smoke_acceptance.rb log-partial-update; ruby scripts/smoke_acceptance.rb manifest-partial-update",
+        "scope": "One exact targeted Dev Commands/README invocation correction per fictional consumer. Claude Sonnet 5.5 / High metadata verified; bounded complete traces, no broader content-update matrix."
       }
     },
     {
@@ -588,11 +720,31 @@
       "reason": "Wrong adoption scope or replacement can overwrite customized local instructions; current equivalent-copy fixtures do not exercise these routes.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Opt-in guarded/custom-copy/writing-only scenarios are planned in scripts/acceptance-plan.md. Exact selected-rule output mapping and bounded model execution remain pending; no adoption into this checkout is selected."
+      "tests": [
+        "scripts/test_acceptance_support.rb",
+        "scripts/smoke_acceptance.rb::adopt-package-root",
+        "scripts/smoke_acceptance.rb::adopt-protected-root",
+        "scripts/smoke_acceptance.rb::adopt-protected-nested",
+        "scripts/smoke_acceptance.rb::adopt-custom-keep",
+        "scripts/smoke_acceptance.rb::adopt-writing-only"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_acceptance_support.rb",
+          "scripts/smoke_acceptance.rb::adopt-package-root",
+          "scripts/smoke_acceptance.rb::adopt-protected-root",
+          "scripts/smoke_acceptance.rb::adopt-protected-nested",
+          "scripts/smoke_acceptance.rb::adopt-custom-keep",
+          "scripts/smoke_acceptance.rb::adopt-writing-only"
+        ],
+        "method": "runtime",
+        "outcome": "Live adoption stopped at the copied loaded-package root and renamed/nested source roots. Keep retained all customized rule copies exactly. Writing-only installed precisely the preapproved rule and owner pointer while preserving foreign Git/safety rules, other bytes and Git state. Offline exact-output controls rejected unapproved changes.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/test_acceptance_support.rb; ruby scripts/smoke_acceptance.rb adopt-package-root; ruby scripts/smoke_acceptance.rb adopt-protected-root; ruby scripts/smoke_acceptance.rb adopt-protected-nested; ruby scripts/smoke_acceptance.rb adopt-custom-keep; ruby scripts/smoke_acceptance.rb adopt-writing-only",
+        "scope": "Disposable complete package copies and fictional consumers, never adoption into this checkout or the installed package. Empty native client guard-directory pairs alone are bookkeeping exceptions. Claude Sonnet 5.5 / High metadata verified; bounded complete traces."
       }
     },
     {
@@ -612,11 +764,27 @@
       "reason": "Source assessment can be mistaken for verified closure or retirement permission; these meaningful local provenance and protection boundaries lack workflow scenarios.",
       "action": "add",
       "layer": "workflow acceptance",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Standalone harness was not selected. Shared trace/state scenarios for zero-state preview and failed/deferred verification/provenance are planned in scripts/acceptance-plan.md; they remain unexecuted and helper validation is not equivalent protection."
+      "tests": [
+        "scripts/smoke_acceptance.rb::refactor-source-preview",
+        "scripts/smoke_acceptance.rb::test-deferred-verification",
+        "scripts/smoke_acceptance.rb::test-failed-verification",
+        "scripts/smoke_acceptance.rb::test-successful-provenance"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/smoke_acceptance.rb::refactor-source-preview",
+          "scripts/smoke_acceptance.rb::test-deferred-verification",
+          "scripts/smoke_acceptance.rb::test-failed-verification",
+          "scripts/smoke_acceptance.rb::test-successful-provenance"
+        ],
+        "method": "runtime",
+        "outcome": "Live source-only refactor preview inspected the target function without explicit state/helper access or writes. Deferred/failed test scenarios preserved the existing test, uncommitted additive drafts, open finding and source roots; actual failing output was required. Successful test execution produced a real test commit B followed by a separate ledger-only C citing B, with exact changed-path/ancestry checks.",
+        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
+        "command": "ruby scripts/smoke_acceptance.rb refactor-source-preview; ruby scripts/smoke_acceptance.rb test-deferred-verification; ruby scripts/smoke_acceptance.rb test-failed-verification; ruby scripts/smoke_acceptance.rb test-successful-provenance",
+        "scope": "Selected source-only refactor and test lifecycle acceptance paths in isolated fictional consumers; not a runtime refactor-apply or all-decision matrix. Explicit access guard is conservative, not adversarial-shell proof. Claude Sonnet 5.5 / High metadata verified; bounded complete traces."
       }
     }
   ]
