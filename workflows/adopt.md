@@ -10,9 +10,9 @@ Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; a
 |---|---|
 | Ambiguous project/adoption root or supplied copy source | Single for known candidates; Input for an explicit safe path or missing facts. |
 | Non-project directory confirmation | Review of the named directory and proposed effect. |
-| Applicable install/connect/update/keep route; optional writing | Single; independent rule selection uses Multi, preserving the Git/safety dependency. |
-| Foreign overwrite, managed replacement, rollback or repair | Review per named file with its actual diff/version; never replace separate decisions with one bulk answer. |
-| Pointer/adapter changes and local commit when approval is missing | Review, reusing the exact per-file/plan approval where already sufficient. |
+| Installation, replacement, repair, connection or optional writing | Review of the shown bodies/diffs, versions and exact entry patches; approve all shown changes or an explicit subset. Preserve the Git/safety dependency. |
+| Missing overwrite, rollback or pointer approval after changed inputs | Review only the new or changed effects; reuse unchanged concrete approval. |
+| Local commit when approval is missing | Review of the exact adoption diff and commit. |
 
 ## Rule catalog and selection
 
@@ -25,14 +25,14 @@ Use this catalog for inventory, source validation, per-file decisions, copy/upda
 | `writing.md` | `{package_root}/rules/writing.md` | `.claude/rules/writing.md` | Independent guidance for clear, natural prose. |
 
 - **New adoption:** when there is no established Helm rule installation, propose all three rules in the existing reviewed plan unless the developer explicitly scoped the request to particular rules. Show each body, destination and pointer; writing may be omitted before approval. Proposed defaults are not consent, and every foreign/custom-file decision still applies.
-- **Existing installation:** inventory all catalog rows, preserving established Git/safety dependencies. If writing has no established Helm copy/pointer, list it separately as **new rule available, not selected**. Offer Add writing / Not now in normal general adoption/update review; install only after its body and exact file/pointer changes are explicitly accepted. An explicitly scoped Git/safety connection or repair only reports this availability and proceeds without an extra writing decision. Never install it as a companion repair or upgrade side effect.
+- **Existing installation:** inventory all catalog rows, preserving established Git/safety dependencies. If writing has no established Helm copy/pointer, list it separately as **new rule available, not selected**. In a general review, show its full body and exact pointer patch with the other proposals so Install writing / Not now is an installation decision, not permission to start another review. Explicit approval of all three shown rules covers it too. An explicitly scoped Git/safety connection or repair only reports this availability without an extra writing question. Never install it as a companion repair or upgrade side effect.
 - **Already adopted writing:** apply the same marker/body, customization, rollback, missing-target and connection procedures as for any installed rule. A missing target for an existing writing pointer is a repair, not a newly available rule. A foreign file named writing.md is protected, not evidence of adoption.
 - Keep the existing Git/safety pair usable without writing. Writing introduces no Git/safety dependency, setting, persistent selection/decline record or required third file. Not now/omission preserves files and pointers; offer again on a later applicable run without treating absence as a defect. No rule removal is offered.
-- Carry each row's selection, established dependencies and actual installed/kept status through the plan. Verify connectivity only for the approved scope and existing dependencies; report unselected writing separately from skipped/broken selected rules. Never generate pointers from the catalog or directory contents alone: use verified managed copies or individually approved replacements and exact pointer patches. Presence or a basename alone is not ownership.
+- Carry each row's selection, established dependencies and actual installed/kept status through the plan. Verify connectivity only for the approved scope and existing dependencies; report unselected writing separately from skipped/broken selected rules. Never generate pointers from the catalog or directory contents alone: use verified managed copies or explicitly approved replacements and exact pointer patches. Presence or a basename alone is not ownership.
 
 ## Read-only preflight
 
-Resolve the selected adoption root under **Before starting** and apply **Source-project and installation guard** before rule-selection, installation/connection proposals, sanity-check Continue or Git preparation. Inspect an eligible consumer first, then choose a local installation/update, copied-rule connection, repair, Keep or Cancel. Prepare Git only when the chosen action needs writes.
+Resolve the selected adoption root under **Before starting** and apply **Source-project and installation guard** before installation/connection proposals, sanity-check Continue or Git preparation. Inspect an eligible consumer, then show the concrete changes before asking to apply or keep them. Do not ask whether to begin reviewing updates. Prepare Git only when the approved action needs writes.
 
 Pass developer requests and answers safely and unchanged, never as shell code. An explicit source location is evidence to validate under Step 2, not permission to install/update plugins or change client settings. Clarify ambiguous requests before dependent work.
 
@@ -130,37 +130,40 @@ For a marked local copy, remove **only** the recognized first marker line and it
 - **Content-equivalent:** body equals the selected source. An older/differently branded marker alone requires no rewrite, marker refresh or commit; report that marker separately.
 - **Different / customization unknown:** body differs, including equal-version differences. Without an already available verified historical baseline, a pristine old copy cannot be distinguished from local edits. Never call it pristine or authorize replacement/deletion from its marker. Do not fetch, construct or check out an old baseline. A verified baseline already supplied may inform the diff, never bypass approval.
 - **Unknown:** comparison/source/read unavailable. Preserve the file, report the limitation, and allow only otherwise valid Keep/connection actions until a source-dependent action can be reviewed.
-- **Absent / foreign:** retain those per-file distinctions and review replacements individually. Unknown markers remain foreign; an existing filename or recorded version alone never establishes ownership or permits overwrite.
+- **Absent / foreign:** retain those per-file distinctions and identify each proposed replacement explicitly. Unknown markers remain foreign; an existing filename or recorded version alone never establishes ownership or permits overwrite.
 
 Show an authoritative raw before/after diff before each content-changing replacement when the old body is readable; unavailable-target recovery instead shows the complete proposal with its explicit unknown-source approval below. A short secondary summary may explain changed Git, commit, safety, CI or ownership obligations, but never substitutes for the diff.
 
-Different/uncertain marked copies offer explicit **Replace / Keep / Cancel** per file; an ahead rollback needs its separately described version choice too. Keep preserves bytes and any existing pointer. No automatic or model-generated policy merge, no batched approval replacing per-file decisions, no new provenance ledger/hash fields. Real updates with differing bodies therefore require per-file review, even with an older Helm marker.
+Identify every different/uncertain body and any proposed rollback by file and old/new version. Approval may cover all shown replacements or an explicit subset in one answer; separate prompts per file are not required. Keep preserves bytes and existing pointers. Never merge policies automatically or infer replacement permission from an older marker.
 
 Report Fresh (no files/pointers), Update (managed local copies), Conflict (foreign files/competing targets) and Repair (missing local dependencies) as display summaries. Unsupported external pointers stop for explicit maintenance outside adopt. Preserve the exact per-rule evidence and requested scope.
 
-Content-equivalent local bodies retain exact bytes/markers even when older or differently branded. A newer marker takes precedence for version/rollback review but does not establish content equivalence. A differing or uncertain body needs per-file review; no old/equal marker grants bulk replacement. Missing comparison data permits valid local Keep/connection choices, never a current/in-sync claim. No automatic policy merge or new provenance ledger is introduced.
+Content-equivalent local bodies retain exact bytes/markers even when older or differently branded. A newer marker requires explicit rollback disclosure but does not establish content equivalence. Missing comparison data permits valid local Keep/connection choices, never a current/in-sync claim. No new provenance ledger is introduced.
 
 ### Static destination checks
 
 For the exact paths in the per-rule proposal, inspect containment, symlinked ancestors/destinations, case-insensitive filename/directory collisions, non-file targets and existing tracked/untracked occupants. Unexpected occupants are protected, never automatically adopted or replaced. With Git available, inspect ignore/tracking evidence without refreshing the index: an ignored required output or a required untracked file omitted from the proposed commit is a publication blocker. Newly created untracked outputs explicitly included in the plan are normal. Never force-add or edit `.gitignore` to hide the problem. Report these blockers; without Git or resolved scope, report unavailable checks. Repeat these observations on the prepared destination and immediately before writes.
 
-## Step 3 — Choose the local action
+## Step 3 — Show changes and obtain direct approval
 
-First show every catalog row: local path/status/marker/body relation, actual effective target(s), loaded/selected copy source and comparison limitations. Distinguish existing/selected rules from optional unselected writing. Updating shared copies affects both clients using them.
+Show every catalog row: local path/status/marker/body relation, actual effective target(s), loaded/selected copy source and comparison limitations. Then show the proposed source bodies or raw diffs and exact pointer/adapter patches before the first action question. Distinguish proposed updates from optional unselected writing. Updating shared copies affects both clients using them.
 
-Use only applicable choices, with no one-option picker and at most four independent options (conversation/paging if needed):
+Ask directly about the shown effects, using applicable choices with at most four options. Do not insert Review updates first, a rule-selection gate before showing content, or a final confirmation of already approved changes. Keep every file/action identifiable; allow an explicit subset through custom text or a faithful QM selection. Choosing which displayed actions to apply authorizes only those exact actions, not unseen changes.
 
 | Situation | Choices and protections |
 |---|---|
-| Fresh | Install proposed shared local copies / Cancel. Propose all three catalog rules, allow writing to be omitted, and show exact destination paths, source bodies/markers and minimal instruction entries. No install-mode question. |
+| Fresh | Show the proposed rules and minimal instruction entries, then Install shown rules / Cancel. Allow explicit omissions in the same review; no later per-file installation questions. |
 | Managed local bodies equivalent, all existing/selected pointers and entries connected | Preserve files/markers. With no separately accepted writing addition or other requested change, report no changes; optional writing absence is not a repair. |
-| Healthy managed local copies need an entry/adapter | Connect agents without changing rules / Cancel; no update source required if those local copies are readable. |
-| Different managed bodies or missing companion/directive | Review updates/repairs per rule / Keep project rules / Cancel. Each real replacement needs Replace/Keep/Cancel; missing-copy/pointer repairs use Apply/Skip. |
-| Known ahead local/reference version | Keep existing / Review updates and named rollbacks per rule / Cancel. Each downgrade needs its own explicit old/new-version approval. |
-| Foreign local files selected for adoption | Review each selected foreign file / Cancel. Show Overwrite/Skip per file, plus independently reviewed required-companion repairs when an actual overwrite is selected. |
+| Healthy managed local copies need an entry/adapter | Show the exact entry patches, then Apply connection / Skip / Cancel. Preserve rule bodies; no update source is required for readable valid copies. |
+| Different managed bodies | Show the named body diffs and entry changes, then Replace shown rules / Keep existing / Cancel. An explicit subset is valid; do not ask again for each approved file. |
+| Missing copies or directives | Show the complete missing bodies and entry patches, then Apply repairs / Skip / Cancel. Include required companions in the proposal, never silently add them after approval. |
+| Known ahead local/reference version | Show the exact named downgrade, old/new versions and diff, then Replace with shown version / Keep existing / Cancel. A concrete answer can approve multiple explicitly listed downgrades. |
+| Foreign local files selected for adoption | Show the named custom-file diffs, replacement effects and any required repairs, then Overwrite shown files / Skip / Cancel. Never infer overwrite permission from a filename or general install request. |
 | External references | Stop with upgrade guidance; preserve pointers and installations. |
 
-Keep/Cancel/no action exits without Git preparation or new entries. If all foreign files are skipped and no independent writing addition or valid connection was explicitly approved, write nothing, including adapters/companion repairs; this is not a complete shared Helm installation. An explicitly accepted writing-only addition can proceed under its own exact reviewed scope, without silently installing/repairing the skipped Git/safety pair or claiming its coverage.
+Combine mixed cases in one concrete review where practical. Optional writing can use an independent Install writing / Not now question in the same batch, or clearly scoped combined choices; never silently include it in an ambiguous Apply all. An answer such as "apply all three" after all three bodies/diffs and entry patches were shown approves those exact actions. Preserve explicit Keep/Skip/exclusions. A choice to inspect or choose a subset is not approval yet: ask only which already shown actions to apply. Conflicting or incomplete answers, or a subset missing a required dependency, need clarification without silently broadening it.
+
+A whole-plan Keep/Cancel/no action exits without Git preparation or new entries. If all foreign files are skipped and no independent writing addition or valid connection was explicitly approved, write nothing, including adapters/companion repairs; this is not a complete shared Helm installation. An explicitly accepted writing-only addition can proceed under its own exact reviewed scope, without silently installing/repairing the skipped Git/safety pair or claiming its coverage.
 
 For partial ordinary local repairs, preserve each Skip and existing pointers; add no pointer to an uninstalled foreign file. Broken/shared-version dependencies stop the affected plan before writes. Do not rename/delete existing files or add client-specific rule copies to make the table look complete.
 
@@ -176,7 +179,7 @@ For Git-backed writes, record `{original_branch}`, require an attached branch, c
 
 Require the current actual main/master base for Git-backed writes; block elsewhere and explain without checkout/update/branch creation. Record current `{branch}` and `{original_branch}` as the same branch. No-Git/no-HEAD bootstrap remains uncommitted. Existing copied rules that mandate old branching need explicit reviewed replacement/reconciliation, not a silent bypass.
 
-Before local writes, re-read the actual entries, owner, chains, relevant overrides/native project entries and effective settings. Reapply all layout/sanity/scope gates. Conflicting ownership/policy/dependencies stop without writes. Rebuild Steps 2–3's rows/diffs on this destination; collect concrete per-file decisions here, never use approvals from a different branch/HEAD/input snapshot. If the selected intent no longer makes sense, show the difference and obtain the missing decision, or exit unchanged without branch cleanup. Reuse an already concrete approval only for the exact same destination/snapshot/actions. Freeze invocation policy: newly installed rule text cannot silently govern this run's finalization or weaken active safety rules.
+Before local writes, re-read the actual entries, owner, chains, relevant overrides/native project entries and effective settings. Reapply all layout/sanity/scope gates. Conflicting ownership/policy/dependencies stop without writes. Compare with the reviewed destination/snapshot/actions; matching inputs proceed under the existing approval. If relevant inputs changed, refresh only the affected proposal and obtain missing authorization, never reuse approval from a different branch/HEAD. Freeze invocation policy: newly installed rule text cannot silently govern this run's finalization or weaken active safety rules.
 
 Snapshot the relevant entry/override/source/rule bytes and absent targets on this destination. Before any write, check each exact planned path for ignore status, existing tracked/untracked occupants, case-insensitive filename/directory collisions, non-file targets and symlinked/escaping destinations. New untracked files explicitly in the plan are expected, not a blanket blocker. Unexpected occupants invalidate the plan.
 
@@ -184,7 +187,7 @@ Ignored outputs needed for a committed installation must be reported for explici
 
 ### Plan before mutation
 
-Collect every per-file Overwrite/Skip, Replace/Keep, repair/rollback, local-copy repair and pointer decision before changing any file. Show the resulting rule actions, exact pointer patches, any entry/adapter creation, and all retained/missing rules. These are the concrete effects authorized by the reviewed local plan and per-file answers; do not ask again for the same action. Recheck the branch, effective policy, source version/content, and recorded target snapshots immediately before writing. Changed inputs or a remaining conflicting pointer stop the plan before mutation. Reject write targets that resolve outside the consumer project or through symlinked destinations; do not modify another checkout or plugin installation.
+Before any mutation, reconcile the answer with the shown rule actions, pointer patches, entry/adapter creation and retained/missing rules. Reuse approval of the whole plan or named subset; no additional per-file or overall confirmation follows unchanged approval. A request received before the actual contents were shown does not authorize unseen overwrites: show them in the first direct review. Recheck branch, policy, source bytes and target snapshots immediately before writing. Changed inputs or a conflicting pointer stop dependent work. Reject targets outside the consumer project or through symlinked destinations; never modify another checkout or plugin installation.
 
 Include all affected-rule local install/update/repair decisions; a blocking required rule stops the affected plan before writes. Raw before/after diffs are authoritative. Retained/customized bodies keep their markers; no automatic merge or marker-only refresh. Freeze each new rule body/marker and each exact pointer/adapter patch for execution and readback.
 
@@ -194,7 +197,7 @@ Cancellation before mutation writes nothing. If a later write/read-back fails or
 
 Copy/update and connection patch only approved exact Helm pointer spans in the owner. Use this procedure whenever a path updates the `## Rules` instructions:
 
-- Identify candidate Helm entries by exact resolved catalog destinations from the reviewed inventory, then confirm managed ownership or the individually approved replacement. A directory prefix, basename alone, quoted example, or mention of another plugin does not establish ownership. A foreign `.claude/rules/writing.md` is not automatically a Helm pointer. Preserve custom entries such as `.claude/rules/security.md` byte-for-byte. Change only the approved Helm pointer spans, preserving user prose, other imports, existing Skip pointers, and section order. If a line combines Helm and unrelated instructions and cannot be patched unambiguously, stop for a reviewed patch instead of replacing the line/section wholesale. Reuse effective pointers outside this section; changing a local outside-Rules pointer span requires its exact patch in the reviewed **Plan before mutation**; otherwise stop for reconciliation. Create a new `## Rules` section only when required and none exists, never add a second heading or duplicate pointer.
+- Identify candidate Helm entries by exact resolved catalog destinations from the reviewed inventory, then confirm managed ownership or the explicitly approved replacement. A directory prefix, basename alone, quoted example, or mention of another plugin does not establish ownership. A foreign `.claude/rules/writing.md` is not automatically a Helm pointer. Preserve custom entries such as `.claude/rules/security.md` byte-for-byte. Change only the approved Helm pointer spans, preserving user prose, other imports, existing Skip pointers, and section order. If a line combines Helm and unrelated instructions and cannot be patched unambiguously, stop for a reviewed patch instead of replacing the line/section wholesale. Reuse effective pointers outside this section; changing a local outside-Rules pointer span requires its exact patch in the reviewed **Plan before mutation**; otherwise stop for reconciliation. Create a new `## Rules` section only when required and none exists, never add a second heading or duplicate pointer.
 - The snippet shows a full three-rule install. Add entries only for successfully installed or verified managed copies whose connection was approved, never from the catalog or filenames alone. Preserve an existing entry for a skipped file, but never add a new one for it. Omit unselected writing from new directives without deleting an established pointer. If every file was skipped and no connection was selected, leave the entry untouched.
 - When an existing review marker is at end of file, insert any new Rules/directives before it so it stays at the end without changing its value. Preserve an existing non-final marker's placement during targeted adoption; do not relocate it as unrelated cleanup. New knowledge files produced by log put their review marker last.
 - If {adopt_file} exists, apply only the exact pointer diff already reviewed; do not infer ownership or permission from a generic install intent.
@@ -205,7 +208,7 @@ Copy/update and connection patch only approved exact Helm pointer spans in the o
 
 - Create `.claude/rules/` if it does not exist.
 - For each selected catalog rule approved for copying/updating:
-  - Read the frozen selected source from `{rule_source_root}/rules/{name}`. Write only files approved by the exact local plan or per-file review; skipped/kept copies and content-equivalent bodies remain byte-for-byte unchanged regardless of marker age. A different marked body requires its explicit Replace approval; per-file rollback approval covers only that named file and version.
+  - Read the frozen selected source from `{rule_source_root}/rules/{name}`. Write only the exact approved rule bodies and versions, whether authorized together or as a named subset. Skipped/kept copies and content-equivalent bodies remain byte-for-byte unchanged regardless of marker age. No unapproved replacement, companion or downgrade follows.
   - Prepend exactly `<!-- helm-rule: agent-helm@v{current_version} -->` followed by `\n`, then the unchanged source bytes. Do not normalize source line endings or add another blank line.
   - Write to `.claude/rules/{name}`.
 - Read back each approved copy and verify exact marker/body before patching pointers. Then update {adopt_file}'s `## Rules` section and approved adapter/bridge (see above), read back the resulting chains, using this root-owner snippet for a full install (adjust only the reviewed relative path for an allowed non-root owner):
@@ -228,22 +231,11 @@ Use this path for in-sync copies, keeping newer project copies, or a missing Cla
 
 Record the action as `connected` (or `already connected`), not as a rule copy/update. Do not convert external pointers, delete files, rewrite markers or fall through into Copy or Update from this connection-only action. Do not require or install absent unselected writing to reconnect the Git/safety pair. Report the versions actually present; keeping newer copies must not be reported as a rollback to the loaded plugin version.
 
-### Review per file path
+### Customized files and required companions
 
-For each selected Foreign file, collect the answer before any mutation. If at least one overwrite was selected, include a proposed action for a missing or outdated required companion in the same reviewed plan, using the explicit per-rule Apply/Skip questions; it must not disappear merely because the aggregate state is CONFLICT. Writing is independent and never an automatic companion. Preserve newer managed companion rules unless their rollback was explicitly approved. Never bundle a companion write into approval to overwrite a different file.
+The direct review must name every foreign/custom file being overwritten and every companion repair or rollback, with their actual diffs and entry changes. Explicit approval can cover these named effects together; approval of one file never silently adds another. Writing stays independent. Missing comparison evidence blocks an overwrite, not valid Keep/connection actions.
 
-QM Review:
-  question: "{file} already exists and was not created by helm. Overwrite it with the plugin's version?"
-  header:   "Foreign file"
-  choices:
-    - label: "Overwrite"
-      description: "Replace it with the helm version — adds the marker and the local ## Rules entry"
-    - label: "Skip"
-      description: "Leave your file untouched"
-
-- Before the question, show the actual old/source body diff and any bounded changed-obligations summary. Never require the developer to discover the diff manually.
-- On Overwrite → queue the named file for the Copy or Update path after all decisions are collected.
-- On Skip → leave the user's file and existing pointers unchanged; do not add a new pointer. Marked different/uncertain bodies use the same reviewed preservation principle with Replace/Keep/Cancel, never this foreign-file label as proof of provenance.
+Skip preserves that file and its existing pointers; add no new pointer to an uninstalled foreign file. Kept customized managed bodies likewise remain unchanged. No automatic policy merge follows.
 
 If every foreign file was skipped and no independent writing addition or valid connection was explicitly approved, write nothing and create no entries; do not initiate companion repairs in this cancelled install. A skipped foreign file is not an installed Helm rule; disclose actual coverage rather than claiming the catalog applies to both hosts. Do not add a pointer to it just to make Codex imitate Claude's native loading. Existing unselected foreign writing stays untouched and outside Helm's installation claim.
 
@@ -254,10 +246,6 @@ If every foreign file was skipped and no independent writing addition or valid c
 ### Cancel path
 
 - Before preparation, exit without files or Git mutations. After preparation, no-write exits leave the same branch untouched. After any mutation/failure, preserve actual pending work instead of calling it Cancel/no-change.
-
-### Overwrite mapping
-
-- Update/replacement review runs Copy or Update only for individually approved differing bodies/missing copies, preserving content-equivalent and kept copies/markers. "Review updates and rollbacks per rule" shows actual diffs and old/new versions and requires a separate explicit choice for each rollback. No marker-only bulk overwrite or downgrade.
 
 ### Verification gate before Git finalization
 

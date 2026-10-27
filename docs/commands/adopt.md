@@ -30,8 +30,8 @@ flowchart TD
   Inspect --> Compare["Compare each rule with<br/>the loaded Helm package"]
   Compare --> Needed{"Changes needed?"}
   Needed -->|No| Current(["Report existing rules<br/>and connectivity"])
-  Needed -->|Yes| Review["Choose rules and review<br/>each replacement or repair"]
-  Review --> Decision{"Approve the local plan?"}
+  Needed -->|Yes| Review["Show rule bodies or diffs<br/>and exact instruction changes"]
+  Review --> Decision{"Apply the shown changes?"}
   Decision -->|Cancel or keep| Finish(["Finish without replacing rules"])
   Decision -->|Yes| Apply["Copy approved rules and<br/>connect project instructions"]
   Apply --> Verify["Verify content and<br/>both instruction paths"]
@@ -46,11 +46,13 @@ flowchart TD
 | [Safety](../rules/safety.html) | Boundaries around consequential actions. |
 | [Writing](../rules/writing.html) | Clear, useful prose. |
 
-New adoption proposes all three; you can omit Writing or explicitly request it alone. Git and Safety stay paired. Existing installations get a separate offer to add Writing.
+New adoption proposes all three; you can omit Writing or explicitly request it alone. Git and Safety stay paired. Existing installations offer Writing as an optional addition in the same review.
 
 ## What to expect
 
-Adopt compares actual bodies, not just version markers. Changed Helm copies get a diff and **Replace / Keep / Cancel** per file. Other existing files need **Overwrite / Skip**. Equivalent content stays untouched even with an older marker; downgrades require explicit review. Customizations are not merged automatically.
+Adopt compares actual bodies, not just version markers. It shows new rule bodies, replacement diffs and exact instruction changes before asking to install, replace, repair or connect them. Approve all shown changes or name a subset; approved changes are applied without another per-file or final confirmation. Optional Writing needs explicit inclusion, and custom-file overwrites or downgrades must be named in the proposal. New or changed effects still need review.
+
+Equivalent content stays untouched even with an older marker. Keep/Skip preserves existing files and pointers; customizations are not merged automatically.
 
 Suitable copies can be connected without replacement. Independent instruction files or a `CLAUDE.md`-only layout need [log](log.html) first. A fresh project can receive minimal shared instructions during installation.
 
