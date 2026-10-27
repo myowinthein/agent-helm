@@ -96,16 +96,28 @@
       "reason": "Host capability differences can lose choices, duplicate a pending question or confuse selection with approval; packaging checks prove routing references only.",
       "action": "manual",
       "layer": "manual",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-      "blocker": {
-        "kind": "execution",
-        "note": "Headless Claude Sonnet 5.5 / High Multi fallback passed with all nine independent choices, exactly one pending question and unchanged files/Git without an answer. Native Claude/Codex Single/Multi/Input/Review, picker interaction and render-failure recovery remain unverified. CUA rejected inspection of com.openai.codex for safety reasons; no workaround attempted. The optional human rendering question has no answer, so no native pass, consent or sign-off is recorded."
-      },
       "tests": [
         "scripts/smoke_acceptance.rb::qm-headless-fallback",
-        "scripts/acceptance-plan.md::Browser and host acceptance"
-      ]
+        "scripts/acceptance-plan.md::Browser and host acceptance",
+        "scripts/acceptance-plan.md::Implemented checks",
+        "prompts/shared/question-mechanism.md"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/smoke_acceptance.rb::qm-headless-fallback",
+          "scripts/acceptance-plan.md::Implemented checks",
+          "scripts/acceptance-plan.md::Browser and host acceptance",
+          "prompts/shared/question-mechanism.md"
+        ],
+        "method": "runtime",
+        "outcome": "Actual Codex developer replies confirmed visible Single choices on the requested retry, free Input and custom Esperanto, Review/Revise, explicit none, the complete nine-item subset/exclusion Input and independent Alpha/Beta/Gamma membership yielding Alpha/Gamma only. The first reported invisible Single request had resolved before Input substitution; its later retry was explicitly requested. Claude Code rendered a four-question native batch: exclusive Beta, independent Alpha/Gamma with Beta unselected, exact Unicode custom text Esperanto — QM input 19, and Revise without approval. After reading the copied shared QM contract, Claude retained all nine identities through genuine None/All-nine choices plus native Other/Input, preserved the supplied subset/exclusion text, distinguished explicit None from Skip, and conservatively left the skipped question unanswered despite its default. Pending preselected answers caused no submission or duplicate question. Exact fixture hashes and project HEAD/status matched before and after both batches. No real work was approved or performed by these sample answers.",
+        "commit": "5ec0fdaab47d5ec218ebff33a4bd0429738be8cc",
+        "command": "functions.request_user_input_async: live Single/Input/custom/Review, nine-item Input, independent membership and explicit-None cases; mcp__cua_repl.js: Claude Code native AskUserQuestion four-question batch, then shared-QM Read and wide-list/None/Skip batch; SHA-256 fixture and Git HEAD/status comparisons",
+        "scope": "2026-10-27, current Codex desktop chat with actual developer answers and Claude for Mac 3.6556.2 (20c019), Code on this computer with UI-reported Sonnet 5.5 / High throughout. Claude interactions were operator-driven synthetic UI tests, not attributable human approval of any real operation. Codex self-inspection remained prohibited; its app version was not obtained. Eligible generic Codex tools expose no Multi switch; supported membership/Input equivalents were verified instead. Claude preserved wide-list raw input and conservatively treated unspecified items as unresolved, with no dependent work. Bounded pending observations do not certify every timeout, client/version, cancellation or platform. No new integration/server, fabricated tool field, host-mode workaround, project code execution or source policy change."
+      }
     },
     {
       "id": "g-5bd8c9f8-2c65-408a-ba75-6413770a7bea",
