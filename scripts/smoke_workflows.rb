@@ -43,9 +43,9 @@ cases = {
     request: "Inspect adoption. Preserve the existing instruction owner; no layout change is approved.", unchanged: true
   },
   "codex-foreign-skip" => {
-    files: { "CLAUDE.md" => standard, ".claude/rules/git.md" => "# My Git rules\n\nThese are user-owned rules.\n",
+    files: { "AGENTS.md" => standard, "CLAUDE.md" => "@AGENTS.md\n", ".claude/rules/git.md" => "# My Git rules\n\nThese are user-owned rules.\n",
              ".claude/rules/safety.md" => "# My safety rules\n\nThese are user-owned rules.\n" },
-    command: "adopt", request: "Install the project rules. For foreign files choose Review each foreign file, then Skip both git.md and safety.md.", unchanged: true
+    command: "adopt", request: "Keep both foreign files git.md and safety.md unchanged. Skip their replacements and all other installation or connection changes; no writes are approved.", unchanged: true
   },
   # Current managed copies retain their recorded marker on connection.
   "codex-newer-copies" => {

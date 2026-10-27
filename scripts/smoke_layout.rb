@@ -33,13 +33,13 @@ cases = {
   "cancel-migration" => { files: { "CLAUDE.md" => shared }, request: "Run log. At the layout migration choice, choose Cancel. Do not run a knowledge scan." },
   "fresh-no-git" => { files: {}, no_git: true, fresh: true, request: "Run log. I approve the full scan and creating both root entries. Choose direct shipping and no automatic commits. No special safety risks apply to this fictional Markdown-only project. Do not initialize Git, invent a review hash, or create rules." },
   "fresh-skip" => { files: {}, no_git: true, request: "Run log, choosing Skip at the full-scan assessment. Do not create any entry files." },
-  "canonical-adopt-copy" => { command: "adopt", copy: true, files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter + claude_only }, expected: { "CLAUDE.md" => adapter + claude_only }, request: "Run adopt. Choose Copy shared rules and connect Codex. I approve installing the two Helm copies and adding their explicit Rules pointers to the existing AGENTS.md owner. Keep all existing instructions, configuration and the review marker unchanged; preserve CLAUDE.md byte-for-byte." },
+  "canonical-adopt-copy" => { command: "adopt", copy: true, files: { "AGENTS.md" => shared, "CLAUDE.md" => adapter + claude_only }, expected: { "CLAUDE.md" => adapter + claude_only }, request: "Run adopt for Git and safety only. I approve installing those two Helm copies and adding their explicit Rules pointers to the existing AGENTS.md owner. Keep all existing instructions, configuration and the review marker unchanged; preserve CLAUDE.md byte-for-byte." },
   # Current managed markers remain byte-for-byte intact on connection.
   "canonical-adopt-connect" => { command: "adopt", files: { "AGENTS.md" => shared + reference_rules,
     ".claude/rules/git.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
     ".claude/rules/safety.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
     expected: { "AGENTS.md" => shared + reference_rules, "CLAUDE.md" => adapter },
-    request: "Run adopt. Keep the newer project rules and choose Connect agents without changing rules. I approve creating CLAUDE.md with exactly @AGENTS.md followed by a newline. Preserve AGENTS.md and both rules byte-for-byte." }
+    request: "Run adopt. Keep the newer project rules. I approve creating CLAUDE.md with exactly @AGENTS.md followed by a newline. Preserve AGENTS.md and both rules byte-for-byte." }
 }
 cases.delete("canonical-adopt-copy") if client == "claude"
 selected = ARGV.drop(1)

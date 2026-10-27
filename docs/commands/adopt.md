@@ -54,6 +54,19 @@ Adopt compares actual bodies, not just version markers. It shows new rule bodies
 
 Equivalent content stays untouched even with an older marker. Keep/Skip preserves existing files and pointers; customizations are not merged automatically.
 
+| Situation | Result |
+|---|---|
+| No rules installed | Show the proposed rules and instruction entries; install after approval. |
+| All bodies match, even with older/newer markers | Preserve files and markers; no update question. |
+| Managed bodies differ | Show exact replacements; apply the approved set. |
+| Copies or references are missing | Show the missing bodies or connection patches; apply approved repairs. |
+| Writing is newly available | Offer its body and pointer as an optional addition in the same review. |
+| Custom files or a downgrade | Name the overwrite or lower version explicitly; apply only approved changes. |
+| Mixed updates, repairs and kept files | Use one proposal and accept all shown actions or a named subset. |
+| Comparison source is unavailable | Keep copies; allow valid connection-only work and report blocked updates. |
+
+Keeping a rule does not cancel an approved addition or connection. A populated folder without project markers gets a placement warning in the same installation review, rather than a separate Continue question.
+
 Suitable copies can be connected without replacement. Independent instruction files or a `CLAUDE.md`-only layout need [log](log.html) first. A fresh project can receive minimal shared instructions during installation.
 
 ## Your result
