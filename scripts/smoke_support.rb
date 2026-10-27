@@ -16,7 +16,7 @@ module HelmSmoke
   def normalize_gate(standard)
     { files: { "CLAUDE.md" => standard }, command: "normalize", unchanged: true,
       initial_message: "initialize fixture", expected_proposal: "chore(fixture): initialize",
-      request: "Inspect normalization of the initial fixture commit. Use chore(fixture): initialize as its proposed correction. Show the pending final rewrite review; no history rewrite, record write or commit is approved." }
+      request: "Team ready: I acknowledge coordination for this owned local-only fixture. No remote operations are approved. Inspect normalization of the initial fixture commit. Use chore(fixture): initialize as its proposed correction. Show the pending final rewrite review; no history rewrite, record write or commit is approved." }
   end
 
   def connected_owner(original, rules: %w[git safety])

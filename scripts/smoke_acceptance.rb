@@ -111,7 +111,21 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     HelmAcceptance.verify_test_lifecycle!(workspace: workspace, package: package, scenario: scenario, before: before, before_git: before_git, approved: approved, result: result)
   else
     HelmAcceptance.assert_fixture_files!(workspace, before, approved)
-    if scenario[:expected_tracking]
+    if scenario[:expected_new_refs]
+      after_git = HelmSmoke.git_state(workspace)
+      old_refs = before_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
+      new_refs = after_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
+      scenario.fetch(:expected_new_refs).each do |ref, tip|
+        raise "Prepared branch was pre-existing or has the wrong tip" unless !old_refs.key?(ref) && new_refs.delete(ref) == tip
+      end
+      scenario.fetch(:allowed_preparation_tracking).each do |ref, tip|
+        next if new_refs[ref] == old_refs[ref]
+        raise "Preparation tracking does not match approved remote tip" unless new_refs[ref] == tip
+        old_refs.key?(ref) ? new_refs[ref] = old_refs.fetch(ref) : new_refs.delete(ref)
+      end
+      after_git[:refs] = new_refs.sort.map { |ref, tip| "#{ref} #{tip}\n" }.join
+      raise "Preparation changed unrelated fixture Git/index/config" unless after_git == before_git
+    elsif scenario[:expected_tracking]
       after_git = HelmSmoke.git_state(workspace)
       old_refs = before_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
       new_refs = after_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
@@ -128,6 +142,15 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   end
   if scenario[:local_remote]
     HelmAcceptance.verify_publication!(name: name, workspace: workspace, scenario: scenario, result: result)
+  end
+  if scenario[:branch_remote]
+    raise "Branch preparation changed the remote" unless HelmSmoke.git(scenario[:branch_remote], "for-each-ref", "--format=%(refname) %(objectname)") == scenario.fetch(:branch_remote_refs)
+    unless result.fetch(:calls).any? { |call| HelmAcceptance.strings(call["input"]).any? { |input| input.include?("ls-remote") } }
+      warn "Synthetic branch-preparation commands: #{result.fetch(:calls).map { |call| call['input'] }.to_json[0, 9000]}"
+      warn "Synthetic branch-preparation answer: #{result.fetch(:answer)[0, 2500]}"
+      raise "Fresh branch-advertisement evidence was not observed"
+    end
+    raise "Branch preparation wrote unapproved FETCH_HEAD" if workspace.join(".git/FETCH_HEAD").exist? || workspace.join(".git/FETCH_HEAD").symlink?
   end
   if scenario[:tampered_archive]
     raise "Wrong archive failure reported" unless result.fetch(:answer).match?(/digest|hash|fingerprint|tamper|mismatch/i)
@@ -150,9 +173,23 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     if scenario[:readiness] == :review_only
       raise "Review-only readiness did not finish the actual message assessment" unless
         answer.include?("update fixture readme") && answer.match?(/docs\([^)]+\):/i)
-    elsif %i[ready private].include?(scenario[:readiness])
+    elsif scenario[:readiness] == :ready
       raise "Readiness/private history was incorrectly sent back to the first gate" if
         answer.include?("Team ready") && answer.include?("Review only") && answer.match?(/\bStop\b/)
+    end
+    if scenario[:waiting_history_canary]
+      HelmAcceptance.assert_normalize_waiting!(result, history_canary: scenario.fetch(:waiting_history_canary))
+      unless scenario[:readiness] == :stop
+        required_notice = ["Normalize may change commit IDs across multiple branches.",
+          "Inform your team about the upcoming normalize process.",
+          "Push any unpublished branches you want included before continuing.",
+          "Pause pushes, merges and creating new branches until normalize and ship finish.",
+          "Run normalize, then ship straight away in the same terminal and project folder.",
+          "Make sure affected branches allow rewritten history to be pushed.",
+          "After ship, sync local branches with the rewritten history before resuming. Do not merge the old history back."]
+        raise "First gate omitted its full actionable notice" unless required_notice.all? { |line| answer.include?(line) }
+        raise "First gate replaced plain warning bullets with bold labels" unless required_notice.drop(1).all? { |line| answer.lines.any? { |actual| actual.strip.match?(/\A(?:>\s*)?[-*] /) && actual.include?(line) && !actual.include?("**") } }
+      end
     end
     # All readiness cases above also retain the complete consumer/package and
     # Git/index/config preservation checks: no answer here authorizes mutation.

@@ -22,12 +22,13 @@ Read-only review permits a dirty or detached checkout. Rewriting and record writ
 
 ```mermaid
 flowchart TD
-  Start(["Start normalize"]) --> Audit["Resolve commit policy and<br/>review the requested history"]
-  Audit --> Shared{"Shared-history readiness<br/>needed for corrections?"}
-  Shared -->|No or already acknowledged| Messages["Prepare exact message proposals<br/>and resolve requested edits/subsets"]
-  Shared -->|Yes or uncertain| Team{"Team ready /<br/>Review only / Stop"}
-  Team -->|Team ready| Messages
-  Team -->|Review only| Report["Report findings;<br/>write nothing"]
+  Start(["Start normalize"]) --> Basic["Load instructions and check<br/>repository, branch and HEAD"]
+  Basic -->|Ordinary run| Team{"Show full warning; wait for<br/>Team ready / Review only / Stop"}
+  Basic -->|Explicit read-only request| Report["Review local history and report;<br/>write nothing"]
+  Team -->|Team ready or applicable prior answer| Prepare["Discover newly pushed branches;<br/>approve exact preparation if needed"]
+  Prepare --> Audit["Freeze scope and<br/>review the requested history"]
+  Audit --> Messages["Prepare exact message proposals<br/>and resolve requested edits/subsets"]
+  Team -->|Review only| Report
   Team -->|Stop| End(["Report the local result"])
   Report --> End
   Messages --> Changed{"Any proposed corrections?"}
@@ -42,11 +43,17 @@ flowchart TD
   Record --> End
 ```
 
-## Review messages first
+## Before history review
 
-Default scope is the current local branch. Request named branches, all local branches, a bounded range or full history when needed. Project policy and compatible commitlint rules take precedence over Helm defaults.
+After basic repository checks, normalize displays the complete coordination warning, then asks **Team ready / Review only / Stop**. It waits before reading commit messages, checking formatting, loading assessment records or delegating review. Ordinary runs show the warning even for private history or when the later scan finds no corrections; an explicit read-only/formatting-only request bypasses the question. Applicable answers are reused.
 
-For possible shared-history corrections, an early **Team ready / Review only / Stop** check covers team coordination, saving pending work, including agreed branches, pausing changes until publication, using the same clone for ship and reconciling other clones afterward. It is an acknowledgement, not proof of teammate activity or a new branch/device restriction. Review only writes nothing; explicit read-only reviews, no-change results and established private-only corrections skip the question. An applicable readiness answer is reused.
+The warning asks you to inform the team, push unpublished branches intended for inclusion, pause pushes/merges/new branches, finish normalize then ship promptly in the same terminal/project folder, check that rewritten branches can be published and sync other clones afterward. These are coordination recommendations. Another terminal in the same clone still works; private work need not be published. Review only performs a local report without writes. Stop ends the run.
+
+After Team ready, fresh remote discovery notices branches pushed during team preparation. Agreed remote-only branches need exact fetch/local-branch preparation approval, or developer preparation, before the local inventory is frozen. Continue within the same run; no second normalize invocation is required. Readiness alone grants no Git writes. Existing local branches are not silently overwritten or merged, and unavailable discovery or missing agreed branches stays explicit.
+
+## Review messages
+
+Default scope is the current local branch. Request named branches, all local branches, a bounded range or full history when needed. Preparing a branch does not automatically expand its message audit; affected local branches still join the consistency rewrite. Project policy and compatible commitlint rules take precedence over Helm defaults.
 
 Accepted messages stay unchanged. Corrections normally affect subjects; bodies, trailers and breaking information are preserved unless their edits are shown. Unclear intent needs clarification.
 
@@ -64,7 +71,7 @@ Reports distinguish mechanical checks, new review, reused coverage and unreviewe
 
 Every local branch containing a corrected commit joins the coordinated rewrite. Its other messages stay unchanged unless separately approved. Shared ancestors change descendant IDs; feature-only corrections need not affect main.
 
-Remote-tracking refs, tags, stashes, notes and other clones stay unchanged. Fixed tags can lose ancestry from rewritten branches; signatures may be lost.
+The rewrite preserves remote-tracking refs from after any approved preparation, plus tags, stashes, notes and other clones. Fixed tags can lose ancestry from rewritten branches; signatures may be lost.
 
 ## Approve and verify the rewrite
 

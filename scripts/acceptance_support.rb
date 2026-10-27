@@ -81,6 +81,14 @@ module HelmAcceptance
     raise "Source-only preview accessed state" if result.fetch(:calls).any? { |c| strings(c.fetch("input")).any? { |s| state.match?(s) } }
   end
 
+  def assert_normalize_waiting!(result, history_canary:)
+    assert_no_canary!(result, history_canary)
+    assert_no_state_access!(result)
+    forbidden = /\b(?:rev-list|cat-file|diff-tree|ls-remote)\b|\bhelpers\/normalize_check\.py\b|\bgit\b[^\n;]*\s(?:log|show|diff|fetch)(?:\s|$)/
+    raise "Normalize investigated history or remotes before readiness" if
+      result.fetch(:calls).any? { |call| strings(call.fetch("input")).any? { |input| forbidden.match?(input) } }
+  end
+
   def map_pairs(value)
     pairs = if value.is_a?(Hash)
       value.to_a
