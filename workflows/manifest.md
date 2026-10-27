@@ -53,7 +53,7 @@ For custom style with no content, ask for an outline/reference before a source s
 
 ### Assess provenance and likely reader impact
 
-Inspect target existence/content, applicable structure and `<!-- last-reviewed: {hash} -->`. Accept an anchor only when there is one unambiguous marker containing a literal hexadecimal commit ID, it resolves to a commit object and it is an ancestor of the local candidate review HEAD. Treat missing, malformed, ambiguous, unavailable or divergent anchors as unknown history. Never interpolate unvalidated file text into Git commands; pass validated IDs as literal arguments.
+Inspect target existence/content, applicable structure and `<!-- last-reviewed: {hash} -->`. Accept one unambiguous literal hexadecimal marker when its commit is an ancestor of the local candidate review HEAD. If its object is unavailable or ancestry was lost, read `{package_root}/prompts/shared/review-anchor.md` and attempt automatic recovery before declaring history unknown. Use a verified recovered ID as the effective baseline. Missing/malformed/multiple markers provide no recovery identity; failed recovery retains Full scan / Skip and independently eligible alternatives. Never interpolate unvalidated file text into Git commands; pass validated IDs as literal arguments.
 
 Build a cheap index of the commit range, changed paths, project/package entry points and README-facing surfaces before deep reading. Consider changes to installation, runtimes, scripts, examples, interfaces, configuration, prerequisites, availability, support, contribution and licensing. Do not exclude fixes, styling, dependency updates, CRUD or README-only commits by label: any can affect readers. A path/net-diff index is triage, not proof that no update is needed.
 
@@ -155,6 +155,8 @@ For a new/empty target, selection of full generation with the chosen standard st
 ### Review marker rules
 
 `<!-- last-reviewed: {review_head} -->` records a complete static assessment of this README's relevant source snapshot. It does not attest to all code/history, runtime behavior or external services.
+
+A verified same-review ID repair follows the shared recovery procedure and can accompany an approved partial update; it preserves earlier provenance rather than advancing coverage. Show that repair in the existing content/marker proposal, never a separate recovery gate.
 
 Advance/create it only when the selected snapshot scope was fully investigated, no unresolved substantive findings remain and inputs are unchanged. A substantive finding is inaccurate, materially misleading or materially incomplete information within the README's stated scope. Optional clarifications, style and convenience suggestions are not substantive; declining them, including within a partially accepted patch, does not block the marker. A completed full/gap review finding no prose changes may make a marker-only update after explaining the result, without an unnecessary prose-change approval. Verified own-output-only maintenance or no new source must not cause recurring marker churn.
 
