@@ -23,7 +23,8 @@ Start on clean **main or master**. Commits containing legal document text need e
 ```mermaid
 flowchart TD
   Start(["Start legal"]) --> Inspect["Inspect source, context<br/>and existing documents"]
-  Inspect --> Table["Show the six document types,<br/>file status, decisions and reasons"]
+  Inspect --> Reconcile["Resolve missing recorded paths;<br/>apply verified ledger repairs"]
+  Reconcile --> Table["Show the six document types,<br/>file status, decisions and reasons"]
   Table --> Needed{"Drafts or proposed removals?"}
   Needed -->|No| End(["Report the result, gaps<br/>and any record-only changes"])
   Needed -->|Yes| Draft["Prepare eligible drafts;<br/>keep removal candidates intact"]
@@ -44,6 +45,12 @@ flowchart TD
 Review actual data flows, integrations, payments and existing policies. Source and supplied answers come first; essential missing facts are asked in one batch.
 
 Relevant provider or legal research may be needed, but there is no standard business interview, home-address requirement or worldwide clearance process. Off-code practices remain limits of source inspection.
+
+## Reconcile missing recorded documents
+
+Before assessing document actions, legal checks current files/Git state, the current conversation, existing project documents/references and relevant local history as needed. It automatically corrects a confirmed move's recorded path or removes a confirmed deleted document's entry, preserving historical assessment fields on retained/moved records. Only unresolved whereabouts need a question; uncertain records stay intact. Record reconciliation never deletes actual documents.
+
+Repairs are reported separately, then the document table uses the updated state. A confirmed deleted document gets a new assessment if recreated at the same path; an existing file without a record is still existing. No cleanup approval or mid-run commit is added. With drafts, repairs join the existing content commit or stay uncommitted. Record-only work follows auto-commit or existing commit authorization; otherwise it stays uncommitted. Explicit read-only requests remain read-only.
 
 ## Prepare the useful documents
 
@@ -67,12 +74,6 @@ Every decision needs a reason; preserving a file does not replace assessing its 
 Follow existing locations and language. Preserve approved custom or lawyer-reviewed clauses unless a specific replacement is agreed. Missing facts do not become invented promises.
 
 Routing, consent controls, navigation and store submissions are separate implementation work.
-
-## Reconcile missing recorded documents
-
-Legal checks the current files/Git snapshot, current conversation, existing project documents and references, then relevant local Git history as needed. It automatically corrects a confirmed move's recorded path or removes a confirmed deleted document's entry, preserving historical assessment dates/source IDs. It asks where a file went only after relevant investigation cannot resolve it; uncertain records stay intact. Record reconciliation never deletes actual documents; proposed file removals use the final review below.
-
-No cleanup approval is added. With drafts, record repairs join the existing content commit or stay uncommitted with the drafts. Record-only work follows auto-commit or existing commit authorization; otherwise it stays uncommitted. Explicit read-only requests remain read-only.
 
 ## Handle gaps precisely
 
