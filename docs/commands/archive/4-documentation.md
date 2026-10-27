@@ -7,7 +7,7 @@ nav_order: 4
 
 # Step 4: Documentation
 
-Make the preserved project understandable to someone opening it later. The entry point explains where to begin, the setup gives ordered recovery commands and the metadata records exactly what was captured.
+Give future developers a clear entry point, ordered recovery procedure and record of captured artifacts.
 
 ## Flow
 
@@ -26,25 +26,25 @@ flowchart TD
 
 ## Keep useful documentation
 
-Accurate setup, domain and API information is kept and linked. Design decisions, build notes, changelogs and useful history remain available; LICENSE/NOTICE and legal documents are preserved. Outdated or duplicate material gets a proposed focused repair or consolidation rather than automatic deletion.
+Retain useful setup, domain, API and historical material, including licenses and legal notices. Review focused repairs, consolidation or removals before editing.
 
-Before editing, you review exact Keep/Update/Merge/Archive/Remove actions and reasons. Agent instruction files, their imports, adopted rules and operational Helm state are protected. A conflicting output path needs an agreed alternative, not an overwritten instruction file.
+Instructions, imports, rules and operational records remain protected. A conflicting output path needs an agreed alternative.
 
 ## Give each output a clear purpose
 
-| Default output | What belongs there |
+| Default output | Purpose |
 |---|---|
-| `README.md` | Archive orientation: purpose, source snapshot, selected goal, quickest recovery route, requirements, limitations and useful links. |
-| `docs/setup.md` | Actual ordered configuration, image/runtime preparation, data restore, run/demo and stop procedures. |
-| `docs/archive-metadata.md` | Artifact paths, identities, platforms, sizes, checksums, provenance, storage, verification and missing inputs. |
-| Optional `docs/historical-notes.md` | Useful historical context that benefits from a separate home. |
+| `README.md` | Snapshot, recovery route, requirements, limits and links. |
+| `docs/setup.md` | Ordered preparation, data restore, run/demo and stop commands. |
+| `docs/archive-metadata.md` | Artifact identities, checksums, provenance, storage and verification. |
+| Optional `docs/historical-notes.md` | Useful history needing a separate home. |
 
-Existing suitable locations can be retained. The README uses archive-specific information needs, independently of [manifest](../manifest.html) and `readme-style`. It links to the full procedure instead of copying setup commands and raw phase reports into the entry point.
+Keep suitable existing locations. The archive index follows recovery needs independently of [manifest](../manifest.html) or `readme-style`.
 
-The setup carries forward evidenced commands from Step 2 and actual API-material paths from Step 3. The metadata holds full identity tables so other pages can link to them. Missing inputs and unrun checks remain visible; the docs do not promise a published backup before ship verifies it.
+Link procedures and artifact tables rather than copying them into the index. Use evidenced commands and actual API-material paths; retain missing inputs and unverified checks.
 
 ## What happens next
 
-Static review checks the recovery navigation, paths, configuration and command order against the preserved evidence. It does not execute the app merely to write documentation.
+Static review checks navigation, paths and command order against recovery evidence. It does not execute the app or claim a published backup.
 
-You review the actual files, consolidation decisions and gaps. Approval saves `step4-documentation.md` under `.helm/archive/` and continues to [Step 5: Prepare locally](5-finalize.html). Earlier approved reports remain unchanged. No commit or push happens in this phase.
+Approve the report to continue to [Step 5: Prepare locally](5-finalize.html). Earlier reports stay unchanged. This phase does not commit.

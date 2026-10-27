@@ -8,7 +8,7 @@ has_toc: false
 
 # archive
 
-Preserve an old project so its source, setup and useful recovery materials remain understandable. Archive helps restore the selected project, freeze a suitable setup and prepare a local payload for later private backup through ship.
+Preserve an old project's source, setup and useful recovery materials. Archive helps restore the selected scope, capture a suitable setup and prepare it locally for private backup through ship.
 
 ## Start the command
 
@@ -18,7 +18,7 @@ archive
 
 Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
 
-Start on the attached branch containing the project you want to preserve. Archive shows its branch, commit and excluded work, then asks you to confirm it before a pending phase begins. It does not switch branches or merge missing work for you.
+Start on the branch you want to preserve. Confirm its commit and excluded work before pending phases begin. Archive does not switch branches or merge missing work.
 
 ## Flow
 
@@ -36,43 +36,38 @@ flowchart TD
   Payload --> End(["Prepared locally;<br/>use ship later for private backup"])
 ```
 
-Each phase presents a report for approval before advancing. Execution, data operations and the final payload commit also need their concrete action approvals; a report or saved cursor alone does not authorize them.
+Each phase needs report approval. Execution, data operations and the payload commit retain their concrete approvals; approving a report does not authorize unseen actions.
 
 ## The five steps
 
-- [Step 1: Explore](archive/1-explore.html): inventory the project, dependencies, data and preservation gaps without executing it.
-- [Step 2: Restore and freeze](archive/2-restore-and-freeze.html): agree a safe restoration, inspect its actual result, then capture a suitable runtime and data setup.
-- [Step 3: Postman collection](archive/3-postman.html): retain, repair or create useful API recovery files when the project owns an API.
-- [Step 4: Documentation](archive/4-documentation.html): make the recovery entry point, ordered setup and artifact inventory useful to a future developer.
-- [Step 5: Prepare locally](archive/5-finalize.html): review storage, supplementary assets and the exact local payload, then commit it after approval.
+1. [Explore](archive/1-explore.html): inspect dependencies, data and preservation gaps without execution.
+2. [Restore and freeze](archive/2-restore-and-freeze.html): restore the agreed scope, review results and capture a suitable setup.
+3. [Postman collection](archive/3-postman.html): retain, repair or create useful API recovery files.
+4. [Documentation](archive/4-documentation.html): prepare the recovery entry point, procedure and artifact inventory.
+5. [Prepare locally](archive/5-finalize.html): review storage and the exact payload, then approve its commit.
 
-The preservation goal can be source only, a useful runnable demonstration, offline runtime recovery or additional offline rebuild inputs. These need different evidence. A version list, saved image or currently running app does not prove every future recovery goal.
+Choose source preservation, a runnable demonstration, offline runtime recovery or additional rebuild inputs. Each needs different evidence; a saved image alone cannot prove all of them.
 
 ## Output files
 
-Only useful applicable outputs are created. Existing recovery files can stay at their approved paths.
+Only useful outputs are created. Existing suitable locations can stay in use.
 
 | Output | Purpose |
 |---|---|
-| `.helm/archive/state.json` and `files.json` | Persistent progress and file inventory for agent resume and payload verification. |
-| Five `.helm/archive/step*.md` reports | Approved phase evidence for later review, not the startup manual. |
-| Archive index, normally `README.md` | Human entry point explaining the snapshot, recovery route and limitations. |
+| `.helm/archive/` | Saved progress, file inventory and five approved reports. |
+| Archive index, normally `README.md` | Where to start and what recovery can achieve. |
 | `docs/setup.md` | Ordered recovery, data, run/demo and stop instructions. |
-| `docs/archive-metadata.md` | Human-readable artifact identities, checksums, provenance, storage and verification. |
-| Selected `recovery/` outputs | Useful image exports, API collections, data or supplementary materials when existing paths do not already serve them. |
-
-New free-form names use lowercase kebab case, while conventional names and native format suffixes stay intact. Empty companion files and duplicate copies are not created just to fill a layout.
+| `docs/archive-metadata.md` | Artifact identities, checksums, storage and verification. |
+| Selected `recovery/` files | Captured images, API materials, data or supplementary assets. |
 
 ## Returning to an existing archive
 
-Run archive again to validate saved progress and continue the next incomplete local phase. The command checks source identity, reports and output fingerprints before reusing them; unexplained changes need reconciliation.
+Rerun to validate progress and continue incomplete local work. Unexplained source or output changes need reconciliation. Proven prepared payloads are reported without repeating restoration or replacing reports.
 
-A proven prepared payload is reported without replacing files, recommitting or restoring the project again. A completed backup is also preserved; unavailable remote proof is reported as unverified rather than treated as permission to restart. Unsupported bundles block this archive route and remain intact.
-
-Progress and reports remain under `.helm/archive/` after completion. Other commands' ledgers, instruction files, adopted rules and recovery assets are protected from blanket consolidation or cleanup.
+Unsupported bundles remain intact. Missing remote proof does not authorize restarting. Instructions, rules, other commands' records and existing recovery evidence are protected from blanket cleanup.
 
 ## Your result
 
-Archive finishes on the same branch with the actual local payload commit or pending drafts, recovery instructions and known limitations. Deferred checks remain unverified, and partial preservation is labelled accordingly.
+You get the local payload commit or pending drafts, recovery instructions and limitations on the same branch. Deferred checks stay unverified.
 
-It does not push, create PRs or clean up remote refs. When ready, run [ship](ship.html#publish-an-archive-backup) to select and verify a private backup destination, publish the payload and record its completion receipt. That is a separate approval from local preparation.
+Use [ship](ship.html#publish-an-archive-backup) separately to select a private destination, publish the payload and verify its completion receipt. Local preparation does not prove a remote backup.
