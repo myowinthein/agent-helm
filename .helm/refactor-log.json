@@ -12,7 +12,8 @@
         "scripts/acceptance_support.rb",
         "scripts/git_acceptance.rb",
         "scripts/test_acceptance_support.rb",
-        "scripts/test_git_acceptance.rb"
+        "scripts/test_git_acceptance.rb",
+        "scripts/test_acceptance_oracles.rb"
       ],
       "found": {
         "origin": "native",
@@ -33,8 +34,38 @@
         ],
         "invariant": "Extract only existing verification blocks behind explicit callable inputs while preserving their conditions, order, diagnostics, Git commands, approved-output mutations and current CLI/model/isolation behavior. Preserve all existing test scenarios/assertions; only scoped invariant guards may be added."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "a5612d50cd97f46e7311ab2096126b0601b9d29b",
+        "date": "2026-10-27",
+        "method": "runtime",
+        "evidence": [
+          "scripts/acceptance_support.rb now exposes verify_normalize!, verify_test_lifecycle! and verify_publication! with explicit keyword inputs; requiring support executes no client/workflow.",
+          "All three extracted verification bodies were compared by SHA-256 with their original driver blocks and are byte-for-byte identical. The driver retains CLI parsing, fixture/model setup, dispatch, guard ordering and the same 23 scenario names.",
+          "scripts/test_acceptance_oracles.rb directly exercises the actual extracted functions on synthetic inputs and owned temporary Git repositories: reviewed-prefix/private-proof rejection, independent recovery, approved-byte mutation, deferred/failed evidence, code-before-closure provenance, actual remote refs, paired readback, immutable expectations and missing-action leases.",
+          "Existing test bodies/assertions and live model/permission/budget behavior were preserved. Rake runs the new direct guards with the offline suite. No live model workflow scenarios were rerun; supplied unit traces do not certify workflow execution."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_acceptance_support.rb; ruby scripts/test_git_acceptance.rb",
+            "scope": "Pre-change acceptance support and Git fixture baseline, then unchanged existing protection after extraction",
+            "outcome": "Passed all 9 acceptance-support groups and 3 Git-oracle groups before and after the change; no model calls."
+          },
+          {
+            "command": "BUNDLE_VERSION=4.0.22 BUNDLE_FROZEN=true bundle _4.0.22_ exec rake test",
+            "scope": "Final source tree, existing offline package/helper/smoke/docs suite and 3 new direct acceptance-oracle groups",
+            "outcome": "Passed: package checks, 26 normalize tests, 22 ledger tests, 20 smoke-support scenarios, 9 acceptance-support groups, 3 Git-oracle groups, 3 direct-oracle groups, 10 setup scenarios, 24 docs-link scenarios, Jekyll build and 212 internal links. No model workflow execution."
+          },
+          {
+            "command": "ruby -c scripts/acceptance_support.rb; ruby -c scripts/smoke_acceptance.rb; ruby scripts/smoke_acceptance.rb --list; git diff --check",
+            "scope": "Extracted helper/driver syntax, opt-in CLI list and final reviewed diff",
+            "outcome": "Syntax and whitespace checks passed; list mode returned the unchanged 23 scenario names without a model call."
+          }
+        ]
+      }
     },
     {
       "id": "r-0d54d481-f356-4cf2-8eca-55db77baaacf",
