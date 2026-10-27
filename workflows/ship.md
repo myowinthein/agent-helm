@@ -1,6 +1,6 @@
 # ship
 
-Publish reviewed work through one workflow: inspect pending work, use verified history-replacement or private archive procedures when applicable, handle selected branch targets and offer an approved release on ready main/master. Publication, PR handoff, integration, release and deployment remain separate outcomes. Never publish registry packages or upload release assets automatically.
+Publish reviewed work through one workflow: inspect pending work, use verified history-replacement or private archive procedures when applicable, handle selected branch targets and offer an approved release on ready main/master. Never publish registry packages or upload release assets automatically.
 
 ## Question points
 
@@ -17,6 +17,14 @@ Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below an
 | History publication and archive payload/receipt publication | Separate Review of the exact selected protocol, fixed expectations and effects. |
 | Archive destination/privacy facts, preservation/cleanup, portable copy | Input for safe identity/paths; Single for retention route, Multi for independent candidates, then Review of exact effects. |
 | CI wait/recheck versus pending and missing resume operations | Single for wait/pending; Review only for missing mutations lacking valid approval. |
+
+## Publication rules
+
+Apply throughout this workflow and its selected supporting procedures:
+
+- Source publication, PR handoff, integration, release and deployment are separate outcomes. An open PR is a review handoff: do not merge it, await future review/CI or tag its unintegrated work. Release-metadata PRs stop at that handoff until independently integrated.
+- PR heads are moving refs. Before approving a source push, disclose its effects on **all open PRs sharing that source**. Reuse matching open requests without duplicates. Merged requests receive no later commits; new target work needs an explicitly selected new request/action.
+- Verify actual destination refs and provider results after success or uncertainty, before continuation/retry. Reuse completed work rather than replay it. Unresolved outcomes and deferred/unavailable/failed required checks block dependents, preserving earlier successes.
 
 ## Before starting: policy and permissions
 
@@ -38,9 +46,9 @@ After a selected history publication is fully verified, retain its exact publish
 
 ### Ordinary work, existing candidates and completion
 
-For ordinary work, reuse proven existing source/helper/PR identities and perform only missing actions through Steps 1/6. Detect a pending or integrated release-metadata candidate before routing its metadata-only delta as application work. A uniquely proven candidate uses Step 7's same-version continuation; an open metadata PR is already handed off and stops tagging. Ambiguous identity or unrelated ahead application work requires reconciliation, not another bump or code PR.
+For ordinary work, reuse proven existing source/helper/PR identities and perform only missing actions through Steps 1/6. Detect a pending or integrated release-metadata candidate before routing its metadata-only delta as application work. A uniquely proven candidate uses Step 7's same-version continuation. Ambiguous identity or unrelated ahead application work requires reconciliation, not another bump or code PR.
 
-An already-published current tip still permits Step 6's optional targets: selected environments may be behind even when the source needs no push. Do not treat an optional target's different tip as authorization; show only applicable concrete actions and obtain selection/approval. An unchanged proven selection is reused. After verified ordinary publication/targets or a proven source no-op, assess the release stage below. A core PR may be followed by explicitly selected independent target PRs, but is never awaited/merged. Pending main code/metadata PRs prevent a release of that work.
+An already-published current tip still permits Step 6's optional targets: selected environments may be behind even when the source needs no push. Do not treat an optional target's different tip as authorization; show only applicable concrete actions and obtain selection/approval. An unchanged proven selection is reused. After verified ordinary publication/targets or a proven source no-op, assess release eligibility. A core PR may be followed by explicitly selected independent target PRs.
 
 - Work successfully published on ready main/master: offer the release plan with **Release / Skip release**, including changes with no automatic version bump; version choice remains explicit.
 - No source push needed, but published main has unreleased product changes or a proven incomplete release: offer the new release plan or only missing same-version actions. A previous tag need not exist: assess a first release from complete scoped history. A published tag by itself is not a new release opportunity; already-complete/skipped optional hosted output is not automatically recreated.
@@ -64,13 +72,13 @@ On base only, retain the existing explicit **Commit reviewed safe changes / Stop
 
 For writes, describe needed narrow fetch/history completion before performing it. Preserve tags, unrelated refs and remote configuration; no pruning/forced tag replacement. Compare actual advertised source/target refs. No ordinary force, automatic divergent merge/rebase, reset or conflict repair. A behind-only clean branch may be safely fast-forwarded under policy and reassessed; otherwise leave manual reconciliation. Detect reviewed squash/rebase equivalence before calling old IDs new work: do not republish equivalent patches or create another PR to fix local divergence. Pin `{source_sha}` to the complete reviewed current tip after preparation and capture remote expectations. Recheck before every dependent mutation; later target results never replace this source.
 
-Before core publication show the source SHA, exact destination/refspec, full included changes, applicable checks and known triggers, and obtain concrete approval or reuse same-action approval. Inspect existing PRs that use the source: pushing review fixes updates **all open PRs sharing that source**, not only a newly selected target. Disclose those known effects before approval. A previously merged PR/branch does not receive later commits automatically; new changes need an explicitly selected new target action. Verify actual refs and provider results after success or uncertainty before retry. Required deferred/unavailable/failed checks remain pending, never green.
+Before core publication show the source SHA, exact destination/refspec, full included changes, applicable checks and known triggers, and obtain concrete approval or reuse same-action approval.
 
 ### Collect and refresh the source snapshot
 
 Batch independent permitted local reads: repository/current branch and HEAD, safe index/worktree path status, in-progress operations, relevant refs/upstream and credential-free destination/configuration identities. Once the actual host/repository/ref is bound, batch independent authenticated policy, open-request and required-check queries, with complete relevant pagination. Return decision-critical fields, not raw provider/configuration blobs. Stop dependent work at a discovered blocker; do not investigate an unrelated publication route to fill the report.
 
-Bind complete reviewed messages/diffs and other immutable evidence to exact object IDs and reuse them. Immediately before each approved mutation, batch fresh checks of local HEAD/index/worktree, relevant effective settings, destination, actual remote refs, applicable protection/checks and request state. Reuse content only while those identities still match. Fresh observations never replace a rejected fixed lease or authorize a changed plan. Read back the exact result after success or uncertainty. A single batch is not a lock; material drift stops dependent execution.
+Bind complete reviewed messages/diffs and other immutable evidence to exact object IDs and reuse them. Immediately before each approved mutation, batch fresh checks of local HEAD/index/worktree, relevant effective settings, destination, actual remote refs, applicable protection/checks and request state. Reuse content only while those identities still match. Fresh observations never replace a rejected fixed lease or authorize a changed plan. A single batch is not a lock; material drift stops dependent execution.
 
 ### Core direct publication
 
@@ -98,13 +106,13 @@ Freeze `{published_source_ref}`, `{published_source_repository}` and `{source_sh
 
 Example: local main has C above remote P; helper(C)→main and helper(C)→staging both propose C, independently. Staging may accept it before main or even if main rejects it. Show this in the plan and obey stronger project restrictions; do not silently substitute P or wait for main's PR to merge.
 
-No PR route auto-merges, waits for future review/CI, updates a source from its target, deletes branches or releases. After an own-target PR handoff, proceed only to the expressly optional independent actions in Step 6 and then report.
+After an own-target PR handoff, proceed only to selected independent Step 6 actions, then report. Never update a source from its target or delete branches.
 
 ## Steps 2–5 — Assess and publish an optional release
 
 Read [release](../prompts/ship/release.md) only for an identified candidate, an explicit release assessment/question or ready integrated main/master's release assessment. Initial discovery still identifies incomplete metadata/tag/PR candidates before misrouting them as application work. Feature/environment invocations do not acquire a release offer. Ready main includes no-push reruns and first releases; do not skip them as ordinary source no-ops.
 
-Where already relevant, collect cheap version/tag/candidate identities with the source snapshot and reuse pinned history. Do not speculate about product versions or build notes for an ineligible/unselected source. Revalidate release eligibility after selected publication/targets; read-only preparation never supplies release or hosted-write approval. Reuse an incomplete version rather than bumping again. Release-metadata PRs remain terminal handoffs without tagging, merging or waiting.
+Where already relevant, collect cheap version/tag/candidate identities with the source snapshot and reuse pinned history. Do not speculate about product versions or build notes for an ineligible/unselected source. Revalidate release eligibility after selected publication/targets; read-only preparation never supplies release or hosted-write approval. Reuse an incomplete version rather than bumping again.
 
 ## Step 6 — Optional targets and an explicitly selected published source
 
@@ -112,7 +120,7 @@ After verified core publication/handoff (or a proven already-published source), 
 
 ## Step 7 — Assess current results and continue only missing work
 
-For ordinary branch status, inspect current/identified source and remote refs, established helper/PR identities, source/target inclusion/equivalence and explicitly selected partial actions. No tag is required. Report core publication separately from optional targets and actual review/CI/merge state. An open matching PR is an existing handoff, not permission to merge/wait or create another. An identified partial ordinary resume freshly validates that source/ref/observed tip, original role/target set, complete diffs and prior successful operations, then offers only missing source push/own PR or selected target work through Steps 1/6. Without recoverable provenance ask for the exact source/request rather than guessing a helper or new target plan. The entry assessment reuses these established source/PR facts and assesses any separately proven same-version candidate without a new bump or duplicate helper.
+For ordinary branch status, inspect current/identified source and remote refs, established helper/PR identities, source/target inclusion/equivalence and explicitly selected partial actions. No tag is required. An identified partial ordinary resume freshly validates that source/ref/observed tip, original role/target set, complete diffs and prior successful operations, then offers only missing source push/own PR or selected target work through Steps 1/6. Without recoverable provenance ask for the exact source/request rather than guessing a helper or new target plan. The entry assessment reuses these established source/PR facts and assesses any separately proven same-version candidate without a new bump or duplicate helper.
 
 For an identified release candidate, load the continuation in [release](../prompts/ship/release.md). Reuse completed results and sufficient approval; inspect uncertain outcomes before retrying. Targets continue only their explicitly selected pinned source/scope, never an inferred newer source.
 
@@ -124,8 +132,8 @@ A needed checkout requires clean index/tree, no ongoing Git operation, an existi
 
 Unsafe/missing/occupied target or checkout failure preserves actual work and reports the pending return and non-secret reason. A clean partial publication/manual handoff may still return safely; return does not make a failed handoff successful. Retain helper/feature/base/environment branches locally and remotely. Read-only/no-op/cancel paths never check out for a cosmetic return.
 
-Report assessed work, chosen publication procedure, release offered/skipped/pending/not applicable and resolved original/current role and base, original/actual checkout and safe-return status, source repository/ref/SHA/helper when applicable and the actual source push/core own-target PR result. Report every optional target separately: selected/none, exact source/target/destination, bypass-main effects, merge/commit/push or PR URL/head identity, verified/no-op/pending/failed/not-attempted result, checks and concrete continuation. Capture result verification before return. A later GitHub/GitLab source push updates existing open PRs sharing it; merged PRs remain completed historical requests, not automatic destinations for fixes.
+Report assessed work, chosen publication procedure, release offered/skipped/pending/not applicable and resolved original/current role and base, original/actual checkout and safe-return status, source repository/ref/SHA/helper when applicable and the actual source push/core own-target PR result. Report every optional target separately: selected/none, exact source/target/destination, bypass-main effects, merge/commit/push or PR URL/head identity, verified/no-op/pending/failed/not-attempted result, checks and concrete continuation. Capture result verification before return.
 
 For an accepted or pending release also report product/stream, prior/exact version/tag rationale, actual integrated release SHA, metadata PR/commit, local/remote tag, hosted URL/channel and missing same-version actions. Source/target publication alone reports **release not performed** until the optional release stage actually succeeds. Main-only release requires its reviewed approval after integration/reconciliation; no new code PR is needed merely to tag ready integrated content, while genuinely new metadata may require its own reviewed PR.
 
-Keep source publication, PR handoff, later review/CI/merge, target inclusion, release and deployment distinct. A source/PR URL or preflight cannot certify deployment; report package/registry/asset actions as not performed or independently observed CI behavior with evidence. Preserve all verified results on later failure, list exact pending manual work, and never invent a tag for ordinary resume, recalculate a release to recover partial publication, overwrite published refs or claim unperformed tests/provider support passed. Read-only/no-op/cancel creates no state or cosmetic cleanup.
+A source/PR URL or preflight cannot certify deployment; report package/registry/asset actions as not performed or independently observed CI behavior with evidence. List exact pending manual work; never invent a tag for ordinary resume, recalculate a release to recover partial publication, overwrite published refs or claim unperformed tests/provider support passed. Read-only/no-op/cancel creates no state or cosmetic cleanup.

@@ -1,6 +1,6 @@
 # test
 
-Assess important project behaviors, review existing and missing tests, and write or maintain approved cases using the project's actual stack and conventions. Gap scan and Full scan share this workflow on Claude and Codex. Assessment currency, executed verification, remaining gaps, and Git publication are separate outcomes.
+Assess important project behaviors, review existing and missing tests, and write or maintain approved cases using the project's actual stack and conventions. Gap scan and Full scan share this workflow on Claude and Codex.
 
 ## Question points
 
@@ -15,6 +15,10 @@ Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; a
 | Assessment-only record, selected cases/setup and mapped replacement guarantees | Review of the existing complete plan; preserve separately required setup/side-effect approval. |
 | Required manual acceptance and actual defer/accepted-risk reasons | Input for human evidence/reason; Review for a decision whose effects require authorization. No automatic sign-off. |
 | Local setup/case/ledger commits when approval is missing | Review of the exact completed unit under invocation policy. |
+
+## Evidence rule
+
+Keep static assessment, setup/runner readiness, executed verification, case closure, human sign-off and publication separate. Only actual scoped evidence supports each claim. Installation, executable presence, version output or exit zero alone does not prove the intended tests ran. Never report unrun, deferred, unavailable, failed or incomplete checks as passed. Static review and assessment checkpoints certify no runtime result; Keep alone proves neither adequacy nor passing verification. Apply throughout, including the final report.
 
 ## Before starting: scope and boundaries
 
@@ -32,7 +36,7 @@ Static source inspection never runs package scripts, hooks, dynamic config, test
 
 Honor invocation auto-commit for every local setup, cluster and ledger commit. Reuse approval already covering the same concrete work; present exact changes when confirmation is required. Declining a commit or a failed write/readback/commit stops subsequent writes and finalization: preserve the actual branch, drafts, index, earlier commits, and preserved inputs. Go to Step 8 without merge/rebase/push/promotion, branch deletion, checkout, or an uncommitted checkpoint advance. Never stash, reset, or absorb unrelated work to continue. No branch cleanup occurs even when earlier clusters succeeded.
 
-A scope-level Skip or plan cancellation before writes creates no checkpoint. After real setup/test work, cancellation preserves that work and reports a handoff, not a no-op. Never push failing tests or treat unavailable required verification as passed.
+A scope-level Skip or plan cancellation before writes creates no checkpoint. After real setup/test work, cancellation preserves that work and reports a handoff, not a no-op. Never push failing tests.
 
 ## Step 1: Static inventory and cheap preflight
 
@@ -127,7 +131,7 @@ A dummy structural example, not live records or executable inputs:
 }
 ```
 
-Validate required fields/types/enums, unique IDs, safe references and state/closure consistency before dependent use. Serialize cases deterministically by ID without changing identity or dropping fields. Store secret-free evidence/commands, never credential values, raw environment dumps or uncontrolled runner logs. A resolved case needs evidence that its identified need was addressed; obsolete needs current contract/consumer evidence. Neither claims all current tests pass. Do not automatically prune closed records, collapse them to a file priority or create cases for already adequately covered behavior merely to fill the ledger.
+Validate required fields/types/enums, unique IDs, safe references and state/closure consistency before dependent use. Serialize cases deterministically by ID without changing identity or dropping fields. Store secret-free evidence/commands, never credential values, raw environment dumps or uncontrolled runner logs. A resolved case needs evidence that its identified need was addressed; obsolete needs current contract/consumer evidence. Do not automatically prune closed records, collapse them to a file priority or create cases for already adequately covered behavior merely to fill the ledger.
 
 ### Contextual validity
 
@@ -201,7 +205,7 @@ Choose the lowest fitting unit/component/integration/contract/E2E layer that can
 
 ### Maintain existing tests within scope
 
-Keep useful tests unchanged by default, regardless of author or generator. Review existing tests connected to the selected behavior and affected dependencies; do not expand Gap scan work into whole-project cleanup or require a disposition for every case in Full scan. Keeping a test after static inspection does not certify that it passes. Distinguish reviewed-kept, unclear/deferred and out-of-scope/unassessed cases.
+Keep useful tests unchanged by default, regardless of author or generator. Review existing tests connected to the selected behavior and affected dependencies; do not expand Gap scan work into whole-project cleanup or require a disposition for every case in Full scan. Distinguish reviewed-kept, unclear/deferred and out-of-scope/unassessed cases.
 
 Where there is a concrete maintenance need, propose a case-level action:
 
@@ -252,7 +256,7 @@ Establish intended results from explicit contracts, documentation, existing test
 
 Batch related unresolved cases into the plan. Offer **Clarify and proceed / Characterize current behavior / Defer this case**. Characterization requires an explicit current-behavior choice and clear labeling of limitations/known contradictions; it does not replace the intended contract or authorize a production fix. An unclear finding remains open with a clarification blocker; record a deferred decision only when the developer actually defers it. Accepting risk is likewise an explicit contextual decision, not resolution or edit authorization.
 
-Separate adequately protected/covered-elsewhere behavior (cite the protection), kept useful tests (no automatic adequacy/pass claim), unknown intent, execution blockers and required manual work. Do not disguise blocked/unclear/manual work as no-test-needed or fill Low with redundant proposals. Record meaningful findings, not every kept/passing test.
+Separate adequately protected/covered-elsewhere behavior (cite the protection), kept useful tests, unknown intent, execution blockers and required manual work. Do not disguise blocked/unclear/manual work as no-test-needed or fill Low with redundant proposals. Record meaningful findings, not every kept/passing test.
 
 For each proposal show the durable finding ID when present, expected result/evidence, priority/reason, action, layer, paths and prerequisites. New report proposals may use aliases P1/P2 that map unambiguously to stable IDs at the assessment checkpoint; aliases never encode priority or persist as another ID system. Group display by module/behavior; categories, layers, techniques and priorities are overlapping filters, not exclusive queues. Count one finding once across views. For large reports, summarize by module/tier with reasons and expand/page details without hiding proposed edits or truncating independent choices.
 
@@ -306,19 +310,19 @@ Use the actual package/environment manager and dependency policy, including revi
 
 Do not create a lockfile, switch managers/registries, refresh unrelated dependencies, install globally, replace/provision runtimes or fetch credentials as incidental recovery. Runtime/toolchain provisioning needs its own reviewed scope and authorization, which may be included explicitly in that same plan. Offline/private-registry/auth failures remain blockers, without bypassing project/security policy. If restore unexpectedly changes dependency selections or other files, stop dependent work and review the actual diff; preserve drafts and never reset/delete files to force a clean result. Stop on setup failure, reporting completed steps and affected pending work.
 
-After approved setup, read back exact changes and re-resolve the intended project command/configuration. Within the approved scope, verify the actual runtime/runner and relevant configuration/adapter using safe command output and real discovery/execution evidence. Installation success, an executable's presence, version output or exit zero alone does not prove that the intended tests ran. Do not invent a smoke fixture, weaken filters/assertions or force unrelated cases just to obtain a pass.
+After approved setup, read back exact changes and re-resolve the intended project command/configuration. Within the approved scope, verify the actual runtime/runner and relevant configuration/adapter using safe command output and real discovery/execution evidence. Do not invent a smoke fixture, weaken filters/assertions or force unrelated cases just to obtain a pass.
 
 Zero cases is limited evidence; when no cases exist, keep execution verification pending until approved real cases are available, without blocking independent planning/authoring. A genuine test failure can show the runner executed while test verification remains failed; distinguish configuration/discovery/harness failures from behavior failures. Reuse suitable baseline/cluster results instead of repeating runs merely for setup verification.
 
 Commit an accepted setup logical unit separately only when it has reviewed tracked changes and its required checks passed, under invocation policy. A restore with no tracked changes needs no empty setup commit. Deferred/unavailable required verification leaves setup drafts pending and uncommitted; later Skip/cancel preserves actual earlier work and accepted commits.
 
-Run an appropriate safe existing-test baseline for selected modules/layers after execution approval, once per relevant snapshot. Record exact commands, exit/collection/outcomes, pre-existing failures, environment/tool errors and verification scope. No existing cases is a disclosed baseline, not successful proof. A pre-existing failure is not automatically caused by new tests and never authorizes a production fix or bypasses required checks. A whole-suite baseline is needed only when impact or project policy requires it.
+Run an appropriate safe existing-test baseline for selected modules/layers after execution approval, once per relevant snapshot. Record exact commands, exit/collection/outcomes, pre-existing failures, environment/tool errors and verification scope, including empty baselines. A pre-existing failure is not automatically caused by new tests and never authorizes a production fix or bypasses required checks. A whole-suite baseline is needed only when impact or project policy requires it.
 
 ### Coverage evidence
 
 Use an existing report only with known source/command/scope provenance, labeling stale or partial evidence. Run an available appropriate coverage tool only through the approved execution plan. Record tool/command, selected packages/files, relevant inclusion/exclusions (including whether untouched files are absent), and measured metrics actually produced. Unknown coverage is unknown, never zero or an invented static percentage. Respect existing thresholds; do not install instrumentation, change exclusions or lower thresholds without an explicit reviewed change. No coverage tool or unsafe/unavailable coverage execution does not prevent useful static assessment/test design.
 
-Full scan means complete static assessment, not compulsory full-project runtime coverage. Every component must actually be reviewed to advance both root anchors; partial assessment saves only supported cases without global advancement. Runtime-blocked execution can coexist with complete static assessment, never with a false verification claim. Selected unfinished work remains open and blocks completion/closure, not an already accepted assessment checkpoint.
+Full scan means complete static assessment, not compulsory full-project runtime coverage. Every component must actually be reviewed to advance both root anchors; partial assessment saves only supported cases without global advancement. Runtime-blocked execution can coexist with complete static assessment. Selected unfinished work remains open and blocks completion/closure, not an already accepted assessment checkpoint.
 
 ## Step 5: Write and verify coherent clusters
 
@@ -333,7 +337,7 @@ For each cluster:
 3. Retire only approved old cases after the mapped replacement or established remaining coverage is verified. A genuinely superseded expectation need not pass first: show authoritative contract-change/obsolescence evidence independent of current implementation, owner approval naming the affected case, and that its failure/irrelevance belongs to that exact assertion rather than setup or other live guarantees. Record the old baseline failure and reason for supersession; do not report it as passed. Corrected expectations must remain specific and preserve other required assertions. Pure removal has no invented replacement: verify its contract/consumer evidence and relevant remaining cases. Check actual discovery, selectors and expected scenario/assertion preservation after retirement; explain removed/renamed/parameterized cases using reporter evidence rather than raw count or coverage equivalence. Run required affected checks on the final cluster tree before its commit; unrelated required failures remain blockers.
 4. Review the complete proposed diff/index and commit only exact verified cluster paths, including approved removals, under invocation policy, for example `test({scope}): maintain tests for {feature}` or `test({scope}): cover {priority}-priority {behavior}`. Infer domain scope from the changes, not the priority label. Do not absorb user work or other operational state. A failed final check leaves actual edits pending under the existing failure policy, without claiming rollback or successful maintenance.
 
-If execution is unavailable, an explicit **Draft unverified tests / Leave pending** choice may authorize drafts only. Label them unverified and retain them uncommitted, without case closure, final completion, integration or publication; a supported accepted assessment checkpoint remains. Do not convert unavailable checks into passes. When the user already explicitly deferred execution, honor that constraint and offer only the permitted static/draft path.
+If execution is unavailable, an explicit **Draft unverified tests / Leave pending** choice may authorize drafts only. Label them unverified and retain them uncommitted, without case closure, final completion, integration or publication; a supported accepted assessment checkpoint remains. When the user already explicitly deferred execution, honor that constraint and offer only the permitted static/draft path.
 
 When verification is deferred/unavailable, preserve existing protecting cases, assertions and required fixtures. Approved additive drafts can proceed under that draft-only rule; describe consolidation/replacement/removal that retires protections in the plan as pending verification instead of applying the destructive step. Do not weaken an existing assertion or change discovery so that an unverified draft silently substitutes for the old test. If interruption/failure occurs after an approved retirement edit, preserve/report the actual partial tree under the existing pending-work policy; never claim original tests remain intact or automatically reset user work.
 
@@ -365,7 +369,7 @@ A past tested closure proves its recorded snapshot/scope only. Unavailable/rewri
 
 Before each write require the same clean eligible current branch and no in-progress operation. Confirm actual lineage and expected accepted setup/test/ledger overlays. Pending unverified drafts or unrelated source/index changes block further persistence; never stage them into a ledger-only update or stash/reset them to proceed.
 
-Write only supported in-scope assessments, actual human decisions and evidenced lifecycle updates. Preserve all other cases/unknown fields. Gap scan's assessment anchor covers its fully assessed diff-derived scope, not a claim that all old backlog was freshly reviewed; expose retained backlog with its own judgment context. Partial assessments never alter either root anchor. Root commits identify source before generated setup/test/ledger commits, not the latest bookkeeping tip. An assessment checkpoint is never a test-pass certificate.
+Write only supported in-scope assessments, actual human decisions and evidenced lifecycle updates. Preserve all other cases/unknown fields. Gap scan's assessment anchor covers its fully assessed diff-derived scope, not a claim that all old backlog was freshly reviewed; expose retained backlog with its own judgment context. Partial assessments never alter either root anchor. Root commits identify source before generated setup/test/ledger commits, not the latest bookkeeping tip.
 
 Compare meaningful data before serializing. A date/order/default-only change, migration opportunity, own ledger commit changing HEAD or identical reused judgment cannot justify a repeat write. Identify exact own setup/test/ledger overlays before ignoring bookkeeping in subsequent diffs; real user tests/configuration/fixtures remain actionable, and other workflows' operational state remains opaque. Keep the existing anchor/provenance when no new actual assessment needs recording.
 
@@ -387,17 +391,17 @@ For continuation, use only explicitly identified retained work. Inspect actual b
 
 ## Step 8: Report actual outcomes
 
-Report evidence, including no-write/Skip and pending paths:
+Apply the Evidence rule; report no-write/Skip and pending paths too:
 
 - Full scan / Gap scan depth and actual scope, actual inspected/prepared branch and source SHA, resolved base identity and branch eligibility; packages/layers and relevant perspectives assessed, omitted or incomplete. A feature or environment-branch assessment does not claim merged-base or deployed-runtime currency. Report any relevant manual upstream follow-up without performing branch synchronization.
 - Stable finding IDs and report-alias mapping; new/reassessed/reopened, open/resolved/obsolete cases, per-case priorities/reasons, actual human decisions and last-observed blockers. Show recommended/selected versus unselected/blocked/cleanup/manual groups, with counts derived from actual assessed records and scope. Distinguish adequately covered, reviewed-kept and unassessed behavior. Use "none found/recorded at {snapshot}" only within evidence, never a universal "up to date" certificate.
 - Recommended/selected techniques and evidence-based reasons, actual layers/targets/matrix entries, expected criteria, material exclusions and unassessed prior technique coverage. Separate automated results, unrun/unavailable checks and required versus optional human review/sign-off; do not certify accessibility, usability, security or business acceptance from automation alone.
 - New/extended test paths and behavior covered. Declaration blocks and collected/executed parameterized cases are distinct; use reporter counts when available, otherwise mark unknown rather than inventing volume.
-- Existing-test maintenance: reviewed-kept versus out-of-scope/unassessed cases; proposed/selected versus applied improve/consolidate/replace/remove actions, reasons, preserved or superseded guarantees and old-to-new/remaining-coverage mappings. Distinguish declined proposals, unresolved intent and draft/pending-verification work. Explain actual case/fixture/selector changes and verification; no inventory of every existing test or new report artifact is required, and static Keep is not a test-pass claim.
+- Existing-test maintenance: reviewed-kept versus out-of-scope/unassessed cases; proposed/selected versus applied improve/consolidate/replace/remove actions, reasons, preserved or superseded guarantees and old-to-new/remaining-coverage mappings. Distinguish declined proposals, unresolved intent and draft/pending-verification work. Explain actual case/fixture/selector changes and verification; no inventory of every existing test or new report artifact is required.
 - Tooling per relevant package/layer: intended command/working directory and dependency owner, declared versus restored/added/repaired/upgraded setup, actual readiness/evidence or blocker. Distinguish install success, runner verification and passing tests; report unexpected changes and restore-only work without a setup commit. Tool inventory stays transient; a case blocker or closure command is not a tooling cache/profile.
 - Verification as **command → outcome and scope**, or **not run: reason**; baseline versus new failures, skips/todo/xfail/unexpected/flaky results as known, required checks pending, measured versus static/unknown coverage and report scope.
 - Specialist evidence where produced: generator settings/domain/replay examples, reviewed visual references and comparison outcomes, workload/duration/metrics/thresholds, mutation outcomes and before/after recovery evidence. Use actual tool output, noting incomplete runs and provenance limits; do not invent measurements, per-type pass counts, thresholds or human approval. Keep sensitive data out of reports/artifacts and introduce no default report/profile file or per-technique ledger.
 - Actual setup/test commits versus drafts, assessment-only checkpoint versus later case updates, and closure methods/commands/scopes/evidence commits versus historical or missing proof. Include own-ledger loaded paths, canonical destination, schema 3 or an unsupported-state blocker, root anchors unchanged/advanced, state-write/commit status and unresolved cases. No claims about other workflows' state.
-- Local outputs/commits/checkpoints, actual current branch, retained drafts, performed/deferred checks and exact continuation action. Publication is not performed; invoke ship later. A local checkpoint or partial assessment never certifies passing tests or remote integration.
+- Local outputs/commits/checkpoints, actual current branch, retained drafts, performed/deferred checks and exact continuation action. Publication is not performed; invoke ship later.
 
 Never run missing checks, create commits, migrate state or publish merely to improve the report's appearance.

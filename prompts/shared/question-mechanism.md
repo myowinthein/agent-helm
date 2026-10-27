@@ -1,12 +1,12 @@
 # Question mechanism (QM)
 
-Shared presentation and answer handling for every Helm workflow and its supporting prompts. Commands define a question once; this file owns host differences. QM is an instruction contract, not a callable tool, new skill, setting, state schema or approval authority. Use the current host's actual exposed tools and restrictions; the capability inventory below is researched guidance, not a promise that every client exposes every field.
+Shared question presentation and answer handling for workflows and supporting prompts. The workflow owns the decision; QM adapts it to the host without adding tools, settings, state or approval authority. Actual exposed tools and restrictions take precedence over the researched inventory.
 
-Read the form, routing, baseline and answer rules for an ordinary question; consult only applicable rows of the host inventory. Detailed native alternatives and presentation recovery apply when the preferred form is unavailable or a confirmed failure needs recovery. Other-host details, MCP forms and evidence links are reference material, not routine reads or capability probes.
+Read forms, routing, baseline and answer rules for ordinary questions, plus applicable host-inventory rows. Consult alternatives for a capability gap and recovery for a confirmed failure. Other-host/MCP details and evidence links remain reference material; do not probe capabilities to read them.
 
 ## Choose the question form
 
-Use each workflow's **Question points** map, including conditional questions expressed as ask, offer, confirm or obtain approval in its body/helpers. An unresolved human fact without an explicit picker uses the mapped Input form. The map classifies existing gates; it neither adds a question to a no-op nor moves a question before its prerequisites. Reuse explicit answers and still-valid concrete approval. Ask only for missing material input; do not make routine authorized work ask again.
+Use the workflow's **Question points**, including conditional questions in its body/helpers. Missing human facts use Input. The map adds no gate and changes no prerequisites. Reuse explicit answers and valid concrete approval; ask only for missing material input.
 
 | Form | Use | What the command supplies |
 |---|---|---|
@@ -19,15 +19,15 @@ Compose forms without combining decisions: Single → Input for a custom version
 
 ## Route once, then ask
 
-1. Resolve required versus optional input, form, current choices, and any sensitive/attachment needs. Check tools already exposed to this session, their current schemas, purpose restrictions, mode and worker restrictions. The parent asks; workers return missing facts to the parent.
-2. Prefer the host's native question tool when it is available, permitted for this purpose and can represent the full question faithfully. On Claude use `AskUserQuestion`. On Codex prefer permitted `request_user_input`, otherwise permitted `request_user_input_async`. Do not assume the blocking tool exists outside Plan mode, or that an optional-preference tool can carry required input or authorization. A future host uses its documented equivalent under this same test.
-3. Keep the mapped preferred presentation wherever supported. Only when it is unavailable, prohibited for this purpose or cannot fit the question, choose the first compatible native alternative from the ordered table below, before asking. This is planned substitution, independent of a rendering failure. Use the common conversational baseline only after eligible native representations are exhausted. Do not change agent mode, tool permissions, client settings or install an MCP server to obtain a picker.
-4. Batch only independent questions sharing the same prerequisite snapshot and supported tool limit; split an oversized batch into supported calls without changing its questions. Ask dependent follow-ups after the real answer. A batch is not permission to collapse per-file decisions or separate confirmations. Use short unique labels/headers and stable in-run identities where supported; keep exact file/finding/branch IDs visible when labels could collide.
-5. Await the actual answer before dependent work. A blocking tool waits within its call. An asynchronous call returning accepted only means the question was queued: continue independent authorized work, then leave dependent work pending until the reply arrives. Do not ask the same question again in chat while a native request is pending. Reconcile a late reply with the still-current question/snapshot before using it.
+1. Resolve form, required/optional input, choices and sensitive/attachment needs. Check exposed tool schemas, purpose/mode restrictions and the applicable inventory rows. The parent asks; workers return missing facts.
+2. Use a faithful, permitted native tool: Claude's `AskUserQuestion`; Codex's `request_user_input`, otherwise `request_user_input_async`; a future host's documented equivalent. Blocking input may be Plan-only, and optional-preference tools cannot carry required input or authorization when prohibited.
+3. Keep the preferred form when supported; otherwise use the first eligible **Ordered native alternative**, then the baseline. This is capability substitution, separate from rendering recovery. Never change modes, permissions or client settings, or install MCP, to obtain a picker.
+4. Batch independent questions only within the supported limit and one prerequisite snapshot. Split oversized batches; ask dependent follow-ups after answers. Preserve per-file decisions, separate confirmations, short unique labels and exact file/finding/branch IDs where labels could collide.
+5. Wait for an actual answer before dependent work. Blocking tools wait in-call; accepted async requests are only queued. Continue independent authorized work, leaving dependents pending. Do not duplicate a pending native question in chat. Revalidate late replies against the current question/snapshot.
 
 ### Ordered native alternatives
 
-Apply this table to the existing Question points maps, not new per-command host lists. The preferred form and supported points stay unchanged. These are Helm representations of the same decision, not claims that a host has an undocumented widget. Preserve the complete question, candidate identities, cardinality, scope, evidence and distinct exits in every representation. Filter each entry by the current tool's purpose, mode and schema restrictions; an alternative cannot bypass a restriction on required questions or authorization.
+Use these representations only for a capability gap in an existing question, not as undocumented host widgets or new per-command lists. Preserve the complete question, identities, cardinality, scope, evidence and exits. Every alternative must satisfy current tool purpose, mode and schema restrictions, including required-input/authorization limits.
 
 | Preferred presentation lacking support | Ordered equivalent native representations, then the baseline |
 |---|---|
@@ -37,7 +37,7 @@ Apply this table to the existing Question points maps, not new per-command host 
 | **Review** exact action/content decision | Original review choices → paged Single only where permitted and the complete review stays visible → native Input for an unambiguous decision about that same shown unit → conversational baseline. Never decompose one approval into membership questions, split its effects across pages, or treat partial/revise as approve. Existing independent per-file reviews remain independent. |
 | Optional rich preview or option descriptions | Supported original preview → supported Markdown preview → show the same evidence/comparison beside native choices; put missing option descriptions in the question or preceding report. Retain material visual evidence through an already available permitted display; if it cannot be shown, leave that review pending rather than approve from a weaker summary. If the choice control also lacks support, use its Single/Multi/Review row. |
 
-The Multi row covers existing rule/target/document/finding selections in adopt, env, legal, refactor, test, ship and archive's independent optional scope. The wide Single/Review rows cover the existing four-choice scope, wording, remedy and plan menus when a host has a tighter limit. Input and preview rows apply only to their actual capability gaps. A workflow-mandated conversational list or stronger gate still wins; QM adds no new choices, confirmation stages or persistent fallback settings.
+Workflow-mandated conversational lists and stronger gates still win. QM adds no choices, confirmation stages or persistent fallback settings.
 
 ### Recover after a presentation failure
 
