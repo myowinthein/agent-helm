@@ -1,0 +1,129 @@
+{
+  "schema_version": 2,
+  "assessed_commit": "0e3ebe76854df025954259c5f755522179d97d01",
+  "full_scan_commit": "0e3ebe76854df025954259c5f755522179d97d01",
+  "findings": [
+    {
+      "id": "r-7d02b3b4-6359-416d-a0d0-29b8f96fc8bb",
+      "category": "Architecture",
+      "summary": "Acceptance verification is embedded in the live runner, preventing direct reuse of its provenance and publication checks.",
+      "paths": [
+        "scripts/smoke_acceptance.rb",
+        "scripts/acceptance_support.rb",
+        "scripts/git_acceptance.rb",
+        "scripts/test_acceptance_support.rb",
+        "scripts/test_git_acceptance.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "Maintainers cannot require or directly exercise the actual normalize, test-lifecycle and publication assertions without exiting through list mode or running a live model scenario. Changes to these high-consequence assertions therefore require reasoning through fixture/model orchestration, while offline suites exercise only lower-level helpers.",
+        "evidence": [
+          "scripts/smoke_acceptance.rb:8-15 handles ARGV and exits or starts the live fixture at top level; requiring it is not a callable verification interface.",
+          "scripts/smoke_acceptance.rb:106-186 embeds normalize checkpoint/recovery, test A/B/C provenance and preservation assertions; lines 187-214 embed publication/readback/fixed-lease checks.",
+          "scripts/test_acceptance_support.rb and scripts/test_git_acceptance.rb require lower-level support modules rather than these actual driver assertions."
+        ],
+        "invariant": "Extract only existing verification blocks behind explicit callable inputs while preserving their conditions, order, diagnostics, Git commands, approved-output mutations and current CLI/model/isolation behavior. Preserve all existing test scenarios/assertions; only scoped invariant guards may be added."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-0d54d481-f356-4cf2-8eca-55db77baaacf",
+      "category": "Code Quality",
+      "summary": "Adopt refers outside-Rules pointer edits to a nonexistent common conversion gate.",
+      "paths": [
+        "workflows/adopt.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "The undefined cross-reference makes an agent infer which review applies and uses conversion terminology despite the workflow's explicit external-pointer stop. Naming the existing local-plan review removes that small concrete ambiguity.",
+        "evidence": [
+          "workflows/adopt.md:197 requires an exact outside-Rules pointer patch under a 'common conversion gate' that is not defined.",
+          "workflows/adopt.md:185-189 already defines Plan before mutation for every exact local pointer patch and per-file decision.",
+          "workflows/adopt.md:3,67,264 prohibit external-reference conversion; the intended edit must retain that stop."
+        ],
+        "invariant": "Preserve the existing managed-ownership checks, exact local pointer/per-file approval, unrelated content and external-reference stop. Change only the stale gate reference, with no additional approval stage or conversion capability."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-c89f8e49-2803-44b5-8a17-d1da2416ca47",
+      "category": "Consistency",
+      "summary": "Test retains rebuild/reset instructions after its supported-state contract removed in-command old-schema replacement.",
+      "paths": [
+        "workflows/test.md",
+        "prompts/shared/project-state.md",
+        "docs/commands/test.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "Three residual instructions make the reader reconcile a nonexistent replacement route with the explicit unsupported-state stop. Aligning them with the established owning-state procedure reduces a small but concrete interpretation burden without adding recovery behavior.",
+        "evidence": [
+          "workflows/test.md:134 supports only schema 3 and requires explicit maintenance outside the command for unsupported inputs.",
+          "workflows/test.md:168 refers to reviewed rebuild/reset rules; line 282 mentions old-schema replacement authorization; line 400 reports a pending reviewed rebuild.",
+          "prompts/shared/project-state.md:16-18 and 29 prohibit an old-state reader/reset/migration; docs/commands/test.md already describes the external-maintenance stop."
+        ],
+        "invariant": "Keep the existing unsupported-input preservation and stop, separate outside-command maintenance, eligible independent source inspection, and all supported schema-3 assessment/partial-checkpoint/closure semantics. Do not add a reset, migration, new permission or fallback."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-1e0d180d-863b-4e27-946e-7279222838bc",
+      "category": "Tests",
+      "summary": "Invalid-ledger mutation subtests use unstable numerical labels instead of naming the rejected contract.",
+      "paths": [
+        "scripts/test_ledger.py"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "0e3ebe76854df025954259c5f755522179d97d01",
+        "date": "2026-10-27",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "A failing mutation=index diagnostic requires counting through positional mutation tables, and inserting a case renumbers later diagnostics. Descriptive labels make existing failures identifiable without changing protection.",
+        "evidence": [
+          "scripts/test_ledger.py:266-287 builds invalid test-ledger mutations and reports subTest(mutation=index).",
+          "scripts/test_ledger.py:296-308 applies refactor mutations with the same numerical subtest label.",
+          "The original cases already isolate schema, identity, path, provenance, dependency, recurrence and closure rules; no new protected behavior is needed for this naming change."
+        ],
+        "invariant": "Preserve every existing mutation, fixture value, assertion, test method/selector and evaluation order. Change only table/subtest labels; add no coverage or schema behavior."
+      },
+      "state": "open",
+      "depends_on": []
+    }
+  ]
+}
