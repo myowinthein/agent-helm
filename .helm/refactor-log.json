@@ -93,8 +93,32 @@
         ],
         "invariant": "Preserve the existing managed-ownership checks, exact local pointer/per-file approval, unrelated content and external-reference stop. Change only the stale gate reference, with no additional approval stage or conversion capability."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "b696aaa95397f980279effa2a55360f65ec006fa",
+        "date": "2026-10-27",
+        "method": "static",
+        "evidence": [
+          "workflows/adopt.md:197 now sends the exact local outside-Rules pointer patch to the existing Plan before mutation review, removing the undefined common conversion gate.",
+          "Only the agreed clause changed. Managed ownership, exact patch/per-file approval, unrelated-content preservation and the external-reference stop remain unchanged.",
+          "Reviewed against the existing local-plan heading, external-conversion stops and the already-consistent human adopt guide; no new approval stage or conversion capability."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Baseline, changed-workflow check and recheck after an unrelated setup-docs commit",
+            "outcome": "Passed offline package, shared-QM, relocation/resource/path-containment and Git-export checks on all three runs. No model/native-client behavior test was run."
+          },
+          {
+            "command": "git diff --check; exact prepared before/after SHA-256 comparison; scoped stale-reference search",
+            "scope": "Four replacements in workflows/adopt.md and workflows/test.md; preserve R4 test source and unrelated docs",
+            "outcome": "Passed whitespace and exact four-replacement checks; stale phrases are absent. The two workflow files and scripts/test_ledger.py were unchanged by the subsequent setup-docs commit. Static evidence does not certify runtime agent behavior."
+          }
+        ]
+      }
     },
     {
       "id": "r-c89f8e49-2803-44b5-8a17-d1da2416ca47",
@@ -124,8 +148,32 @@
         ],
         "invariant": "Keep the existing unsupported-input preservation and stop, separate outside-command maintenance, eligible independent source inspection, and all supported schema-3 assessment/partial-checkpoint/closure semantics. Do not add a reset, migration, new permission or fallback."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "b696aaa95397f980279effa2a55360f65ec006fa",
+        "date": "2026-10-27",
+        "method": "static",
+        "evidence": [
+          "workflows/test.md:168 now names Step 2's unsupported-state stop; line 282 no longer describes old-schema replacement; line 400 reports schema 3 or an unsupported-state blocker and actual state-write/commit status.",
+          "The schema-3-only preservation/stop at line 134, supported baseline refresh at line 284, and all Full/Gap/partial assessment and closure semantics remain unchanged.",
+          "Only the three agreed stale references changed. Shared project-state and the human test guide already describe the preserved stop; no migration, reset, reader or permission was added."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Baseline, changed-workflow check and recheck after an unrelated setup-docs commit",
+            "outcome": "Passed offline package, shared-QM, relocation/resource/path-containment and Git-export checks on all three runs. No model/native-client behavior test was run."
+          },
+          {
+            "command": "git diff --check; exact prepared before/after SHA-256 comparison; scoped stale-reference search",
+            "scope": "Four replacements in workflows/adopt.md and workflows/test.md; preserve R4 test source and unrelated docs",
+            "outcome": "Passed whitespace and exact four-replacement checks; stale phrases are absent. The two workflow files and scripts/test_ledger.py were unchanged by the subsequent setup-docs commit. Static evidence does not certify runtime agent behavior."
+          }
+        ]
+      }
     },
     {
       "id": "r-1e0d180d-863b-4e27-946e-7279222838bc",
@@ -154,7 +202,24 @@
         "invariant": "Preserve every existing mutation, fixture value, assertion, test method/selector and evaluation order. Change only table/subtest labels; add no coverage or schema behavior."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "20a6b08a56377daa52b0fe53b18817a66f009115",
+        "date": "2026-10-27",
+        "reason": "Developer accepted the recommendation to leave R4 until these tests next need editing; descriptive labels offer a small diagnostic benefit, and no test changes are selected now.",
+        "context": {
+          "paths": [
+            "scripts/test_ledger.py"
+          ],
+          "evidence": [
+            "The developer accepted the R2-R4 recommendation and explicitly allowed only R2/R3 edits plus recording R4's deferral.",
+            "The two mutation=index tables and all existing test inputs/assertions remain unchanged. scripts/test_ledger.py SHA-256 is 060f58bd5274107a00951cba4e3d710c73d9dfae3a5f85b1e1badafeb9d0de86 at the revalidated decision-context commit.",
+            "This is an actual contextual deferral: R4 remains open and held, with no closure or passing-test claim."
+          ]
+        }
+      }
     }
   ]
 }
