@@ -15,12 +15,11 @@ The desktop guides were tested on macOS. The steps should be similar on other su
 
 Type the prefix in the chat input, then select an Agent Helm command.
 
-| Client | Prefix | Example |
-|---|---|---|
-| Claude desktop and terminal | `/` | `/agent-helm:log` |
-| Codex desktop and terminal | `$` | `$log` |
-
-Elsewhere, command names appear without prefixes, such as `log`. Bare command blocks identify workflows rather than copy-and-run examples. Use the prefix above in your client's chat input, not your shell.
+| Client | Prefix |
+|---|---|
+| Claude desktop and terminal | `/` |
+| Codex terminal | `$` |
+| Codex desktop | `/` or `$` |
 
 ## Plugin names
 
