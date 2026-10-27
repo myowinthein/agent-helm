@@ -6,7 +6,7 @@ nav_order: 2
 
 # adopt
 
-Install shared working rules for Claude and Codex, then review updates when the bundled rules change.
+Install shared working rules for Claude and Codex, then approve updates when the bundled rules change.
 
 ## Start the command
 
@@ -30,8 +30,8 @@ flowchart TD
   Inspect --> Compare["Compare each rule with<br/>the loaded Helm package"]
   Compare --> Needed{"Changes needed?"}
   Needed -->|No| Current(["Report existing rules<br/>and connectivity"])
-  Needed -->|Yes| Review["Show rule bodies or diffs<br/>and exact instruction changes"]
-  Review --> Decision{"Apply the shown changes?"}
+  Needed -->|Yes| Review["Summarize file actions, versions<br/>and meaningful policy changes"]
+  Review --> Decision{"Apply the proposed changes?"}
   Decision -->|Cancel or keep| Finish(["Finish without replacing rules"])
   Decision -->|Yes| Apply["Copy approved rules and<br/>connect project instructions"]
   Apply --> Verify["Verify content and<br/>both instruction paths"]
@@ -50,17 +50,19 @@ New adoption proposes all three; you can omit Writing or explicitly request it a
 
 ## What to expect
 
-Adopt compares actual bodies, not just version markers. It shows new rule bodies, replacement diffs and exact instruction changes before asking to install, replace, repair or connect them. Approve all shown changes or name a subset; approved changes are applied without another per-file or final confirmation. Optional Writing needs explicit inclusion, and custom-file overwrites or downgrades must be named in the proposal. New or changed effects still need review.
+Adopt compares complete files internally, not just version markers. You see a compact **File | Action | Local → Source version** table, the selected package, pointer changes and a short summary of meaningful policy changes. Named custom-file overwrites and downgrades are disclosed. Approve the proposed set or a subset once; optional Writing needs explicit inclusion. No review-first or repeated per-file confirmation follows unchanged approval.
+
+Full rule bodies/diffs are available on request or through editor links, rather than printed by default. Approval covers exact copies from the identified package and the stated instruction changes; internal comparison and byte-for-byte verification still apply.
 
 Equivalent content stays untouched even with an older marker. Keep/Skip preserves existing files and pointers; customizations are not merged automatically.
 
 | Situation | Result |
 |---|---|
-| No rules installed | Show the proposed rules and instruction entries; install after approval. |
+| No rules installed | Summarize installations, purposes and instruction changes; install after approval. |
 | All bodies match, even with older/newer markers | Preserve files and markers; no update question. |
-| Managed bodies differ | Show exact replacements; apply the approved set. |
-| Copies or references are missing | Show the missing bodies or connection patches; apply approved repairs. |
-| Writing is newly available | Offer its body and pointer as an optional addition in the same review. |
+| Managed bodies differ | Summarize named replacements and meaningful changes; apply the approved set. |
+| Copies or references are missing | Summarize missing copies and exact connection effects; apply approved repairs. |
+| Writing is newly available | Include its purpose/version/pointer as an optional addition in the same proposal. |
 | Custom files or a downgrade | Name the overwrite or lower version explicitly; apply only approved changes. |
 | Mixed updates, repairs and kept files | Use one proposal and accept all shown actions or a named subset. |
 | Comparison source is unavailable | Keep copies; allow valid connection-only work and report blocked updates. |
