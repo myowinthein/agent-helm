@@ -83,6 +83,8 @@ Fixed remote expectations and `--force-with-lease` protect the agreed rewrite; a
 
 Existing tags stay fixed. Rewording released history alone does not create a product release.
 
+After publication, ship reports old/new branch tips and guidance for owners to reconcile their local work. It keeps its exact push approval and does not repeat normalize's team-readiness question or automatically update other clones.
+
 ## Publish an archive backup
 
 For a prepared [archive](archive.html), approve an existing private destination. Ship verifies the payload backup, then commits and publishes its completion receipt. Cleanup is optional and separately reviewed.

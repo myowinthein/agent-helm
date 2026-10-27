@@ -37,6 +37,16 @@ module HelmAcceptanceCases
       "normalize-rewrite" => {
         files: shared, command: "normalize", prepare: ->(w,c) { prepare_normalize(w,c,package: package) }, required: ["normalize"]
       },
+      "normalize-readiness-pending" => { files: shared, command: "normalize",
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :pending) }, required: ["Team ready", "Review only", "Stop"] },
+      "normalize-readiness-review-only" => { files: shared.merge("AGENTS.md" => standard.sub("git-auto-commit: false", "git-auto-commit: true")), command: "normalize",
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :review_only) }, required: ["readme"] },
+      "normalize-readiness-ready" => { files: shared, command: "normalize",
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :ready) }, required: ["Apply reviewed rewrite"] },
+      "normalize-readiness-private" => { files: shared, command: "normalize",
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :private) }, required: ["Apply reviewed rewrite"] },
+      "normalize-readiness-stop" => { files: shared, command: "normalize",
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :stop) }, required: ["stop"] },
       "history-remote-moved" => { files: shared, command: "ship", prepare: ->(w,c) { prepare_history(w,c,moved: true) }, required: ["main"] },
       "history-partial-resume" => { files: shared, command: "ship", prepare: ->(w,c) { prepare_history(w,c,moved: false) }, required: ["feature"] },
       "history-auto-discovery" => { files: shared, command: "ship",
@@ -89,6 +99,36 @@ module HelmAcceptanceCases
     }
   end
 
+  def prepare_readiness(workspace, container, choice:)
+    workspace.join("README.md").write("# Fictional fixture\n\nRun the greeting example with python3 app.py.\n")
+    HelmSmoke.git(workspace, "add", "README.md")
+    HelmSmoke.git(workspace, "commit", "--quiet", "-m", "update fixture readme")
+    commit = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
+    fixture = { readiness: choice, extra_reads: [],
+      request: "Normalize the non-Conventional message of commit #{commit} on current main, using its actual README.md change for intent. " }
+    if choice == :private
+      fixture[:request] += "This commit has never been published or shared; this owned synthetic project has no other developers, clones or remotes. Prepare the exact correction and rewrite-impact proposal; no final Apply answer has been supplied."
+    else
+      remote = container.join("read-only shared fixture.git")
+      HelmSmoke.git(workspace, "init", "--quiet", "--bare", "--initial-branch=main", remote.to_s)
+      HelmSmoke.git(workspace, "remote", "add", "origin", remote.to_s)
+      HelmSmoke.git(workspace, "push", "--quiet", "--no-follow-tags", "origin", "#{commit}:refs/heads/main")
+      fixture[:extra_reads] << remote
+      fixture[:request] += "This commit is already published on the owned local bare origin/main; other developers may use that history. No network or hosted provider is involved. "
+      fixture[:request] += case choice
+      when :pending
+        "No team-readiness answer has been supplied in this fresh session. Follow the workflow's questions and leave an unanswered question pending."
+      when :review_only
+        "My answer to shared-history readiness is Review only. Finish the source-based message assessment and report the before/after proposal. Preserve all files/refs and leave no record, plan, recovery or commit write, even with auto-commit enabled. Reuse this answer."
+      when :ready
+        "Team ready: I acknowledge the coordination notice for this exact scope. Reuse that acknowledgement without asking it again. Prepare the exact message/impact plan. No final Apply answer or publication approval has been supplied."
+      when :stop
+        "My answer to shared-history readiness is Stop. End here and preserve existing work."
+      end
+    end
+    fixture
+  end
+
   def prepare_normalize(workspace, container, package: nil)
     HelmSmoke.git(workspace, "remote", "add", "origin", container.join("noncontacted.git").to_s)
     first = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
@@ -135,7 +175,7 @@ module HelmAcceptanceCases
     wrapper.chmod(0700)
     fixture[:require_handoff] = true
     fixture[:environment] = { "PATH" => "#{bin}#{File::PATH_SEPARATOR}#{ENV.fetch('PATH')}" }
-    fixture[:request] += " Include the standard immutable Git-common-directory locator in this approved pre-filter preparation. Use handoff.json as the JSON data entrypoint. Keep verified-map.json exactly a plain JSON object mapping each original full object ID to its rewritten full object ID, without an enclosing wrapper or status fields; save index/status separately. The controller's reviewed backend wrapper checks the actual locator before filtering and otherwise delegates to the installed backend; do not bypass it."
+    fixture[:request] += " Team ready: I acknowledge the coordination notice for this exact owned synthetic rewrite; there are no external developers/clones to coordinate. Reuse this readiness answer and the already supplied exact final rewrite approval. Include the standard immutable Git-common-directory locator in this approved pre-filter preparation. Use handoff.json as the JSON data entrypoint. Keep verified-map.json exactly a plain JSON object mapping each original full object ID to its rewritten full object ID, without an enclosing wrapper or status fields; save index/status separately. The controller's reviewed backend wrapper checks the actual locator before filtering and otherwise delegates to the installed backend; do not bypass it."
     fixture
   end
 

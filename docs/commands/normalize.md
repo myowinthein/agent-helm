@@ -23,13 +23,19 @@ Read-only review permits a dirty or detached checkout. Rewriting and record writ
 ```mermaid
 flowchart TD
   Start(["Start normalize"]) --> Audit["Resolve commit policy and<br/>review the requested history"]
-  Audit --> Messages["Prepare exact message proposals<br/>and resolve requested edits/subsets"]
+  Audit --> Shared{"Shared-history readiness<br/>needed for corrections?"}
+  Shared -->|No or already acknowledged| Messages["Prepare exact message proposals<br/>and resolve requested edits/subsets"]
+  Shared -->|Yes or uncertain| Team{"Team ready /<br/>Review only / Stop"}
+  Team -->|Team ready| Messages
+  Team -->|Review only| Report["Report findings;<br/>write nothing"]
+  Team -->|Stop| End(["Report the local result"])
+  Report --> End
   Messages --> Changed{"Any proposed corrections?"}
   Changed -->|No| Record["Record meaningful proven coverage<br/>only when eligible and authorized"]
   Changed -->|Yes| Impact["Show all affected local branches,<br/>ID changes, risks and recovery plan"]
   Impact --> Approval{"Apply these messages<br/>and their complete rewrite plan?"}
   Approval -->|Edit/change selection| Messages
-  Approval -->|Cancel/keep review only| End(["Report the local result"])
+  Approval -->|Cancel/keep review only| End
   Approval -->|Apply| Backup["Recheck inputs and tools;<br/>verify private recovery bundle"]
   Backup --> Rewrite["Rewrite once and verify<br/>all affected commits and refs"]
   Rewrite --> Record
@@ -39,6 +45,8 @@ flowchart TD
 ## Review messages first
 
 Default scope is the current local branch. Request named branches, all local branches, a bounded range or full history when needed. Project policy and compatible commitlint rules take precedence over Helm defaults.
+
+For possible shared-history corrections, an early **Team ready / Review only / Stop** check covers team coordination, saving pending work, including agreed branches, pausing changes until publication, using the same clone for ship and reconciling other clones afterward. It is an acknowledgement, not proof of teammate activity or a new branch/device restriction. Review only writes nothing; explicit read-only reviews, no-change results and established private-only corrections skip the question. An applicable readiness answer is reused.
 
 Accepted messages stay unchanged. Corrections normally affect subjects; bodies, trailers and breaking information are preserved unless their edits are shown. Unclear intent needs clarification.
 
@@ -62,7 +70,7 @@ Remote-tracking refs, tags, stashes, notes and other clones stay unchanged. Fixe
 
 Review exact messages, affected branches, ID and tag effects, recovery location and record/commit changes. A blocked branch or incomplete history stops the coordinated rewrite.
 
-Choose **Apply reviewed rewrite / Edit or change selection / Cancel/keep review only**. Unchanged preflight needs no second approval; material changes return for review. Cancellation creates no recovery artifacts or record.
+The separate final decision is **Apply reviewed rewrite / Edit or change selection / Cancel/keep review only**. Team readiness authorizes no rewrite or push. The unchanged rewrite plan is not asked twice; material changes return for review. Cancellation creates no recovery artifacts or record.
 
 Apply requires **git-filter-repo and Python**. After approval, verify a private recovery bundle outside the checkout, rewrite once and check messages, trees, topology, metadata and preserved refs. Failure leaves actual results for reconciliation, not a blind retry.
 

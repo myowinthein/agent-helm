@@ -68,7 +68,7 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   approved.each { |path, body| request += "\n\nExact approved #{path}:\n```markdown\n#{body}```\n" }
   writes = (scenario[:private_path] ? [scenario[:private_path]] : []) + scenario.fetch(:extra_writes, [])
   visible_writes = scenario[:discover_handoff] ? scenario.fetch(:extra_writes, []) : writes
-  reads = scenario[:local_remote] ? [scenario[:local_remote]] : []
+  reads = (scenario[:local_remote] ? [scenario[:local_remote]] : []) + scenario.fetch(:extra_reads, [])
   instructions = "This is an explicitly approved disposable acceptance fixture. The selected target is #{target}; the ordinary consumer root is #{workspace}. Only these additional owned fixture paths are usable when explicitly approved: #{visible_writes.map(&:to_s).inspect}. Read-only fixture destinations: #{reads.map(&:to_s).inspect}. Read packaged instructions only at #{package}. Package targets are guard checks only and stay read-only. No network, real/shared remote operations, other consumer projects, global settings or tools outside Bash. Do not execute project code except an exact isolated test command explicitly approved in the case request. Only specifically approved local-bare-fixture publication is permitted. Existing factual bytes/settings remain authoritative. Follow the selected workflow and reuse only the exact fixture approvals in the request. Any missing question answer means stop and report it. Do not invent human consent. All credential-like data in this fixture is synthetic, but an env audit must still follow its value-free inspection contract."
   instructions += " A recovery directory may additionally be accessed only through the package's canonical local-handoff procedure; no private path is supplied by this fresh session's controller instructions." if scenario[:discover_handoff]
   prompt = if scenario[:command]
@@ -144,6 +144,18 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     answer = result.fetch(:answer)
     raise "Fallback duplicated its pending question" unless answer.scan("Which fixture packages should be selected?").length == 1
     raise "Fallback invented a selection" if answer.match?(/I(?:'ve| have)? (?:selected|chosen)|Selected packages?:\s*Option|Applying (?:Option|the default)/i)
+  end
+  if scenario[:readiness]
+    answer = result.fetch(:answer)
+    if scenario[:readiness] == :review_only
+      raise "Review-only readiness did not finish the actual message assessment" unless
+        answer.include?("update fixture readme") && answer.match?(/docs\([^)]+\):/i)
+    elsif %i[ready private].include?(scenario[:readiness])
+      raise "Readiness/private history was incorrectly sent back to the first gate" if
+        answer.include?("Team ready") && answer.include?("Review only") && answer.match?(/\bStop\b/)
+    end
+    # All readiness cases above also retain the complete consumer/package and
+    # Git/index/config preservation checks: no answer here authorizes mutation.
   end
   HelmAcceptance.assert_fixture_files!(package, package_before)
   puts "PASS #{name}: #{HelmAcceptance::MODEL}/high, complete exposed trace and verified case-specific file/Git invariants."

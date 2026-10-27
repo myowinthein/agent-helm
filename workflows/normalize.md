@@ -1,6 +1,6 @@
 # normalize
 
-Review commit messages with code-assisted mechanical checks and semantic assessment, reusing proven schema-2 coverage when compatible. Present exact replacements and their complete impact together for one final rewrite approval, then optionally rewrite all affected local branches together. Message-review scope and rewrite scope are distinct. Preserve tags, remote-tracking refs, stashes, notes and unaffected refs. Inspection, local rewriting and ledger commits retain their authorization requirements. This command never publishes; invoke ship separately when ready.
+Review commit messages with code-assisted mechanical checks and semantic assessment, reusing proven schema-2 coverage when compatible. For possible shared-history corrections, obtain an early coordination acknowledgement; then present exact replacements and their complete impact together for one final rewrite approval. Optionally rewrite all affected local branches together. Readiness, message-review scope and rewrite authorization are distinct. Preserve tags, remote-tracking refs, stashes, notes and unaffected refs. Inspection, local rewriting and ledger commits retain their authorization requirements. This command never publishes; invoke ship separately when ready.
 
 ## Question points
 
@@ -8,6 +8,7 @@ Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; a
 
 | Point | QM form |
 |---|---|
+| Early coordination for possible shared/published-history corrections | Single: Team ready / Review only / Stop. A readiness acknowledgement only; reuse an explicit applicable answer. |
 | Missing named review refs, policy/intent facts or required recovery evidence after automatic handoff discovery | Input; Single for evidenced interpretations. No routine branch-scope picker. |
 | Optional wording/subset decisions when requested or needed to settle intent or selection | Single for Accept / Edit / Keep / Defer beside complete before/after messages; Input for exact wording or IDs. Preserve independent decisions; no routine preliminary wording-approval gate. These decisions alone authorize no rewrite. |
 | One final all-affected-branch rewrite and disclosed ledger-anchor maintenance | Review of the exact messages and complete impact together: Apply reviewed rewrite / Edit or change selection / Cancel/keep review only. No subset picker for affected branches. |
@@ -21,6 +22,8 @@ Read the shared runtime, resolve `{memory_file}`, active overrides and local `gi
 Record the invocation's `{original_branch}` and starting HEAD before any rewrite or checkout; keep that branch identity through bookkeeping. On resume, preserve the saved original branch rather than substituting the resume checkout. A coordinated rewrite may legitimately change its tip. Returning later means the same original branch at its verified current tip, not restoring its old SHA. Initial read-only review never checks out a branch.
 
 Review committed messages, prepare exact correction proposals and the affected-branch impact report, then offer one final Apply decision or a no-rewrite checkpoint when eligible. Optional earlier wording/selection exchanges need no separate approval of their own. Invocation alone never approves rewriting or pushing. Pass developer requests and answers unchanged, never as shell code.
+
+Honor explicit read-only/Stop choices from the outset. Review only, including the readiness choice below, permits the scoped investigation and report but no history, index, ledger, locator, recovery-file or commit writes, regardless of auto-commit. Stop ends the run preserving existing work. Keep readiness in the invocation context, not a new setting, ledger field or standalone receipt.
 
 For a resume request, use [local handoff discovery](../prompts/shared/normalize-handoff.md) or explicitly identified prior evidence, then inspect the verified own record branch/commit and current local/remote facts as applicable. Offer only missing actions under Step 8. A rewrite continuation still requires its private recovery evidence; a locator proves no completion and never authorizes rerunning the filter.
 
@@ -62,6 +65,22 @@ Use Step 2's exact proposals and any explicit selections to derive the affected 
 
 Walk unique required semantic IDs once in bounded batches; locally check supported mechanical rules over the selected history without re-sending valid reused messages to the model. Freeze refs/tips, audit/rewrite membership, boundaries, tags and peeled IDs, symbolic/excluded refs and remote configuration. No unbounded `--all`, `--branches`, `--tags`, wildcard or fresh enumeration may widen execution scope. Exclude proven old bookkeeping-only branches from default message review using complete diff/provenance, never names alone. That exclusion never exempts affected-branch detection or authorizes branch deletion.
 
+### Early shared-history readiness
+
+As soon as the initial read-only review identifies a concrete possible correction to history known to be published/shared with others, or whose publication status is unknown, show the compact notice below and use the readiness choice **before presenting the final message/impact plan**. Do not wait until backend preparation. A candidate discovered during Step 2 still takes this gate before proceeding toward Apply. Use actual refs/history and supplied developer facts; absence of an upstream does not prove privacy. No remote contact, new fetch or inspection of other clones is introduced.
+
+Skip this gate for an explicit read-only/formatting-only review, no correction candidates, proven private-only corrections or an already-blocked write route with only independent review available. Reuse an explicit readiness acknowledgement for this invocation's described scope; show the notice once without repeating the question. Do not infer readiness from bare invocation, message selection, rewrite approval, defaults or silence.
+
+> **This rewrite affects or may affect shared history.**
+> - Coordinate affected developers, save pending work and include agreed branches in this clone.
+> - Pause ordinary commits, pushes, merges and new branches from the affected old history until publication finishes.
+> - Prefer the same local clone for normalize and ship so recovery evidence is found automatically.
+> - After publication, branch owners must fetch and reconcile local history, preserving unpublished work; a plain pull may mix old and new history.
+
+Offer **Team ready / Review only / Stop** once. Team ready acknowledges the notice and allows preparation of the exact rewrite proposal; it authorizes no mutation or publication. Review only finishes the scoped assessment/report without writes or a later Apply prompt. Stop exits without continuing investigation or writes. An unanswered gate remains pending; do not proceed to final rewrite approval or interpret it as cancellation.
+
+These are coordination recommendations, not new branch/device restrictions or a requirement to push unfinished work. Accept the developer's acknowledgement without demanding proof of teammate activity, a completed push checklist or a particular laptop. Other clones/private branches cannot be inspected or frozen by this command. Existing eligibility, complete-history, recovery, verification and publication protections still apply. A materially broadened shared scope needs only the missing readiness clarification; unchanged scope does not repeat this gate in Step 3 or ship.
+
 ### All affected local branches form the rewrite scope
 
 From Step 2's exact non-identical proposals, derive provisional `{changed_original_shas}` within the established message-edit range. Use explicit selections when already known; otherwise preview the full proposed set without claiming the user has selected or approved it. Freeze that set with its complete impact for the final Apply, then revalidate it before execution. With an empty set, do not run the backend or ask a rewrite-scope question.
@@ -78,7 +97,7 @@ Do not reuse incompatible per-branch exclusions, drop affected descendants, or w
 
 Branches added only for consistency receive necessary parent/ID remapping. Their unique messages remain byte-identical unless the developer explicitly broadens message review and accepts those additional corrections. This does not claim their messages were audited/compliant. Reading/verifying their graph/metadata is required; finding new possible message issues there does not recursively expand the replacement set. An explicit broader audit produces a fresh plan and affected-set calculation.
 
-Use Step 3's single final review to show and approve the exact messages, complete affected list and graph together. No extra warning screen, branch picker, configuration flag or ledger field is introduced. Recheck the whole frozen local inventory before execution: new/deleted/moved branches require fresh affected-set/graph assessment and refreshed approval where the plan materially changes. If any affected local branch is unavailable, checked out elsewhere, unsupported or forbidden by applicable policy, report the blocker and stop the coordinated rewrite; do not quietly omit it. The developer resolves a worktree/policy/history blocker outside normalize and returns for a fresh plan; normalize never deletes an old bookkeeping branch or changes protection to unblock itself.
+Use Step 3's single final review to show and approve the exact messages, complete affected list and graph together. The early readiness acknowledgement is separate; add no further warning screen, branch picker, configuration flag or ledger field. Recheck the whole frozen local inventory before execution: new/deleted/moved branches require fresh affected-set/graph assessment and refreshed approval where the plan materially changes. If any affected local branch is unavailable, checked out elsewhere, unsupported or forbidden by applicable policy, report the blocker and stop the coordinated rewrite; do not quietly omit it. The developer resolves a worktree/policy/history blocker outside normalize and returns for a fresh plan; normalize never deletes an old bookkeeping branch or changes protection to unblock itself.
 
 Remote-tracking refs, remote-only branches, tags, notes/stashes and other clones are not auto-rewritten/materialized. Use available local ref/worktree evidence to disclose known old-history holders, including detached other worktrees, and unknown remote/clone coverage without fetch; never move/reattach another worktree. A changed commit reachable through another branch's available remote-tracking ref is not an unpublished change merely because the review branch has no upstream; unknown remote coverage is not proof of unpublished history. Local coordination does not establish remote consistency. Tags remain fixed under the existing ancestry warning. Separate publication approval, leases, protection, signing and check gates still apply; a publication-only blocker leaves remote coordination pending, not permission to skip a locally affected branch or promise safe future merges everywhere.
 
@@ -99,6 +118,8 @@ For each reviewed commit, record classification, original message, evidence/conf
 Resolve uncertainty in the proposed execution set before offering Apply, then derive Step 1's all-affected scope from that set. Unresolved or held messages remain visible outside it. Shared commits receive one consistent SHA-keyed proposal across every affected branch. Discard byte-identical proposals; an empty replacement set never runs the backend.
 
 ## Step 3: Present one final message and impact review
+
+Only proceed toward Apply when any required shared-history readiness is acknowledged. Team ready is not rewrite approval. Review only exits with proposed corrections and actual coverage limits, skipping Apply and all checkpoint writes; an unanswered readiness question stays pending. Preserve the existing single final rewrite decision below, without repeating the coordination notice/question or adding a separate wording-approval gate.
 
 Finish the read-only scope, capability, worktree and policy checks needed for the concrete plan before offering Apply. Known blockers affecting that execution set leave Apply unavailable while independent message review remains possible; its required evidence cannot be approved away. Present the exact messages and complete impact together, leading with a compact summary of changed messages versus commit IDs, affected branches, tag ancestry, signatures and checkpoint/commit effects. A proposal alone authorizes no rewrite or ledger write. Do not create a saved plan merely for a review-only outcome.
 
@@ -166,6 +187,8 @@ Persist the verified current-run mapping, results, post-filter tips, actual chan
 
 ## Step 6: Plan and record truthful checkpoints
 
+Review only and Stop from the readiness gate authorize no checkpoint or commit, including after a complete assessment or with auto-commit enabled. Do not enter this write path for those outcomes.
+
 ### Load only this workflow's state
 
 Reuse Step 1's complete schema-2 validation and baseline snapshot under `{package_root}/prompts/normalize-review.md` and the shared project-state procedure. Recheck `.helm/normalize-log.json` before dependent actions; never open another owner's record. Schema 1 and older shapes are unsupported, with no reader, migration or automatic reset. An absent file means no prior coverage, not an empty checkpoint. The native branch shape is:
@@ -226,6 +249,7 @@ For a record-only continuation, verify the identified current-branch diff, sourc
 Report:
 
 - Exact committed snapshot, reviewed scope, policy/coverage limits and outcome: review only, clean scan, rewritten locally, cancelled, blocked or verification failed.
+- Readiness when applicable: acknowledged/reused, Review only or pending; it is developer coordination context, not proof that other clones are synchronized. Publication and its approval remain with ship.
 - Exact syntax-checked IDs/count, newly semantically reviewed IDs/count, reused compatible prior coverage and explicitly unreviewed IDs/ranges; helper availability/unsupported rules and baseline fallback reasons. Distinguish mechanical pass from accepted/spec-valid nonpreferred/spec-invalid/unresolved message classifications. Report actual message changes versus descendant IDs/signatures, Keep/Defer and out-of-range findings, with up to five before/after examples.
 - Message-audited refs/ranges versus the complete affected/rewrite branch set, consistency-only additions and unaudited unique messages, shared-ID verification, excluded/old-history refs and actual per-branch release-tag ancestry/ship implications. A local-only result never claims remote/other-clone reconciliation.
 - Own-ledger loaded paths, canonical/migration status, proven branch checkpoints versus pending findings, destination and dependency, committed/draft/pending status. No claims about other workflows' state.
