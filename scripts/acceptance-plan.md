@@ -4,6 +4,28 @@ This is the implementation plan requested for the Full scan's P6–P20 proposals
 
 The review used Claude Sonnet 5.5 with High effort and verified returned model metadata. The decisions below also account for the actual source and existing suites. Prefer small deterministic regressions; keep expensive model checks opt-in and actual browser/client acceptance manual. No new framework, dependency, CI job or operational-state schema is proposed.
 
+## Implemented checks
+
+The original decision table below is retained as design rationale. Implementation now lives in `acceptance_support.rb`, `acceptance_cases.rb`, `git_acceptance.rb`, `smoke_acceptance.rb` and `browser_acceptance.py`, beside the existing smoke and docs checks.
+
+- **P8/P9/P20:** actual Chrome checks cover both setup pages' clicks, keyboard/wrap/focus/ARIA, fragments, all twelve legacy redirects, JavaScript-disabled content and print preview; saved/invalid themes, cross-tab change/remove/clear, blocked-storage faults and DevTools system-theme changes; and rendered ship/test Mermaid SVG labels. The blocked-storage page injects a `SecurityError` before the real theme script; it changes no privacy setting. Browser controls were restored afterward. Browser version was not obtained because browser policy blocks `chrome://version`; these are scoped observations on the current Chrome/macOS host, not a browser support matrix or human usability sign-off.
+- **P10:** complete exposed Claude tool/result/message traces, synthetic leak positive controls and a value-free env audit. Scanner controls cover raw/partial/JSON-escaped/base64/hex values, malformed/incomplete streams and wrong-model results. A separate owned read/write probe checks the configured OS sandbox boundary. No claim about hidden channels or every encoding.
+- **P11/P12/P13:** disposable merge graphs, current-run message/metadata/ref oracles and independent bundle recovery; moved-remote and partial-publication scenarios; tampered-report and completed archive/ship-backup resumes. Publication fixtures use a controller-prepared actual `git-filter-repo` rewrite with independently verified objects and a synthetic upstream handoff, not this project's state. A reviewed local-bare `pre-receive` recorder independently checks actual updated refs. There are no real provider writes, deployments, services, LFS assets or recovery certifications.
+- **P14/P15/P16/P17/P18:** source-only preview; failed/deferred/successful test lifecycle and actual code-before-closure provenance; renamed/nested source and loaded-package adoption guards, custom-copy Keep and writing-only adoption; exact partial log/README updates; complete fictional legal drafts left uncommitted even with auto-commit enabled; and release-proposal reasoning against the actual ship source. No duplicate SemVer parser or legal-validity claim.
+- **P19:** the headless Multi fallback retains all nine choices and leaves files/Git unchanged without an answer. Native client rendering, picker interaction and render-failure recovery still need actual host evidence. The current Codex app is blocked from computer-use inspection; the optional human rendering question is not consent or a passing result until answered. No question server, client-mode change or host workaround is installed.
+
+Run the offline regressions with the existing `bundle exec rake test` environment. They include `test_acceptance_support.rb` and `test_git_acceptance.rb` and call no models. For explicit live checks:
+
+```sh
+ruby scripts/smoke_acceptance.rb --list
+ruby scripts/smoke_acceptance.rb env-confidentiality
+python3 -I -B scripts/browser_acceptance.py
+```
+
+Each live invocation selects one Claude scenario, uses Sonnet 5.5 / High, a $1 API cap, a 240-second process-group timeout, strict Bash sandbox settings and a complete exposed stream with metadata validation. No automatic batch/model run is added to Rake or CI. The sandbox setup follows the [official Claude sandbox guidance](https://code.claude.com/docs/en/sandboxing); the model receives only Bash, with native file tools, MCP servers and client customizations disabled. Only the reviewed local-bare fixture recorder runs as a Git hook. Source is copied into a disposable complete package. Exact file preservation checks apply to the package and consumer fixtures; only newly created empty native `.claude/.cc-writes` directory pairs are treated as client bookkeeping. Fixture records, model traces and recovery data never come from this project's operational files. These live observations are Claude-only; offline Codex stream fixtures do not certify Codex workflow behavior.
+
+The browser command serves the already-built `_site` on a fresh loopback port with visible, isolated fault controls. Stop it with Ctrl-C. It installs nothing and writes no site settings or source files.
+
 | Proposal | Decision and benefit | Implementation or next check |
 |---|---|---|
 | P6 — normalize paging | Implement. Cheap enforcement of the documented digest-bound continuation contract. | `normalize_check.py` rejects nonzero offsets without a digest. Extend `test_normalize.py` for check/plan, missing/empty/wrong/matching digests and the CLI's safe failure response. First-page calls still work. No history rewrite or schema change. |
@@ -22,9 +44,9 @@ The review used Claude Sonnet 5.5 with High effort and verified returned model m
 | P19 — QM fidelity | Manual acceptance per actual host. A mock picker would not establish native rendering or human consent. | Check Single/Multi/Input/Review, long option lists and unanswered questions on Claude and Codex. Record actual client version, date, supported surfaces and unresolved host limits. Use the checklist below; no client setting changes or new question server. |
 | P20 — Mermaid | Manual check after diagram/loader changes; skip a new browser framework for one low-impact surface. | Build/serve current source, open the ship and test diagrams in one identified browser, verify rendered SVG and readable labels. Record browser/version/date and any load failure. This is narrower than a browser-compatibility claim. |
 
-## Bounded model-check implementation
+## Model-check boundaries
 
-Implement this shared support only when an opt-in scenario is selected. Do not turn every plan into a new suite automatically.
+The shared support is implemented and opt-in. Keep any additional scenarios within these boundaries rather than turning the plans into an automatic model matrix.
 
 1. Create a fresh temporary consumer repo outside Helm source/install roots. Use fictional identities, synthetic records and generated canaries only. Reuse `HelmSmoke.environment`, no-follow artifact reads and exact file/index/ref snapshots. Do not read this project's operational state, history-rewrite proof or archive bundles to construct fixtures.
 2. Review the actual CLI, model, tool/permission settings, selected scenario, allowed paths/refs and backend before execution. For Claude use the project-required Sonnet 5.5 / High and verify metadata. For Codex explicitly select the intended available model/effort. One scenario/client per invocation, at most 240 seconds and eight model turns where enforceable; agree an enforceable spend limit before a paid run. Do not change the user's global client configuration or repurpose `HOME` to bypass authentication/policy.
