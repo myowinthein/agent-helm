@@ -6,7 +6,7 @@ nav_order: 3
 
 # env
 
-Review environment configuration and Git ignore rules as the project changes. Env finds mismatches, exposed secrets and misleading ignore rules, then lets you choose which fixes to apply.
+Find environment configuration mismatches, credible secret exposure and misleading ignore rules, then choose which fixes to apply.
 
 ## Start the command
 
@@ -16,7 +16,7 @@ env
 
 Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
 
-The initial audit can inspect the current checkout even with pending edits. Writes require a clean, eligible **main/master, feature or confirmed environment branch**. The command stays on that branch and preserves intentional environment differences.
+The audit can inspect pending edits. Fixes require a clean, eligible **main/master, feature or confirmed environment branch** and preserve intentional environment differences.
 
 ## Flow
 
@@ -36,30 +36,28 @@ flowchart TD
 
 ## What gets checked
 
-The audit follows the project's actual services, loaders and configuration layers. An environment override does not need every key from its baseline, and externally supplied configuration does not automatically need an `.env` file.
+The audit follows actual services, loaders and configuration layers. Overrides need not repeat baseline keys, and externally supplied settings need not live in an `.env` file.
 
 | Area | Checks |
 |---|---|
-| Files and usage | Discover env files, compare related key sets, find source/configuration references and identify missing or apparently unused keys. |
-| Values and syntax | Detect credible secret exposure, unfilled required inputs, hardcoded environment-dependent values and loader-specific formatting or duplicate problems. |
-| Git protection | Find missing shared ignore protection, tracked files matching ignore rules, harmful patterns and provably redundant formatting. |
+| Files and usage | Find env files, compare related keys, trace references and identify missing or apparently unused inputs. |
+| Values and syntax | Find credible exposure, required placeholders, hardcoded settings and loader-specific syntax or duplicate problems. |
+| Git protection | Check missing protection, tracked ignore matches, harmful patterns and redundant rules. |
 
-These cover eleven checks in total. Reports show file paths, key names, evidence and uncertainty, with existing values omitted. A key with no reference found is not automatically unused, and a tracked ignored file is not automatically wrong.
+The eleven checks report paths, key names and uncertainty without exposing values. A search miss does not prove a key is unused; a tracked ignore match does not prove a mistake.
 
 ## Choose the fixes
 
-You first choose the target area, then review one concrete plan. It separates committable source/template/ignore edits, local-only env work and manual or external provisioning. You can accept a subset, revise or skip; dependent changes stay together.
+Choose Env files, `.gitignore` or both, then review a concrete plan. It separates committable edits, local-only changes and external provisioning. Accept all, choose findings, revise or skip; dependent fixes stay together.
 
-Optional template work can update an existing example or create an approved service-specific template such as `.env.example`. New placeholders are generated without copying real values. Formatting follows the actual loader; ignore fixes use Git's matching rules rather than sorting patterns for appearance.
+Optional templates use generated placeholders without copying real values. Formatting preserves loader semantics; ignore edits preserve Git's pattern behavior.
 
-Removing a file from tracking needs a separate exact-path confirmation. Its local copy remains, but the committed removal may delete clean copies in other checkouts when they update. Untracking or moving a secret does not remove it from history or revoke it.
+Untracking needs separate exact-path approval. The local file remains, but the committed removal may delete clean copies elsewhere when they update. Moving or untracking a secret neither revokes it nor erases history.
 
 ## Your result
 
-You get the audit findings, verified changes and remaining manual work. Credential-free source, approved templates and project `.gitignore` edits may be committed under your policy.
+You get findings, verified changes and manual follow-up. Credential-free source, approved templates and project ignore edits may be committed under your policy. Operational env contents are never staged; tracked or managed env files remain report-only. Approved ignored, untracked env edits stay local.
 
-Real operational env contents are never staged. Eligible edits to existing ignored, untracked local env files stay local; tracked operational, encrypted or managed env files remain report-only.
+Static checks establish syntax, key and ignore behavior, not working credentials or deployment readiness. Env does not start the app or contact services for the audit.
 
-Static checks verify key usage, syntax and ignore behavior. They do not prove credentials work or deployment values exist. The command neither starts the app nor contacts services merely to audit configuration.
-
-Env creates no ledger and does not edit `AGENTS.md` or `CLAUDE.md`. It finishes on the same branch. Shared fixes made on an environment branch may need deliberate upstream application; ignored local env files are not synchronized by merging branches. Use [ship](ship.html) separately for publication.
+Work stays on the same branch. Shared fixes on an environment branch may need deliberate upstream application; merging does not synchronize ignored env files. Use [ship](ship.html) for publication.

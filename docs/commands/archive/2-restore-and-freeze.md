@@ -7,7 +7,7 @@ nav_order: 2
 
 # Step 2: Restore and freeze
 
-Restore the agreed project scope, review what actually works and preserve the setup needed to recover it later. The approach follows the project's stack and recovery goal rather than forcing every project into Docker.
+Restore the agreed scope, review what works and capture what later recovery needs. The approach follows the project and goal.
 
 ## Flow
 
@@ -27,40 +27,33 @@ flowchart TD
 
 ## Restore from reliable inputs
 
-Setup notes are cross-checked with manifests, locks, scripts, CI, Dockerfiles and platform requirements. Missing instructions can be reconstructed from evidence; conflicting versions need resolution before dependent actions. Restoration favors compatible original behavior over upgrades.
+Cross-check setup notes against manifests, locks, scripts and platform requirements. Resolve conflicts before execution, favoring compatibility over upgrades.
 
-Before execution, you review exact edits, commands, acquisitions, runtime targets, data operations and checks. The plan uses owned isolated resources and prevents live-service contact. If isolation or a required capability cannot be established, affected execution stays pending rather than guessing a safe target.
+Review exact edits, commands, downloads, targets and checks first. Execution uses owned isolated resources without live-service contact; uncertain isolation leaves affected work pending.
 
 ## Choose and preserve data
 
-The command looks for suitable synthetic or sanitized fixtures, seeds, dumps and required files. It does not automatically prefer an old dump, assume localhost is disposable or connect to production for missing data. You can supply an approved local export, wait or accept a limited empty/schema-only restoration.
+Use suitable synthetic or sanitized inputs. Missing data can mean waiting for an approved local export or accepting empty/schema-only recovery.
 
-Imports use fresh owned empty targets, compatible engine-native procedures and correct initialization order. Applied migration records are preserved and pending work is identified. A partial import failure stops dependent work; it does not trigger an automatic drop, reset or retry.
+Imports need fresh owned empty targets and the correct initialization order. Partial failure stops dependent work without automatic reset or retry. Localhost alone does not establish safety.
 
 ## Freeze what the project needs
 
-After restoration evidence, you get a chance to inspect the app or relevant CLI, library or native behavior. The final recommendation reflects that result and the goal:
+After restoration, you can inspect the result before choosing the final capture approach.
 
-| Project | Possible preservation route |
+| Project | Possible route |
 |---|---|
-| Server or full-stack app | Compatible runtime/images, required stores and recovery configuration. |
-| Self-contained static site | Built output and the build inputs needed for the selected goal. |
+| Server or full-stack app | Runtime/images, stores and recovery configuration. |
+| Self-contained static site | Built output and selected build inputs. |
 | Library or CLI | Source, locked environment and useful distributables. |
-| Native, mobile, data or hardware project | Useful builds/models/firmware plus actual SDK, platform, hardware and acquisition constraints. |
+| Native, data or hardware project | Useful builds, models or firmware with platform requirements. |
 
-Only selected artifacts are captured. Docker exports, when useful, go under `recovery/docker/` with real image/tag/platform mappings, sizes and checksums. Native data and distributables can stay at existing paths. A real `.env` is never copied into the recovery kit.
+Selected artifacts retain identities and checksums. Real env credentials are not copied into the kit. A working app does not prove offline rebuilding or future platform availability.
 
 ## What happens next
 
-The phase prepares ordered commands in the approved setup file, normally `docs/setup.md`:
+The setup file records artifact validation, runtime preparation, data restore, startup, demonstration and shutdown in order.
 
-1. Validate artifacts.
-2. Load or prepare the runtime.
-3. Restore data before dependent consumers.
-4. Start safely.
-5. Demonstrate useful behavior.
-6. Stop the owned services.
+Review performed and deferred checks separately. An optional cold-recovery rehearsal needs separate approval and isolation; existing caches and volumes are preserved.
 
-You review actual checks separately from unverified or deferred work. An optional cold-recovery rehearsal needs separate approval and a suitable isolated environment; the developer's existing caches and volumes are not cleared to simulate one.
-
-Approval saves `step2-restore-and-freeze.md` and verified progress under `.helm/archive/`, then continues to [Step 3: Postman collection](3-postman.html). You may approve limited preservation with its limitations stated. No commit or push happens in this phase.
+Approve the report to continue to [Step 3: Postman collection](3-postman.html), including any accepted limitations. This phase does not commit.

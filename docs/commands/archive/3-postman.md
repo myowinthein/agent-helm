@@ -7,7 +7,7 @@ nav_order: 3
 
 # Step 3: Postman collection
 
-Preserve useful API recovery materials when the project owns an API. Existing collections and specifications come first; projects with no applicable API need no generated collection.
+Preserve useful API recovery materials. Existing collections and specifications come first; projects without an applicable owned API need no collection.
 
 ## Flow
 
@@ -29,20 +29,18 @@ flowchart TD
 
 ## Retain, repair, create or skip
 
-Owned backend APIs, server routes and serverless functions can qualify. Merely consuming a third-party API does not. The agent checks actual operations, request shapes and authentication; a route list alone cannot supply the whole contract.
+Owned server routes and functions can qualify; third-party API consumption alone does not. The review checks operations, inputs and authentication.
 
-You can keep a useful collection at its current path, approve targeted repairs, create missing recovery coverage or explicitly skip it. Existing custom requests and canonical specs are preserved. Unsupported protocols can keep their native materials instead of being forced into Postman.
+Keep useful files, approve repairs, create missing coverage or skip. Custom requests and canonical specs are preserved. Unsupported protocols can retain native materials.
 
-New collections normally use Postman v2.1 at `recovery/postman/{project-name}.postman_collection.json`. Collection variables may be sufficient; a separate environment file is created only when it adds value. Examples and variables contain placeholders, not credentials, private records or production endpoints.
+New collections normally use Postman v2.1 under `recovery/postman/`. An environment companion is optional. Saved examples use placeholders without credentials, private records or production endpoints.
 
 ## Verification is optional execution work
 
-Source-based generation and static format/reference checks do not require API requests. Any request execution first needs approval, a currently verified isolated runtime and inspection of its effects, including collection scripts. Historical running-app reports or reachable ports do not establish a safe target.
+Static generation needs no API requests. Request execution requires approved effects and a currently verified isolated runtime, including review of collection scripts. An old report or reachable port does not establish a safe target.
 
-Deferred or unavailable requests are listed as unverified. The command does not repeat restoration automatically, contact live services or exercise destructive endpoints merely to increase coverage.
+Deferred requests stay unverified; the command does not repeat restoration to test them.
 
 ## What happens next
 
-The report lists the actual Retain/Repair/Create/Skip result, paths, discovered operations, performed requests and remaining gaps. A not-applicable or skipped result still receives report approval.
-
-Approval saves `step3-postman.md` under `.helm/archive/` and continues to [Step 4: Documentation](4-documentation.html). No commit or push happens in this phase.
+Review retained or changed files, actual requests and remaining gaps. Skipped and not-applicable outcomes still need report approval before [Step 4: Documentation](4-documentation.html). This phase does not commit.
