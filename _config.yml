@@ -17,8 +17,6 @@ nav_external_links:
     url: https://github.com/myowinthein/agent-helm
     hide_icon: false
 
-footer_content: "Agent Helm &mdash; MIT License"
-
 plugins:
   - jekyll-seo-tag
   - jekyll-remote-theme
