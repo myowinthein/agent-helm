@@ -32,11 +32,19 @@ Apply the safety rules' [Maintaining workflow outputs](../../rules/safety.md#mai
 
 ## Questions and authorization
 
-Before the first human question, read [Question mechanism (QM)](question-mechanism.md) once and use it for all questions in the selected workflow and its supporting prompts. Each workflow's Question points map selects Single, Multi, Input or Review; its body still owns when to ask, prerequisites, exact choices, approval scope and exits. QM centralizes native tool routing, supported equivalents for capability gaps, ordered recovery from confirmed presentation failures, asynchronous waiting and one conversational baseline for Claude, Codex and future hosts. It grants no state access, execution, new approval stage or permission to change client modes/settings. No question means no QM setup question or capability probe.
+Before the first human question, read [Question mechanism (QM)](question-mechanism.md) once: use its form/routing/answer contract and the current host's relevant capabilities; load detailed alternatives/recovery or other-host/MCP reference material only if needed. Each workflow's Question points map owns when to ask, prerequisites, exact choices, approval scope and exits. QM grants no state access, execution, new approval stage or permission to change client modes/settings. No question means no QM setup question or capability probe.
 
 Keep every workflow confirmation, cancellation, no-op, and cleanup path. Reuse authorization already given for the same described action; do not add another approval on top of a workflow's own confirmation. Host sandbox/tool approvals are separate technical permissions and do not answer a workflow question. Conversely, a workflow confirmation cannot bypass host restrictions. Do not pre-approve shell, push, history rewrite, publication, or deployment tools through skill metadata.
 
 `Write` and `Edit` refer to full replacement and a targeted patch respectively; use the host's equivalent file tools while preserving those semantics and the workflow's read-back verification.
+
+## Execution and evidence reuse
+
+Use one transient invocation snapshot: the facts already gathered, not a script/report/profile to create. Load the selected route and needed references only; batch independent permitted local/provider reads using existing tools once prerequisites are known. Return complete decision-critical fields and bounded source sections instead of oversized blobs. Retrieve an explicit unread remainder after truncation; neither batching nor a summary proves complete requested coverage.
+
+Reuse unchanged packaged instructions, resolved facts and complete content bound to immutable object IDs. Do not repeatedly read the same bytes or re-derive pinned diffs. Before dependent writes, recheck relevant local HEAD/index/worktree, effective instructions/configuration, destination, remote refs, protection/checks and request state. Changed/unknown evidence invalidates its dependents; a fixed rejected lease is never refreshed into permission. Readback after success/uncertainty remains mandatory. No reuse crosses an unresolved source, policy, package or approval change.
+
+Run required checks on their actual inputs and reuse established results only while those inputs and applicable policy match. Keep development validation proportional to the change; do not repeat passed suites or run model/site/client checks merely because another phase or file was visited. A required exact-SHA check still needs that SHA. Preserve review gates, state boundaries, requested scan depth and verification; add no speed mode, automatic model/effort change, timing promise or extra question.
 
 ## Delegation and checkpoints
 

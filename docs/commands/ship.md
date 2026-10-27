@@ -8,6 +8,8 @@ nav_order: 9
 
 Publish reviewed work, optionally update other branches and prepare a versioned release. Publication and release need separate approval.
 
+For a long-running chat, a fresh session can avoid carrying unrelated context. Ship still discovers pending work and verifies the selected source; changing sessions does not waive checks or approvals.
+
 ## Start the command
 
 ```text

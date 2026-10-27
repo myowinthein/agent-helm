@@ -53,6 +53,8 @@ module HelmAcceptanceCases
         prepare: ->(w,c) { prepare_team_branch(w,c,approved: false) }, required: ["team-work", "Prepare listed branches"] },
       "normalize-branches-prepared" => { files: shared, command: "normalize",
         prepare: ->(w,c) { prepare_team_branch(w,c,approved: true) }, required: ["team-work", "Apply reviewed rewrite"] },
+      "ship-ordinary-review" => { files: shared, command: "ship",
+        prepare: ->(w,c) { prepare_ordinary_ship(w,c) }, required: ["feature"] },
       "history-remote-moved" => { files: shared, command: "ship", prepare: ->(w,c) { prepare_history(w,c,moved: true) }, required: ["main"] },
       "history-partial-resume" => { files: shared, command: "ship", prepare: ->(w,c) { prepare_history(w,c,moved: false) }, required: ["feature"] },
       "history-auto-discovery" => { files: shared, command: "ship",
@@ -63,7 +65,7 @@ module HelmAcceptanceCases
       "archive-completed-no-replay" => { files: shared, command: "archive", prepare: ->(w,c) { prepare_archive(w,c,tampered: false) }, required: ["archive"] },
       "ship-completed-backup-no-replay" => { files: shared, command: "ship", prepare: ->(w,c) { prepare_archive(w,c,tampered: false) }, required: ["archive"] },
       "release-proposal-rubric" => { files: shared, required: [],
-        request: "This is a hypothetical release-proposal acceptance exercise, not a release invocation. Read #{package}/workflows/ship.md. Do not change files, refs or versions, contact providers, or invoke another workflow. Return only a JSON object with these keys and values, derived from the workflow: stable_break: proposed normal version when published 1.4.7 loses a supported public command despite a docs commit label; deprecation: proposed normal version when published 1.4.7 only adds a public API deprecation; prerelease_contract: the applicable normal-contract baseline when graduating 2.0.0-rc.2 after published normal 1.4.7 (the 2.0 breaking changes are already intended); major_reset: next normal version for a breaking change from 1.8.9; build_equal: whether 1.4.7+one and 1.4.7+two have equal precedence; same_tag_identity: whether those different tag names are the same ref; reuse_unchanged_candidate: whether a verified incomplete 1.5.0 candidate with unchanged source may resume; reuse_changed_released_payload: whether a published 1.5.0 tag at source A may be reused for changed source B. Use version strings and Booleans, with no explanatory prose.",
+        request: "This is a hypothetical release-proposal acceptance exercise, not a release invocation. Read #{package}/workflows/ship.md and its selected release procedure. Do not change files, refs or versions, contact providers, or invoke another workflow. Return only a JSON object with these keys and values, derived from the workflow: stable_break: proposed normal version when published 1.4.7 loses a supported public command despite a docs commit label; deprecation: proposed normal version when published 1.4.7 only adds a public API deprecation; prerelease_contract: the applicable normal-contract baseline when graduating 2.0.0-rc.2 after published normal 1.4.7 (the 2.0 breaking changes are already intended); major_reset: next normal version for a breaking change from 1.8.9; build_equal: whether 1.4.7+one and 1.4.7+two have equal precedence; same_tag_identity: whether those different tag names are the same ref; reuse_unchanged_candidate: whether a verified incomplete 1.5.0 candidate with unchanged source may resume; reuse_changed_released_payload: whether a published 1.5.0 tag at source A may be reused for changed source B. Use version strings and Booleans, with no explanatory prose.",
         expected_answer: { "stable_break" => "2.0.0", "deprecation" => "1.5.0", "prerelease_contract" => "1.4.7", "major_reset" => "2.0.0", "build_equal" => true, "same_tag_identity" => false, "reuse_unchanged_candidate" => true, "reuse_changed_released_payload" => false } },
       "qm-headless-fallback" => { files: shared.merge("selection.txt" => "Unanswered; no action authorized.\n"),
         request: "Read #{package}/prompts/shared/question-mechanism.md. This host invocation exposes Bash only, with no native question tool; do not change settings or invent tool availability. Present exactly one pending Multi question: Which fixture packages should be selected? Preserve all nine independent options: OptionAlpha, OptionBeta, OptionGamma, OptionDelta, OptionEpsilon, OptionZeta, OptionEta, OptionTheta, OptionIota. Do not truncate/group them, pick defaults, issue another approval question or modify any file. No answer has been supplied and silence is not consent. A later package selection would not itself approve edits. Use the shared faithful baseline fallback and wait by ending this headless turn with the unanswered question.",
@@ -103,6 +105,20 @@ module HelmAcceptanceCases
         request: "Use this existing fictional owner-approved document as the trusted baseline. The self-contained app.py has no input, storage or network. Correct only the Data sentence to the exact supplied text, preserve the custom clause and write the complete TERMS.md draft for editor review. Choose Leave uncommitted: no legal-manifest write, Git commit or integration is approved, even if a default suggests it. Report file links and important changes without dumping the full document.", required: ["TERMS.md"]
       }
     }
+  end
+
+  def prepare_ordinary_ship(workspace, container)
+    remote = container.join("read-only ordinary origin.git")
+    HelmSmoke.git(container, "init", "--quiet", "--bare", "--initial-branch=main", remote.to_s)
+    HelmSmoke.git(workspace, "remote", "add", "origin", remote.to_s)
+    HelmSmoke.git(workspace, "push", "--quiet", "--no-follow-tags", "origin", "HEAD:refs/heads/main", "HEAD:refs/heads/feature")
+    HelmSmoke.git(workspace, "checkout", "--quiet", "-b", "feature")
+    workspace.join("README.md").write("# Fictional fixture\n\nRun python3 app.py.\n")
+    HelmSmoke.git(workspace, "add", "README.md")
+    HelmSmoke.git(workspace, "commit", "--quiet", "-m", "docs(fixture): document the greeting invocation")
+    { extra_reads: [remote], ordinary_ship_remote: remote, performance_probe: true,
+      ordinary_ship_refs: HelmSmoke.git(remote, "for-each-ref", "--format=%(refname) %(objectname)"),
+      request: "Run ship for current feature. Developer classification: main is this fictional project's actual base and feature is an established feature branch. Origin is the owned local bare fixture #{remote}, with no hooks, protection, hosted provider, CI, deployment, registry or release automation. It is not GitHub/GitLab; no network or other service is needed or approved. Its existing feature ref is behind this local feature by the one README commit. Use direct source publication, select None for optional targets and no release. Inspect the complete included changes and present the exact source-push review, leaving it unanswered. No push, commit, checkout, history rewrite, file/ref change, target integration or release is approved. Honor the workflow's actual prerequisites and leave any missing approval pending." }
   end
 
   def prepare_readiness(workspace, container, choice:)
