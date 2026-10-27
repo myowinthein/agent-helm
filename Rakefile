@@ -32,11 +32,17 @@ task :smoke_support_test do
   ruby "scripts/test_smoke_support.rb"
 end
 
+desc "Test complete model traces and acceptance oracles without calling models"
+task :acceptance_support_test do
+  ruby "scripts/test_acceptance_support.rb"
+  ruby "scripts/test_git_acceptance.rb"
+end
+
 desc "Test offline validation of absolute own-site links and images"
 task :docs_links_test do
   ruby "scripts/test_docs_links.rb"
 end
 
 desc "Check plugin packaging, helpers, smoke assertions and documentation"
-task test: %i[plugin_test normalize_test ledger_test smoke_support_test docs_links_test docs_test]
+task test: %i[plugin_test normalize_test ledger_test smoke_support_test acceptance_support_test docs_links_test docs_test]
 task default: :test

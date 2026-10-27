@@ -19,9 +19,11 @@ module HelmSmoke
       request: "Inspect normalization of the initial fixture commit. Use chore(fixture): initialize as its proposed correction. Show the pending final rewrite review; no history rewrite, record write or commit is approved." }
   end
 
-  def connected_owner(original)
+  def connected_owner(original, rules: %w[git safety])
     raise "Fixture already contains a Rules section" if original.match?(/^## Rules$/)
-    original + "\n## Rules\n\nAt the start of every session, read and follow .claude/rules/git.md and .claude/rules/safety.md.\n"
+    raise "Unexpected selected rules" unless !rules.empty? && rules.uniq == rules && (rules - %w[git safety writing]).empty?
+    pointers = rules.map { |rule| ".claude/rules/#{rule}.md" }.join(" and ")
+    original + "\n## Rules\n\nAt the start of every session, read and follow #{pointers}.\n"
   end
 
   def validate_preconditions!(name, scenario)
