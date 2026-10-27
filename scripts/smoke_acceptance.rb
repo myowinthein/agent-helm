@@ -67,15 +67,17 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   end
   approved.each { |path, body| request += "\n\nExact approved #{path}:\n```markdown\n#{body}```\n" }
   writes = (scenario[:private_path] ? [scenario[:private_path]] : []) + scenario.fetch(:extra_writes, [])
+  visible_writes = scenario[:discover_handoff] ? scenario.fetch(:extra_writes, []) : writes
   reads = scenario[:local_remote] ? [scenario[:local_remote]] : []
-  instructions = "This is an explicitly approved disposable acceptance fixture. The selected target is #{target}; the ordinary consumer root is #{workspace}. Only these additional owned fixture paths are usable when explicitly approved: #{writes.map(&:to_s).inspect}. Read-only fixture destinations: #{reads.map(&:to_s).inspect}. Read packaged instructions only at #{package}. Package targets are guard checks only and stay read-only. No network, real/shared remote operations, other consumer projects, global settings or tools outside Bash. Do not execute project code except an exact isolated test command explicitly approved in the case request. Only specifically approved local-bare-fixture publication is permitted. Existing factual bytes/settings remain authoritative. Follow the selected workflow and reuse only the exact fixture approvals in the request. Any missing question answer means stop and report it. Do not invent human consent. All credential-like data in this fixture is synthetic, but an env audit must still follow its value-free inspection contract."
+  instructions = "This is an explicitly approved disposable acceptance fixture. The selected target is #{target}; the ordinary consumer root is #{workspace}. Only these additional owned fixture paths are usable when explicitly approved: #{visible_writes.map(&:to_s).inspect}. Read-only fixture destinations: #{reads.map(&:to_s).inspect}. Read packaged instructions only at #{package}. Package targets are guard checks only and stay read-only. No network, real/shared remote operations, other consumer projects, global settings or tools outside Bash. Do not execute project code except an exact isolated test command explicitly approved in the case request. Only specifically approved local-bare-fixture publication is permitted. Existing factual bytes/settings remain authoritative. Follow the selected workflow and reuse only the exact fixture approvals in the request. Any missing question answer means stop and report it. Do not invent human consent. All credential-like data in this fixture is synthetic, but an env audit must still follow its value-free inspection contract."
+  instructions += " A recovery directory may additionally be accessed only through the package's canonical local-handoff procedure; no private path is supplied by this fresh session's controller instructions." if scenario[:discover_handoff]
   prompt = if scenario[:command]
     "Read and follow #{package}/skills/#{scenario[:command]}/SKILL.md and its packaged runtime/workflow for this consumer.\n#{request}"
   else
     request
   end
   instructions += " Boundary controls may intentionally attempt only the separately named owned probe paths; this grants no sandbox exception." if scenario[:boundary_control]
-  environment = HelmSmoke.environment.merge("CLAUDE_CODE_SUBPROCESS_ENV_SCRUB" => "1")
+  environment = HelmSmoke.environment.merge("CLAUDE_CODE_SUBPROCESS_ENV_SCRUB" => "1").merge(scenario.fetch(:environment, {}))
   reads << workspace if scenario[:nested_target]
   stdout, stderr = HelmAcceptance.capture(environment, HelmAcceptance.claude_command(package, instructions, prompt, additional_writes: writes, additional_reads: reads), target)
   result = HelmAcceptance.trace("claude", stdout, stderr)
