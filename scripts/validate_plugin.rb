@@ -118,7 +118,8 @@ module HelmValidation
           "Shared runtime must load QM before human questions")
     %w[helpers/helm.py helpers/helm_lib/__init__.py helpers/helm_lib/common.py helpers/helm_lib/ledger.py
        helpers/ledger-contract.json prompts/shared/ledger-helper.md helpers/normalize_check.py
-       prompts/normalize-review.md].each { |path| resource(root, path) }
+       prompts/normalize-review.md helpers/normalize_handoff.py
+       prompts/shared/normalize-handoff.md].each { |path| resource(root, path) }
     contract = JSON.parse(read(resource(root, "helpers/ledger-contract.json")))
     check(contract.fetch("interface_version") == 1 && contract.fetch("owners").keys.sort == %w[refactor test],
           "Expected one read-only refactor/test helper interface")

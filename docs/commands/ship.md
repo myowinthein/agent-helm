@@ -77,7 +77,9 @@ Hosted release creation is optional after Git publication. Packages, assets and 
 
 ## Publish normalized history
 
-Keep [normalize](normalize.html)'s exact private recovery path. Ship verifies it and reviews all history replacements before publication approval. Fixed remote expectations and `--force-with-lease` protect the agreed rewrite; a PR cannot replace commit IDs.
+Ship automatically finds [normalize](normalize.html)'s local recovery pointers, including across terminal or agent sessions in the same clone. It matches and verifies the actual history before publication approval. Multiple rewrites retain separate evidence; ship never simply picks the newest backup. Missing, invalid or ambiguous required evidence prompts for a path or reconciliation. Another clone/machine needs the recovery files transferred.
+
+Fixed remote expectations and `--force-with-lease` protect the agreed rewrite; a discovered pointer never approves a push, and a PR cannot replace commit IDs.
 
 Existing tags stay fixed. Rewording released history alone does not create a product release.
 

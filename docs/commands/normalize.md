@@ -68,8 +68,8 @@ Apply requires **git-filter-repo and Python**. After approval, verify a private 
 
 ## Your result and later publication
 
-You get old/new tips, message results, tag effects and the private recovery path. Keep that path for recovery or publication.
+You get old/new tips, message results, tag effects and the private recovery path. Before rewriting, normalize also registers a private local pointer so ship can find the evidence in another terminal or agent session. Each rewrite keeps its own pointer; backups and pointers remain after publication.
 
 Eligible semantic coverage is saved in `.helm/normalize-log.json` under your commit policy. Coordinating another branch does not certify its unique messages as reviewed. Unsupported state remains preserved and blocks dependent work.
 
-Normalize finishes locally. Use [ship](ship.html#publish-normalized-history) with the private evidence to publish reviewed replacement history; other clones need deliberate coordination.
+Normalize finishes locally. Use [ship](ship.html#publish-normalized-history) to publish reviewed replacement history. In the same clone, you normally do not need to supply a path. Missing/moved evidence or another clone/machine may need an explicit recovery path and transferred files. Other clones still need deliberate history coordination.

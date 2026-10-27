@@ -151,9 +151,24 @@ module HelmAcceptance
     evidence = scenario.fetch(:private_path)
     raise "Private proof is not owner-only" unless (evidence.stat.mode & 077) == 0
     saved = JSON.parse(HelmSmoke.read_regular(evidence, "verified-map.json"))
-    unless HelmAcceptance.map_pairs(saved) == mapping
+    pairs = begin
+      HelmAcceptance.map_pairs(saved)
+    rescue RuntimeError
+      warn "Synthetic map outer structure: #{saved.class}; keys=#{saved.is_a?(Hash) ? saved.keys.first(5).inspect : 'not an object'}"
+      raise
+    end
+    unless pairs == mapping
       warn "Synthetic map structure: #{saved.class}; keys=#{saved.is_a?(Hash) ? saved.keys.first(5).inspect : 'not an object'}"
       raise "Saved current-run map mismatch"
+    end
+    if scenario[:require_handoff]
+      locator = JSON.parse(HelmSmoke.read_regular(evidence, "before-filter-locator.json"))
+      raise "Recovery was not registered before filtering" unless locator.fetch("recovery_directory") == evidence.to_s &&
+        locator.fetch("entrypoint") == "handoff.json" && locator.fetch("availability") == "present"
+      path = "agent-helm/normalize-handoffs/#{locator.fetch('run_id')}.json"
+      current = JSON.parse(HelmSmoke.read_regular(workspace.join(".git"), path))
+      raise "Pre-filter locator was changed after rewriting" unless current == locator.reject { |key,_| key == "availability" }
+      JSON.parse(HelmSmoke.read_regular(evidence, current.fetch("entrypoint")))
     end
     recovery = container.join("independent recovery")
     recovery.mkpath
@@ -200,6 +215,15 @@ module HelmAcceptance
     observed = HelmGitAcceptance.remote_refs(workspace, scenario.fetch(:local_remote))
     HelmGitAcceptance.assert_publication!(observed, scenario.fetch(:expected_remote))
     commands = result.fetch(:calls).flat_map { |c| HelmAcceptance.strings(c.fetch("input")) }
+    if scenario[:discover_handoff]
+      raise "Ship skipped local handoff discovery" unless commands.any? { |text| text.include?("normalize_handoff.py") || text.include?("normalize-handoffs") }
+      actual = HelmSmoke.read_regular(workspace.join(".git"), "agent-helm/normalize-handoffs/history-fixture.json")
+      raise "Ship changed its immutable locator" unless actual == scenario.fetch(:locator_bytes)
+      if scenario[:missing_handoff]
+        raise "Missing recovery did not remain pending" unless result.fetch(:answer).match?(/missing|unavailable|pending|not exist/i)
+        raise "Ship searched for the moved private backup" if HelmAcceptance.strings(result.fetch(:calls)).any? { |text| text.include?(scenario.fetch(:private_path).to_s) }
+      end
+    end
     remote_tip = scenario.fetch(:expected_remote).fetch("refs/heads/main")
     inspected = result.fetch(:calls).any? do |call|
       command = HelmAcceptance.strings(call.fetch("input")).join("\n")
@@ -207,7 +231,7 @@ module HelmAcceptance
         (command.include?("ls-remote") || command.include?(scenario.fetch(:local_remote).to_s)) &&
         HelmAcceptance.strings(call["output"]).any? { |text| text.include?(remote_tip) }
     end
-    raise "Actual remote main was not inspected" unless inspected
+    raise "Actual remote main was not inspected" unless inspected || scenario[:missing_handoff]
     if scenario[:immutable_proof]
       proof = JSON.parse(HelmSmoke.read_regular(scenario.fetch(:private_path), "handoff.json"))
       raise "Original proof or fixed expectations were replaced" unless scenario.fetch(:immutable_proof).all? { |key,value| proof[key] == value }
@@ -218,7 +242,7 @@ module HelmAcceptance
       updates = log.file? ? HelmSmoke.read_regular(scenario.fetch(:local_remote), "fixture-updates.log").lines.map(&:strip) : []
       raise "Unexpected fixture publication actions" unless updates == scenario.fetch(:expected_updates)
     end
-    if %w[history-remote-moved archive-completed-no-replay ship-completed-backup-no-replay].include?(name)
+    if %w[history-remote-moved history-missing-handoff archive-completed-no-replay ship-completed-backup-no-replay].include?(name)
       raise "Moved remote caused a publication attempt" if commands.any? { |c| c.match?(/\bgit\s+push\b/) }
     else
       raise "Partial resume omitted its fixed feature lease" unless commands.any? { |c| c.include?("--force-with-lease=refs/heads/feature:") }

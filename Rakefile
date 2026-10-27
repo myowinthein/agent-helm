@@ -22,6 +22,11 @@ task :normalize_test do
   sh "python3", "-I", "-B", "scripts/test_normalize.py"
 end
 
+desc "Test private normalize-to-ship locator I/O in disposable clones"
+task :normalize_handoff_test do
+  sh "python3", "-I", "-B", "scripts/test_normalize_handoff.py"
+end
+
 desc "Test read-only ledger isolation, validation and retrieval with synthetic consumers"
 task :ledger_test do
   sh "python3", "-I", "-B", "scripts/test_ledger.py"
@@ -45,5 +50,5 @@ task :docs_links_test do
 end
 
 desc "Check plugin packaging, helpers, smoke assertions and documentation"
-task test: %i[plugin_test normalize_test ledger_test smoke_support_test acceptance_support_test docs_links_test docs_test]
+task test: %i[plugin_test normalize_test normalize_handoff_test ledger_test smoke_support_test acceptance_support_test docs_links_test docs_test]
 task default: :test

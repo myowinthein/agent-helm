@@ -2,7 +2,7 @@
 
 ## Project Identity
 
-Agent Helm is a workflow plugin for Claude and Codex. Its ten portable skills load Markdown workflows; Python provides read-only ledger helpers and normalize checks, Ruby scripts check packaging and client discovery, and Jekyll publishes the documentation site.
+Agent Helm is a workflow plugin for Claude and Codex. Its ten portable skills load Markdown workflows; Python provides read-only ledger/normalize checks and private recovery-locator I/O, Ruby scripts check packaging and client discovery, and Jekyll publishes the documentation site.
 
 Plugin name: `agent-helm`. Marketplace: `agent-helm-marketplace`. Workflow changes affect installed consumers; changes to copied rules also affect projects that adopt those updates.
 
@@ -20,6 +20,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `ruby scripts/test_plugin.rb`: offline package, relocation and Git-export checks in temporary repositories; does not execute Python helpers or call models.
 - `ruby scripts/check_clients.rb`: native discovery through installed Claude/Codex CLIs, including Codex's actual `skills/list`; uses temporary installations and calls no models.
 - `python3 -I -B scripts/test_normalize.py`: offline normalize mechanics tests with synthetic messages, graphs and schema-2 records; no real history or live state access.
+- `python3 -I -B scripts/test_normalize_handoff.py`: private locator safety, independent-process discovery and worktree/clone checks in disposable repositories.
 - `bundle install`: install the docs dependencies from `Gemfile` and `Gemfile.lock`.
 - `bundle exec jekyll serve`: preview the docs site.
 - `bundle exec rake test`: package and normalize mechanics checks plus a Jekyll build and HTMLProofer checks for internal links, HTML, images and scripts. Remote-theme resolution may need network access.
@@ -36,6 +37,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `prompts/refactor-ledger.md` defines refactor's native provenance and checkpoint semantics. `prompts/shared/project-state.md` defines owning-workflow access and preservation.
 - `workflows/archive.md` sequences the five supporting `prompts/archive/step*.md` files. These steps are not independently discoverable skills.
 - `workflows/ship.md` owns publication. Its history/archive protocols in `prompts/shared/` are ship-only helpers; `ci.md` and `release-providers.md` define exact-source checks and provider handoffs.
+- `prompts/shared/normalize-handoff.md` owns normalize-to-ship discovery across sessions. `helpers/normalize_handoff.py` only registers/reads immutable private locators in the actual Git common directory; it executes no Git, reads no recovery bodies/ledgers and grants no publication authority. Source work leaves real locators untouched.
 - `docs/commands/` and `docs/rules/` are concise guides for people deciding whether and how to use Helm. Explain purpose, choices, outcomes and constraints that affect use. Workflows and rules hold the complete behavior. Update what readers need to know at the guide's intended depth; consistency does not require matching source detail. Link authoritative standards instead of reproducing them.
 - `.claude-plugin/plugin.json` owns the release version; ship synchronizes `.claude-plugin/marketplace.json`. Keep their plugin identity, version and description aligned, preserving `commands: []` and avoiding legacy command adapters.
 - `_config.yml`, `Gemfile`, `Rakefile` and `.github/workflows/docs.yml` own the docs build. Main pushes, PRs and manual dispatch build; only main publishes Pages. CI resolves the latest stable Just the Docs release and does not run package, helper, native-client or model checks.
