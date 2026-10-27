@@ -97,7 +97,17 @@ def policy_info(policy):
         require(type(rules.get(key)) is bool, "Missing policy boolean")
     limit = rules.get("header_max_length")
     require(limit is None or (type(limit) is int and limit > 0), "Invalid header limit")
-    return digest(policy), sorted(set(rules) - RULES)
+    # These two enumerations are membership sets, not precedence lists. Keep
+    # semantic/unknown fields exact: their ordering or wording can carry meaning.
+    normalized = dict(policy)
+    normalized["rules"] = dict(rules)
+    for key in ("types", "scopes"):
+        values = rules.get(key)
+        if values is not None:
+            if key == "types" and not rules["type_case_sensitive"]:
+                values = [value.lower() for value in values]
+            normalized["rules"][key] = sorted(set(values))
+    return digest(normalized), sorted(set(rules) - RULES)
 
 
 def precheck(message, rules, unsupported, resolved):

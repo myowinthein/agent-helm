@@ -106,6 +106,78 @@ class NormalizeTests(unittest.TestCase):
         self.assertEqual(result["records"], [oid(3)])
         self.assertEqual(result["counts"], {"selected": 3, "reused": 2, "needs_semantic": 1})
 
+    def test_unordered_memberships_reuse_the_same_baseline_without_mutating_policy(self):
+        effective = policy()
+        effective["rules"]["scopes"] = ["api", "core"]
+        record = baseline(2, effective)
+        effective["rules"]["types"] = ["docs", "fix", "feat", "docs"]
+        effective["rules"]["scopes"] = ["core", "api", "core"]
+        before = copy.deepcopy(effective)
+        result = self.plan(graph((1, []), (2, [1]), (3, [2])),
+                           records={"main": record}, policy=effective)
+        self.assertEqual(result["records"], [oid(3)])
+        self.assertEqual(result["branches"]["main"]["baseline_status"], "reused")
+        self.assertEqual(effective, before)
+
+    def test_type_case_folding_matches_actual_policy_and_never_folds_scopes(self):
+        effective = policy()
+        effective["rules"].update(type_case_sensitive=False, scopes=["API"])
+        original = mod.policy_info(effective)[0]
+        effective["rules"]["types"] = ["DOCS", "FEAT", "FIX"]
+        self.assertEqual(mod.policy_info(effective)[0], original)
+        self.assertEqual(self.check_message("FIX(API): repair", effective)["records"][0]["syntax"], "pass")
+        effective["rules"]["scopes"] = ["api"]
+        self.assertNotEqual(mod.policy_info(effective)[0], original)
+        self.assertIn("scope_policy", self.check_message("FIX(API): repair", effective)["records"][0]["diagnostics"])
+        sensitive = policy()
+        original = mod.policy_info(sensitive)[0]
+        sensitive["rules"]["types"] = ["DOCS", "FEAT", "FIX"]
+        self.assertNotEqual(mod.policy_info(sensitive)[0], original)
+
+    def test_null_empty_and_real_membership_changes_remain_distinct(self):
+        effective = policy()
+        unrestricted = mod.policy_info(effective)[0]
+        effective["rules"]["scopes"] = []
+        self.assertNotEqual(mod.policy_info(effective)[0], unrestricted)
+        effective["rules"]["scopes"] = None
+        record = baseline(1, effective)
+        effective["rules"]["types"].remove("fix")
+        result = self.plan(graph((1, []), (2, [1])), records={"main": record}, policy=effective)
+        self.assertEqual(result["branches"]["main"]["baseline_status"], "policy_changed")
+        self.assertEqual(result["records"], [oid(1), oid(2)])
+
+    def test_semantic_text_order_and_unknown_rules_are_not_guessed_equivalent(self):
+        effective = policy()
+        effective["semantic_rules"] = ["Preserve body.", "Preserve trailers."]
+        effective["rules"]["custom_order"] = ["owner", "project"]
+        original = mod.policy_info(effective)[0]
+        for field in ("wording", "semantic_order", "custom_order"):
+            changed = copy.deepcopy(effective)
+            if field == "wording":
+                changed["semantic_rules"][0] = "Do not change the body."
+            elif field == "semantic_order":
+                changed["semantic_rules"].reverse()
+            else:
+                changed["rules"]["custom_order"].reverse()
+            self.assertNotEqual(mod.policy_info(changed)[0], original)
+
+    def test_semantically_equal_policy_change_still_invalidates_exact_page_digest(self):
+        payload = {"policy": policy(), "commits": graph((1, []), (2, [1])),
+                   "tips": {"main": oid(2)}, "ledger": None}
+        first = mod.execute(payload, "plan", limit=1)
+        payload["policy"]["rules"]["types"].reverse()
+        with self.assertRaises(mod.Invalid):
+            mod.execute(payload, "plan", offset=1, limit=1, expected_digest=first["input_digest"])
+
+    def test_old_noncanonical_fingerprint_is_preserved_and_not_recertified(self):
+        record = baseline(1)
+        record["policy_fingerprint"] = mod.digest(policy())
+        before = copy.deepcopy(record)
+        result = self.plan(graph((1, []), (2, [1])), records={"main": record})
+        self.assertEqual(result["branches"]["main"]["baseline_status"], "policy_changed")
+        self.assertEqual(result["records"], [oid(1), oid(2)])
+        self.assertEqual(record, before)
+
     def test_new_merge_side_history_is_never_skipped(self):
         result = self.plan(graph((1, []), (2, [1]), (3, [1]), (4, [2, 3])), records={"main": baseline(2)})
         self.assertEqual(result["records"], [oid(3), oid(4)])

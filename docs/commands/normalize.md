@@ -63,7 +63,7 @@ Wording and subset choices authorize no rewrite. Final approval covers exact mes
 
 A Python helper checks formatting. The agent reviews full messages and relevant changes for meaning: `feat(auth): fix login typo` can pass syntax while using the wrong type.
 
-Later runs reuse proven semantic coverage only while history, policy and review requirements remain compatible. New commits still need review; explicit full-history review reassesses everything selected. Formatting-only checks establish no semantic coverage.
+Later runs reuse proven semantic coverage only while history, policy and review requirements remain compatible. Reordering the same allowed types/scopes does not change the policy fingerprint; actual constraints and semantic rules still matter. Existing unmatched checkpoints retain the full-review fallback and are not rewritten automatically. New commits still need review; explicit full-history review reassesses everything selected. Formatting-only checks establish no semantic coverage.
 
 Reports distinguish mechanical checks, new review, reused coverage and unreviewed history.
 

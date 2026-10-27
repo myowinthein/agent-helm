@@ -2,6 +2,8 @@
 
 Shared presentation and answer handling for every Helm workflow and its supporting prompts. Commands define a question once; this file owns host differences. QM is an instruction contract, not a callable tool, new skill, setting, state schema or approval authority. Use the current host's actual exposed tools and restrictions; the capability inventory below is researched guidance, not a promise that every client exposes every field.
 
+Read the form, routing, baseline and answer rules for an ordinary question; consult only applicable rows of the host inventory. Detailed native alternatives and presentation recovery apply when the preferred form is unavailable or a confirmed failure needs recovery. Other-host details, MCP forms and evidence links are reference material, not routine reads or capability probes.
+
 ## Choose the question form
 
 Use each workflow's **Question points** map, including conditional questions expressed as ask, offer, confirm or obtain approval in its body/helpers. An unresolved human fact without an explicit picker uses the mapped Input form. The map classifies existing gates; it neither adds a question to a no-op nor moves a question before its prerequisites. Reuse explicit answers and still-valid concrete approval. Ask only for missing material input; do not make routine authorized work ask again.

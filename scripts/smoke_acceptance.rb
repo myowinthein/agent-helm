@@ -79,7 +79,9 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   instructions += " Boundary controls may intentionally attempt only the separately named owned probe paths; this grants no sandbox exception." if scenario[:boundary_control]
   environment = HelmSmoke.environment.merge("CLAUDE_CODE_SUBPROCESS_ENV_SCRUB" => "1").merge(scenario.fetch(:environment, {}))
   reads << workspace if scenario[:nested_target]
+  started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
   stdout, stderr = HelmAcceptance.capture(environment, HelmAcceptance.claude_command(package, instructions, prompt, additional_writes: writes, additional_reads: reads), target)
+  elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - started
   result = HelmAcceptance.trace("claude", stdout, stderr)
   if scenario[:boundary_control]
     HelmAcceptance.assert_no_canary!(result, marker)
@@ -152,6 +154,15 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     end
     raise "Branch preparation wrote unapproved FETCH_HEAD" if workspace.join(".git/FETCH_HEAD").exist? || workspace.join(".git/FETCH_HEAD").symlink?
   end
+  if scenario[:ordinary_ship_remote]
+    remote = scenario.fetch(:ordinary_ship_remote)
+    raise "Unapproved ordinary source publication" unless HelmSmoke.git(remote, "for-each-ref", "--format=%(refname) %(objectname)") == scenario.fetch(:ordinary_ship_refs)
+    forbidden = %r{prompts/(?:ship/(?:release|targets)\.md|shared/(?:history-publication|archive-publication|ledger-helper)\.md)}
+    raise "Ordinary source review loaded an unrelated publication procedure" if result.fetch(:calls).any? { |call| HelmAcceptance.strings(call["input"]).any? { |input| forbidden.match?(input) } }
+    tip = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
+    shown = result.fetch(:answer).scan(/\b[0-9a-f]{7,40}\b/).select { |id| tip.start_with?(id) }
+    raise "Ordinary source proposal omitted the actual source commit" unless shown.any? { |id| HelmSmoke.git(workspace, "rev-parse", "--verify", "#{id}^{commit}").strip == tip }
+  end
   if scenario[:tampered_archive]
     raise "Wrong archive failure reported" unless result.fetch(:answer).match?(/digest|hash|fingerprint|tamper|mismatch/i)
     raise "Archive checkpoint was not inspected" unless result.fetch(:calls).any? { |c| HelmAcceptance.strings(c["input"]).any? { |s| s.include?(".helm/archive") && s.match?(/sha256|hashlib|shasum/i) } }
@@ -196,4 +207,9 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   end
   HelmAcceptance.assert_fixture_files!(package, package_before)
   puts "PASS #{name}: #{HelmAcceptance::MODEL}/high, complete exposed trace and verified case-specific file/Git invariants."
+  if scenario[:performance_probe]
+    usage = result.fetch(:events).last.fetch("modelUsage").fetch(HelmAcceptance::MODEL)
+    puts JSON.generate({ scenario: name, elapsed_seconds: elapsed.round(2), tool_calls: result.fetch(:calls).length,
+      assistant_messages: result.fetch(:events).count { |event| event["type"] == "assistant" }, model_usage: usage })
+  end
 end
