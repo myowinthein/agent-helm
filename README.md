@@ -136,3 +136,5 @@ It reviews the project and proposes a preservation plan. After I approve each st
 If something does not work or you have an idea that would make working with agents easier, [share it on GitHub](https://github.com/myowinthein/agent-helm/issues).
 
 Agent Helm is open source under the [MIT license](https://github.com/myowinthein/agent-helm/blob/main/LICENSE).
+
+<!-- last-reviewed: 57532d617951cc576240c2570c34fd474abdc473 -->
