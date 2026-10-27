@@ -50,7 +50,6 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - Operational records live under `.helm/`: refactor/normalize schema 2, test schema 3, legal schema 1. Only the invoked owning workflow accesses its record. Source maintenance leaves live records and protected legacy paths opaque; unsupported state has no automatic migration/reset.
 - Refactor/test helpers load lazily at their eligible owning-state steps. Source-only previews require no helper or Python setup. Maintaining this repo uses a separate installed package rather than treating the checkout as both package and consumer.
 - A source assessment, human selection, edit approval, verified fix and publication are separate results. Preserve stable identities, unknown fields, human decisions and useful closed history; skip/defer/accepted risk does not mean resolved. Follow the owning workflow rather than inventing schema fields or shared cross-ledger access.
-- Batch independent permitted reads and reuse unchanged instructions/pinned-object evidence within an invocation. Refresh mutable source, policy, destination, remote and required-check facts before mutations and read back outcomes. This reduces orchestration, never requested coverage, approval or safety. Keep development checks proportional; passed unchanged-input suites need no repeat merely for another phase.
 - Full scan / Gap scan applies only to log, manifest, test and refactor, with different coverage/checkpoint contracts. Refactor Full scan reads eligible implementation/tests in full; log traces representative flows across all packages/topics. Incomplete review never becomes a complete checkpoint.
 - Refactor preserves behavior and existing test guarantees; test owns missing/stronger protection and independent tooling/strategy work. Neither invokes the other automatically. Required deferred checks remain unverified.
 - Local editing workflows finish on their permitted current branch. Ship alone publishes reviewed work and optional independently selected targets, then separately offers a release on ready integrated main/master. Source publication or a PR handoff does not prove integration, release or deployment.
@@ -59,6 +58,17 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - Archive prepares a reviewed local payload in the current canonical `.helm/archive/` bundle. Ship separately publishes/verifies the private payload and receipt. Historical `.archive/` bundles remain protected; no automatic relocation or replay.
 - Adopt installs reviewed local rule copies; it does not convert external pointers or merge rule bodies. Legal writes complete uncommitted source-based drafts for editor/Markdown review, keeps chat to file links and important changes/gaps, and asks once for Commit / Revise / Leave uncommitted. Preserve existing clauses and distinguish concrete omissions from unassessed legal sufficiency; never require home-address intake or a second model. Exact legal content/commit approval remains independent of auto-commit; only approved commits advance its manifest.
 - Adopt must stop without writes in this Helm source checkout, its nested directories or a Helm package installation. This project reads the maintained `rules/` sources directly; do not create adopted copies or repoint its instructions to them. Test adoption in a separate consumer fixture outside those roots. This restriction also applies when the invoked installed workflow is older than this checkout.
+
+## Instruction authoring
+
+This covers Helm's agent-facing instructions. Generic prose stays in `rules/writing.md`.
+
+- Keep non-obvious, decision-changing guidance. Rewrite affected passages instead of accumulating exceptions or generic tutorials.
+- Define rules once per loaded context; brief action-boundary reminders may repeat. Copied rules retain declared dependencies, including the Git/safety pair, without requiring an installed plugin.
+- Keep routine paths concise; load specialized detail when needed and avoid needless reference layers. Moving text alone is not trimming.
+- Preserve behavior, essential standards, QM capabilities, approvals, state/recovery protections and coverage semantics. Keep text readable; word or line quotas do not establish quality.
+- Batch independent permitted reads; reuse unchanged instructions and pinned-object evidence within an invocation. Refresh mutable source, policy, destination, remote and required checks before mutations; read back outcomes. Never reduce requested coverage, approval or safety.
+- Verify proportionately with focused existing checks; reuse passed results while inputs and policy match, rather than per file/phase. Assess source size, loaded context/tool calls and latency separately; speed claims need comparable measurements.
 
 ## Behavior Rules
 
