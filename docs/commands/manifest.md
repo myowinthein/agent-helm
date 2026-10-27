@@ -32,6 +32,8 @@ flowchart TD
   Review --> Choice{"Apply the proposal?"}
   Choice -->|Revise| Review
   Choice -->|Skip| Finish
+  Choice -->|Keep prose and record review, when eligible| Marker["Update only the review marker"]
+  Marker --> Finish
   Choice -->|All or selected changes| Write["Update and read back<br/>the approved content"]
   Write --> Finish
 ```
@@ -61,8 +63,10 @@ Manifest checks commands, examples and links against source, preserving banners,
 
 For existing content, choose all proposed section changes, a subset, revision or cancellation. Only approved edits are written and read back. Example commands are not executed merely to write the README.
 
+When a complete review finds only optional improvements, the same question also offers **Keep README unchanged and record review**. This preserves the prose and records the reviewed source commit without another approval gate.
+
 ## Your result
 
-You get the README, any approved style preference and unresolved facts. The `last-reviewed` comment records a complete, accepted Full or Gap review; partial edits, repairs and style changes retain earlier provenance.
+You get the README, any approved style preference and unresolved facts. The `last-reviewed` comment records a complete Full or Gap assessment of the relevant source snapshot. Declined optional suggestions do not block it, including when only some edits are accepted. Incomplete review or unresolved inaccuracies and material gaps retain earlier provenance; declining a factual correction does not resolve it. Repairs and style-only changes do not establish a new review baseline. Cancellation writes nothing.
 
 Changes follow your local commit policy and stay on the same branch. Use [ship](ship.html) to publish.
