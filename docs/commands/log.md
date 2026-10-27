@@ -53,7 +53,9 @@ Custom content, imports, settings and adopted rules are preserved unless you app
 ## What the review covers
 
 - **Full scan:** trace important workflows, setup, configuration and tests across every first-party package. This gathers project knowledge rather than auditing every line for code quality.
-- **Gap scan:** review commits and relevant patches since the saved review point, including affected code. Missing or unusable history calls for Full scan.
+- **Gap scan:** review commits and relevant patches since the saved review point, including affected code. If a rewrite changed that commit's ID, log first tries to recover its verified equivalent automatically. Only an unrecoverable baseline or incomplete required history prevents Gap scan.
+
+Recovery tries preserved normalize maps, Git-filter-repo's native map, then verified local object/history correspondence. Success adds a short note before the normal scan choices, without another approval gate. Any marker repair joins the existing approved output; Skip and read-only/no-op outcomes leave files unchanged. This restores the earlier review, not a new one. Missing local evidence in another clone may mean Full scan is still needed.
 
 The review looks for useful identity, configuration, development commands, architecture, domain rules, working agreements, safety hazards and traps. Relevant corrections from the current conversation can become proposed lessons too.
 

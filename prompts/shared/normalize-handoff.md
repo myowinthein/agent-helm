@@ -1,6 +1,6 @@
 # Local normalize handoff
 
-Loaded only by normalize for an approved rewrite/resume, or ship's history/release-evidence discovery. A locator finds private recovery evidence across terminal sessions and Claude/Codex; it grants neither approval nor proof. Other workflows and source maintenance leave real locators and recovery records untouched. No live-ledger access, tracked record/schema change, global setting or automatic cleanup follows.
+Loaded by normalize for an approved rewrite/resume or ship's history/release-evidence discovery. Log/manifest may use only **Location and bounded I/O** for read-only lookup under [review-anchor recovery](review-anchor.md), then return there; ship's selection/publication requirements below are not their procedure. A locator finds private recovery evidence across sessions and hosts; it grants neither approval nor proof. Other workflows and source maintenance leave real locators and recovery records untouched. No live-ledger access, tracked record/schema change, global setting or automatic cleanup follows.
 
 ## Location and bounded I/O
 
@@ -25,9 +25,9 @@ Use the actual host's safe equivalent tools when Python or required filesystem o
 
 - Resolve canonical absolute paths; refuse symlink traversal, linked/nonregular leaves, foreign ownership and unsafe writable metadata directories. Locator directories use 0700 and files 0600, or verified equivalent access restrictions. Preserve existing files/permissions; never repair them automatically.
 - Locator JSON is strict UTF-8, at most 8 KiB, with exactly the three string fields and no duplicate keys. Filename/run ID must agree; IDs contain only lowercase ASCII letters, digits and hyphens, at most 80 characters. Recovery paths are absolute; entrypoints are JSON basenames, not traversal paths. Check recovery-directory/entrypoint metadata without opening bodies. A small entrypoint is at most 256 KiB; full graphs/maps remain separately named proof inputs under the existing publication protocol.
-- Enumerate only the exact locator directory, at most 1,024 entries. Exceeding the limit stops automatic selection without truncation; retain everything and request identified evidence if required. Recognized unfinished `.pending-` writes are not locators; unexpected or invalid entries remain visible issues. Capture results transiently and inspect bounded summaries, not an entire registry/proof dump.
+- Enumerate only the exact locator directory, at most 1,024 entries. Exceeding the limit stops automatic selection without truncation; retain everything and follow the caller's fallback. Recognized unfinished `.pending-` writes are not locators; unexpected or invalid entries remain visible issues. Capture results transiently and inspect bounded summaries, not an entire registry/proof dump.
 - Register only after the existing rewrite approval and verified recovery preparation. Publish a complete locator atomically without clobbering another file, then read it back **before filtering**. An identical already-written locator may satisfy an uncertain same-run retry; a collision/different body stops. Registration failure retains the backup and prevents rewriting. Independent locator files do not authorize concurrent Git/normalize writers.
-- Ship discovery is read-only: it never creates locators, rebuilds missing evidence, runs saved scripts, marks a run consumed or deletes anything. Keep earlier locators after publication because later release-tag correspondence can still need them. Source updates do not retroactively register old operational runs.
+- Ship and permitted review-anchor discovery are read-only: never create locators, rebuild missing evidence, run saved scripts, mark runs consumed or delete anything. Keep earlier locators after publication because later correspondence can still need them. Source updates do not retroactively register old operational runs.
 
 ## Discovery and selection
 

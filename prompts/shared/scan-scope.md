@@ -18,7 +18,7 @@ This prompt grants no additional reads or writes. Never discover/load another co
 
 The caller's local-only inspection must establish that an applicable anchor is a literal hexadecimal commit identity, resolves unambiguously to an available commit object and is an ancestor of the relevant inspected source. Respect its existing abbreviation rules and scope/provenance limits. Do not interpolate file text into shell code or accept arbitrary revision expressions/options. Failed reads/comparisons are unknown, never empty diffs or successful coverage.
 
-An absent/malformed/unavailable/divergent review anchor within otherwise valid inputs is unusable for Gap scan. Do not guess HEAD~1, rewrite anchors, fetch history or borrow another target/branch's checkpoint. Valid endpoints alone do not prove that all required intervening evidence is available or reviewed. Technical ancestry is not proof of when Full scan last happened or of current runtime/external facts.
+An absent/malformed/unavailable/divergent review anchor within otherwise valid inputs is unusable for Gap scan. Log/manifest may first supply a verified recovered baseline under their shared review-anchor procedure; this selector neither invokes recovery nor grants its access to other callers. Do not guess HEAD~1, rewrite anchors, fetch history or borrow another target/branch's checkpoint. Valid endpoints alone do not prove that all required intervening evidence is available or reviewed. Technical ancestry is not proof of when Full scan last happened or of current runtime/external facts.
 
 ## Select and explain depth
 

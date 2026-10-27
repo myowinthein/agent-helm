@@ -52,10 +52,12 @@ An approved choice can be saved as `readme-style`. Full scan does not authorize 
 ## What the review covers
 
 - **Full scan:** check existing claims and missing reader information across relevant project workflows, from prerequisites and installation to use and support.
-- **Gap scan:** follow changes since the saved review point to affected sections. Missing or unusable history calls for Full scan.
+- **Gap scan:** follow changes since the saved review point to affected sections. A rewritten marker is automatically checked for a verified equivalent before falling back to Full scan.
 - **Repair structure:** address specific content or layout gaps without claiming a complete source review.
 
 An explicit style-only change is also possible. Skip and already-current outcomes leave content untouched.
+
+Marker recovery tries preserved normalize maps, the native backend map, then verified local object/history correspondence. A short recovery note precedes the normal choices, with no extra approval gate. Any marker repair is included in the existing approved output and preserves the earlier review; Skip, Cancel and read-only/no-op outcomes write nothing. Missing local proof or incomplete comparison history still prevents Gap scan.
 
 ## Review the update
 
