@@ -9,7 +9,7 @@ Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; a
 | Point | QM form |
 |---|---|
 | Ambiguous project/adoption root or supplied copy source | Single for known candidates; Input for an explicit safe path or missing facts. |
-| Non-project directory confirmation | Review of the named directory and proposed effect. |
+| Populated directory without project markers | Include the directory warning in the concrete installation Review; no preliminary Continue question. |
 | Installation, replacement, repair, connection or optional writing | Review of the shown bodies/diffs, versions and exact entry patches; approve all shown changes or an explicit subset. Preserve the Git/safety dependency. |
 | Missing overwrite, rollback or pointer approval after changed inputs | Review only the new or changed effects; reuse unchanged concrete approval. |
 | Local commit when approval is missing | Review of the exact adoption diff and commit. |
@@ -32,13 +32,13 @@ Use this catalog for inventory, source validation, per-file decisions, copy/upda
 
 ## Read-only preflight
 
-Resolve the selected adoption root under **Before starting** and apply **Source-project and installation guard** before installation/connection proposals, sanity-check Continue or Git preparation. Inspect an eligible consumer, then show the concrete changes before asking to apply or keep them. Do not ask whether to begin reviewing updates. Prepare Git only when the approved action needs writes.
+Resolve the selected adoption root under **Before starting** and apply **Source-project and installation guard** before installation/connection proposals or Git preparation. Inspect an eligible consumer, then show concrete changes before asking to apply them. Reuse explicit Keep/Skip/Cancel answers without asking whether to review excluded work. Prepare Git only when the approved action needs writes.
 
 Pass developer requests and answers safely and unchanged, never as shell code. An explicit source location is evidence to validate under Step 2, not permission to install/update plugins or change client settings. Clarify ambiguous requests before dependent work.
 
 The initial preview permits dirty/staged/untracked files, feature branches, detached checkouts and no repository/HEAD. Label the inspected working tree, branch/SHA when available, adoption root and limitations. Assess this checkout, not an unseen base/upstream. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where inspection might refresh the index; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. Unavailable reads are unknown, not empty results.
 
-Static preflight executes no project code, hooks, dynamic configuration, tests/discovery, linters, builds, installs or services. It performs no fetch, checkout, branch/index/ref/file/report-artifact write, publication or state access. Keep output in conversation. Report layout/source blockers and safe independent observations without following broken chains or escalating to writes. Keep/Cancel/no-action exits leave Git untouched. A later write requires the destination preparation and fresh plan in Step 4.
+Static preflight executes no project code, hooks, dynamic configuration, tests/discovery, linters, builds, installs or services. It performs no fetch, checkout, branch/index/ref/file/report-artifact write, publication or state access. Keep output in conversation. Report layout/source blockers and safe independent observations without following broken chains or escalating to writes. Whole-plan Keep/Cancel/no-action exits leave Git untouched. A later write requires Step 4's destination verification.
 
 ## Source-project and installation guard
 
@@ -88,29 +88,20 @@ Before any Git preparation, check whether the selected adoption root looks like 
 Decide based on what is present:
 - **Project markers found** → proceed.
 - **Empty directory** (no project markers and no other files) → proceed silently. This is a plausible fresh-project setup with nothing to clobber.
-- **Non-empty but no project markers** → this is the suspicious case (a populated folder that isn't a project — possibly the wrong directory). Confirm before writing:
+- **Non-empty but no project markers** → warn that this may be the wrong directory. Include its exact path and the warning in Step 3's installation proposal, then ask Install shown rules here / Cancel once. That approval covers both placement and the shown changes, not unrelated existing files. Ambiguous roots and protected targets still stop under their own guards; no separate Continue question precedes the proposal.
 
-  QM Review:
-    question: "This directory has files but does not look like a project (no .git, no {adopt_file}, no recognised manifest). Continue anyway?"
-    header:   "Confirm"
-    choices:
-      - label: "Continue"
-        description: "Adopt rules here anyway"
-      - label: "Cancel"
-        description: "Exit without changes"
-
-  If Cancel → exit without writes or Git preparation. If a destination recheck later reveals a new sanity blocker, stop before writes and report unchanged/pending status without branch cleanup.
+If a destination recheck reveals a new sanity blocker, stop dependent writes and refresh only the affected placement/content decision.
 
 ## Step 2 — Scan existing rules
 
 Inventory actual directives/imports for each catalog rule in the owner and applicable entries. Resolve local targets relative to the referring file; quoted examples are not pointers. Classify local, missing/dangling and custom/unknown targets separately. Report a known external installation pointer as unsupported and block dependent work, without fetching/loading its target.
 
-Establish managed local ownership from exact directives, a recognized leading agent-helm marker and actual body evidence, or explicit confirmation of the exact project-local span. Basenames, directory prefixes and another plugin's mention do not establish ownership. Unknown/custom files need individual review; unavailable local bodies block a claimed comparison.
+Establish managed local ownership from exact directives, a recognized leading agent-helm marker and actual body evidence, or explicit confirmation of the exact project-local span. Basenames, directory prefixes and another plugin's mention do not establish ownership. Name unknown/custom files explicitly in the proposed overwrite; unavailable local bodies block a claimed comparison.
 
 Classify each catalog destination `.claude/rules/{name}` separately, including unselected writing without treating it as required:
 
 - **Helm-marked:** its entire first line is `<!-- helm-rule: agent-helm@v{X.Y.Z} -->`. Record its numeric version, never assume pristine content/authenticity.
-- **Foreign:** an existing file without a valid leading Helm marker; protect it through individual Overwrite/Skip review.
+- **Foreign:** an existing file without a valid leading Helm marker; require explicit named overwrite approval through Step 3.
 - **Absent:** no file; a dangling local pointer is a repair, not an installed rule.
 
 Use one per-rule table for local status, marker/body relation, pointer spans, source, selection, proposed action, approval and dependencies. Missing selected companions remain visible. Unsupported external dependencies are blockers rather than a conversion display mode.
@@ -119,7 +110,7 @@ Use one per-rule table for local status, marker/body relation, pointer spans, so
 
 On **both** hosts default `{rule_source_root}` to the actual loaded `{package_root}` resolved through the runtime, with `current_version` from its `.claude-plugin/plugin.json`. Verify manifest name `agent-helm`, a usable numeric version and readable catalog sources required by the selected copy/update and its dependencies within that verified package root; freeze their exact bytes. Source absence blocks the affected source-dependent action, never Keep/connection to valid existing copies or an unrelated action merely because writing is unselected. Do not prefer a Claude marketplace checkout, guess a Codex/Claude cache, enumerate installations or install/update a plugin to find a copy source. Package identity is observed evidence, not authentication.
 
-An explicit developer-supplied alternative package can be the reviewed copy source after the same manifest/rule/containment validation. If it differs from the loaded package in version or a relevant rule body/availability, show the available identities/differences and resolve the requested source before dependent writes. Never mix rule bodies from different packages or silently fall back from an invalid selected source. This source choice creates only local copies; it never creates a persistent pointer to that installation or URL.
+Use an unambiguous developer-supplied alternative package after the same manifest/rule/containment validation; disclose differences from the loaded package in the proposal without another source-confirmation gate. Ask only for conflicting or ambiguous source choices. Never mix packages or silently fall back from an invalid selected source. This choice creates only local copies, never a persistent installation/URL pointer.
 
 Copy/update and missing-local-copy repair require a valid selected copy source. Keep or connection-only to readable managed local copies needs no unrelated update source; unknown comparison remains unknown, never current/in sync. Do not require another client or marketplace installation.
 
@@ -132,13 +123,13 @@ For a marked local copy, remove **only** the recognized first marker line and it
 - **Unknown:** comparison/source/read unavailable. Preserve the file, report the limitation, and allow only otherwise valid Keep/connection actions until a source-dependent action can be reviewed.
 - **Absent / foreign:** retain those per-file distinctions and identify each proposed replacement explicitly. Unknown markers remain foreign; an existing filename or recorded version alone never establishes ownership or permits overwrite.
 
-Show an authoritative raw before/after diff before each content-changing replacement when the old body is readable; unavailable-target recovery instead shows the complete proposal with its explicit unknown-source approval below. A short secondary summary may explain changed Git, commit, safety, CI or ownership obligations, but never substitutes for the diff.
+Show the raw before/after diff for each proposed replacement and the complete proposed file for a missing copy. An unreadable existing body leaves its replacement pending. A short summary may explain changed Git, commit, safety, CI or ownership obligations, but never substitutes for the diff.
 
 Identify every different/uncertain body and any proposed rollback by file and old/new version. Approval may cover all shown replacements or an explicit subset in one answer; separate prompts per file are not required. Keep preserves bytes and existing pointers. Never merge policies automatically or infer replacement permission from an older marker.
 
 Report Fresh (no files/pointers), Update (managed local copies), Conflict (foreign files/competing targets) and Repair (missing local dependencies) as display summaries. Unsupported external pointers stop for explicit maintenance outside adopt. Preserve the exact per-rule evidence and requested scope.
 
-Content-equivalent local bodies retain exact bytes/markers even when older or differently branded. A newer marker requires explicit rollback disclosure but does not establish content equivalence. Missing comparison data permits valid local Keep/connection choices, never a current/in-sync claim. No new provenance ledger is introduced.
+Content-equivalent local bodies retain exact bytes/markers even when older or newer; never offer a downgrade merely to refresh a marker. A proposed replacement with a lower version needs explicit rollback disclosure. Missing comparison data permits valid local Keep/connection choices, never a current/in-sync claim. No new provenance ledger is introduced.
 
 ### Static destination checks
 
@@ -153,15 +144,17 @@ Ask directly about the shown effects, using applicable choices with at most four
 | Situation | Choices and protections |
 |---|---|
 | Fresh | Show the proposed rules and minimal instruction entries, then Install shown rules / Cancel. Allow explicit omissions in the same review; no later per-file installation questions. |
-| Managed local bodies equivalent, all existing/selected pointers and entries connected | Preserve files/markers. With no separately accepted writing addition or other requested change, report no changes; optional writing absence is not a repair. |
-| Healthy managed local copies need an entry/adapter | Show the exact entry patches, then Apply connection / Skip / Cancel. Preserve rule bodies; no update source is required for readable valid copies. |
+| All required bodies equivalent and connected, including older/newer markers | Preserve files/markers and report no changes without a question. Handle optional new writing separately below; its absence is not a repair. |
+| Kept or equivalent managed copies need an entry/adapter | Show only the exact entry patches, then Apply connection / Skip / Cancel. Preserve rule bodies and markers; no update source or replacement decision is required. |
 | Different managed bodies | Show the named body diffs and entry changes, then Replace shown rules / Keep existing / Cancel. An explicit subset is valid; do not ask again for each approved file. |
 | Missing copies or directives | Show the complete missing bodies and entry patches, then Apply repairs / Skip / Cancel. Include required companions in the proposal, never silently add them after approval. |
-| Known ahead local/reference version | Show the exact named downgrade, old/new versions and diff, then Replace with shown version / Keep existing / Cancel. A concrete answer can approve multiple explicitly listed downgrades. |
+| New writing available in an existing installation | In a general review, show its full body and pointer patch, then Install writing / Not now. Explicit Git/safety-only scope just reports availability. No later installation approval follows. |
+| A proposed body replacement would downgrade a managed copy | Show the exact named downgrade, old/new versions and diff, then Replace with shown version / Keep existing / Cancel. A concrete answer can approve multiple explicitly listed downgrades. |
 | Foreign local files selected for adoption | Show the named custom-file diffs, replacement effects and any required repairs, then Overwrite shown files / Skip / Cancel. Never infer overwrite permission from a filename or general install request. |
+| Copy source or comparison unavailable | Keep bodies unchanged. A valid connection can use its direct patch approval; source-dependent replacements/repairs stay pending, with no speculative install question. |
 | External references | Stop with upgrade guidance; preserve pointers and installations. |
 
-Combine mixed cases in one concrete review where practical. Optional writing can use an independent Install writing / Not now question in the same batch, or clearly scoped combined choices; never silently include it in an ambiguous Apply all. An answer such as "apply all three" after all three bodies/diffs and entry patches were shown approves those exact actions. Preserve explicit Keep/Skip/exclusions. A choice to inspect or choose a subset is not approval yet: ask only which already shown actions to apply. Conflicting or incomplete answers, or a subset missing a required dependency, need clarification without silently broadening it.
+Use one concrete review for mixed cases: name every update, repair, connection, optional addition and retained file. Approval can cover all shown actions or exact IDs; state whether each combined choice includes writing. An answer such as "apply all three" after all three bodies/diffs and entry patches were shown approves those exact actions. Preserve exclusions; keeping one rule does not cancel another approved action. If the user only asks to inspect or choose, ask which shown actions to apply, not another approval afterward. Clarify conflicting/incomplete answers or missing required dependencies without silently broadening scope.
 
 A whole-plan Keep/Cancel/no action exits without Git preparation or new entries. If all foreign files are skipped and no independent writing addition or valid connection was explicitly approved, write nothing, including adapters/companion repairs; this is not a complete shared Helm installation. An explicitly accepted writing-only addition can proceed under its own exact reviewed scope, without silently installing/repairing the skipped Git/safety pair or claiming its coverage.
 
@@ -169,9 +162,9 @@ For partial ordinary local repairs, preserve each Skip and existing pointers; ad
 
 ## Step 4 — Execute
 
-### Prepare only the selected write, then replan
+### Verify the approved destination
 
-Keep/Cancel and an already-connected/content-equivalent no-action outcome stop without checkout/fetch/branch creation. For a selected write, reapply **Source-project and installation guard** with the actual target and selected copy source, then check preliminary target containment, symlinks, collisions and ignore status before Git preparation; repeat on the actual destination below. These checks do not authorize changes.
+With no approved changes or a whole-plan Cancel, stop without checkout/fetch/branch creation. For approved writes, reapply **Source-project and installation guard** and verify target containment, symlinks, collisions and ignore status. Unchanged evidence needs no new plan or question; these checks grant no additional scope.
 
 Only **no repository or no HEAD** skips Git preparation: freeze the selected project's snapshots and later leave files uncommitted, without initializing Git or inventing a base. Preserve existing originals; Git recovery may not exist. A repository with HEAD still requires current-base write eligibility even with no instruction files.
 
@@ -241,7 +234,7 @@ If every foreign file was skipped and no independent writing addition or valid c
 
 ### No-change path
 
-- For no action/Keep project rules, make no changes and report actual content/marker/source evidence, including unknown relations. No Git preparation for a normal preflight exit. If a destination recheck after preparation finds no remaining action, Step 5 reports no local changes without cleanup. A current-checkout preview is not proof the unseen base/upstream has the same installation.
+- With no approved changes, preserve all files and report actual content/marker/source evidence, including unknown relations. No Git preparation for a normal preflight exit. If a destination recheck finds no remaining action, Step 5 reports no local changes without cleanup. Keeping selected bodies never discards an independently approved writing addition or connection. A current-checkout preview does not certify unseen base/upstream content.
 
 ### Cancel path
 
@@ -261,11 +254,11 @@ Any write, read-back, content, directive, or preservation failure blocks Step 5 
 
 ### Pending-work and no-op rules
 
-Failed/declined writes, verification or commits preserve actual files/index/current branch and earlier successful work. Report partial/draft/pending status. Never reset/stash/absorb work or clean up branches. No changes means no commit; no branch was created to remove. No repository/HEAD keeps verified outputs uncommitted without initializing Git. Remote/provider access is unnecessary for local installation completion.
+Failed/declined writes, verification or commits preserve actual files/index/current branch and earlier successful work. Report partial/draft/pending status. On continuation, reconcile completed outputs and perform only missing approved actions; changed inputs need the affected review, never a blind retry. No reset/stash/absorption or branch cleanup. No changes means no commit. No repository/HEAD keeps verified outputs uncommitted without initializing Git. Local completion needs no remote/provider access.
 
 ### Commit verified adoption changes
 
-Use the invocation's resolved `git-auto-commit`: true permits the scoped adoption commit silently; false/missing requires approval for the exact diff. If declined, stop with pending files, without integration or cleanup. Never interpret commit approval as push approval.
+Use the invocation's resolved `git-auto-commit`: true permits the scoped adoption commit silently; false/missing requires exact commit approval, reusing any already supplied with the reviewed plan. Install/replace approval alone does not approve a commit. An explicit leave-uncommitted choice finishes with drafts and no repeated commit question. Never interpret commit approval as push approval.
 
 Stage only the exact approved owner, entry/adapter/bridge and local-rule paths using literal pathspecs, for example `git --literal-pathspecs add -- {approved_paths}`. This workflow has no rule-file deletion action; unexpected staged deletions block the commit for reconciliation. Resolve those paths from the selected adoption root into the verified Git working tree's path namespace, especially for nested projects; never accidentally stage the root's similarly named files. Do not stage whole directories, operational state, unrelated changes or client settings.
 
