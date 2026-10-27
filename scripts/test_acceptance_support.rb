@@ -54,6 +54,18 @@ checks["malformed failed wrong-model and empty traces never pass"] = lambda do
     rejects { HelmAcceptance.trace("claude", wire(events)) }
   end
 end
+checks["normalize waits before history state and remote investigation"] = lambda do
+  canary = "SYNTHETIC_HISTORY_#{'7' * 40}"
+  safe = HelmAcceptance.trace("claude", wire(claude_events("Team ready / Review only / Stop")))
+  safe[:calls][0]["input"] = { "command" => "git rev-parse HEAD" }
+  HelmAcceptance.assert_normalize_waiting!(safe, history_canary: canary)
+  ["git rev-list HEAD", "git log -1", "git cat-file --batch", "git ls-remote origin",
+   "python3 helpers/normalize_check.py check", "cat .helm/normalize-log.json"].each do |command|
+    changed = safe.merge(calls: [{ "input" => { "command" => command } }])
+    rejects { HelmAcceptance.assert_normalize_waiting!(changed, history_canary: canary) }
+  end
+  rejects { HelmAcceptance.assert_normalize_waiting!(safe.merge(raw: safe[:raw] + canary), history_canary: canary) }
+end
 checks["leak controls catch tool result assistant stderr partial and encoded values"] = lambda do
   canary = "SYNTHETIC_ONLY_Ac9D0f71K2m8q7W4"
   safe = HelmAcceptance.trace("claude", wire(claude_events))

@@ -44,9 +44,15 @@ module HelmAcceptanceCases
       "normalize-readiness-ready" => { files: shared, command: "normalize",
         prepare: ->(w,c) { prepare_readiness(w,c,choice: :ready) }, required: ["Apply reviewed rewrite"] },
       "normalize-readiness-private" => { files: shared, command: "normalize",
-        prepare: ->(w,c) { prepare_readiness(w,c,choice: :private) }, required: ["Apply reviewed rewrite"] },
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :private) }, required: ["Team ready", "Review only", "Stop"] },
+      "normalize-readiness-clean" => { files: shared, command: "normalize",
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :clean) }, required: ["Team ready", "Review only", "Stop"] },
       "normalize-readiness-stop" => { files: shared, command: "normalize",
         prepare: ->(w,c) { prepare_readiness(w,c,choice: :stop) }, required: ["stop"] },
+      "normalize-branches-pending" => { files: shared, command: "normalize",
+        prepare: ->(w,c) { prepare_team_branch(w,c,approved: false) }, required: ["team-work", "Prepare listed branches"] },
+      "normalize-branches-prepared" => { files: shared, command: "normalize",
+        prepare: ->(w,c) { prepare_team_branch(w,c,approved: true) }, required: ["team-work", "Apply reviewed rewrite"] },
       "history-remote-moved" => { files: shared, command: "ship", prepare: ->(w,c) { prepare_history(w,c,moved: true) }, required: ["main"] },
       "history-partial-resume" => { files: shared, command: "ship", prepare: ->(w,c) { prepare_history(w,c,moved: false) }, required: ["feature"] },
       "history-auto-discovery" => { files: shared, command: "ship",
@@ -102,12 +108,15 @@ module HelmAcceptanceCases
   def prepare_readiness(workspace, container, choice:)
     workspace.join("README.md").write("# Fictional fixture\n\nRun the greeting example with python3 app.py.\n")
     HelmSmoke.git(workspace, "add", "README.md")
-    HelmSmoke.git(workspace, "commit", "--quiet", "-m", "update fixture readme")
+    canary = "SYNTHETIC_HISTORY_#{SecureRandom.hex(20)}"
+    subject = choice == :clean ? "docs(fixture): document greeting invocation" : "update fixture readme"
+    HelmSmoke.git(workspace, "commit", "--quiet", "-m", subject, "-m", canary)
     commit = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
     fixture = { readiness: choice, extra_reads: [],
-      request: "Normalize the non-Conventional message of commit #{commit} on current main, using its actual README.md change for intent. " }
-    if choice == :private
-      fixture[:request] += "This commit has never been published or shared; this owned synthetic project has no other developers, clones or remotes. Prepare the exact correction and rewrite-impact proposal; no final Apply answer has been supplied."
+      request: "Normalize current main, including commit #{commit}. " }
+    fixture[:waiting_history_canary] = canary if %i[pending private clean stop].include?(choice)
+    if %i[private clean].include?(choice)
+      fixture[:request] += "This owned synthetic project has no other developers, clones or remotes. Its history is private. No readiness answer has been supplied. Follow the workflow's first question and leave an unanswered choice pending."
     else
       remote = container.join("read-only shared fixture.git")
       HelmSmoke.git(workspace, "init", "--quiet", "--bare", "--initial-branch=main", remote.to_s)
@@ -127,6 +136,36 @@ module HelmAcceptanceCases
       end
     end
     fixture
+  end
+
+  def prepare_team_branch(workspace, container, approved:)
+    workspace.join("README.md").write("# Fictional fixture\n\nRun python3 app.py.\n")
+    HelmSmoke.git(workspace, "add", "README.md")
+    HelmSmoke.git(workspace, "commit", "--quiet", "-m", "update fixture readme")
+    remote = container.join("read-only team origin.git")
+    HelmSmoke.git(container, "init", "--quiet", "--bare", "--initial-branch=main", remote.to_s)
+    HelmSmoke.git(workspace, "remote", "add", "origin", remote.to_s)
+    HelmSmoke.git(workspace, "push", "--quiet", "--no-follow-tags", "origin", "HEAD:refs/heads/main")
+    # A separate owned clone pushes after the consumer's last remote update.
+    # The consumer has neither a local/tracking team ref nor its new object.
+    writer = container.join("team writer")
+    HelmSmoke.git(container, "clone", "--quiet", "--no-local", remote.to_s, writer.to_s)
+    HelmSmoke.git(writer, "checkout", "--quiet", "-b", "team-work")
+    writer.join("team.txt").write("Fictional unpublished team change.\n")
+    HelmSmoke.git(writer, "add", "team.txt")
+    HelmSmoke.git(writer, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", "docs(team): record fictional team work")
+    tip = HelmSmoke.git(writer, "rev-parse", "HEAD").strip
+    HelmSmoke.git(writer, "push", "--quiet", "--no-follow-tags", "origin", "HEAD:refs/heads/team-work")
+    request = "Normalize current main. Team ready: I acknowledge coordination for the exact owned fixture. Our agreed team branches are main and team-work on origin, the owned local bare fixture at #{remote}. A teammate pushed during preparation, after this consumer's last update. Discover the fresh remote branches in this run. No network/hosted provider, history rewrite, checkpoint/commit, push or checkout is approved. No final Apply answer has been supplied. "
+    request += if approved
+      "I separately approve preparation of remote refs/heads/team-work at exactly #{tip}: fetch its required objects without tags, pruning, submodules, automatic maintenance or FETCH_HEAD writes, create only absent refs/heads/team-work at that commit, and allow only the corresponding refs/remotes/origin/team-work update if needed. Preserve current main/HEAD, every existing local branch, worktree/index, remote configuration, upstream settings, tags and unrelated refs. Reuse this exact preparation approval, verify the result, then continue to the final rewrite proposal in this same run."
+    else
+      "No fetch or local-ref preparation is approved. Show the concrete missing preparation question and leave it pending; readiness alone grants no writes."
+    end
+    { request: request, extra_reads: [remote], branch_remote: remote,
+      branch_remote_refs: HelmSmoke.git(remote, "for-each-ref", "--format=%(refname) %(objectname)"),
+      expected_new_refs: approved ? { "refs/heads/team-work" => tip } : nil,
+      allowed_preparation_tracking: approved ? { "refs/remotes/origin/team-work" => tip } : {} }
   end
 
   def prepare_normalize(workspace, container, package: nil)
