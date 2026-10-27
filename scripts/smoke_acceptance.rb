@@ -104,69 +104,9 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   end
   HelmAcceptance.assert_no_state_access!(result) if scenario[:no_state]
   if name == "normalize-rewrite"
-    graph_before = scenario.fetch(:graph_before)
-    graph_after = HelmGitAcceptance.graph(workspace)
-    mapping = HelmGitAcceptance.derive_mapping(graph_before, graph_after, scenario.fetch(:replacements))
-    checkpoint = JSON.parse(HelmSmoke.read_regular(workspace, ".helm/normalize-log.json"))
-    first = scenario.fetch(:replacements).keys.fetch(0)
-    unless checkpoint["schema_version"] == 2 && checkpoint.fetch("branches").keys == ["main"] &&
-           checkpoint.dig("branches", "main", "last_checked_commit") == mapping.fetch(first) &&
-           checkpoint.dig("branches", "main", "review_kind") == "semantic"
-      raise "Normalize checkpoint overstates the reviewed prefix"
-    end
-    tip = graph_after.fetch(:refs).fetch("refs/heads/main")
-    parents = graph_after.fetch(:commits).fetch(tip).fetch(:headers).grep(/^parent /)
-    expected_parent = mapping.fetch(graph_before.fetch(:refs).fetch("refs/heads/main"))
-    raise "Unexpected checkpoint ancestry" unless parents == ["parent #{expected_parent}"]
-    raise "Unexpected checkpoint diff" unless HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", tip).lines.map(&:strip) == [".helm/normalize-log.json"]
-    core = Marshal.load(Marshal.dump(graph_after))
-    core[:refs]["refs/heads/main"] = expected_parent
-    core[:index] = graph_before.fetch(:index)
-    HelmGitAcceptance.assert_rewrite!(graph_before, core, mapping, scenario.fetch(:replacements))
-    evidence = scenario.fetch(:private_path)
-    raise "Private proof is not owner-only" unless (evidence.stat.mode & 077) == 0
-    saved = JSON.parse(HelmSmoke.read_regular(evidence, "verified-map.json"))
-    unless HelmAcceptance.map_pairs(saved) == mapping
-      warn "Synthetic map structure: #{saved.class}; keys=#{saved.is_a?(Hash) ? saved.keys.first(5).inspect : 'not an object'}"
-      raise "Saved current-run map mismatch"
-    end
-    recovery = container.join("independent recovery")
-    recovery.mkpath
-    protected_bundle_refs = graph_before[:refs].select { |k,_| k.start_with?("refs/heads/", "refs/tags/") }
-    HelmGitAcceptance.verify_bundle!(workspace, evidence.join("recovery.bundle"), graph_before[:refs].select { |k,_| k.start_with?('refs/heads/') }.values, recovery, expected_refs: protected_bundle_refs)
-    approved[".helm/normalize-log.json"] = HelmSmoke.read_regular(workspace, ".helm/normalize-log.json")
-    HelmAcceptance.assert_fixture_files!(workspace, before, approved)
+    HelmAcceptance.verify_normalize!(workspace: workspace, container: container, scenario: scenario, before: before, approved: approved)
   elsif scenario[:test_fixture]
-    contract = scenario.fetch(:test_fixture)
-    ledger = JSON.parse(HelmSmoke.read_regular(workspace, ".helm/test-log.json"))
-    finding = ledger.fetch("cases").find { |c| c["id"] == contract.fetch(:id) }
-    raise "Synthetic test finding is missing or scope expanded" unless ledger["schema_version"] == 3 && finding && ledger.fetch("cases").length == 1
-    raise "A human skip/risk decision was invented" if %w[skip accepted-risk].include?(finding.dig("decision", "type"))
-    raise "Backlog-only work advanced scan roots" unless %w[assessed_commit full_scan_commit].all? { |key| ledger[key] == contract.fetch(:source) }
-    checked, status = Open3.capture2e("python3", "-I", "-B", package.join("helpers/helm.py").to_s, "ledger-check",
-      stdin_data: JSON.generate(interface_version: 1, owner: "test", workspace: workspace.to_s))
-    raise "Invalid synthetic test record" unless status.success? && JSON.parse(checked).dig("result", "status") == "valid"
-    commits = HelmSmoke.git(workspace, "rev-list", "#{before_git.fetch(:head).strip}..HEAD").lines.map(&:strip)
-    if contract.fetch(:successful)
-      closure = finding.fetch("closure")
-      code = closure.fetch("commit")
-      raise "Successful closure lacks actual separate code provenance" unless finding["state"] == "resolved" && closure["method"] == "runtime" && commits.include?(code) && code != commits.first
-      raise "Wrong code commit scope" unless HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", code).lines.map(&:strip) == ["tests/test_greeting.py"]
-      raise "Wrong final closure commit scope" unless HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").lines.map(&:strip) == [".helm/test-log.json"]
-      raise "Unexpected successful-test commit scope" unless (2..3).include?(commits.length) && commits.all? { |id| HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", id).lines.map(&:strip) == [id == code ? "tests/test_greeting.py" : ".helm/test-log.json"] }
-      HelmSmoke.git(workspace, "merge-base", "--is-ancestor", code, "HEAD")
-      raise "Successful fixture retained source/index drafts" unless HelmSmoke.git(workspace, "status", "--porcelain", "--untracked-files=no").empty?
-    else
-      raise "Deferred/failed verification falsely closed a case" unless finding["state"] == "open" && !finding.key?("closure")
-      raise "Unexpected test/code commit after unverified work" unless commits.length <= 1 && commits.all? { |id| HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", id).lines.map(&:strip) == [".helm/test-log.json"] }
-    end
-    approved[".helm/test-log.json"] = HelmSmoke.read_regular(workspace, ".helm/test-log.json")
-    HelmAcceptance.assert_fixture_files!(workspace, before, approved)
-    if contract.fetch(:deferred)
-      raise "Deferred tests were executed" if result.fetch(:calls).any? { |c| HelmAcceptance.strings(c["input"]).any? { |s| s.match?(/\b(?:unittest|pytest)\b/) && s.match?(/\bpython\S*\s+(?:-\S+\s+)*-m\s/) } }
-    elsif !contract.fetch(:successful)
-      raise "Expected failed verification never ran" unless HelmAcceptance.strings(result.fetch(:tool_outputs)).any? { |s| s.include?("FAILED") && s.include?("TypeError") }
-    end
+    HelmAcceptance.verify_test_lifecycle!(workspace: workspace, package: package, scenario: scenario, before: before, before_git: before_git, approved: approved, result: result)
   else
     HelmAcceptance.assert_fixture_files!(workspace, before, approved)
     if scenario[:expected_tracking]
@@ -185,32 +125,7 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     end
   end
   if scenario[:local_remote]
-    observed = HelmGitAcceptance.remote_refs(workspace, scenario.fetch(:local_remote))
-    HelmGitAcceptance.assert_publication!(observed, scenario.fetch(:expected_remote))
-    commands = result.fetch(:calls).flat_map { |c| HelmAcceptance.strings(c.fetch("input")) }
-    remote_tip = scenario.fetch(:expected_remote).fetch("refs/heads/main")
-    inspected = result.fetch(:calls).any? do |call|
-      command = HelmAcceptance.strings(call.fetch("input")).join("\n")
-      command.match?(/\b(?:ls-remote|show-ref|for-each-ref|rev-parse|cat-file)\b/) &&
-        (command.include?("ls-remote") || command.include?(scenario.fetch(:local_remote).to_s)) &&
-        HelmAcceptance.strings(call["output"]).any? { |text| text.include?(remote_tip) }
-    end
-    raise "Actual remote main was not inspected" unless inspected
-    if scenario[:immutable_proof]
-      proof = JSON.parse(HelmSmoke.read_regular(scenario.fetch(:private_path), "handoff.json"))
-      raise "Original proof or fixed expectations were replaced" unless scenario.fetch(:immutable_proof).all? { |key,value| proof[key] == value }
-    end
-    if scenario[:expected_updates]
-      raise "Fixture recorder hook changed" unless HelmSmoke.read_regular(scenario.fetch(:local_remote), "hooks/pre-receive") == scenario.fetch(:fixture_hook).b
-      log = scenario.fetch(:local_remote).join("fixture-updates.log")
-      updates = log.file? ? HelmSmoke.read_regular(scenario.fetch(:local_remote), "fixture-updates.log").lines.map(&:strip) : []
-      raise "Unexpected fixture publication actions" unless updates == scenario.fetch(:expected_updates)
-    end
-    if %w[history-remote-moved archive-completed-no-replay ship-completed-backup-no-replay].include?(name)
-      raise "Moved remote caused a publication attempt" if commands.any? { |c| c.match?(/\bgit\s+push\b/) }
-    else
-      raise "Partial resume omitted its fixed feature lease" unless commands.any? { |c| c.include?("--force-with-lease=refs/heads/feature:") }
-    end
+    HelmAcceptance.verify_publication!(name: name, workspace: workspace, scenario: scenario, result: result)
   end
   if scenario[:tampered_archive]
     raise "Wrong archive failure reported" unless result.fetch(:answer).match?(/digest|hash|fingerprint|tamper|mismatch/i)
