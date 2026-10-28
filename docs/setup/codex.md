@@ -12,6 +12,6 @@ permalink: /docs/setup/codex.html
 
 The desktop app has three modes: **Chat**, **Work** and **Codex**.
 
-Install through the desktop app or terminal to use Helm in **Work**, **Codex** and the **terminal** on this computer. Chat lacks the local project and terminal access Helm workflows require.
+Either installation method lets you use Helm in the desktop app and terminal on this computer, except in **Chat**, which lacks the local project and terminal access Helm requires.
 
 {% include setup-tabs.html platform="codex" %}
