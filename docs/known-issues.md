@@ -13,7 +13,7 @@ Observations from maintainer testing and use on macOS, alongside documented plat
 <details id="noticeably-longer-command-runtimes-in-codex" markdown="block">
 <summary>Noticeably longer command runtimes in Codex</summary>
 
-**Observed:** Helm commands have taken noticeably longer in Codex than in Claude during maintainer testing and daily use, particularly in longer workflows. The size of the difference varies with the task, model and client.
+**Observed:** The slowdown is more apparent in longer workflows and varies by task, model and client.
 
 Official guidance describes factors that can increase waiting time:
 
