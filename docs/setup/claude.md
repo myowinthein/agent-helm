@@ -12,6 +12,6 @@ permalink: /docs/setup/claude.html
 
 The desktop app has two modes: **Claude** (Chat + Cowork) and **Code**.
 
-Install through **Claude → Customize → Plugins** to use Helm in Claude, Code and the terminal, with account sync enabled. Installing through **Code** or the terminal makes Helm available in Code and the terminal only.
+Plugins installed in **Claude** are shared with **Code** and the terminal through account sync, but plugins installed through Code or the terminal aren't shared back to Claude.
 
 {% include setup-tabs.html platform="claude" %}
