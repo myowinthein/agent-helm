@@ -76,11 +76,11 @@ Before core publication show the source SHA, exact destination/refspec, full inc
 
 ### Collect and refresh the source snapshot
 
-Prioritize timely completion of the selected operation. Define its required evidence before deeper investigation: exact included work, source/destination refs, applicable policy/checks, approval and any required special-route proof. Assess each decision once; retain the supported route, scope and review until relevant facts change. Stop investigating when that evidence supports the decision and continue to the next authorized step. Investigate concrete blockers, not hypothetical alternatives or perfect certainty. Disclose nonblocking uncertainty once and proceed; unresolved identity, included content, authorization, required policy/checks or safety evidence still blocks its dependent action.
+Apply the shared runtime's **Execution and evidence reuse** policy. For the selected operation, establish exact included work, source/destination refs, applicable policy/checks, approval and any required special-route proof. Unresolved required evidence blocks its dependent action.
 
-Batch independent permitted local reads and, once the host/repository/ref is bound, authenticated policy, open-request and required-check queries with complete relevant pagination. Return decision-critical fields and necessary evidence, not raw blobs; load references only for the selected action. Stop dependent work at a discovered blocker without investigating unrelated routes to fill the report.
+Once the host/repository/ref is bound, batch independent authenticated policy, open-request and required-check queries with complete relevant pagination. Do not investigate unrelated publication routes to fill the report.
 
-Bind complete reviewed messages/diffs, decisions and verified test results to their actual source, inputs, configuration and required identity; reuse them while unchanged. Immediately before each approved mutation, refresh relevant mutable HEAD/index/worktree, settings, destination, remote refs, protection/checks and request state. This freshness check is not a new content review or test run unless relevant facts changed or an exact-SHA gate requires it. Reassess only affected decisions/results; preserve all required approvals, full history-rewrite proof and publication readback. Fresh observations never replace a rejected fixed lease or authorize a changed plan. A batch is not a lock; material drift stops dependent execution.
+Immediately before each approved mutation, apply the runtime's freshness checks to source/destination identity, effective policy/checks and request state. Preserve required approvals, full history-rewrite proof, fixed leases and publication readback. Fresh observations never replace a rejected lease or authorize a changed plan. A batch is not a lock; material drift stops dependent execution.
 
 ### Core direct publication
 

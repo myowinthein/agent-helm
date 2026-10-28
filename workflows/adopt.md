@@ -123,13 +123,11 @@ For a marked local copy, remove **only** the recognized first marker line and it
 - **Unknown:** comparison/source/read unavailable. Preserve the file, report the limitation, and allow only otherwise valid Keep/connection actions until a source-dependent action can be reviewed.
 - **Absent / foreign:** retain those per-file distinctions and identify each proposed replacement explicitly. Unknown markers remain foreign; an existing filename or recorded version alone never establishes ownership or permits overwrite.
 
-Read and compare complete local/source bodies internally, including the full proposed source for a missing copy. An unreadable existing body leaves replacement pending. Identify material changes to Git/configuration, commit/publication, safety, CI and ownership obligations; a marker, hash or diffstat alone is not content inspection. Step 3 owns concise human presentation; full bodies/diffs are not a default approval requirement.
+Read and compare complete local/source bodies internally, including the full proposed source for a missing copy. An unreadable existing body leaves replacement pending. Identify material changes to Git/configuration, commit/publication, safety, CI and ownership obligations; a marker, hash or diffstat alone is not content inspection. Carry differing/uncertain bodies and proposed rollbacks into Step 3 by file and old/new version.
 
-Identify every different/uncertain body and any proposed rollback by file and old/new version. Approval may cover all shown replacements or an explicit subset in one answer; separate prompts per file are not required. Keep preserves bytes and existing pointers. Never merge policies automatically or infer replacement permission from an older marker.
+Keep preserves bytes and existing pointers. Never merge policies automatically or infer replacement permission from an older marker.
 
 Report Fresh (no files/pointers), Update (managed local copies), Conflict (foreign files/competing targets) and Repair (missing local dependencies) as display summaries. Unsupported external pointers stop for explicit maintenance outside adopt. Preserve the exact per-rule evidence and requested scope.
-
-Content-equivalent local bodies retain exact bytes/markers even when older or newer; never offer a downgrade merely to refresh a marker. A proposed replacement with a lower version needs explicit rollback disclosure. Missing comparison data permits valid local Keep/connection choices, never a current/in-sync claim. No new provenance ledger is introduced.
 
 ### Static destination checks
 
@@ -147,13 +145,13 @@ Ask Apply proposed changes / Keep existing / Cancel once, using scenario-specifi
 
 | Situation | Choices and protections |
 |---|---|
-| Fresh | Summarize the named installations and minimal instruction effects, then Install proposed rules / Cancel. Honor omissions; no later per-file installation questions. |
+| Fresh | Summarize the named installations and minimal instruction effects, then Install proposed rules / Cancel. Honor omissions. |
 | All required bodies equivalent and connected, including older/newer markers | Preserve files/markers and report no changes without a question. Handle optional new writing separately below; its absence is not a repair. |
 | Kept or equivalent managed copies need an entry/adapter | State exact pointer/import changes, then Apply connection / Skip / Cancel. Preserve rule bodies/markers; no update source or replacement decision is required. |
-| Different managed bodies | Summarize named replacements and material policy/entry changes, then Replace proposed rules / Keep existing / Cancel. No repeated per-file approval. |
+| Different managed bodies | Summarize named replacements and material policy/entry changes, then Replace proposed rules / Keep existing / Cancel. |
 | Missing copies or directives | Summarize missing copies, their purpose and pointer changes, then Apply repairs / Skip / Cancel. Name required companions before approval. |
-| New writing available in an existing installation | Include its purpose/version/pointer in the general proposal, then Install writing / Not now. Git/safety-only scope just reports availability. No later installation approval. |
-| A proposed replacement would downgrade a managed copy | Name each downgrade, old/new versions and material effects, then Replace with proposed version / Keep existing / Cancel. One answer may approve all named downgrades. |
+| New writing available in an existing installation | Include its purpose/version/pointer in the general proposal, then Install writing / Not now. Git/safety-only scope just reports availability. |
+| A proposed replacement would downgrade a managed copy | Name each downgrade, old/new versions and material effects, then Replace with proposed version / Keep existing / Cancel. |
 | Foreign local files selected for adoption | Name the custom files, discarded content, replacement effects and required repairs, then Overwrite proposed files / Skip / Cancel. A filename/general install request never grants overwrite permission. |
 | Copy source or comparison unavailable | Keep bodies unchanged. A valid connection can use its direct patch approval; source-dependent replacements/repairs stay pending, with no speculative install question. |
 | External references | Stop with upgrade guidance; preserve pointers and installations. |
@@ -178,13 +176,13 @@ Require the current actual main/master base for Git-backed writes; block elsewhe
 
 Before local writes, re-read the actual entries, owner, chains, relevant overrides/native project entries and effective settings. Reapply all layout/sanity/scope gates. Conflicting ownership/policy/dependencies stop without writes. Compare with the reviewed destination/snapshot/actions; matching inputs proceed under the existing approval. If relevant inputs changed, refresh only the affected proposal and obtain missing authorization, never reuse approval from a different branch/HEAD. Freeze invocation policy: newly installed rule text cannot silently govern this run's finalization or weaken active safety rules.
 
-Snapshot the relevant entry/override/source/rule bytes and absent targets on this destination. Before any write, check each exact planned path for ignore status, existing tracked/untracked occupants, case-insensitive filename/directory collisions, non-file targets and symlinked/escaping destinations. New untracked files explicitly in the plan are expected, not a blanket blocker. Unexpected occupants invalidate the plan.
+Snapshot the relevant entry/override/source/rule bytes and absent targets on this destination. Repeat **Static destination checks** immediately before writes; unexpected occupants invalidate the plan.
 
-Ignored outputs needed for a committed installation must be reported for explicit resolution or leave the action blocked, never force-added or accompanied by an unapproved `.gitignore` edit. Do not commit pointers to required ignored/untracked rule files omitted from the same approved local installation. Without Git, disclose that tracking/ignore checks are unavailable rather than inventing a pass; entry/rule preservation and target checks still apply.
+Do not commit pointers to required ignored/untracked rule files omitted from the approved local installation. Resolve destination blockers explicitly; never force-add or change `.gitignore` to hide them. Without Git, disclose unavailable tracking/ignore checks; entry/rule preservation and target checks still apply.
 
 ### Plan before mutation
 
-Before mutation, match the answer to the named rule actions, frozen source bytes, exact entry patches and retained/missing dependencies. Reuse approval of the whole plan or subset without per-file/overall reconfirmation. Generic intent before the concrete proposal supplies no permission for undisclosed overwrites, but full-text display is not required. Recheck branch, policy, source bytes and target snapshots; changed inputs or conflicting pointers stop dependent work for only the missing authorization. Reject outside-project or symlinked write targets; never modify another checkout or installation.
+Before mutation, match Step 3's approved actions/subset to the frozen source bytes, exact entry patches and retained/missing dependencies. Recheck branch, policy, source bytes and target snapshots; changed inputs or conflicting pointers stop dependent work for only the missing authorization. Reject outside-project or symlinked write targets; never modify another checkout or installation.
 
 Include all affected-rule decisions; a blocked required rule stops the affected plan. Actual complete bodies/diffs remain the internal comparison evidence. Preserve kept bodies/markers, with no automatic merge or marker-only refresh. Freeze each new body/marker and exact pointer/adapter patch for execution/readback.
 
@@ -230,11 +228,9 @@ Record the action as `connected` (or `already connected`), not as a rule copy/up
 
 ### Customized files and required companions
 
-Internally compare every foreign/custom replacement, companion repair and rollback. The concise proposal names these files, discarded local content, versions and entry effects; it need not print their full diffs. Explicit approval can cover the named effects together, never silently adding another file. Writing stays independent. Missing comparison evidence blocks overwrite, not valid Keep/connection work.
+For foreign/custom replacements, companion repairs and rollbacks, execute only Step 3's named approved effects. Writing stays independent. Missing comparison evidence blocks overwrite, not valid Keep/connection work.
 
 Skip preserves that file and its existing pointers; add no new pointer to an uninstalled foreign file. Kept customized managed bodies likewise remain unchanged. No automatic policy merge follows.
-
-If every foreign file was skipped and no independent writing addition or valid connection was explicitly approved, write nothing and create no entries; do not initiate companion repairs in this cancelled install. A skipped foreign file is not an installed Helm rule; disclose actual coverage rather than claiming the catalog applies to both hosts. Do not add a pointer to it just to make Codex imitate Claude's native loading. Existing unselected foreign writing stays untouched and outside Helm's installation claim.
 
 ### No-change path
 
