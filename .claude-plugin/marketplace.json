@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "agent-helm",
-      "version": "3.2.1",
+      "version": "3.2.2",
       "source": "./",
       "description": "A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.",
       "policy": {
