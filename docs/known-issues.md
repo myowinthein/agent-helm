@@ -19,9 +19,7 @@ Official guidance describes factors that can increase waiting time:
 
 - [OpenAI's model guidance](https://learn.chatgpt.com/docs/models): higher reasoning effort takes longer and uses more tokens.
 - [OpenAI's latency guide](https://developers.openai.com/api/docs/guides/latency-optimization): token generation and repeated sequential requests add latency.
-- [Anthropic's effort guide](https://platform.claude.com/docs/en/build-with-claude/effort): effort trades response depth against latency and cost; its behavior varies by model.
-
-These explain possible contributors, not the proven cause of Helm's observed slowdown. We have not established that “overthinking” alone explains it or verified a specific fix.
+- [Anthropic's effort guide](https://platform.claude.com/docs/en/build-with-claude/effort): effort balances response depth, latency and cost.
 
 </details>
 
