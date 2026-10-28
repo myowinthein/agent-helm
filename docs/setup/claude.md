@@ -10,7 +10,7 @@ permalink: /docs/setup/claude.html
 
 # Claude
 
-The new desktop experience has two areas: **Claude**, which combines Chat and Cowork, and **Code**.
+The desktop app has two modes: **Claude** and **Code**.
 
 Install through **Claude → Customize → Plugins** to use Helm in Claude, Code and the terminal, with account sync enabled. Installing through **Code** or the terminal makes Helm available in Code and the terminal only.
 
