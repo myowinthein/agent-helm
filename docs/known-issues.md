@@ -30,9 +30,9 @@ Official guidance describes factors that can increase waiting time:
 
 **Observed:** Helm's custom icon did not appear in Claude Desktop.
 
-Anthropic documents the manifest's icon as metadata for its plugin-directory listing and says Claude Code ignores it. This does not establish how imported plugins display icons in Chat/Cowork; the cause there remains unconfirmed. See the [plugin manifest reference](https://code.claude.com/docs/en/plugins-reference#directory-listing-fields).
+Claude Code ignores the [manifest icon field](https://code.claude.com/docs/en/plugins-reference#directory-listing-fields), which is used for directory listings. The cause in Chat/Cowork remains unconfirmed.
 
-Use the plugin name to identify Helm and check its workflows using the [Claude setup guide]({{ '/docs/setup/claude.html' | relative_url }}). A missing icon alone does not establish that installation failed; no icon-display fix has been verified here.
+Find Helm by name and check its workflows using the [setup guide]({{ '/docs/setup/claude.html' | relative_url }}).
 
 </details>
 
