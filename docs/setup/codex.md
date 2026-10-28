@@ -10,6 +10,8 @@ permalink: /docs/setup/codex.html
 
 # Codex
 
-Install through either method to use Helm in ChatGPT mode, Codex mode and the terminal on this computer.
+The desktop app has three modes: **Chat**, **Work** and **Codex**.
+
+Install through the desktop app or terminal to use Helm in **Work**, **Codex** and the **terminal** on this computer. Chat lacks the local project and terminal access Helm workflows require.
 
 {% include setup-tabs.html platform="codex" %}
