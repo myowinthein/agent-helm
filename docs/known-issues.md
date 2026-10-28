@@ -37,10 +37,8 @@ Claude Code ignores the [manifest icon field](https://code.claude.com/docs/en/pl
 <details id="code-and-terminal-installations-do-not-appear-in-chatcowork" markdown="block">
 <summary>Code and terminal installations do not appear in Chat/Cowork</summary>
 
-**Documented behavior:** Installing a plugin through the desktop app's **Code** tab or the **terminal** does not add it to the account's **Claude (Chat + Cowork)** plugin library.
+**Observed:** Installing a plugin through the desktop app's **Code** tab or the **terminal** does not add it to the account's **Claude (Chat + Cowork)** plugin library.
 
-Anthropic documents one-way sync from the Claude account into Claude Code, not back into the account. See [Use plugins in Claude](https://support.claude.com/en/articles/13837440-use-plugins-in-claude).
-
-If you need Helm in Chat/Cowork, add it through Claude's **Customize → Plugins** using the [Claude setup guide]({{ '/docs/setup/claude.html' | relative_url }}). Account-to-Code sync requires the same Claude account and a supported Code version; see Anthropic's requirements above.
+Anthropic documents [one-way sync](https://support.claude.com/en/articles/13837440-use-plugins-in-claude) from the Claude account into Claude Code, not back into the account.
 
 </details>
