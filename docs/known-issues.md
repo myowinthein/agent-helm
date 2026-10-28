@@ -6,17 +6,21 @@ permalink: /docs/known-issues.html
 
 # Known issues
 
-Observations from maintainer use on macOS, alongside documented platform limitations. Platform documentation was checked on **28 October 2026**; affected app versions were not recorded for the observations.
+Observations from maintainer testing and use on macOS, alongside documented platform limitations. Platform documentation was checked on **28 October 2026**.
 
 ## Agent choice
 
-### Some commands take longer in Codex
+### Noticeably longer command runtimes in Codex
 
-**Observed:** Some Helm commands took longer with **GPT-6.1 Sol in Codex** than with **Claude Sonnet 5.5**, both at **High** effort. This does not establish that one agent is always faster.
+**Observed:** Helm commands have taken noticeably longer in Codex than in Claude during maintainer testing and daily use, particularly in longer workflows. The size of the difference varies with the task, model and client.
 
-More reasoning can increase response time. Effort is model-specific: selecting High in both clients does not establish an equal amount of reasoning. See [OpenAI's model guidance](https://learn.chatgpt.com/docs/models) and [Sonnet 5.5's effort behavior](https://platform.claude.com/docs/en/models/sonnet-5-5/whats-new-sonnet-5-5#behavior-differences).
+Official guidance describes factors that can increase waiting time:
 
-The cause of the difference in these runs has not been isolated. “Overthinking” is a possible explanation, not a confirmed diagnosis, and no specific fix has been verified.
+- [OpenAI's model guidance](https://learn.chatgpt.com/docs/models): higher reasoning effort takes longer and uses more tokens.
+- [OpenAI's latency guide](https://developers.openai.com/api/docs/guides/latency-optimization): token generation and repeated sequential requests add latency.
+- [Anthropic's effort guide](https://platform.claude.com/docs/en/build-with-claude/effort): effort trades response depth against latency and cost; its behavior varies by model.
+
+These explain possible contributors, not the proven cause of Helm's observed slowdown. We have not established that “overthinking” alone explains it or verified a specific fix.
 
 ## Claude Desktop
 
