@@ -32,8 +32,6 @@ Official guidance describes factors that can increase waiting time:
 
 Claude Code ignores the [manifest icon field](https://code.claude.com/docs/en/plugins-reference#directory-listing-fields), which is used for directory listings. The cause in Chat/Cowork remains unconfirmed.
 
-Find Helm by name and check its workflows using the [setup guide]({{ '/docs/setup/claude.html' | relative_url }}).
-
 </details>
 
 <details id="code-and-terminal-installations-do-not-appear-in-chatcowork" markdown="block">
