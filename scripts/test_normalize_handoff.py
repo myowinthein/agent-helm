@@ -174,6 +174,14 @@ class HandoffTests(unittest.TestCase):
         self.entry.chmod(0o600)
         self.assertEqual(mod.discover(str(self.common))["candidates"][0]["availability"], "invalid")
 
+    def test_non_private_recovery_directory_is_invalid_and_cannot_be_registered(self):
+        mod.register(str(self.common), self.data)
+        self.recovery.chmod(0o755)
+        self.assertEqual(mod.discover(str(self.common))["candidates"][0]["availability"], "invalid")
+        with self.assertRaises(mod.Invalid):
+            mod.register(str(self.common), dict(self.data, run_id="run-two"))
+        self.assertFalse((self.registry / "run-two.json").exists())
+
     def test_unfinished_and_unknown_entries_are_not_opened_or_selected(self):
         mod.register(str(self.common), self.data)
         (self.registry / (".pending-" + "a" * 32)).write_text("UNREAD_INCOMPLETE_LOCATOR")
