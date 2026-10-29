@@ -55,6 +55,10 @@ module HelmSmoke
     output
   end
 
+  def fixture_git(workspace, *arguments)
+    git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", *arguments)
+  end
+
   def snapshot(workspace)
     root = Pathname(workspace)
     raise "Unexpected fixture root" if root.symlink? || !root.directory?

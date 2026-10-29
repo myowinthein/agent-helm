@@ -61,14 +61,14 @@ cases.each do |name, scenario|
     unless scenario[:no_git]
       git(workspace, "init", "--quiet", "--initial-branch=main")
       git(workspace, "add", ".")
-      git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", "chore(fixture): initialize")
+      HelmSmoke.fixture_git(workspace, "commit", "--quiet", "-m", "chore(fixture): initialize")
       review_hash = git(workspace, "rev-parse", "HEAD")
       files.each do |path, contents|
         next unless contents.include?("{review_hash}")
         workspace.join(path).write(contents.gsub("{review_hash}", review_hash))
       end
       git(workspace, "add", ".")
-      git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "--allow-empty", "-m", "docs(fixture): record review marker only")
+      HelmSmoke.fixture_git(workspace, "commit", "--quiet", "--allow-empty", "-m", "docs(fixture): record review marker only")
       before_head = git(workspace, "rev-parse", "HEAD")
     end
     before = HelmSmoke.snapshot(workspace)

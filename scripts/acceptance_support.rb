@@ -135,6 +135,10 @@ module HelmAcceptance
     raise "Fixture bytes or undeclared paths changed" unless actual.reject { |path, _| allowed.include?(path) } == expected
   end
 
+  def changed_paths(workspace, commit)
+    HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", commit).lines.map(&:strip)
+  end
+
   # These checks operate only on caller-supplied disposable fixture paths.
   def verify_normalize!(workspace:, container:, scenario:, before:, approved:)
     graph_before = scenario.fetch(:graph_before)
@@ -151,7 +155,7 @@ module HelmAcceptance
     parents = graph_after.fetch(:commits).fetch(tip).fetch(:headers).grep(/^parent /)
     expected_parent = mapping.fetch(graph_before.fetch(:refs).fetch("refs/heads/main"))
     raise "Unexpected checkpoint ancestry" unless parents == ["parent #{expected_parent}"]
-    raise "Unexpected checkpoint diff" unless HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", tip).lines.map(&:strip) == [".helm/normalize-log.json"]
+    raise "Unexpected checkpoint diff" unless changed_paths(workspace, tip) == [".helm/normalize-log.json"]
     core = Marshal.load(Marshal.dump(graph_after))
     core[:refs]["refs/heads/main"] = expected_parent
     core[:index] = graph_before.fetch(:index)
@@ -204,14 +208,14 @@ module HelmAcceptance
       closure = finding.fetch("closure")
       code = closure.fetch("commit")
       raise "Successful closure lacks actual separate code provenance" unless finding["state"] == "resolved" && closure["method"] == "runtime" && commits.include?(code) && code != commits.first
-      raise "Wrong code commit scope" unless HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", code).lines.map(&:strip) == ["tests/test_greeting.py"]
-      raise "Wrong final closure commit scope" unless HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").lines.map(&:strip) == [".helm/test-log.json"]
-      raise "Unexpected successful-test commit scope" unless (2..3).include?(commits.length) && commits.all? { |id| HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", id).lines.map(&:strip) == [id == code ? "tests/test_greeting.py" : ".helm/test-log.json"] }
+      raise "Wrong code commit scope" unless changed_paths(workspace, code) == ["tests/test_greeting.py"]
+      raise "Wrong final closure commit scope" unless changed_paths(workspace, "HEAD") == [".helm/test-log.json"]
+      raise "Unexpected successful-test commit scope" unless (2..3).include?(commits.length) && commits.all? { |id| changed_paths(workspace, id) == [id == code ? "tests/test_greeting.py" : ".helm/test-log.json"] }
       HelmSmoke.git(workspace, "merge-base", "--is-ancestor", code, "HEAD")
       raise "Successful fixture retained source/index drafts" unless HelmSmoke.git(workspace, "status", "--porcelain", "--untracked-files=no").empty?
     else
       raise "Deferred/failed verification falsely closed a case" unless finding["state"] == "open" && !finding.key?("closure")
-      raise "Unexpected test/code commit after unverified work" unless commits.length <= 1 && commits.all? { |id| HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", id).lines.map(&:strip) == [".helm/test-log.json"] }
+      raise "Unexpected test/code commit after unverified work" unless commits.length <= 1 && commits.all? { |id| changed_paths(workspace, id) == [".helm/test-log.json"] }
     end
     approved[".helm/test-log.json"] = HelmSmoke.read_regular(workspace, ".helm/test-log.json")
     HelmAcceptance.assert_fixture_files!(workspace, before, approved)
