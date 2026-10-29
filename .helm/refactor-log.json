@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "assessed_commit": "0e3ebe76854df025954259c5f755522179d97d01",
+  "assessed_commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
   "full_scan_commit": "0e3ebe76854df025954259c5f755522179d97d01",
   "findings": [
     {
@@ -220,6 +220,100 @@
           ]
         }
       }
+    },
+    {
+      "id": "r-e717a30a-441f-4792-b04a-c28959a1a1f9",
+      "category": "Consistency",
+      "summary": "Normalize's local-handoff access rules are restated in runtime.md, rules/safety.md and rules/git.md, so every command that loads the runtime and rules reads the same exception more than once and each protocol change must be mirrored in three files.",
+      "paths": [
+        "prompts/shared/runtime.md",
+        "rules/safety.md",
+        "rules/git.md",
+        "prompts/shared/normalize-handoff.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
+        "date": "2026-10-29"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
+        "date": "2026-10-29",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "The protocol is summarized in runtime.md line 15 (1,296 characters), the Operational Helm state paragraph of rules/safety.md line 24 (972) and rules/git.md line 49 (752), while normalize-handoff.md already owns the full procedure; the three summaries were edited independently in this range, so a later change has to keep them aligned. The benefit is a smaller shared context and a single place to change. Copied rules must stay self-sufficient without the package, so the saving is limited.",
+        "evidence": [
+          "prompts/shared/runtime.md:15 restates that only normalize registers locators, that ship and log/manifest discovery stay bounded and read-only, and the no-live-ledger limit.",
+          "rules/safety.md:24 restates the same registration, discovery and no-ledger limits for copied-rule sessions.",
+          "rules/git.md:49 restates registration and ship's cross-session discovery again.",
+          "prompts/shared/normalize-handoff.md is the authoritative procedure and already defines these boundaries."
+        ],
+        "invariant": "Preserve every access boundary: only normalize registers locators, ship and review-anchor discovery stay read-only and bounded, no live-ledger access, and copied-rule sessions gain no locator or state access. Copied rules remain self-sufficient without the package."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-9a8e6bdd-d532-4997-aa46-a8ba4b7d460e",
+      "category": "Code Quality",
+      "summary": "Acceptance fixtures and oracles repeat the same Git invocation fragments: the fixture identity flags seven times and the changed-path listing five times.",
+      "paths": [
+        "scripts/acceptance_cases.rb",
+        "scripts/acceptance_support.rb",
+        "scripts/smoke_layout.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
+        "date": "2026-10-29"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
+        "date": "2026-10-29",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "scripts/acceptance_cases.rb repeats the full -c user.name and -c user.email pair in five git calls and scripts/smoke_layout.rb in two; scripts/acceptance_support.rb repeats the diff-tree changed-path listing five times. A small private helper for each would give fixture identity and path listing a single definition, so a change cannot leave one copy behind.",
+        "evidence": [
+          "scripts/acceptance_cases.rb lines 172, 191, 194, 196 and 197 pass identical identity flags.",
+          "scripts/acceptance_support.rb lines 154, 207, 208, 209 and 214 each build the same diff-tree --name-only listing.",
+          "scripts/test_acceptance_oracles.rb and scripts/test_git_acceptance.rb exercise these fixtures and oracles offline."
+        ],
+        "invariant": "Preserve every fixture commit's author and committer identity, message and graph, and every oracle's exact path comparison and failure message; change only how the repeated arguments are written."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-7b94d5a7-e234-445f-8052-18ab2df3d1d1",
+      "category": "Code Quality",
+      "summary": "The publication oracle selects its no-publication behavior from a hard-coded list of four scenario names instead of a field on the scenario.",
+      "paths": [
+        "scripts/acceptance_support.rb",
+        "scripts/acceptance_cases.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
+        "date": "2026-10-29"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
+        "date": "2026-10-29",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "verify_publication! at scripts/acceptance_support.rb line 256 branches on the scenario name, and that list grew from three to four names in this range when history-missing-handoff was added, while the scenario table already carries data fields such as missing_handoff and expected_updates. A forgotten name fails loudly rather than weakening the check, so the cost is a hidden coupling between two files, not silent loss of protection.",
+        "evidence": [
+          "scripts/acceptance_support.rb:256 hard-codes history-remote-moved, history-missing-handoff, archive-completed-no-replay and ship-completed-backup-no-replay.",
+          "scripts/smoke_acceptance.rb previously held a three-name version of the same list before the oracle moved into acceptance_support.rb.",
+          "An unlisted no-publication scenario falls into the else branch and fails on the missing --force-with-lease check."
+        ],
+        "invariant": "Preserve which scenarios forbid a git push and which require the fixed feature lease, and every raise message; change only where that distinction is declared."
+      },
+      "state": "open",
+      "depends_on": []
     }
   ]
 }
