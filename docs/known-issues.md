@@ -6,7 +6,7 @@ permalink: /docs/known-issues.html
 
 # Known issues
 
-Observations from maintainer testing and use on macOS, alongside documented platform limitations. Platform documentation was checked on **28 October 2026**.
+Observations from maintainer testing and use on macOS, alongside documented platform limitations. Platform documentation was checked on **28–29 October 2026**.
 
 ## Agent choice
 
@@ -20,6 +20,17 @@ Official guidance describes factors that can increase waiting time:
 - [OpenAI's model guidance](https://learn.chatgpt.com/docs/models): higher reasoning effort takes longer and uses more tokens.
 - [OpenAI's latency guide](https://developers.openai.com/api/docs/guides/latency-optimization): token generation and repeated sequential requests add latency.
 - [Anthropic's effort guide](https://platform.claude.com/docs/en/build-with-claude/effort): effort balances response depth, latency and cost.
+
+</details>
+
+## Codex CLI
+
+<details id="questions-appear-as-plain-text-in-default-mode" markdown="block">
+<summary>Questions appear as plain text in Default mode</summary>
+
+**Observed:** Helm's questions appeared as plain text in Default mode, requiring a typed reply. Native single-choice selection and custom text replies worked in Plan mode and the desktop app.
+
+OpenAI describes [Plan mode](https://learn.chatgpt.com/docs/learn/best-practices#plan-first-for-difficult-tasks) as planning before implementation. In Default mode, type your choice or text to continue.
 
 </details>
 
