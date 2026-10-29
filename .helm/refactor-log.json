@@ -282,8 +282,32 @@
         ],
         "invariant": "Preserve every fixture commit's author and committer identity, message and graph, and every oracle's exact path comparison and failure message; change only how the repeated arguments are written."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "509107dfd36eadbac533e1601a3f94aa963e8a5c",
+        "date": "2026-10-29",
+        "method": "runtime",
+        "evidence": [
+          "HelmSmoke.fixture_git carries the fixed identity flags and replaces the five call sites in scripts/acceptance_cases.rb and the two in scripts/smoke_layout.rb recorded in the finding; HelmAcceptance.changed_paths replaces the five diff-tree listings in scripts/acceptance_support.rb.",
+          "A throwaway run of prepare_normalize in a disposable repository showed the fixture commits, merge and annotated tag still carry Helm fixture <fixture@example.invalid> as author, committer and tagger.",
+          "Four further identical identity-flag sites in scripts/smoke_acceptance.rb, scripts/smoke_workflows.rb and scripts/test_smoke_support.rb were outside the recorded paths and remain unchanged."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_git_acceptance.rb",
+            "scope": "Merge/shared-ID rewrite, publication and archive oracles on disposable repositories",
+            "outcome": "passed: exit 0"
+          },
+          {
+            "command": "bundle _4.0.22_ exec rake plugin_test smoke_support_test acceptance_support_test",
+            "scope": "Combined tree at 509107d on macOS, offline with local Git only",
+            "outcome": "passed: plugin checks, 20 smoke-support scenarios, 10 acceptance-support groups and 3 direct oracle groups"
+          }
+        ]
+      }
     },
     {
       "id": "r-7b94d5a7-e234-445f-8052-18ab2df3d1d1",
@@ -312,8 +336,32 @@
         ],
         "invariant": "Preserve which scenarios forbid a git push and which require the fixed feature lease, and every raise message; change only where that distinction is declared."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "bfa066cd0395010372451046a9d20f62b9a25754",
+        "date": "2026-10-29",
+        "method": "runtime",
+        "evidence": [
+          "verify_publication! no longer takes a scenario name; scripts/acceptance_support.rb branches on scenario[:no_publication].",
+          "scripts/acceptance_cases.rb sets the field in prepare_history for moved or missing scenarios and in the completed prepare_archive fixture. A throwaway check on disposable repositories showed history-remote-moved, history-missing-handoff, archive-completed-no-replay and ship-completed-backup-no-replay carry it while history-partial-resume and history-auto-discovery do not.",
+          "scripts/test_acceptance_oracles.rb sets and clears the field in place of reassigning a name; scripts/smoke_acceptance.rb drops the argument."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_acceptance_oracles.rb",
+            "scope": "Direct normalize, test and publication oracles on disposable repositories",
+            "outcome": "passed: 3 oracle groups"
+          },
+          {
+            "command": "bundle _4.0.22_ exec rake plugin_test smoke_support_test acceptance_support_test",
+            "scope": "Combined tree at 509107d on macOS, offline with local Git only",
+            "outcome": "passed: plugin checks, 20 smoke-support scenarios, 10 acceptance-support groups and 3 direct oracle groups"
+          }
+        ]
+      }
     }
   ]
 }
