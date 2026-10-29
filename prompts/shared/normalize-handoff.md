@@ -4,7 +4,7 @@ Loaded by normalize for an approved rewrite/resume or ship's history/release-evi
 
 ## Location and bounded I/O
 
-Resolve the selected clone's actual common Git directory with `git rev-parse --path-format=absolute --git-common-dir`; never assume `.git` is a directory or use a worktree-private Git directory. The exact owned lookup location is `{git_common_dir}/agent-helm/normalize-handoffs/`. It is local to this clone, shared by linked worktrees and absent from pushes/clones. External recovery directories stay outside the checkout. Moved/deleted backups or a new clone/machine may need an explicit transferred evidence path; no private-directory search or automatic upload.
+Resolve the selected clone's actual common Git directory with `git rev-parse --path-format=absolute --git-common-dir`; never assume `.git` is a directory or use a worktree-private Git directory. The exact owned lookup location is `{git_common_dir}/agent-helm/normalize-handoffs/`. It is local to this clone, shared by linked worktrees and absent from pushes/clones. External recovery directories stay outside the checkout. Existing locators and verified evidence paths remain usable regardless of normalize's new-run storage convention; never scan the home storage parent to discover backups. Moved/deleted backups or a new clone/machine may need an explicit transferred evidence path; no private-directory search or automatic upload.
 
 Each rewrite has one immutable `{run_id}.json`, with a fresh lowercase UUID or equivalent collision-resistant ID. Use only these fields:
 
