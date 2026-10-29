@@ -120,6 +120,32 @@
       }
     },
     {
+      "id": "g-3f2c6d53-58b0-4386-8bf1-a85fe0b011bf",
+      "expected": "Legal's automatic record repair updates only a verified moved document path or removes a verified deleted document's record, preserves dates, source IDs and unknown fields, deletes no document and asks for no commit approval",
+      "basis": [
+        "workflows/legal.md Reconcile recorded document paths",
+        "prompts/shared/project-state.md legal exception",
+        "857fd55 feat(legal): reconcile missing document records from local evidence",
+        "cd4b91a fix(legal): reconcile records before document assessment"
+      ],
+      "paths": [
+        "workflows/legal.md",
+        "prompts/shared/project-state.md",
+        "scripts/acceptance_cases.rb",
+        "scripts/acceptance_support.rb"
+      ],
+      "priority": "medium",
+      "reason": "The repair writes .helm/legal-manifest.json without a separate approval, so a wrong move or removal would lose assessment provenance; only legal-draft-only exists as an acceptance scenario",
+      "action": "add",
+      "layer": "acceptance",
+      "state": "open",
+      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "blocker": {
+        "kind": "execution",
+        "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
+      }
+    },
+    {
       "id": "g-5bd8c9f8-2c65-408a-ba75-6413770a7bea",
       "expected": "Unaccounted remote movement or mismatched proof blocks history publication without replacing fixed leases; partial success resumes only exact missing actions and preserves published refs.",
       "basis": [
@@ -155,6 +181,57 @@
         "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
         "command": "ruby scripts/test_git_acceptance.rb; ruby scripts/smoke_acceptance.rb history-remote-moved; ruby scripts/smoke_acceptance.rb history-partial-resume",
         "scope": "Owned local bare remotes and a controller-prepared actual git-filter-repo rewrite with independently verified synthetic handoff, not this project or hosted provider/CI/deployment behavior. Claude Sonnet 5.5 / High metadata verified; bounded complete traces."
+      }
+    },
+    {
+      "id": "g-5e07afce-265e-4ccd-a9f2-e5ccb725600a",
+      "expected": "After a normalize rewrite, log and manifest recover only a verified equivalent review baseline from preserved maps or the native filter-repo map; a missing, tampered or ambiguous map leaves Full scan or Skip instead of a guessed anchor",
+      "basis": [
+        "prompts/shared/review-anchor.md",
+        "workflows/log.md Step 0",
+        "workflows/manifest.md Step 1",
+        "12f2089 feat(review): recover rewritten log and manifest baselines"
+      ],
+      "paths": [
+        "prompts/shared/review-anchor.md",
+        "workflows/log.md",
+        "workflows/manifest.md",
+        "scripts/acceptance_cases.rb",
+        "scripts/git_acceptance.rb"
+      ],
+      "priority": "medium",
+      "reason": "A wrongly recovered anchor would let log or manifest treat unreviewed commits as covered and advance a review marker; no acceptance scenario or deterministic oracle exercises the recovery, only log-partial-update and manifest-partial-update exist",
+      "action": "add",
+      "layer": "acceptance",
+      "state": "open",
+      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "blocker": {
+        "kind": "execution",
+        "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
+      }
+    },
+    {
+      "id": "g-7d59a9cb-8eb8-46c4-bbb5-dc5fcd9121d1",
+      "expected": "Registering a recovery directory whose home path crosses a symlinked ancestor (for example /home linking to /var/home) follows an explicitly chosen behavior: refused with a clear stop, or resolved before registration",
+      "basis": [
+        "helpers/normalize_handoff.py directory() refuses symlinks at every component",
+        "workflows/normalize.md recovery path under Path.home() (c99a0b2)",
+        "scripts/test_normalize_handoff.py::test_symlinked_locators_and_recovery_ancestors_are_not_followed"
+      ],
+      "paths": [
+        "helpers/normalize_handoff.py",
+        "workflows/normalize.md",
+        "scripts/test_normalize_handoff.py"
+      ],
+      "priority": "unknown",
+      "reason": "Since c99a0b2 the default recovery path starts at Path.home(), so a host whose home path crosses a symlink would be refused today and normalize would stop; whether that is intended or the workflow should resolve the home path is unconfirmed",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "blocker": {
+        "kind": "clarification",
+        "note": "Clarify the intended behavior for symlinked home ancestors, or Characterize the current refusal"
       }
     },
     {
@@ -248,6 +325,31 @@
       }
     },
     {
+      "id": "g-8ddcab2e-624a-4259-bec5-a867d5809294",
+      "expected": "The normalize-rewrite acceptance scenario exercises the workflow's fixed per-run recovery folder under the OS user's home (Agent Helm/normalize/<run-id>) with no custom path, and its oracle verifies the locator, owner-only proof, saved map and self-contained bundle there",
+      "basis": [
+        "workflows/normalize.md recovery storage (c99a0b2)",
+        "docs/commands/normalize.md",
+        "scripts/acceptance_cases.rb prepare_normalize",
+        "scripts/acceptance_support.rb verify_normalize!"
+      ],
+      "paths": [
+        "scripts/acceptance_cases.rb",
+        "scripts/acceptance_support.rb",
+        "scripts/test_acceptance_oracles.rb",
+        "workflows/normalize.md"
+      ],
+      "priority": "high",
+      "reason": "Since c99a0b2 the workflow fixes recovery under Path.home() with no custom base folder, but the fixture dictates a controller-owned private proof folder, the oracle requires the locator to equal it and the sandbox does not set HOME, so the history-rewrite scenario cannot pass as the workflow now behaves",
+      "action": "improve",
+      "layer": "acceptance",
+      "state": "open",
+      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "tests": [
+        "scripts/test_acceptance_oracles.rb::direct normalize oracle"
+      ]
+    },
+    {
       "id": "g-8fd9f54e-cb13-4eb1-b831-e11b049d4ee6",
       "expected": "Prepared/completed/tampered synthetic archive proofs distinguish local payload from remote receipt, preserve protected inputs, and stop rather than replay restoration, cleanup or publication.",
       "basis": [
@@ -322,6 +424,29 @@
         "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
         "command": "python3 -I -B -u scripts/browser_acceptance.py; CUA Chrome theme controls/reloads/cross-tab checks and DevTools prefers-color-scheme emulation",
         "scope": "Current Chrome/macOS, 2026-10-27. Blocked-storage evidence uses API fault injection, not a changed browser privacy setting. No browser support matrix or human sign-off."
+      }
+    },
+    {
+      "id": "g-d790087c-2368-4312-ae92-3dccd82cb867",
+      "expected": "The offline helper, script and acceptance-support suites run automatically before changes reach main, or the build-only CI policy is confirmed as deliberate",
+      "basis": [
+        ".github/workflows/docs.yml steps",
+        "AGENTS.md Architecture Pointers and Known Traps: Docs CI is build-only",
+        "Rakefile test task"
+      ],
+      "paths": [
+        ".github/workflows/docs.yml",
+        "Rakefile"
+      ],
+      "priority": "unknown",
+      "reason": "CI builds the docs only, so helper and script regressions are caught only by a manual rake test; AGENTS.md records this as deliberate, but the owner's intent for the offline suites is unconfirmed",
+      "action": "manual",
+      "layer": "ci",
+      "state": "open",
+      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "blocker": {
+        "kind": "clarification",
+        "note": "Owner decision: add an offline CI job, or defer"
       }
     },
     {
@@ -596,6 +721,24 @@
         "command": "CUA Chrome navigation to built docs/commands/ship.html and test.html; inspect rendered .mermaid svg .nodeLabel and screenshots",
         "scope": "Current Chrome/macOS on 2026-10-27 only; browser version unavailable because browser policy blocked chrome://version. Automated observed rendering, not human sign-off or browser compatibility certification."
       }
+    },
+    {
+      "id": "g-ee820751-a682-4f32-a4c2-3b90e3d9c026",
+      "expected": "A recovery directory that is group or world accessible is reported invalid on discovery and cannot be registered as a normalize handoff",
+      "basis": [
+        "helpers/normalize_handoff.py directory(private=True) and owned()",
+        "prompts/shared/normalize-handoff.md"
+      ],
+      "paths": [
+        "helpers/normalize_handoff.py",
+        "scripts/test_normalize_handoff.py"
+      ],
+      "priority": "low",
+      "reason": "Locator and entrypoint modes are tested, but the recovery directory's own owner-only check is not exercised; a loosened check would mark non-private backups present",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4"
     },
     {
       "id": "g-eebf4a68-3edb-4098-91e6-332ec3940cb3",
