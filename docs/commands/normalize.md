@@ -83,6 +83,8 @@ The normal approval flow has two gates: team readiness, then **Apply reviewed re
 
 Apply requires **git-filter-repo and Python**. After approval, verify a private recovery bundle outside the checkout, rewrite once and check messages, trees, topology, metadata and preserved refs. Failure leaves actual results for reconciliation, not a blind retry.
 
+New rewrite backups live in your OS user's home under `Agent Helm/normalize/<run-id>/`, with a unique UUID for each rewrite. Continuing a run reuses its folder; earlier backups stay in place. There is no custom base-folder option. An unsafe or inaccessible location stops the rewrite rather than choosing another folder. Review-only runs create none.
+
 ## Your result and later publication
 
 You get old/new tips, message results, tag effects and the private recovery path. Before rewriting, normalize also registers a private local pointer so ship can find the evidence in another terminal or agent session. Each rewrite keeps its own pointer; backups and pointers remain after publication.
