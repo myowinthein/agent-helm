@@ -169,7 +169,7 @@ module HelmAcceptanceCases
     HelmSmoke.git(writer, "checkout", "--quiet", "-b", "team-work")
     writer.join("team.txt").write("Fictional unpublished team change.\n")
     HelmSmoke.git(writer, "add", "team.txt")
-    HelmSmoke.git(writer, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", "docs(team): record fictional team work")
+    HelmSmoke.fixture_git(writer, "commit", "--quiet", "-m", "docs(team): record fictional team work")
     tip = HelmSmoke.git(writer, "rev-parse", "HEAD").strip
     HelmSmoke.git(writer, "push", "--quiet", "--no-follow-tags", "origin", "HEAD:refs/heads/team-work")
     request = "Normalize current main. Team ready: I acknowledge coordination for the exact owned fixture. Our agreed team branches are main and team-work on origin, the owned local bare fixture at #{remote}. A teammate pushed during preparation, after this consumer's last update. Discover the fresh remote branches in this run. No network/hosted provider, history rewrite, checkpoint/commit, push or checkout is approved. No final Apply answer has been supplied. "
@@ -188,13 +188,13 @@ module HelmAcceptanceCases
     HelmSmoke.git(workspace, "remote", "add", "origin", container.join("noncontacted.git").to_s)
     first = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
     HelmSmoke.git(workspace, "branch", "feature", first)
-    HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "--allow-empty", "-m", "fix(core): main change")
+    HelmSmoke.fixture_git(workspace, "commit", "--quiet", "--allow-empty", "-m", "fix(core): main change")
     left = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
     HelmSmoke.git(workspace, "checkout", "--quiet", "feature")
-    HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "--allow-empty", "-m", "unique unaudited branch message")
+    HelmSmoke.fixture_git(workspace, "commit", "--quiet", "--allow-empty", "-m", "unique unaudited branch message")
     HelmSmoke.git(workspace, "checkout", "--quiet", "main")
-    HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "merge", "--quiet", "--no-ff", "feature", "-m", "chore(core): merge")
-    HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "tag", "-a", "keep", first, "-m", "Preserve this annotated fixture tag")
+    HelmSmoke.fixture_git(workspace, "merge", "--quiet", "--no-ff", "feature", "-m", "chore(core): merge")
+    HelmSmoke.fixture_git(workspace, "tag", "-a", "keep", first, "-m", "Preserve this annotated fixture tag")
     HelmSmoke.git(workspace, "update-ref", "refs/recovery/excluded", first)
     home = container.join("home")
     home.mkpath
