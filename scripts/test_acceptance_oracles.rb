@@ -168,12 +168,11 @@ with_consumer do |workspace, container|
   proof.mkpath
   original = { "remote_expectations" => { "refs/heads/main" => old_tip } }
   proof.join("handoff.json").write(JSON.generate(original))
-  scenario = { local_remote: remote, private_path: proof, immutable_proof: original,
+  scenario = { local_remote: remote, private_path: proof, immutable_proof: original, no_publication: true,
     expected_remote: { "refs/heads/main" => new_tip, "refs/heads/feature" => old_tip } }
   call = { "input" => { "command" => "git ls-remote #{remote}" }, "output" => "#{new_tip}\trefs/heads/main" }
   result = { calls: [call] }
-  name = "history-remote-moved"
-  verify = -> { HelmAcceptance.verify_publication!(name: name, workspace: workspace, scenario: scenario, result: result) }
+  verify = -> { HelmAcceptance.verify_publication!(workspace: workspace, scenario: scenario, result: result) }
   verify.call
   call["output"] = "#{old_tip}\trefs/heads/main"
   rejects_with("Actual remote main was not inspected", &verify)
@@ -190,7 +189,7 @@ with_consumer do |workspace, container|
   HelmSmoke.git(workspace, "push", "--quiet", "--no-follow-tags",
     "--force-with-lease=refs/heads/feature:#{old_tip}", remote.to_s, "#{new_tip}:refs/heads/feature")
   scenario[:expected_remote]["refs/heads/feature"] = new_tip
-  name = "history-partial-resume"
+  scenario.delete(:no_publication)
   rejects_with("Partial resume omitted its fixed feature lease", &verify)
   result[:calls] << { "input" => { "command" => "git push --force-with-lease=refs/heads/feature:#{old_tip} fixture" } }
   verify.call
