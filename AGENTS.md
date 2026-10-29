@@ -2,7 +2,7 @@
 
 ## Project Identity
 
-Agent Helm is a workflow plugin for Claude and Codex. Its ten portable skills load Markdown workflows; Python provides read-only ledger/normalize checks and private recovery-locator I/O, Ruby scripts check packaging and client discovery, and Jekyll publishes the documentation site.
+Agent Helm is a workflow plugin for Claude and Codex. Its ten portable skills load Markdown workflows; Python provides read-only ledger/normalize checks and private recovery-locator I/O, Ruby scripts check packaging, client discovery and offline acceptance oracles, and Jekyll publishes the documentation site.
 
 Plugin name: `agent-helm`. Marketplace: `agent-helm-marketplace`. Workflow changes affect installed consumers; changes to copied rules also affect projects that adopt those updates.
 
@@ -21,10 +21,12 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `ruby scripts/check_clients.rb`: native discovery through installed Claude/Codex CLIs, including Codex's actual `skills/list`; uses temporary installations and calls no models.
 - `python3 -I -B scripts/test_normalize.py`: offline normalize mechanics tests with synthetic messages, graphs and schema-2 records; no real history or live state access.
 - `python3 -I -B scripts/test_normalize_handoff.py`: private locator safety, independent-process discovery and worktree/clone checks in disposable repositories.
+- `python3 -I -B scripts/test_ledger.py`: offline ledger isolation, validation and retrieval contracts with disposable consumers.
 - `bundle install`: install the docs dependencies from `Gemfile` and `Gemfile.lock`.
 - `bundle exec jekyll serve`: preview the docs site.
-- `bundle exec rake test`: package and normalize mechanics checks plus a Jekyll build and HTMLProofer checks for internal links, HTML, images and scripts. Remote-theme resolution may need network access.
-- `ruby scripts/smoke_layout.rb [codex|claude] [case ...]` and `ruby scripts/smoke_workflows.rb [codex|claude] [case]`: optional behavioral checks that call signed-in models in disposable projects. Review their model, usage and execution effects separately from offline checks.
+- `bundle exec rake test`: the full offline suite, no models: plugin, normalize, handoff, ledger, smoke-support, acceptance-support and docs-link checks, then a Jekyll build with HTMLProofer and setup contract checks. Run one task with `bundle exec rake <task>`; see `Rakefile`. Remote-theme resolution may need network access.
+- `ruby scripts/smoke_layout.rb [codex|claude] [case ...]`, `ruby scripts/smoke_workflows.rb [codex|claude] [case]` and `ruby scripts/smoke_acceptance.rb [--list|scenario]`: optional behavioral checks that call signed-in models in disposable projects. The first two pin Claude Opus 5.5 at high effort for Claude cases; acceptance runs one bounded Claude scenario (Sonnet 5.5) per invocation and never runs under rake. Review their model, usage and execution effects separately from offline checks.
+- `scripts/browser_acceptance.py` serves the built `_site` for opt-in browser checks; `scripts/acceptance-plan.md` records the acceptance design rationale.
 
 ## Architecture Pointers
 
@@ -53,7 +55,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - Full scan / Gap scan applies only to log, manifest, test and refactor, with different coverage/checkpoint contracts. Refactor Full scan reads eligible implementation/tests in full; log traces representative flows across all packages/topics. Incomplete review never becomes a complete checkpoint.
 - Refactor preserves behavior and existing test guarantees; test owns missing/stronger protection and independent tooling/strategy work. Neither invokes the other automatically. Required deferred checks remain unverified.
 - Local editing workflows finish on their permitted current branch. Ship alone publishes reviewed work and optional independently selected targets, then separately offers a release on ready integrated main/master. Source publication or a PR handoff does not prove integration, release or deployment.
-- Normalize displays its full coordination notice and waits for readiness before any history review, helper/state access or delegation. Team ready permits fresh agreed-branch discovery; exact fetch/local-branch preparation needs its own concrete approval and continues in the same run before inventory freeze. Readiness is not teammate/device enforcement or rewrite/push consent; Review only writes nothing. Reuse applicable answers and keep one final exact message/impact approval. All affected existing/prepared local branches rewrite together, preserving tags/excluded refs and private recovery proof. Ship retains fixed leases, separate publication approval and owner-sync guidance without live normalize-ledger access.
+- Normalize displays its full coordination notice and waits for readiness before any history review, helper/state access or delegation. Team ready permits fresh agreed-branch discovery; exact fetch/local-branch preparation needs its own concrete approval and continues in the same run before inventory freeze. Readiness is not teammate/device enforcement or rewrite/push consent; Review only writes nothing. Reuse applicable answers and keep one final exact message/impact approval. All affected existing/prepared local branches rewrite together, preserving tags/excluded refs and private recovery proof. New rewrite backups go to a fixed per-run folder under the OS user's home (`Agent Helm/normalize/<run-id>/`), outside every checkout; a continuation reuses its existing folder. Ship retains fixed leases, separate publication approval and owner-sync guidance without live normalize-ledger access.
 - Normalize uses the pure stdin/stdout `helpers/normalize_check.py` for mechanical checks and graph selection, separately from the refactor/test helper. Its policy fingerprint canonicalizes unordered type/scope membership only; semantic/unknown fields remain exact, using applicable normative source text rather than regenerated paraphrases. `prompts/normalize-review.md` retains schema-2 baseline/contract validation, strict paging identity and mismatch fallback without old-record rehashing. Syntax pass grants no semantic coverage. The helper has no Git/file/network access or writer. Test with `python3 -I -B scripts/test_normalize.py`; unsupported schema 1 has no reader/migration.
 - Archive prepares a reviewed local payload in the current canonical `.helm/archive/` bundle. Ship separately publishes/verifies the private payload and receipt. Historical `.archive/` bundles remain protected; no automatic relocation or replay.
 - Adopt installs reviewed local rule copies; it does not convert external pointers or merge rule bodies. Legal writes complete uncommitted source-based drafts for editor/Markdown review, keeps chat to file links and important changes/gaps, and asks once for Commit / Revise / Leave uncommitted. Preserve existing clauses and distinguish concrete omissions from unassessed legal sufficiency; never require home-address intake or a second model. Exact legal content/commit approval remains independent of auto-commit; only approved substantive document changes advance assessment provenance. Verified record-path reconciliation is automatic and preserves that provenance.
@@ -83,6 +85,7 @@ This covers Helm's agent-facing instructions. Generic prose stays in `rules/writ
 - Add new top-level source directories to `_config.yml`'s exclusions when they should not ship as site content.
 - Docs CI is build-only. A green Pages build does not establish that package/helper/client/model checks ran or passed.
 - Normalize uses explicit `git filter-repo --refs` partial mode to preserve remotes and excluded refs. Default full-rewrite mode removes `origin` and affects more refs; never substitute it or reconstruct a remote from its URL alone.
+- Headless `claude -p` has no native question tool, so workflows ask in chat and end the run; profiling needs `--resume <session_id>` per answer. Runs that return $0 or a 429 hit the usage limit; discard them.
 
 ## Rules
 
@@ -92,4 +95,4 @@ Read and follow all three shipped rules before project work:
 - `rules/safety.md`
 - `rules/writing.md`
 
-<!-- last-reviewed: 338818cbfe7421265b2eefe64c7a45c271e23921 -->
+<!-- last-reviewed: c99a0b23034f905b073cf65a4bd853add34f32bb -->
