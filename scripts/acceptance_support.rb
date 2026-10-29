@@ -222,7 +222,7 @@ module HelmAcceptance
     end
   end
 
-  def verify_publication!(name:, workspace:, scenario:, result:)
+  def verify_publication!(workspace:, scenario:, result:)
     observed = HelmGitAcceptance.remote_refs(workspace, scenario.fetch(:local_remote))
     HelmGitAcceptance.assert_publication!(observed, scenario.fetch(:expected_remote))
     commands = result.fetch(:calls).flat_map { |c| HelmAcceptance.strings(c.fetch("input")) }
@@ -253,7 +253,7 @@ module HelmAcceptance
       updates = log.file? ? HelmSmoke.read_regular(scenario.fetch(:local_remote), "fixture-updates.log").lines.map(&:strip) : []
       raise "Unexpected fixture publication actions" unless updates == scenario.fetch(:expected_updates)
     end
-    if %w[history-remote-moved history-missing-handoff archive-completed-no-replay ship-completed-backup-no-replay].include?(name)
+    if scenario[:no_publication]
       raise "Moved remote caused a publication attempt" if commands.any? { |c| c.match?(/\bgit\s+push\b/) }
     else
       raise "Partial resume omitted its fixed feature lease" unless commands.any? { |c| c.include?("--force-with-lease=refs/heads/feature:") }

@@ -143,7 +143,7 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     end
   end
   if scenario[:local_remote]
-    HelmAcceptance.verify_publication!(name: name, workspace: workspace, scenario: scenario, result: result)
+    HelmAcceptance.verify_publication!(workspace: workspace, scenario: scenario, result: result)
   end
   if scenario[:branch_remote]
     raise "Branch preparation changed the remote" unless HelmSmoke.git(scenario[:branch_remote], "for-each-ref", "--format=%(refname) %(objectname)") == scenario.fetch(:branch_remote_refs)

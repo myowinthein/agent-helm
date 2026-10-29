@@ -301,7 +301,7 @@ module HelmAcceptanceCases
     hook.parent.mkpath
     hook.write("#!/bin/sh\ncat >> fixture-updates.log\n")
     hook.chmod(0700)
-    fixture = { private_path: proof, local_remote: remote, expected_remote: expected, remote_before: HelmGitAcceptance.remote_refs(workspace, remote),
+    fixture = { private_path: proof, local_remote: remote, expected_remote: expected, no_publication: moved, remote_before: HelmGitAcceptance.remote_refs(workspace, remote),
       expected_updates: moved ? [] : ["#{old_tip} #{new_tip} refs/heads/feature"], fixture_hook: hook.read,
       immutable_proof: evidence.slice(:original_branch, :original_head, :reviewed_replacements, :original, :post_filter_snapshot, :current_run_map, :backend_commit_map, :remote_expectations).transform_keys(&:to_s).then { |v| JSON.parse(JSON.generate(v)) },
       expected_tracking: moved ? {} : { "refs/remotes/origin/main" => expected.fetch("refs/heads/main"), "refs/remotes/origin/feature" => expected.fetch("refs/heads/feature") },
@@ -322,6 +322,7 @@ module HelmAcceptanceCases
       proof.rename(moved_proof)
       fixture[:private_path] = moved_proof
       fixture[:missing_handoff] = true
+      fixture[:no_publication] = true
       fixture[:expected_remote] = fixture.fetch(:remote_before)
       fixture[:expected_updates] = []
       fixture[:expected_tracking] = {}
@@ -377,7 +378,7 @@ module HelmAcceptanceCases
     HelmSmoke.git(workspace, "commit", "--quiet", "-m", "chore(archive): record completion receipt")
     receipt = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
     HelmSmoke.git(workspace, "push", "--quiet", "--no-follow-tags", remote.to_s, "#{receipt}:refs/heads/main")
-    { local_remote: remote, expected_remote: { "refs/heads/main" => receipt },
+    { local_remote: remote, expected_remote: { "refs/heads/main" => receipt }, no_publication: true,
       request: "Verify this already completed synthetic archive resume. Its archive ID is synthetic-acceptance-archive, payload #{payload}, receipt #{receipt}, on main. The controller confirms the named backup remote is only an owned private local bare fixture with no provider/deployment/CI effects; Git readback may be used. All historical reports and source identities are literal fixture evidence. Verify the completed receipt/payload ancestry and current remote main, then report without replaying preparation/restoration/service stop, creating any file/commit, cleanup or publication. No phase mutation or external copy is selected." }
   end
 
