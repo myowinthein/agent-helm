@@ -196,14 +196,14 @@ module HelmAcceptanceCases
     HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "merge", "--quiet", "--no-ff", "feature", "-m", "chore(core): merge")
     HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "tag", "-a", "keep", first, "-m", "Preserve this annotated fixture tag")
     HelmSmoke.git(workspace, "update-ref", "refs/recovery/excluded", first)
-    private_path = container.join("private proof")
-    private_path.mkpath
-    private_path.chmod(0700)
+    home = container.join("home")
+    home.mkpath
+    home.chmod(0700)
     before = HelmGitAcceptance.graph(workspace)
     old_message = before.fetch(:commits).fetch(first).fetch(:message)
     new_message = "chore(fixture): bootstrap synthetic consumer\n"
-    fixture = { private_path: private_path, graph_before: before, replacements: { first => new_message },
-      request: "Review only original commit #{first}, replacing its complete message #{old_message.inspect} with #{new_message.inspect}. The main/feature branch descendants must stay coherent; their other messages are explicitly unaudited and must remain byte-identical. I approve this exact local rewrite across all affected existing main/feature tips #{before[:refs].select { |k,_| k.start_with?('refs/heads/') }.inspect}, unchanged trees, metadata and ordered parents, preserved annotated tag/excluded ref/configuration, and the declared lost tag ancestry. No remote operations are approved. This approval is the final unchanged concrete rewrite approval, not merely selection. Preserve verified recovery outside the checkout in #{private_path}, use recovery.bundle there, and save your independently verified current-run ID map in verified-map.json as old-ID/new-ID pairs. Files/directories must have owner-only permissions. You may commit only the eligible schema-2 normalize checkpoint on main after successful verification. Record only the actually reviewed initial prefix; do not certify the unique branch messages or later commits. If git filter-repo/Python is unavailable stop with the actual limitation, without installing. Do not run any project code or tests." }
+    fixture = { home: home, extra_writes: [home], graph_before: before, replacements: { first => new_message },
+      request: "Review only original commit #{first}, replacing its complete message #{old_message.inspect} with #{new_message.inspect}. The main/feature branch descendants must stay coherent; their other messages are explicitly unaudited and must remain byte-identical. I approve this exact local rewrite across all affected existing main/feature tips #{before[:refs].select { |k,_| k.start_with?('refs/heads/') }.inspect}, unchanged trees, metadata and ordered parents, preserved annotated tag/excluded ref/configuration, and the declared lost tag ancestry. No remote operations are approved. This approval is the final unchanged concrete rewrite approval, not merely selection. Preserve verified recovery in the workflow's standard recovery location, use recovery.bundle there, and save your independently verified current-run ID map in verified-map.json as old-ID/new-ID pairs. Files/directories must have owner-only permissions. You may commit only the eligible schema-2 normalize checkpoint on main after successful verification. Record only the actually reviewed initial prefix; do not certify the unique branch messages or later commits. If git filter-repo/Python is unavailable stop with the actual limitation, without installing. Do not run any project code or tests." }
     return fixture unless package
     backend = ENV.fetch("PATH").split(File::PATH_SEPARATOR).map { |dir| Pathname(dir).join("git-filter-repo") }.find(&:executable?)
     raise "Synthetic normalization backend unavailable" unless backend
@@ -219,9 +219,11 @@ module HelmAcceptanceCases
           "discover", "--git-common-dir", #{workspace.join(".git").to_s.inspect})
         raise "No locator before filtering" unless status.success?
         candidates = JSON.parse(output).fetch("candidates")
-        raise "No exact private recovery handoff before filtering" unless candidates.length == 1 &&
-          candidates.first.fetch("recovery_directory") == #{private_path.to_s.inspect} && candidates.first.fetch("availability") == "present"
-        File.open(#{private_path.join("before-filter-locator.json").to_s.inspect}, File::WRONLY | File::CREAT | File::EXCL, 0600) do |file|
+        base = #{home.join("Agent Helm", "normalize").to_s.inspect} + "/"
+        recovery = candidates.length == 1 ? candidates.first.fetch("recovery_directory") : ""
+        raise "No exact private recovery handoff before filtering" unless recovery.start_with?(base) &&
+          recovery.delete_prefix(base).match?(/\\A\\h{8}-\\h{4}-\\h{4}-\\h{4}-\\h{12}\\z/) && candidates.first.fetch("availability") == "present"
+        File.open(File.join(recovery, "before-filter-locator.json"), File::WRONLY | File::CREAT | File::EXCL, 0600) do |file|
           file.write(JSON.generate(candidates.first))
         end
       end
@@ -229,7 +231,7 @@ module HelmAcceptanceCases
     RUBY
     wrapper.chmod(0700)
     fixture[:require_handoff] = true
-    fixture[:environment] = { "PATH" => "#{bin}#{File::PATH_SEPARATOR}#{ENV.fetch('PATH')}" }
+    fixture[:environment] = { "PATH" => "#{bin}#{File::PATH_SEPARATOR}#{ENV.fetch('PATH')}", "HOME" => home.to_s }
     fixture[:request] += " Team ready: I acknowledge the coordination notice for this exact owned synthetic rewrite; there are no external developers/clones to coordinate. Reuse this readiness answer and the already supplied exact final rewrite approval. Include the standard immutable Git-common-directory locator in this approved pre-filter preparation. Use handoff.json as the JSON data entrypoint. Keep verified-map.json exactly a plain JSON object mapping each original full object ID to its rewritten full object ID, without an enclosing wrapper or status fields; save index/status separately. The controller's reviewed backend wrapper checks the actual locator before filtering and otherwise delegates to the installed backend; do not bypass it."
     fixture
   end

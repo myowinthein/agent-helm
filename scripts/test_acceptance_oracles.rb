@@ -50,9 +50,10 @@ with_consumer do |workspace, container|
   HelmSmoke.git(workspace, "tag", "-a", "keep", first, "-m", "Preserved fixture tag")
   graph_before = HelmGitAcceptance.graph(workspace)
   before = HelmSmoke.snapshot(workspace)
-  proof = container.join("private proof")
+  home = container.join("home")
+  proof = home.join("Agent Helm", "normalize", "6f1c2d3e-4a5b-4c6d-8e7f-9a0b1c2d3e4f")
   proof.mkpath
-  proof.chmod(0700)
+  [home, proof.parent.parent, proof.parent, proof].each { |directory| directory.chmod(0700) }
   HelmSmoke.git(workspace, "bundle", "create", proof.join("recovery.bundle").to_s, "--all")
   replacement = "chore(fixture): bootstrap\n"
   new_first = HelmGitAcceptance.commit_tree(workspace, replacement, [], tree)
@@ -69,7 +70,7 @@ with_consumer do |workspace, container|
   record.write(JSON.generate(checkpoint))
   HelmSmoke.git(workspace, "add", ".helm/normalize-log.json")
   commit_fixture(workspace, "chore(fixture): record reviewed prefix")
-  scenario = { graph_before: graph_before, replacements: { first => replacement }, private_path: proof }
+  scenario = { graph_before: graph_before, replacements: { first => replacement }, home: home }
   approved = {}
   verify = -> { HelmAcceptance.verify_normalize!(workspace: workspace, container: container,
     scenario: scenario, before: before, approved: approved) }
@@ -84,8 +85,31 @@ with_consumer do |workspace, container|
   proof.chmod(0755)
   rejects_with("Private proof is not owner-only", &verify)
   proof.chmod(0700)
+  second = proof.parent.join("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d")
+  second.mkpath
+  rejects_with("Expected exactly one UUID-named recovery folder under the controlled home", &verify)
+  second.rmtree
+  elsewhere = container.join("custom recovery")
+  proof.rename(elsewhere)
+  rejects_with("Expected exactly one UUID-named recovery folder under the controlled home", &verify)
+  elsewhere.rename(proof)
+  verify.call
 end
-puts "PASS direct normalize oracle: reviewed prefix, approved bytes, independent recovery and private proof"
+puts "PASS direct normalize oracle: reviewed prefix, approved bytes, independent recovery, private proof and standard recovery location"
+
+with_consumer do |workspace, container|
+  backend = ENV.fetch("PATH").split(File::PATH_SEPARATOR).any? { |directory| Pathname(directory).join("git-filter-repo").executable? }
+  package = backend ? Pathname(__dir__).parent : nil
+  setup = HelmAcceptanceCases.prepare_normalize(workspace, container, package: package)
+  expect(setup[:home] == container.join("home") && setup[:extra_writes] == [setup[:home]])
+  expect(!setup.key?(:private_path) && !setup.fetch(:request).include?("private proof"))
+  if package
+    expect(setup.dig(:environment, "HOME") == setup[:home].to_s)
+    _, status = Open3.capture2e("ruby", "-c", container.join("controlled bin", "git-filter-repo").to_s)
+    expect(status.success?)
+  end
+end
+puts "PASS normalize fixture: controlled HOME, standard recovery location, no custom path and a valid controlled backend wrapper"
 
 [false, true].each do |successful|
   with_consumer do |workspace, container|

@@ -156,7 +156,10 @@ module HelmAcceptance
     core[:refs]["refs/heads/main"] = expected_parent
     core[:index] = graph_before.fetch(:index)
     HelmGitAcceptance.assert_rewrite!(graph_before, core, mapping, scenario.fetch(:replacements))
-    evidence = scenario.fetch(:private_path)
+    recovery_base = scenario.fetch(:home).join("Agent Helm", "normalize")
+    names = recovery_base.directory? ? recovery_base.children.map { |child| child.basename.to_s } : []
+    raise "Expected exactly one UUID-named recovery folder under the controlled home" unless names.length == 1 && names.first.match?(/\A\h{8}-\h{4}-\h{4}-\h{4}-\h{12}\z/)
+    evidence = recovery_base.join(names.first)
     raise "Private proof is not owner-only" unless (evidence.stat.mode & 077) == 0
     saved = JSON.parse(HelmSmoke.read_regular(evidence, "verified-map.json"))
     pairs = begin
