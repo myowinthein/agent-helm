@@ -346,8 +346,13 @@
       "state": "open",
       "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
       "tests": [
-        "scripts/test_acceptance_oracles.rb::direct normalize oracle"
-      ]
+        "scripts/test_acceptance_oracles.rb::direct normalize oracle",
+        "scripts/test_acceptance_oracles.rb::normalize fixture"
+      ],
+      "blocker": {
+        "kind": "verification",
+        "note": "Offline oracle and fixture checks pass; the live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run, so end-to-end behavior is unverified"
+      }
     },
     {
       "id": "g-8fd9f54e-cb13-4eb1-b831-e11b049d4ee6",
@@ -737,8 +742,22 @@
       "reason": "Locator and entrypoint modes are tested, but the recovery directory's own owner-only check is not exercised; a loosened check would mark non-private backups present",
       "action": "add",
       "layer": "unit",
-      "state": "open",
-      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4"
+      "state": "resolved",
+      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "tests": [
+        "scripts/test_normalize_handoff.py::test_non_private_recovery_directory_is_invalid_and_cannot_be_registered"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_normalize_handoff.py::test_non_private_recovery_directory_is_invalid_and_cannot_be_registered"
+        ],
+        "method": "runtime",
+        "outcome": "A 0755 recovery directory is reported invalid on discovery and cannot be registered; 17 handoff tests pass, and a mutated copy of the helper without the owner-only check fails the new test",
+        "commit": "c7b2e6775ad5c8429de71997579086d459752a75",
+        "command": "python3 -I -B scripts/test_normalize_handoff.py",
+        "scope": "Disposable clones on macOS with Python 3.14.7; offline, local Git only"
+      }
     },
     {
       "id": "g-eebf4a68-3edb-4098-91e6-332ec3940cb3",
