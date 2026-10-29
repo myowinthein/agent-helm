@@ -99,7 +99,7 @@ Legal documents help explain how a project handles people’s data and what term
 legal
 ```
 
-It reviews the project and suggests relevant documents, then creates or updates the ones I choose based on confirmed facts. It asks for missing business details, and the drafts still need appropriate human review.
+It reviews the project, assesses six document types and writes drafts from confirmed facts as uncommitted files. I can request or exclude types, read the drafts in my editor and decide whether to commit them. It asks once for essential missing details, and the drafts still need appropriate human review.
 
 ### Normalize
 
@@ -109,7 +109,7 @@ Consistent commit messages make it easier to understand what changed and follow 
 normalize
 ```
 
-It reviews the commit history and suggests corrections using Conventional Commits. After I approve, it saves recovery evidence and rewrites the affected local branches together. Publishing those changes happens later through [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-normalized-history).
+Before it reviews the commit history, it shows a coordination warning and asks me to confirm my team is ready. It then suggests corrections using Conventional Commits. After I approve, it saves recovery evidence and rewrites the affected local branches together. Publishing those changes happens later through [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-normalized-history).
 
 ### Ship
 
@@ -137,4 +137,4 @@ If something does not work or you have an idea that would make working with agen
 
 Agent Helm is open source under the [MIT license](https://github.com/myowinthein/agent-helm/blob/main/LICENSE).
 
-<!-- last-reviewed: 57532d617951cc576240c2570c34fd474abdc473 -->
+<!-- last-reviewed: 6d940336a12009df35a29a1f8886eaeeec4f2158 -->
