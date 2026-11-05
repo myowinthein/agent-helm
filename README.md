@@ -51,8 +51,6 @@ adopt
 
 I add [Git rules](https://myowinthein.github.io/agent-helm/docs/rules/git.html) for commits and publishing, [safety rules](https://myowinthein.github.io/agent-helm/docs/rules/safety.html) for actions that could cause damage or be difficult to undo, [writing rules](https://myowinthein.github.io/agent-helm/docs/rules/writing.html) for clear, natural content, and [design rules](https://myowinthein.github.io/agent-helm/docs/rules/design.html) to avoid repetitive AI website patterns.
 
-It checks existing rules, then adds or updates the ones I approve as shared local copies for both agents.
-
 ### Env
 
 As a project grows, its `.env` and `.gitignore` files can become messy or fall behind the code. I use this command to [keep them organised and up to date](https://myowinthein.github.io/agent-helm/docs/commands/env.html).
