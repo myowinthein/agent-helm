@@ -49,7 +49,7 @@ Rule files tell agents how to behave while working on a project. I use this comm
 adopt
 ```
 
-I add [Git rules](https://myowinthein.github.io/agent-helm/docs/rules/git.html) for commits and publishing, [safety rules](https://myowinthein.github.io/agent-helm/docs/rules/safety.html) for actions that could cause damage or be difficult to undo, and [writing rules](https://myowinthein.github.io/agent-helm/docs/rules/writing.html) for clear, natural content. Optional [design rules](https://myowinthein.github.io/agent-helm/docs/rules/design.html) guide web layout, presentation and interaction, with project branding kept locally. It checks existing rules, then adds or updates the ones I approve as shared local copies for both agents.
+I add [Git rules](https://myowinthein.github.io/agent-helm/docs/rules/git.html) for commits and publishing, [safety rules](https://myowinthein.github.io/agent-helm/docs/rules/safety.html) for actions that could cause damage or be difficult to undo, and [writing rules](https://myowinthein.github.io/agent-helm/docs/rules/writing.html) for clear, natural content. Optional [design rules](https://myowinthein.github.io/agent-helm/docs/rules/design.html) discourage repetitive AI website patterns and decorative filler, with project branding kept locally. It checks existing rules, then adds or updates the ones I approve as shared local copies for both agents.
 
 ### Env
 
