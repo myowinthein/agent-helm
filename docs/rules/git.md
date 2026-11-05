@@ -34,6 +34,8 @@ With auto-commit off or absent, the agent asks before committing. With it on, co
 
 Public legal-document commits always need exact content and commit approval. Auto-commit never approves publication.
 
+New commits carry a `Co-authored-by` trailer naming the committing agent. Existing trailers are preserved and not duplicated, and the agent does not ask who wrote the changes.
+
 ## Conventional Commits
 
 Based on [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), with project or user policy taking precedence over Helm defaults.
