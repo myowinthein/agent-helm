@@ -22,7 +22,7 @@ Read the consumer's active project instructions and the bundled [Git rules](../.
 
 Use the Git rules' **Project memory and configuration** procedure before dependent writes. `{memory_file}` means its resolved knowledge/configuration owner, not an importing wrapper. `{instruction_file}` means the active host root entry: `CLAUDE.md` in Claude; `AGENTS.override.md` when present, otherwise `AGENTS.md`, in Codex. A package's contributor instructions are never consumer memory. Do not change global client settings.
 
-Only log/adopt perform their declared instruction-layout writes. Follow their owner reconciliation, bootstrap, override, source-project/installation and external-reference guards; resolving a missing owner does not create it. Other workflows preserve ownership when saving an authorized setting. Log does not convert rule installations; adopt installs only reviewed local copies, with writing separately accepted in existing setups.
+Only log/adopt perform their declared instruction-layout writes. Follow their owner reconciliation, bootstrap, override, source-project/installation and external-reference guards; resolving a missing owner does not create it. Other workflows preserve ownership when saving an authorized setting. Log does not convert rule installations; adopt installs only reviewed local copies, with independent additions separately accepted. Design is optional and is not loaded universally by this runtime; respect it when adopted or otherwise selected by project instructions.
 
 ## Output maintenance
 

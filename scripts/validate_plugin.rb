@@ -112,7 +112,7 @@ module HelmValidation
       read(file).scan(%r{\{package_root\}/([\w./-]+\.md)}).flatten.each { |path| resource(root, path) }
     end
     check(root.glob("prompts/archive/step*.md").length == 5, "Archive steps must stay separate from discoverable entry points")
-    %w[rules/git.md rules/safety.md rules/writing.md prompts/shared/runtime.md prompts/shared/project-state.md
+    %w[rules/git.md rules/safety.md rules/writing.md rules/design.md prompts/shared/runtime.md prompts/shared/project-state.md
        prompts/shared/question-mechanism.md].each { |path| resource(root, path) }
     check(read(root.join("prompts/shared/runtime.md")).include?("[Question mechanism (QM)](question-mechanism.md)"),
           "Shared runtime must load QM before human questions")

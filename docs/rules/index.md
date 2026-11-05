@@ -7,4 +7,4 @@ permalink: /docs/rules
 
 # Rules
 
-Guides to Agent Helm's rules for Git work, safety and writing. Each page explains what the rule covers and how it guides agents working in your project.
+Guides to Agent Helm's rules for Git work, safety, writing and web design. Each page explains what the rule covers and how it guides agents working in your project.

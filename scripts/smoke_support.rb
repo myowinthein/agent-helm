@@ -21,7 +21,7 @@ module HelmSmoke
 
   def connected_owner(original, rules: %w[git safety])
     raise "Fixture already contains a Rules section" if original.match?(/^## Rules$/)
-    raise "Unexpected selected rules" unless !rules.empty? && rules.uniq == rules && (rules - %w[git safety writing]).empty?
+    raise "Unexpected selected rules" unless !rules.empty? && rules.uniq == rules && (rules - %w[git safety writing design]).empty?
     pointers = rules.map { |rule| ".claude/rules/#{rule}.md" }.join(" and ")
     original + "\n## Rules\n\nAt the start of every session, read and follow #{pointers}.\n"
   end

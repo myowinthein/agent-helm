@@ -101,19 +101,22 @@ checks["Codex requires completed commands and a completed turn"] = lambda do
   item.delete("aggregated_output")
   rejects { HelmAcceptance.trace("codex", wire(events)) }
 end
-checks["writing-only exact output excludes unselected rules"] = lambda do
-  owner = "# Fixture\n"
-  connected = HelmSmoke.connected_owner(owner, rules: ["writing"])
-  expect(connected.include?("writing.md") && !connected.include?("git.md") && !connected.include?("safety.md"))
-  Dir.mktmpdir("helm-selected-rules-") do |temporary|
-    root = Pathname(temporary)
-    root.join("AGENTS.md").write(owner)
-    root.join("git.md").write("Custom Git policy\n")
-    before = HelmSmoke.snapshot(root)
-    root.join("AGENTS.md").write(connected)
-    HelmSmoke.assert_files_unchanged!(root, before, "AGENTS.md" => connected)
-    root.join("git.md").write("Lost custom policy\n")
-    rejects { HelmSmoke.assert_files_unchanged!(root, before, "AGENTS.md" => connected) }
+%w[writing design].each do |selected|
+  checks["#{selected}-only exact output excludes unselected rules"] = lambda do
+    owner = "# Fixture\n"
+    connected = HelmSmoke.connected_owner(owner, rules: [selected])
+    expect(connected.include?("#{selected}.md"))
+    expect((%w[git safety writing design] - [selected]).none? { |name| connected.include?("#{name}.md") })
+    Dir.mktmpdir("helm-selected-rules-") do |temporary|
+      root = Pathname(temporary)
+      root.join("AGENTS.md").write(owner)
+      root.join("git.md").write("Custom Git policy\n")
+      before = HelmSmoke.snapshot(root)
+      root.join("AGENTS.md").write(connected)
+      HelmSmoke.assert_files_unchanged!(root, before, "AGENTS.md" => connected)
+      root.join("git.md").write("Lost custom policy\n")
+      rejects { HelmSmoke.assert_files_unchanged!(root, before, "AGENTS.md" => connected) }
+    end
   end
 end
 checks["private fixture maps preserve every exact ID pair and reject duplicates"] = lambda do

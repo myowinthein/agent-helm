@@ -95,4 +95,6 @@ Read and follow all three shipped rules before project work:
 - `rules/safety.md`
 - `rules/writing.md`
 
+For web design planning, changes or review, also read and follow `rules/design.md`.
+
 <!-- last-reviewed: c99a0b23034f905b073cf65a4bd853add34f32bb -->

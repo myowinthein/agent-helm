@@ -45,12 +45,13 @@ flowchart TD
 | [Git](../rules/git.html) | Commit conventions and publication policy. |
 | [Safety](../rules/safety.html) | Boundaries around consequential actions. |
 | [Writing](../rules/writing.html) | Clear, useful prose. |
+| [Design](../rules/design.html) | Web presentation, interaction and design review. |
 
-New adoption proposes all three; you can omit Writing or explicitly request it alone. Git and Safety stay paired. Existing installations offer Writing as an optional addition in the same review.
+New adoption proposes Git, Safety and Writing; you can omit Writing. Design is available but unselected until explicitly included. Git and Safety stay paired; Writing and Design can each be adopted alone or together. Existing installations offer missing independent rules as optional additions in the same review.
 
 ## What to expect
 
-Adopt compares complete files internally, not just version markers. You see a compact **File | Action | Local → Source version** table, the selected package, pointer changes and a short summary of meaningful policy changes. Named custom-file overwrites and downgrades are disclosed. Approve the proposed set or a subset once; optional Writing needs explicit inclusion. No review-first or repeated per-file confirmation follows unchanged approval.
+Adopt compares complete files internally, not just version markers. You see a compact **File | Action | Local → Source version** table, the selected package, pointer changes and a short summary of meaningful policy changes. Named custom-file overwrites and downgrades are disclosed. Approve the proposed set or a subset once; available but unselected rules need explicit inclusion. No review-first or repeated per-file confirmation follows unchanged approval.
 
 Full rule bodies/diffs are available on request or through editor links, rather than printed by default. Approval covers exact copies from the identified package and the stated instruction changes; internal comparison and byte-for-byte verification still apply.
 
@@ -62,7 +63,7 @@ Equivalent content stays untouched even with an older marker. Keep/Skip preserve
 | All bodies match, even with older/newer markers | Preserve files and markers; no update question. |
 | Managed bodies differ | Summarize named replacements and meaningful changes; apply the approved set. |
 | Copies or references are missing | Summarize missing copies and exact connection effects; apply approved repairs. |
-| Writing is newly available | Include its purpose/version/pointer as an optional addition in the same proposal. |
+| An independent rule is available but unselected | Include its purpose/version/pointer as an optional addition in the same proposal. |
 | Custom files or a downgrade | Name the overwrite or lower version explicitly; apply only approved changes. |
 | Mixed updates, repairs and kept files | Use one proposal and accept all shown actions or a named subset. |
 | Comparison source is unavailable | Keep copies; allow valid connection-only work and report blocked updates. |
@@ -73,7 +74,7 @@ Suitable copies can be connected without replacement. Independent instruction fi
 
 ## Your result
 
-Selected copies live under `.claude/rules/`, using `git.md`, `safety.md` and `writing.md`. Shared pointers belong in `AGENTS.md`; `CLAUDE.md` imports it.
+Selected copies live under `.claude/rules/`, using the catalog filenames: `git.md`, `safety.md`, `writing.md` and `design.md`. Shared pointers belong in `AGENTS.md`; `CLAUDE.md` imports it. Keep project branding and design-system choices in separate local guidance by default, so reviewed Design updates can preserve those choices without a policy merge.
 
 The report shows installed, kept, skipped and missing rules. File connections are checked; native startup loading needs separate observation. Start a fresh agent session after instruction changes.
 
