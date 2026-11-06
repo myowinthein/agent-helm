@@ -61,7 +61,7 @@ As a project grows, its `.env` and `.gitignore` files can become messy or fall b
 env
 ```
 
-It checks for exposed secrets, missing settings and potentially unused variables, then applies the fixes I choose. It also maintains environment templates and checks that ignore rules protect private files without hiding files the project needs in Git.
+It checks for exposed secrets, missing settings and unused variables, then applies the fixes I choose. It can also create a safe template to share, and makes sure Git ignores private files but not the ones the project needs.
 
 ### Test
 
@@ -71,7 +71,7 @@ As the project grows and test coverage becomes more important, I use this comman
 test
 ```
 
-It reviews changes to the code and existing tests since the last scan, or reviews the project in full when needed. It reports new tests to add and existing tests that need attention, each with a priority, then works on the ones I choose using tools suited to the project.
+It reviews code and test changes since the last scan, or the whole project when needed. It reports tests to add and existing tests that need attention, each with a priority, then works on the ones I choose using suitable tools.
 
 ### Refactor
 
@@ -81,7 +81,7 @@ After working with agents for a while, the code can become harder to follow and 
 refactor
 ```
 
-It reviews code changes since the last scan, or reviews the project in full when needed. It reports findings with their priority and risk, then works on the ones I choose, following the tech stack’s recommended practices while preserving the code’s behaviour.
+It reviews code changes since the last scan, or the whole project when needed. It reports findings with their priority and risk, then improves the ones I choose, following the stack’s recommended practices without changing behaviour.
 
 ### Manifest
 
@@ -101,7 +101,7 @@ Legal documents help explain how a project handles people’s data and what term
 legal
 ```
 
-It reviews the project, assesses six document types and writes drafts from confirmed facts as uncommitted files. I can request or exclude types, read the drafts in my editor and decide whether to commit them. It asks once for essential missing details, and the drafts still need appropriate human review.
+It reviews the project and writes drafts of up to six document types as uncommitted files. I can choose which types to include and decide whether to commit them. It asks once for missing details, and the drafts still need human review.
 
 ### Normalize
 
@@ -111,7 +111,7 @@ Consistent commit messages make it easier to understand what changed and follow 
 normalize
 ```
 
-Before it reviews the commit history, it shows a coordination warning and asks me to confirm my team is ready. It then suggests corrections using Conventional Commits. After I approve, it saves recovery evidence and rewrites the affected local branches together. Publishing those changes happens later through [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-normalized-history).
+Before reviewing the history, it asks me to confirm my team is ready for a rewrite. It then suggests Conventional Commits corrections. After I approve, it saves a backup and rewrites the affected local branches. [Ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-normalized-history) publishes them later.
 
 ### Ship
 
@@ -121,7 +121,7 @@ Publishing changes involves checks and decisions that are easy to miss when hand
 ship
 ```
 
-It reviews the changes, then pushes them or creates PRs after I approve. I can choose other branches to update and, once changes are published and integrated on main/master, approve a versioned release.
+It reviews the changes, then pushes them or creates PRs after I approve. I can also choose other branches to update. Once my changes are integrated on main or master, it can offer a versioned release for me to approve.
 
 ### Archive
 
