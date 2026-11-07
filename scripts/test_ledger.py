@@ -1,8 +1,11 @@
 """Offline ledger contracts using disposable consumers, never project records."""
 
+import contextlib
 import copy
 from decimal import Decimal
 import hashlib
+import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -10,6 +13,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from unittest import mock
 
@@ -17,6 +21,10 @@ sys.dont_write_bytecode = True
 HELPERS = Path(__file__).resolve().parents[1] / "helpers"
 sys.path.insert(0, str(HELPERS))
 from helm_lib import common, ledger
+
+ENTRY_SPEC = importlib.util.spec_from_file_location("helm_entry", HELPERS / "helm.py")
+entry = importlib.util.module_from_spec(ENTRY_SPEC)
+ENTRY_SPEC.loader.exec_module(entry)
 
 
 A, B = "a" * 40, "b" * 40
@@ -334,6 +342,42 @@ class LedgerTests(unittest.TestCase):
             self.assertEqual(run.stdout, b"")
             self.assertEqual(json.loads(run.stderr)["error"]["kind"], "invalid_input")
             self.assertNotIn(CANARY.encode(), run.stderr)
+
+    def run_helper(self):
+        raw = common.encode(self.request()).encode("utf-8")
+        stderr = io.StringIO()
+        with mock.patch.object(sys, "stdin", types.SimpleNamespace(buffer=io.BytesIO(raw))), \
+                contextlib.redirect_stderr(stderr):
+            code = ledger.run(["ledger-check"])
+        return code, stderr.getvalue()
+
+    def test_unsupported_python_exits_with_runtime_unavailable(self):
+        stderr = io.StringIO()
+        with mock.patch.object(sys, "version_info", (3, 10, 0)), contextlib.redirect_stderr(stderr):
+            code = entry.main()
+        self.assertEqual((code, json.loads(stderr.getvalue())["error"]["kind"]), (3, "runtime_unavailable"))
+
+    def test_read_failure_exits_with_io_error_without_path_or_value(self):
+        real = ledger.read_file
+
+        def unreadable(root, parts, limit):
+            if root == ledger.PACKAGE_ROOT:
+                return real(root, parts, limit)
+            raise OSError(CANARY)
+
+        with mock.patch.object(ledger, "read_file", unreadable):
+            code, stderr = self.run_helper()
+        self.assertEqual((code, json.loads(stderr)["error"]["kind"], CANARY in stderr), (6, "io_error", False))
+
+    def test_unexpected_failure_exits_with_internal_error_without_value(self):
+        with mock.patch.object(ledger, "execute", side_effect=ValueError(CANARY)):
+            code, stderr = self.run_helper()
+        self.assertEqual((code, json.loads(stderr)["error"]["kind"], CANARY in stderr), (7, "internal_error", False))
+
+    def test_broken_bundled_contract_exits_with_internal_error(self):
+        with mock.patch.object(ledger, "read_file", return_value=b'{"interface_version": 2}'):
+            code, stderr = self.run_helper()
+        self.assertEqual((code, json.loads(stderr)["error"]["kind"]), (7, "internal_error"))
 
     def test_pages_include_all_states_and_preserve_order_and_full_summaries(self):
         records = [test_case("z-open"), test_case("a-closed", "resolved"), test_case("m-obsolete", "obsolete")]
