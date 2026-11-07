@@ -94,8 +94,32 @@ with_consumer do |workspace, container|
   rejects_with("Expected exactly one UUID-named recovery folder under the controlled home", &verify)
   elsewhere.rename(proof)
   verify.call
+  scenario[:require_handoff] = true
+  proof.join("handoff.json").write(JSON.generate("status" => "fixture"))
+  locator = { "run_id" => proof.basename.to_s, "recovery_directory" => proof.to_s,
+    "entrypoint" => "handoff.json", "availability" => "present" }
+  registered = workspace.join(".git/agent-helm/normalize-handoffs/#{locator.fetch('run_id')}.json")
+  registered.parent.mkpath
+  prefilter = proof.join("before-filter-locator.json")
+  write_locators = lambda do |saved, current|
+    prefilter.write(JSON.generate(saved))
+    registered.write(JSON.generate(current))
+  end
+  published = locator.reject { |key, _| key == "availability" }
+  write_locators.call(locator, published)
+  verify.call
+  prefilter.delete
+  rejects_with("Fixture artifact is missing or unsafe", &verify)
+  write_locators.call(locator.merge("recovery_directory" => elsewhere.to_s), published)
+  rejects_with("Recovery was not registered before filtering", &verify)
+  write_locators.call(locator.merge("availability" => "missing"), published)
+  rejects_with("Recovery was not registered before filtering", &verify)
+  write_locators.call(locator, published.merge("entrypoint" => "other.json"))
+  rejects_with("Pre-filter locator was changed after rewriting", &verify)
+  write_locators.call(locator, published)
+  verify.call
 end
-puts "PASS direct normalize oracle: reviewed prefix, approved bytes, independent recovery, private proof and standard recovery location"
+puts "PASS direct normalize oracle: reviewed prefix, approved bytes, independent recovery, private proof, pre-filter locator and standard recovery location"
 
 with_consumer do |workspace, container|
   backend = ENV.fetch("PATH").split(File::PATH_SEPARATOR).any? { |directory| Pathname(directory).join("git-filter-repo").executable? }
