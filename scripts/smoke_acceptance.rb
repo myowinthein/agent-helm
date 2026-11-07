@@ -34,7 +34,7 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   HelmSmoke.git(workspace, "config", "user.name", "Helm fixture")
   HelmSmoke.git(workspace, "config", "user.email", "fixture@example.invalid")
   HelmSmoke.git(workspace, "add", ".")
-  HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", "chore(fixture): initialize")
+  HelmSmoke.fixture_git(workspace, "commit", "--quiet", "-m", "chore(fixture): initialize")
   scenario = scenario.merge(scenario.fetch(:prepare).call(workspace, container)) if scenario[:prepare]
   target = scenario[:package_target] ? package : scenario[:nested_target] ? workspace.join("nested") : workspace
   target.join(".claude/.cc-writes").mkpath if scenario[:nested_target] || scenario[:package_target]

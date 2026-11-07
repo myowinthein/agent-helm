@@ -28,8 +28,7 @@ def repository(workspace, message = "chore(fixture): initialize")
   workspace.join("README.md").write("# Synthetic baseline\n")
   HelmSmoke.git(workspace, "init", "--quiet", "--initial-branch=main")
   HelmSmoke.git(workspace, "add", ".")
-  HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid",
-                "commit", "--quiet", "-m", message)
+  HelmSmoke.fixture_git(workspace, "commit", "--quiet", "-m", message)
 end
 
 checks = {}
@@ -243,8 +242,7 @@ checks["changed HEAD or tag targets are rejected"] = lambda do
     HelmSmoke.git(workspace, "tag", "fixture-tag")
     original = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
     before = HelmSmoke.git_state(workspace)
-    HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid",
-                  "commit", "--allow-empty", "--quiet", "-m", "chore(fixture): extra commit")
+    HelmSmoke.fixture_git(workspace, "commit", "--allow-empty", "--quiet", "-m", "chore(fixture): extra commit")
     rejects { HelmSmoke.assert_git_unchanged!(workspace, before) }
     committed = HelmSmoke.git_state(workspace)
     HelmSmoke.git(workspace, "update-ref", "refs/tags/fixture-tag", "HEAD", original)

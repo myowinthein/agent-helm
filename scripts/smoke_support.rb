@@ -4,6 +4,8 @@ require "open3"
 require "pathname"
 
 module HelmSmoke
+  CLAUDE_MODEL = "claude-opus-5-5"
+  CLAUDE_TOOLS = "Read,Glob,Grep,Bash,Write,Edit"
   module_function
 
   def configuration_conflict(shared)

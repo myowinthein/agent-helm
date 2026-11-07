@@ -82,7 +82,7 @@ cases.each do |name, scenario|
     end
     HelmSmoke.git(workspace, "init", "--quiet", "--initial-branch=main")
     HelmSmoke.git(workspace, "add", ".")
-    HelmSmoke.git(workspace, "-c", "user.name=Helm fixture", "-c", "user.email=fixture@example.invalid", "commit", "--quiet", "-m", scenario.fetch(:initial_message, "chore(fixture): initialize"))
+    HelmSmoke.fixture_git(workspace, "commit", "--quiet", "-m", scenario.fetch(:initial_message, "chore(fixture): initialize"))
     before = HelmSmoke.snapshot(workspace)
     before_git = HelmSmoke.git_state(workspace)
     approved = {}
@@ -102,8 +102,8 @@ cases.each do |name, scenario|
       "Use $#{scenario.fetch(:command)}. #{request}"
     end
     command = if client == "claude"
-      ["claude", "--plugin-dir", root.to_s, "--setting-sources", "", "--strict-mcp-config", "--model", "claude-opus-5-5", "--effort", "high",
-       "--tools", "Read,Glob,Grep,Bash,Write,Edit", "--allowedTools", "Read,Glob,Grep,Bash,Write,Edit", "--append-system-prompt", instructions,
+      ["claude", "--plugin-dir", root.to_s, "--setting-sources", "", "--strict-mcp-config", "--model", HelmSmoke::CLAUDE_MODEL, "--effort", "high",
+       "--tools", HelmSmoke::CLAUDE_TOOLS, "--allowedTools", HelmSmoke::CLAUDE_TOOLS, "--append-system-prompt", instructions,
        "--no-session-persistence", "--output-format", "json", "-p", prompt]
     else
       ["codex", "exec", "--ephemeral", "--sandbox", "workspace-write", "--json", "--cd", workspace.to_s, "#{instructions}\n\n#{prompt}"]
@@ -113,7 +113,7 @@ cases.each do |name, scenario|
     raise "#{name}: #{client} failed: #{stderr.to_s[-2000..]}" unless status.success?
     if client == "claude"
       result = JSON.parse(stdout)
-      raise "#{name}: requested Claude model missing" unless result.fetch("modelUsage").key?("claude-opus-5-5")
+      raise "#{name}: requested Claude model missing" unless result.fetch("modelUsage").key?(HelmSmoke::CLAUDE_MODEL)
       raise "#{name}: Claude returned an error" if result["is_error"]
       answer = result.fetch("result")
     else

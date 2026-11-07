@@ -88,8 +88,8 @@ cases.each do |name, scenario|
     instructions = "This is a disposable fictional fixture at #{workspace}. Operate only in it and read the selected packaged workflow/resources. Do not access real projects, network, external services or global settings. Do not commit, push or initialize Git; stop finalization with files uncommitted as explicitly requested by this fixture's user. Follow actual workflow questions; present unanswered choices and stop instead of inventing approval. Explicit approvals of exact final contents in the request authorize only that transformation."
     prompt = "#{instructions}\n\nRead #{root.join('skills', operation, 'SKILL.md')} and execute that Helm workflow with this request:\n\n#{request}"
     args = if client == "claude"
-      ["claude", "--setting-sources", "", "--strict-mcp-config", "--model", "claude-opus-5-5", "--effort", "high",
-       "--tools", "Read,Glob,Grep,Bash,Write,Edit", "--allowedTools", "Read,Glob,Grep,Bash,Write,Edit",
+      ["claude", "--setting-sources", "", "--strict-mcp-config", "--model", HelmSmoke::CLAUDE_MODEL, "--effort", "high",
+       "--tools", HelmSmoke::CLAUDE_TOOLS, "--allowedTools", HelmSmoke::CLAUDE_TOOLS,
        "--no-session-persistence", "--output-format", "json", "-p", prompt]
     else
       ["codex", "exec", "--ephemeral", "--skip-git-repo-check", "--sandbox", "workspace-write", "--json", "--cd", workspace.to_s, prompt]
@@ -109,7 +109,7 @@ cases.each do |name, scenario|
         raise "#{name}: CLI failed: #{stderr.read[-1000..]} #{raw[-2000..]}" unless status.success?
         if client == "claude"
           result = JSON.parse(raw)
-          raise "#{name}: wrong model or error" unless result.fetch("modelUsage").key?("claude-opus-5-5") && !result["is_error"]
+          raise "#{name}: wrong model or error" unless result.fetch("modelUsage").key?(HelmSmoke::CLAUDE_MODEL) && !result["is_error"]
           answer = result.fetch("result")
         else
           events = raw.lines.filter_map { |line| JSON.parse(line) rescue nil }
