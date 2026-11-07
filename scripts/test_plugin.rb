@@ -5,6 +5,14 @@ require "stringio"
 require "tmpdir"
 require_relative "validate_plugin"
 
+# Returns the validator's rejection message, or nil when it accepts the package.
+def validation_failure(installation)
+  HelmValidation.validate(installation)
+  nil
+rescue RuntimeError => error
+  error.message
+end
+
 root = Pathname(__dir__).parent
 HelmValidation.validate(root)
 HelmValidation.check(root.glob("commands/**/*.md").empty?, "Remove unused legacy command adapters; shared skills are the only entry points")
@@ -34,15 +42,10 @@ Dir.mktmpdir("helm-package-") do |temp|
     alternate = installation.join(path)
     alternate.parent.mkpath
     alternate.write(JSON.generate(manifest))
-    rejected = begin
-      HelmValidation.validate(installation)
-      false
-    rescue RuntimeError => error
-      error.message == "Keep one shared Claude/Codex manifest and marketplace; alternate metadata can shadow them"
-    ensure
-      alternate.delete
-    end
-    HelmValidation.check(rejected, "Validator accepted shadowing metadata: #{path}")
+    failure = validation_failure(installation)
+    alternate.delete
+    HelmValidation.check(failure == "Keep one shared Claude/Codex manifest and marketplace; alternate metadata can shadow them",
+                         "Validator accepted shadowing metadata: #{path}")
   end
 
   marketplace_path = installation.join(".claude-plugin/marketplace.json")
@@ -50,28 +53,17 @@ Dir.mktmpdir("helm-package-") do |temp|
   changed_marketplace = JSON.parse(original_marketplace)
   changed_marketplace.fetch("plugins").first["files"] = ["skills/"]
   marketplace_path.write(JSON.generate(changed_marketplace))
-  rejected = begin
-    HelmValidation.validate(installation)
-    false
-  rescue RuntimeError => error
-    error.message == "Do not restore the ignored marketplace files allowlist"
-  ensure
-    marketplace_path.write(original_marketplace)
-  end
-  HelmValidation.check(rejected, "Validator accepted an ignored marketplace files allowlist")
+  failure = validation_failure(installation)
+  marketplace_path.write(original_marketplace)
+  HelmValidation.check(failure == "Do not restore the ignored marketplace files allowlist",
+                       "Validator accepted an ignored marketplace files allowlist")
 
   installation.join("commands/nested").mkpath
   legacy = installation.join("commands/nested/unused.md")
   legacy.write("Unused adapter")
-  rejected = begin
-    HelmValidation.validate(installation)
-    false
-  rescue RuntimeError => error
-    error.message == "Legacy command adapters must not be packaged"
-  ensure
-    legacy.delete
-  end
-  HelmValidation.check(rejected, "Validator accepted a reintroduced legacy adapter")
+  failure = validation_failure(installation)
+  legacy.delete
+  HelmValidation.check(failure == "Legacy command adapters must not be packaged", "Validator accepted a reintroduced legacy adapter")
 
   icon = installation.join("assets/icon.svg")
   original = HelmValidation.read(icon)
@@ -101,20 +93,15 @@ Dir.mktmpdir("helm-package-") do |temp|
     "oversized file" => original.ljust(5 * 1024 * 1024 + 1, " ")
   }.each do |label, bytes|
     bytes ? icon.binwrite(bytes) : icon.delete
-    rejected = begin
-      HelmValidation.validate(installation)
-      false
-    rescue RuntimeError => error
-      expected = case label
-      when /stylesheet/ then "Plugin icon must use presentation attributes, not stylesheets"
-      when "escaped inline CSS resource" then "Plugin icon must use presentation attributes, not inline CSS"
-      when "uppercase paint resource", "escaped paint resource" then "Plugin icon must not execute code or load external resources"
-      end
-      HelmValidation.check(!expected || error.message == expected, "Validator rejected #{label} for the wrong reason")
-      true
-    end
-    HelmValidation.check(rejected, "Validator accepted a #{label} plugin icon")
+    failure = validation_failure(installation)
     icon.binwrite(original)
+    expected = case label
+    when /stylesheet/ then "Plugin icon must use presentation attributes, not stylesheets"
+    when "escaped inline CSS resource" then "Plugin icon must use presentation attributes, not inline CSS"
+    when "uppercase paint resource", "escaped paint resource" then "Plugin icon must not execute code or load external resources"
+    end
+    HelmValidation.check(!failure.nil?, "Validator accepted a #{label} plugin icon")
+    HelmValidation.check(!expected || failure == expected, "Validator rejected #{label} for the wrong reason")
   end
 
   %w[rules/design.md prompts/archive/step1-explore.md prompts/shared/question-mechanism.md
@@ -123,14 +110,9 @@ Dir.mktmpdir("helm-package-") do |temp|
     missing = installation.join(path)
     original = missing.read
     missing.delete
-    begin
-      HelmValidation.validate(installation)
-      raise "Missing supporting prompt was accepted: #{path}"
-    rescue RuntimeError => error
-      raise unless error.message.include?("Missing packaged resource")
-    ensure
-      missing.write(original)
-    end
+    failure = validation_failure(installation)
+    missing.write(original)
+    HelmValidation.check(failure.to_s.include?("Missing packaged resource"), "Missing supporting prompt was accepted: #{path}")
   end
 
   workflow = installation.join("workflows/log.md")
@@ -143,45 +125,28 @@ Dir.mktmpdir("helm-package-") do |temp|
     "native selection field" => original_workflow + "\nmultiSelect: true\n"
   }.each do |label, text|
     workflow.write(text)
-    rejected = begin
-      HelmValidation.validate(installation)
-      false
-    rescue RuntimeError => error
-      error.message.start_with?("Workflow must ")
-    ensure
-      workflow.write(original_workflow)
-    end
-    HelmValidation.check(rejected, "Validator accepted a #{label}")
+    failure = validation_failure(installation)
+    workflow.write(original_workflow)
+    HelmValidation.check(failure.to_s.start_with?("Workflow must "), "Validator accepted a #{label}")
   end
 
   runtime_path = installation.join("prompts/shared/runtime.md")
   original_runtime = runtime_path.read
   runtime_path.write(original_runtime.sub("[Question mechanism (QM)](question-mechanism.md)", "native questions"))
-  rejected = begin
-    HelmValidation.validate(installation)
-    false
-  rescue RuntimeError => error
-    error.message == "Shared runtime must load QM before human questions"
-  ensure
-    runtime_path.write(original_runtime)
-  end
-  HelmValidation.check(rejected, "Validator accepted an unreachable shared QM")
+  failure = validation_failure(installation)
+  runtime_path.write(original_runtime)
+  HelmValidation.check(failure == "Shared runtime must load QM before human questions", "Validator accepted an unreachable shared QM")
 
   link = installation.join("prompts/shared/runtime.md")
   runtime = link.read
   link.delete
   link.make_symlink(workspace.join("outside.md"))
   workspace.join("outside.md").write(runtime)
-  begin
-    HelmValidation.validate(installation)
-    raise "Escaping package link was accepted"
-  rescue RuntimeError => error
-    raise unless error.message.include?("Resource escapes package")
-  ensure
-    link.delete
-    link.write(runtime)
-    workspace.join("outside.md").delete
-  end
+  failure = validation_failure(installation)
+  link.delete
+  link.write(runtime)
+  workspace.join("outside.md").delete
+  HelmValidation.check(failure.to_s.include?("Resource escapes package"), "Escaping package link was accepted")
 
   state_names = %w[refactor-log.json test-log.json normalize-log.json legal-manifest.json]
   %w[.helm .claude/helm .claude].each do |directory|
