@@ -135,6 +135,26 @@ module HelmAcceptance
     raise "Fixture bytes or undeclared paths changed" unless actual.reject { |path, _| allowed.include?(path) } == expected
   end
 
+  def refs_by_name(git_state)
+    git_state.fetch(:refs).lines.to_h { |line| line.strip.split(" ", 2) }
+  end
+
+  # Allows only the declared new refs and approved tracking moves, then requires
+  # every other Git detail to match the earlier state.
+  def assert_declared_ref_changes!(before_git, after_git, new_refs: {}, tracking: {}, tracking_message:, unrelated_message:)
+    old_refs = refs_by_name(before_git)
+    current = refs_by_name(after_git)
+    new_refs.each do |ref, tip|
+      raise "Prepared branch was pre-existing or has the wrong tip" unless !old_refs.key?(ref) && current.delete(ref) == tip
+    end
+    tracking.each do |ref, tip|
+      next if current[ref] == old_refs[ref]
+      raise tracking_message unless current[ref] == tip
+      old_refs.key?(ref) ? current[ref] = old_refs.fetch(ref) : current.delete(ref)
+    end
+    raise unrelated_message unless after_git.merge(refs: current.sort.map { |ref, tip| "#{ref} #{tip}\n" }.join) == before_git
+  end
+
   def changed_paths(workspace, commit)
     HelmSmoke.git(workspace, "diff-tree", "--no-commit-id", "--name-only", "-r", commit).lines.map(&:strip)
   end

@@ -114,30 +114,15 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   else
     HelmAcceptance.assert_fixture_files!(workspace, before, approved)
     if scenario[:expected_new_refs]
-      after_git = HelmSmoke.git_state(workspace)
-      old_refs = before_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
-      new_refs = after_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
-      scenario.fetch(:expected_new_refs).each do |ref, tip|
-        raise "Prepared branch was pre-existing or has the wrong tip" unless !old_refs.key?(ref) && new_refs.delete(ref) == tip
-      end
-      scenario.fetch(:allowed_preparation_tracking).each do |ref, tip|
-        next if new_refs[ref] == old_refs[ref]
-        raise "Preparation tracking does not match approved remote tip" unless new_refs[ref] == tip
-        old_refs.key?(ref) ? new_refs[ref] = old_refs.fetch(ref) : new_refs.delete(ref)
-      end
-      after_git[:refs] = new_refs.sort.map { |ref, tip| "#{ref} #{tip}\n" }.join
-      raise "Preparation changed unrelated fixture Git/index/config" unless after_git == before_git
+      HelmAcceptance.assert_declared_ref_changes!(before_git, HelmSmoke.git_state(workspace),
+        new_refs: scenario.fetch(:expected_new_refs), tracking: scenario.fetch(:allowed_preparation_tracking),
+        tracking_message: "Preparation tracking does not match approved remote tip",
+        unrelated_message: "Preparation changed unrelated fixture Git/index/config")
     elsif scenario[:expected_tracking]
-      after_git = HelmSmoke.git_state(workspace)
-      old_refs = before_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
-      new_refs = after_git.fetch(:refs).lines.to_h { |line| line.strip.split(" ",2) }
-      scenario.fetch(:expected_tracking).each do |ref, tip|
-        next if new_refs[ref] == old_refs[ref]
-        raise "Tracking ref does not match verified publication" unless new_refs[ref] == tip
-        old_refs.key?(ref) ? new_refs[ref] = old_refs.fetch(ref) : new_refs.delete(ref)
-      end
-      after_git[:refs] = new_refs.sort.map { |ref, tip| "#{ref} #{tip}\n" }.join
-      raise "Unexpected fixture Git/index/config changes" unless after_git == before_git
+      HelmAcceptance.assert_declared_ref_changes!(before_git, HelmSmoke.git_state(workspace),
+        tracking: scenario.fetch(:expected_tracking),
+        tracking_message: "Tracking ref does not match verified publication",
+        unrelated_message: "Unexpected fixture Git/index/config changes")
     else
       HelmSmoke.assert_git_unchanged!(workspace, before_git)
     end

@@ -206,4 +206,33 @@ with_consumer do |workspace, container|
   verify.call
 end
 puts "PASS direct publication oracle: real remote refs, paired evidence, immutable proof and missing-action lease"
-puts "Passed 3 direct acceptance-oracle groups; synthetic inputs only, no models or workflow executions."
+
+with_consumer do |workspace, _|
+  head = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
+  before = HelmSmoke.git_state(workspace)
+  HelmSmoke.git(workspace, "update-ref", "refs/heads/team-work", head)
+  HelmSmoke.git(workspace, "update-ref", "refs/remotes/origin/team-work", head)
+  after = HelmSmoke.git_state(workspace)
+  tracking = { "refs/remotes/origin/team-work" => head }
+  declared = { new_refs: { "refs/heads/team-work" => head }, tracking: tracking,
+               tracking_message: "tracking mismatch", unrelated_message: "unrelated change" }
+  check = ->(**changes) { HelmAcceptance.assert_declared_ref_changes!(before, after, **declared, **changes) }
+  check.call
+  rejects_with("Prepared branch was pre-existing or has the wrong tip") { check.call(new_refs: { "refs/heads/team-work" => "0" * 40 }) }
+  rejects_with("Prepared branch was pre-existing or has the wrong tip") do
+    HelmAcceptance.assert_declared_ref_changes!(after, after, **declared)
+  end
+  rejects_with("tracking mismatch") { check.call(tracking: { "refs/remotes/origin/team-work" => "1" * 40 }) }
+  rejects_with("unrelated change") { check.call(tracking: {}) }
+  HelmSmoke.git(workspace, "update-ref", "refs/heads/other", head)
+  rejects_with("unrelated change") do
+    HelmAcceptance.assert_declared_ref_changes!(before, HelmSmoke.git_state(workspace), **declared)
+  end
+  HelmSmoke.git(workspace, "update-ref", "-d", "refs/heads/other")
+  HelmSmoke.git(workspace, "config", "fixture.changed", "yes")
+  rejects_with("unrelated change") do
+    HelmAcceptance.assert_declared_ref_changes!(before, HelmSmoke.git_state(workspace), **declared)
+  end
+end
+puts "PASS declared ref-change oracle: exact new refs, approved tracking moves and unrelated Git drift"
+puts "Passed 4 direct acceptance-oracle groups; synthetic inputs only, no models or workflow executions."
