@@ -139,7 +139,7 @@
       "action": "add",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
@@ -185,12 +185,13 @@
     },
     {
       "id": "g-5e07afce-265e-4ccd-a9f2-e5ccb725600a",
-      "expected": "After a normalize rewrite, log and manifest recover only a verified equivalent review baseline from preserved maps or the native filter-repo map; a missing, tampered or ambiguous map leaves Full scan or Skip instead of a guessed anchor",
+      "expected": "After a normalize rewrite, log and manifest recover only a verified equivalent review baseline from preserved maps or the native filter-repo map; a missing, tampered or ambiguous map, a map from a later reverted or unapplied run, or a native map target that is not reachable from the pinned tip leaves Full scan or Skip instead of a guessed anchor",
       "basis": [
         "prompts/shared/review-anchor.md",
         "workflows/log.md Step 0",
         "workflows/manifest.md Step 1",
-        "12f2089 feat(review): recover rewritten log and manifest baselines"
+        "12f2089 feat(review): recover rewritten log and manifest baselines",
+        "Observed in this project: after three normalize runs the last was reverted, so its map and the native filter-repo commit-map named a commit outside the pinned tip; only the verified published chain gave the reachable equivalent"
       ],
       "paths": [
         "prompts/shared/review-anchor.md",
@@ -204,7 +205,7 @@
       "action": "add",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
@@ -228,7 +229,7 @@
       "action": "add",
       "layer": "unit",
       "state": "open",
-      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
       "blocker": {
         "kind": "clarification",
         "note": "Clarify the intended behavior for symlinked home ancestors, or Characterize the current refusal"
@@ -339,19 +340,19 @@
         "scripts/test_acceptance_oracles.rb",
         "workflows/normalize.md"
       ],
-      "priority": "high",
-      "reason": "Since c99a0b2 the workflow fixes recovery under Path.home() with no custom base folder, but the fixture dictates a controller-owned private proof folder, the oracle requires the locator to equal it and the sandbox does not set HOME, so the history-rewrite scenario cannot pass as the workflow now behaves",
+      "priority": "medium",
+      "reason": "Commit 78eb686 moved the fixture and oracle to the standard recovery folder under the controlled home, and the direct oracle now checks owner-only proof, the saved map and the bundle there; the pre-filter locator branch of verify_normalize! (require_handoff) is still reached only by the live model scenario, so a regression in that check would pass offline suites",
       "action": "improve",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
       "tests": [
         "scripts/test_acceptance_oracles.rb::direct normalize oracle",
         "scripts/test_acceptance_oracles.rb::normalize fixture"
       ],
       "blocker": {
         "kind": "verification",
-        "note": "Offline oracle and fixture checks pass; the live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run, so end-to-end behavior is unverified"
+        "note": "The live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run; end-to-end behavior is unverified. The offline locator-branch oracle test is planned separately"
       }
     },
     {
@@ -432,6 +433,24 @@
       }
     },
     {
+      "id": "g-d3754cf5-b74b-4787-838e-b6663c8bd0a9",
+      "expected": "Live Claude acceptance runs keep the sandbox enabled and mandatory, deny writes to the package and extra read-only paths, allow no network domains or unsandboxed commands, and expose only Bash with the pinned model",
+      "basis": [
+        "scripts/acceptance_support.rb claude_command",
+        "scripts/smoke_acceptance.rb:83"
+      ],
+      "paths": [
+        "scripts/acceptance_support.rb",
+        "scripts/test_acceptance_support.rb"
+      ],
+      "priority": "medium",
+      "reason": "claude_command is the only isolation between a paid live model with Bash and the package checkout, and no offline test inspects its generated settings",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0"
+    },
+    {
       "id": "g-d790087c-2368-4312-ae92-3dccd82cb867",
       "expected": "The offline helper, script and acceptance-support suites run automatically before changes reach main, or the build-only CI policy is confirmed as deliberate",
       "basis": [
@@ -448,7 +467,7 @@
       "action": "manual",
       "layer": "ci",
       "state": "open",
-      "assessed_commit": "cd0ad8d822429ef037acf77dde083437630671d4",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
       "blocker": {
         "kind": "clarification",
         "note": "Owner decision: add an offline CI job, or defer"
@@ -802,6 +821,26 @@
       }
     },
     {
+      "id": "g-ef20cc2f-b6e3-41c7-8e99-dc708251f34c",
+      "expected": "The ledger helper maps an unsupported Python, a read failure, an unexpected exception and a broken bundled contract to its documented exit codes (3, 6, 7 and 7) with fixed messages that never echo paths or values",
+      "basis": [
+        "prompts/shared/ledger-helper.md Limits and failure handling",
+        "helpers/helm.py version gate",
+        "helpers/helm_lib/ledger.py run()"
+      ],
+      "paths": [
+        "helpers/helm.py",
+        "helpers/helm_lib/ledger.py",
+        "scripts/test_ledger.py"
+      ],
+      "priority": "medium",
+      "reason": "The refactor and test workflows branch on these exit codes (3 starts the Set up Python choice, 7 reports a package defect), but test_ledger.py exercises the CLI only for exits 0, 2 and 4",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0"
+    },
+    {
       "id": "g-f068eb49-412f-4ab7-a904-324085b93db7",
       "expected": "Synthetic canaries never enter tool/chat output while useful key/path audit information is retained and input files/Git stay unchanged.",
       "basis": [
@@ -959,6 +998,28 @@
         "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
         "command": "ruby scripts/smoke_acceptance.rb refactor-source-preview; ruby scripts/smoke_acceptance.rb test-deferred-verification; ruby scripts/smoke_acceptance.rb test-failed-verification; ruby scripts/smoke_acceptance.rb test-successful-provenance",
         "scope": "Selected source-only refactor and test lifecycle acceptance paths in isolated fictional consumers; not a runtime refactor-apply or all-decision matrix. Explicit access guard is conservative, not adversarial-shell proof. Claude Sonnet 5.5 / High metadata verified; bounded complete traces."
+      }
+    },
+    {
+      "id": "g-fbd07b4a-30d9-4a23-bfbf-73d30f218051",
+      "expected": "A single-line commit subject containing a Unicode line or paragraph separator, such as U+2028, is checked as one header and not reported as body_separator, matching Git's newline-only subject line",
+      "basis": [
+        "helpers/normalize_check.py precheck() uses str.splitlines()",
+        "Python documents splitlines separators beyond newline"
+      ],
+      "paths": [
+        "helpers/normalize_check.py",
+        "scripts/test_normalize.py"
+      ],
+      "priority": "low",
+      "reason": "splitlines also splits on U+0085, U+2028, U+2029 and some ASCII separators, so such a subject would produce a false body_separator finding; found by reading only, not executed, and limited to rare messages",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "blocker": {
+        "kind": "clarification",
+        "note": "A failing test needs a one-line production fix to split on newline only; fixing production code is outside the test workflow, so confirm the fix or characterize the current behavior"
       }
     }
   ]
