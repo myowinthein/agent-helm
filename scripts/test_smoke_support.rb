@@ -2,18 +2,10 @@
 require "fileutils"
 require "tmpdir"
 require_relative "smoke_support"
+require_relative "test_support"
 
 def assert(condition, message)
   raise message unless condition
-end
-
-def rejects
-  begin
-    yield
-  rescue RuntimeError => error
-    return error
-  end
-  raise "Expected the fixture assertion to reject this mutation"
 end
 
 def consumer

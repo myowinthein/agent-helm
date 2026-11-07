@@ -2,19 +2,7 @@
 require "fileutils"
 require "tmpdir"
 require_relative "acceptance_support"
-
-def expect(condition)
-  raise "Acceptance assertion failed" unless condition
-end
-
-def rejects
-  begin
-    yield
-  rescue RuntimeError
-    return
-  end
-  raise "Expected acceptance guard to reject"
-end
+require_relative "test_support"
 
 def claude_events(answer = "Audit complete: .env, API_TOKEN")
   [

@@ -2,20 +2,7 @@
 require "fileutils"
 require "tmpdir"
 require_relative "acceptance_cases"
-
-def expect(condition)
-  raise "Acceptance oracle assertion failed" unless condition
-end
-
-def rejects_with(message)
-  failure = nil
-  begin
-    yield
-  rescue RuntimeError => error
-    failure = error.message
-  end
-  expect(failure == message)
-end
+require_relative "test_support"
 
 def commit_fixture(workspace, message)
   environment = HelmSmoke.environment.merge("GIT_AUTHOR_DATE" => "2026-01-01T00:00:00Z",
