@@ -167,5 +167,19 @@ checks["timeout terminates the owned process"] = lambda do
     end
   end
 end
+checks["live Claude settings keep the sandbox, write denials and pinned tools"] = lambda do
+  package, home, remote = Pathname("/fixture/package"), Pathname("/fixture/home"), Pathname("/fixture/remote.git")
+  command = HelmAcceptance.claude_command(package, "instructions", "prompt", additional_writes: [home], additional_reads: [remote, home])
+  option = ->(name) { command.fetch(command.index(name) + 1) }
+  settings = JSON.parse(option.call("--settings"))
+  sandbox = settings.fetch("sandbox")
+  expect(sandbox.values_at("enabled", "failIfUnavailable", "allowUnsandboxedCommands") == [true, true, false])
+  expect(sandbox.dig("filesystem", "denyWrite") == [package.to_s, remote.to_s])
+  expect(sandbox.dig("filesystem", "allowWrite") == [home.to_s])
+  expect(sandbox.fetch("network").values_at("allowedDomains", "strictAllowlist", "allowLocalBinding") == [[], true, false])
+  expect(settings.dig("permissions", "blockReadsOutsideWorkingDirectories") == true)
+  expect([option.call("--tools"), option.call("--allowedTools"), option.call("--model")] == ["Bash", "Bash", HelmAcceptance::MODEL])
+  expect(option.call("--setting-sources") == "" && %w[--safe-mode --no-session-persistence --strict-mcp-config].all? { |flag| command.include?(flag) })
+end
 checks.each { |name, check| check.call; puts "PASS acceptance support: #{name}" }
 puts "Passed #{checks.length} offline acceptance-support groups; no model calls."
