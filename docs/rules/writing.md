@@ -26,10 +26,10 @@ Depth follows the audience and task. A guide need not mirror its source's detail
 | Lists | Parallel choices or ordered steps. |
 | Tables | Concise comparisons with shared attributes. |
 | Code and blocks | Exact identifiers, commands and configuration. |
-| Links and quotations | Useful destinations and attributed evidence. |
+| Links and quotations | Descriptive link labels, useful destinations and attributed evidence. |
 | Notes, images and diagrams | Information clearer to highlight or show. |
 
-Use supported Markdown, HTML or plain text and existing conventions. Formatting does not justify extra content. Link optional detail without hiding necessary warnings. Avoid em dashes in new prose while preserving exact syntax and meaningful punctuation.
+Use supported Markdown, HTML or plain text and existing conventions. Formatting does not justify extra content. Make a link's purpose clear in context, name an external source when useful and avoid crowding sentences with repeated links. Link optional detail without hiding necessary warnings. Avoid em dashes in new prose while preserving exact syntax and meaningful punctuation.
 
 ## Examples
 
