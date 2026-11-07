@@ -45,7 +45,7 @@ flowchart TD
 | [Git](../rules/git.html) | Commit conventions and publication policy. |
 | [Safety](../rules/safety.html) | Boundaries around consequential actions. |
 | [Writing](../rules/writing.html) | Clear, useful prose. |
-| [Design](../rules/design.html) | Avoid repetitive AI website defaults and decorative filler. |
+| [Design](../rules/design.html) | Responsive, accessible interfaces and predictable links, without repetitive AI website defaults. |
 
 New adoption proposes Git, Safety and Writing; you can omit Writing. Design is available but unselected until explicitly included. Git and Safety stay paired; Writing and Design can each be adopted alone or together. Existing installations offer missing independent rules as optional additions in the same review.
 
