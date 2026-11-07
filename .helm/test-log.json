@@ -1050,11 +1050,23 @@
       "reason": "splitlines also splits on U+0085, U+2028, U+2029 and some ASCII separators, so such a subject would produce a false body_separator finding; found by reading only, not executed, and limited to rare messages",
       "action": "add",
       "layer": "unit",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
-      "blocker": {
-        "kind": "clarification",
-        "note": "A failing test needs a one-line production fix to split on newline only; fixing production code is outside the test workflow, so confirm the fix or characterize the current behavior"
+      "tests": [
+        "scripts/test_normalize.py::test_only_newlines_end_the_subject_line",
+        "scripts/test_normalize.py::test_crlf_message_keeps_its_blank_body_separator"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_normalize.py::test_only_newlines_end_the_subject_line",
+          "scripts/test_normalize.py::test_crlf_message_keeps_its_blank_body_separator"
+        ],
+        "method": "runtime",
+        "outcome": "The U+2028 test failed before the one-line fix and passed after it; the CRLF guard passed both times",
+        "commit": "b530124a306344140580499c55104bfc346985de",
+        "command": "python3 -I -B scripts/test_normalize.py",
+        "scope": "34 synthetic unit tests, no Git or live state"
       }
     }
   ]
