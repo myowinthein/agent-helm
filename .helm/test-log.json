@@ -341,18 +341,19 @@
         "workflows/normalize.md"
       ],
       "priority": "medium",
-      "reason": "Commit 78eb686 moved the fixture and oracle to the standard recovery folder under the controlled home, and the direct oracle now checks owner-only proof, the saved map and the bundle there; the pre-filter locator branch of verify_normalize! (require_handoff) is still reached only by the live model scenario, so a regression in that check would pass offline suites",
+      "reason": "Commit 78eb686 moved the fixture and oracle to the standard recovery folder, and commit ee8fb38 now tests the pre-filter locator branch of verify_normalize! directly; the end-to-end live normalize-rewrite scenario is still unrun, so only the offline oracle is verified",
       "action": "improve",
       "layer": "acceptance",
       "state": "open",
       "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
       "tests": [
         "scripts/test_acceptance_oracles.rb::direct normalize oracle",
-        "scripts/test_acceptance_oracles.rb::normalize fixture"
+        "scripts/test_acceptance_oracles.rb::normalize fixture",
+        "scripts/test_acceptance_oracles.rb::direct normalize oracle (pre-filter locator)"
       ],
       "blocker": {
         "kind": "verification",
-        "note": "The live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run; end-to-end behavior is unverified. The offline locator-branch oracle test is planned separately"
+        "note": "The live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run; offline oracle checks pass (ruby scripts/test_acceptance_oracles.rb)"
       }
     },
     {
@@ -447,8 +448,22 @@
       "reason": "claude_command is the only isolation between a paid live model with Bash and the package checkout, and no offline test inspects its generated settings",
       "action": "add",
       "layer": "unit",
-      "state": "open",
-      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0"
+      "state": "resolved",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "tests": [
+        "scripts/test_acceptance_support.rb::live Claude settings keep the sandbox, write denials and pinned tools"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_acceptance_support.rb::live Claude settings keep the sandbox, write denials and pinned tools"
+        ],
+        "method": "runtime",
+        "outcome": "The new check passed with the existing acceptance-support groups: sandbox, write denials, network, tools and model matched",
+        "commit": "c20d9f1eea8124b4b92ca20826b8de8694b7d475",
+        "command": "ruby scripts/test_acceptance_support.rb",
+        "scope": "12 offline acceptance-support groups; generated command arguments only, no model call"
+      }
     },
     {
       "id": "g-d790087c-2368-4312-ae92-3dccd82cb867",
@@ -837,8 +852,28 @@
       "reason": "The refactor and test workflows branch on these exit codes (3 starts the Set up Python choice, 7 reports a package defect), but test_ledger.py exercises the CLI only for exits 0, 2 and 4",
       "action": "add",
       "layer": "unit",
-      "state": "open",
-      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0"
+      "state": "resolved",
+      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "tests": [
+        "scripts/test_ledger.py::test_unsupported_python_exits_with_runtime_unavailable",
+        "scripts/test_ledger.py::test_read_failure_exits_with_io_error_without_path_or_value",
+        "scripts/test_ledger.py::test_unexpected_failure_exits_with_internal_error_without_value",
+        "scripts/test_ledger.py::test_broken_bundled_contract_exits_with_internal_error"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_ledger.py::test_unsupported_python_exits_with_runtime_unavailable",
+          "scripts/test_ledger.py::test_read_failure_exits_with_io_error_without_path_or_value",
+          "scripts/test_ledger.py::test_unexpected_failure_exits_with_internal_error_without_value",
+          "scripts/test_ledger.py::test_broken_bundled_contract_exits_with_internal_error"
+        ],
+        "method": "runtime",
+        "outcome": "The four new LedgerTests passed with the existing 22; exits 3, 6, 7 and 7 matched and no canary reached stderr",
+        "commit": "624d3057a9fd7c468feedf9ff0cee33e8a8928cf",
+        "command": "python3 -I -B scripts/test_ledger.py",
+        "scope": "26 synthetic unit tests, in-process mocks only; no real ledger or consumer"
+      }
     },
     {
       "id": "g-f068eb49-412f-4ab7-a904-324085b93db7",
