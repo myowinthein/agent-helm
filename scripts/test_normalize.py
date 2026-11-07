@@ -81,6 +81,12 @@ class NormalizeTests(unittest.TestCase):
             self.assertTrue(self.check_message(message)["records"][0]["formal_breaking_marker"])
         self.assertFalse(self.check_message("fix(api): avoid breaking links\n")["records"][0]["formal_breaking_marker"])
 
+    def test_only_newlines_end_the_subject_line(self):
+        self.assertEqual(self.check_message("fix(api): update widget\n")["records"][0]["syntax"], "pass")
+
+    def test_crlf_message_keeps_its_blank_body_separator(self):
+        self.assertEqual(self.check_message("fix(api): update\r\n\r\nbody\r\n")["records"][0]["syntax"], "pass")
+
     def test_unsupported_rules_and_unresolved_policy_are_not_clean(self):
         effective = policy()
         effective["rules"]["custom_rule"] = "owner constraint"

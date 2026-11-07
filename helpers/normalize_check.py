@@ -117,7 +117,7 @@ def precheck(message, rules, unsupported, resolved):
     except UnicodeError:
         raise Invalid("Unsupported message encoding") from None
     require(size <= MAX_MESSAGE_BYTES and "\0" not in message, "Invalid message size/content")
-    lines = message.splitlines()
+    lines = re.split(r"\r\n|\n", message)
     header = lines[0] if lines else ""
     match = HEADER.fullmatch(header)
     findings = []
