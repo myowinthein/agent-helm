@@ -44,9 +44,10 @@ task :acceptance_support_test do
   ruby "scripts/test_acceptance_oracles.rb"
 end
 
-desc "Test offline validation of absolute own-site links and images"
+desc "Test offline documentation links and content-based asset versions"
 task :docs_links_test do
   ruby "scripts/test_docs_links.rb"
+  ruby "scripts/test_asset_digest.rb"
 end
 
 desc "Check plugin packaging, helpers, smoke assertions and documentation"

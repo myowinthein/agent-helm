@@ -58,6 +58,7 @@ exclude:
   - .DS_Store
   - .claude/
   - .claude-plugin/
+  - _plugins/
   - rules/
   - prompts/
   - skills/
