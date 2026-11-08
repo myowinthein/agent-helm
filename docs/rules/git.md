@@ -1,5 +1,6 @@
 ---
 title: Git
+description: Guide agent work with project Git settings, scoped commits, quality checks and separately approved publication while preserving unrelated changes.
 parent: Rules
 nav_order: 1
 ---

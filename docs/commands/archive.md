@@ -1,5 +1,6 @@
 ---
 title: archive
+description: Restore an agreed project scope and prepare source, setup, data and recovery instructions locally for a separately approved private backup.
 parent: Commands
 nav_order: 10
 has_children: true

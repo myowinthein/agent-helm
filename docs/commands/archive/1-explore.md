@@ -1,5 +1,6 @@
 ---
 title: "Step 1: Explore"
+description: Identify project recovery goals, components, setup, data and missing materials through local source inspection before approving restoration work.
 parent: archive
 grand_parent: Commands
 nav_order: 1

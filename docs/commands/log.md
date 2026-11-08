@@ -1,5 +1,6 @@
 ---
 title: log
+description: Keep project instructions useful across Claude and Codex sessions. Review source, choose context updates and preserve existing project decisions.
 parent: Commands
 nav_order: 1
 ---

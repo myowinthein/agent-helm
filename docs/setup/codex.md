@@ -1,5 +1,6 @@
 ---
 layout: default
+description: Install, update or uninstall Agent Helm in Codex using the desktop app or terminal, with instructions for the marketplace and plugin.
 title: Codex
 parent: Setup
 nav_order: 2

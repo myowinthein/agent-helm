@@ -1,5 +1,6 @@
 ---
 title: Safety
+description: Define when agents can proceed, need authorization or must stop, with safeguards for user work, credentials, operational state and shared systems.
 parent: Rules
 nav_order: 2
 ---

@@ -1,5 +1,6 @@
 ---
 title: Setup
+description: Install, update and uninstall Agent Helm in Claude or Codex through the desktop app or terminal, and learn the command prefixes for each client.
 nav_order: 2
 has_children: true
 permalink: /docs/setup/

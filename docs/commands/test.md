@@ -1,5 +1,6 @@
 ---
 title: test
+description: Find missing test protection and maintain useful existing tests. Review findings, choose changes and verify results before recording outcomes.
 parent: Commands
 nav_order: 4
 ---

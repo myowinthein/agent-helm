@@ -1,5 +1,6 @@
 ---
 title: refactor
+description: Find worthwhile code improvements, review the proposed changes and apply selected fixes while preserving behavior and existing test guarantees.
 parent: Commands
 nav_order: 5
 ---

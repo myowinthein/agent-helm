@@ -1,5 +1,6 @@
 ---
 title: adopt
+description: Install reviewed working rules for Claude and Codex in a consumer project, then approve updates when the bundled rules change.
 parent: Commands
 nav_order: 2
 ---

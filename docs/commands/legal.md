@@ -1,5 +1,6 @@
 ---
 title: legal
+description: Prepare source-based legal document drafts for editor review. Choose document types, review gaps and decide whether to commit the exact content.
 parent: Commands
 nav_order: 7
 ---

@@ -1,14 +1,39 @@
 title: Agent Helm
+tagline: Workflows for Claude and Codex
 description: A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.
 url: "https://myowinthein.github.io"
 baseurl: "/agent-helm"
 remote_theme: just-the-docs/just-the-docs@latest
 defaults:
   - scope:
+      path: ""
+      type: pages
+    values:
+      image:
+        path: /docs/images/banner.jpg
+        width: 1200
+        height: 800
+        alt: A helmsman steering a ship toward a storm
+  - scope:
       path: "docs"
       type: pages
     values:
       layout: default
+  - scope:
+      path: "docs/commands"
+      type: pages
+    values:
+      title_category: Command guide
+  - scope:
+      path: "docs/setup"
+      type: pages
+    values:
+      title_category: Setup
+  - scope:
+      path: "docs/rules"
+      type: pages
+    values:
+      title_category: Rules
 nav_sort: order
 nav_external_links_new_tab: false
 aux_links_new_tab: false

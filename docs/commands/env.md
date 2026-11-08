@@ -1,5 +1,6 @@
 ---
 title: env
+description: Review environment configuration, credible secret exposure and Git ignore rules, then choose scoped fixes or a safe environment template.
 parent: Commands
 nav_order: 3
 ---

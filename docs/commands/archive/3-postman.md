@@ -1,5 +1,6 @@
 ---
 title: "Step 3: Postman collection"
+description: Review and preserve useful API collections and specifications for project recovery, keeping placeholders and distinguishing unverified requests.
 parent: archive
 grand_parent: Commands
 nav_order: 3

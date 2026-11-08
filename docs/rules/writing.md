@@ -1,5 +1,6 @@
 ---
 title: Writing
+description: Guide clear, useful prose for replies, documentation and interface text while preserving meaning, material limitations and the project voice.
 parent: Rules
 nav_order: 3
 ---

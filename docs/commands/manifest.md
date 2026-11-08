@@ -1,5 +1,6 @@
 ---
 title: manifest
+description: Create or update a README using source evidence while preserving the project voice, useful content and chosen document structure.
 parent: Commands
 nav_order: 6
 ---

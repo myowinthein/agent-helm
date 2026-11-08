@@ -1,5 +1,6 @@
 ---
 title: Design
+description: Guide responsive, accessible interfaces and predictable navigation while preserving project design choices and avoiding generic website defaults.
 parent: Rules
 nav_order: 4
 ---

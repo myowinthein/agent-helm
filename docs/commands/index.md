@@ -1,5 +1,6 @@
 ---
 title: Commands
+description: Choose among ten Agent Helm commands for project context, rules, configuration, tests, refactoring, documentation, Git history, releases and archiving.
 nav_order: 3
 has_children: true
 permalink: /docs/commands

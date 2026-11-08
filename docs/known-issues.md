@@ -1,5 +1,6 @@
 ---
 title: Known issues
+description: Review observed Agent Helm limitations in Claude and Codex, including command runtimes, question handling, plugin icons and installation differences.
 nav_exclude: true
 permalink: /docs/known-issues.html
 ---

@@ -1,5 +1,6 @@
 ---
 title: normalize
+description: Review Git commit messages, coordinate affected branches and approve local history corrections with private recovery evidence before publication.
 parent: Commands
 nav_order: 8
 ---
