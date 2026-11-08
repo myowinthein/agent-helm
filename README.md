@@ -9,7 +9,7 @@ permalink: /
 
 Take the helm.
 
-<img src="https://myowinthein.github.io/agent-helm/docs/images/banner.jpg" alt="agent-helm" width="600">
+<img src="https://myowinthein.github.io/agent-helm/docs/images/banner.jpg" alt="agent-helm" width="600" height="400">
 
 Agent Helm is a plugin for developers who work with Claude or Codex.
 
