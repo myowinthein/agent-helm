@@ -37,7 +37,7 @@ Agent Helm has ten commands that I use at different points during project develo
 At the start of a new session, agents read project instruction files such as `AGENTS.md` and `CLAUDE.md` for context. I use this command to [keep those instructions up to date](https://myowinthein.github.io/agent-helm/docs/commands/log.html).
 
 ```text
-log
+Codex → $log    Claude → /log
 ```
 
 It reviews the project, reports what it finds and applies the updates I approve, so agents have the context to start coding without me explaining the project in every new session.
@@ -47,7 +47,7 @@ It reviews the project, reports what it finds and applies the updates I approve,
 Rule files tell agents how to behave while working on a project. I use this command to [add working rules](https://myowinthein.github.io/agent-helm/docs/commands/adopt.html), so I don’t have to give agents the same instructions in every session.
 
 ```text
-adopt
+Codex → $adopt    Claude → /adopt
 ```
 
 I add [Git rules](https://myowinthein.github.io/agent-helm/docs/rules/git.html) for commits and publishing, [safety rules](https://myowinthein.github.io/agent-helm/docs/rules/safety.html) for actions that could cause damage or be difficult to undo, [writing rules](https://myowinthein.github.io/agent-helm/docs/rules/writing.html) for clear, natural content, and [design rules](https://myowinthein.github.io/agent-helm/docs/rules/design.html) for responsive, accessible interfaces and predictable links while avoiding repetitive AI website patterns.
@@ -59,7 +59,7 @@ It checks existing rules, then adds or updates the ones I approve as shared loca
 As a project grows, its `.env` and `.gitignore` files can become messy or fall behind the code. I use this command to [keep them organised and up to date](https://myowinthein.github.io/agent-helm/docs/commands/env.html).
 
 ```text
-env
+Codex → $env    Claude → /env
 ```
 
 It checks for exposed secrets, missing settings and unused variables, then applies the fixes I choose. It can also create a safe template to share, and makes sure Git ignores private files but not the ones the project needs.
@@ -69,7 +69,7 @@ It checks for exposed secrets, missing settings and unused variables, then appli
 As the project grows and test coverage becomes more important, I use this command to [find testing gaps and maintain existing tests](https://myowinthein.github.io/agent-helm/docs/commands/test.html).
 
 ```text
-test
+Codex → $test    Claude → /test
 ```
 
 It reviews code and test changes since the last scan, or the whole project when needed. It reports tests to add and existing tests that need attention, each with a priority, then works on the ones I choose using suitable tools.
@@ -79,7 +79,7 @@ It reviews code and test changes since the last scan, or the whole project when 
 After working with agents for a while, the code can become harder to follow and maintain. I use this command to [review its quality and choose improvements](https://myowinthein.github.io/agent-helm/docs/commands/refactor.html).
 
 ```text
-refactor
+Codex → $refactor    Claude → /refactor
 ```
 
 It reviews code changes since the last scan, or the whole project when needed. It reports findings with their priority and risk, then improves the ones I choose, following the stack’s recommended practices without changing behaviour.
@@ -89,7 +89,7 @@ It reviews code changes since the last scan, or the whole project when needed. I
 The README helps developers understand a project before getting started. I use this command to [create it and keep it up to date](https://myowinthein.github.io/agent-helm/docs/commands/manifest.html).
 
 ```text
-manifest
+Codex → $manifest    Claude → /manifest
 ```
 
 It reviews the project and can create a README using a standard layout if I don’t have a custom structure in mind. For an existing custom README, it preserves the structure and applies the content updates I approve.
@@ -99,7 +99,7 @@ It reviews the project and can create a README using a standard layout if I don�
 Legal documents help explain how a project handles people’s data and what terms apply to its use. I use this command to [prepare and maintain the documents my project needs](https://myowinthein.github.io/agent-helm/docs/commands/legal.html).
 
 ```text
-legal
+Codex → $legal    Claude → /legal
 ```
 
 It reviews the project and writes drafts of up to six document types as uncommitted files. I can choose which types to include and decide whether to commit them. It asks once for missing details, and the drafts still need human review.
@@ -109,7 +109,7 @@ It reviews the project and writes drafts of up to six document types as uncommit
 Consistent commit messages make it easier to understand what changed and follow a project’s history. I use this command to [review and correct them](https://myowinthein.github.io/agent-helm/docs/commands/normalize.html).
 
 ```text
-normalize
+Codex → $normalize    Claude → /normalize
 ```
 
 Before reviewing the history, it asks me to confirm my team is ready for a rewrite. It then suggests Conventional Commits corrections. After I approve, it saves a backup and rewrites the affected local branches. [Ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-normalized-history) publishes them later.
@@ -119,7 +119,7 @@ Before reviewing the history, it asks me to confirm my team is ready for a rewri
 Publishing changes involves checks and decisions that are easy to miss when handled differently each time. I use this command to [follow a consistent process when sharing my work](https://myowinthein.github.io/agent-helm/docs/commands/ship.html).
 
 ```text
-ship
+Codex → $ship    Claude → /ship
 ```
 
 It reviews the changes, then pushes them or creates PRs after I approve. I can also choose other branches to update. Once my changes are integrated on main or master, it can offer a versioned release for me to approve.
@@ -129,7 +129,7 @@ It reviews the changes, then pushes them or creates PRs after I approve. I can a
 Old projects can become difficult to run as tools change and setup details are forgotten. I use this command to [preserve what I need to use them again in the future](https://myowinthein.github.io/agent-helm/docs/commands/archive.html).
 
 ```text
-archive
+Codex → $archive    Claude → /archive
 ```
 
 It reviews the project and proposes a preservation plan. After I approve each stage, it helps restore and freeze the setup, then prepares the necessary data and recovery instructions. I use [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-an-archive-backup) later when I’m ready to back it up.
