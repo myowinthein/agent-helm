@@ -17,7 +17,7 @@ legal
 
 Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
 
-Start on clean **main or master**. Commits containing legal document text need explicit content and commit approval, even with auto-commit enabled.
+Start on clean **main or master**. Commits containing legal document text need explicit content and commit approval, even with [auto-commit](../rules/git.html#auto-commit) enabled.
 
 ## Flow
 

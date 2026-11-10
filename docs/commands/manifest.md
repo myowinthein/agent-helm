@@ -17,7 +17,7 @@ manifest
 
 Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
 
-Run [log](log.html) first if there is no shared instruction owner. Updates require a clean **main or master** branch.
+Run [log](log.html#shared-project-instructions) first if there is no shared instruction owner. Updates require a clean **main or master** branch.
 
 ## Flow
 

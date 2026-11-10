@@ -7,7 +7,7 @@ nav_order: 4
 
 # Design
 
-Help agents avoid generic AI website defaults and build responsive, accessible interfaces with predictable navigation. Select Design explicitly during [adopt](../commands/adopt.html); it is available but unselected by default, independently of Writing, Git and Safety.
+Help agents avoid generic AI website defaults and build responsive, accessible interfaces with predictable navigation. Select Design explicitly during [adopt](../commands/adopt.html#available-rules); it is available but unselected by default, independently of Writing, Git and Safety.
 
 ## What it asks the agent to do
 
@@ -33,7 +33,7 @@ Downloads use download wording and native handling; email, phone and application
 
 No font, gradient, card or familiar component is automatically a defect. Avoiding repetition does not require plainness, novelty or replacing a project's design system. Targeted edits preserve the surrounding style and existing functionality, accessibility and responsive behavior.
 
-Keep project branding, tokens, component choices and known user needs in local guidance or the existing design system. Separate local guidance makes reviewed Helm updates easier than customizing the adopted copy. [Writing](writing.html) governs prose, including descriptive link labels; Design covers visual structure, responsiveness and link behavior. Neither rule requires the other.
+Keep project branding, tokens, component choices and known user needs in local guidance or the existing design system. Separate local guidance makes reviewed Helm updates easier than customizing the adopted copy. [Writing](writing.html#choose-useful-formatting) governs prose, including descriptive link labels; Design covers visual structure, responsiveness and link behavior. Neither rule requires the other.
 
 ## Basis and review
 

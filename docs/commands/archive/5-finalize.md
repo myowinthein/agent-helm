@@ -37,7 +37,7 @@ Only currently identified owned services may be stopped, with approval. There is
 
 Review exact files, storage, exclusions, actual changes and verification limits. Credentials, private records and unrelated work stay out; protected instructions and other commands' state remain intact.
 
-Choose **Commit reviewed local archive** or **Leave uncommitted**. This approval is required even with auto-commit enabled. The verified commit proves local preparation, not remote backup.
+Choose **Commit reviewed local archive** or **Leave uncommitted**. This approval is required even with [auto-commit](../../rules/git.html#auto-commit) enabled. The verified commit proves local preparation, not remote backup.
 
 ## What happens next
 

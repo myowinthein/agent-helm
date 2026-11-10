@@ -21,7 +21,7 @@ New Project Config sections use Markdown bullets. Existing plain or recognized f
 | `git-auto-commit` | `false` | Allow completed local commits without another question when true. |
 | `git-merge-strategy` | `squash` | Use squash, merge or rebase of reviewed private, unpushed work for integration. |
 
-Defaults apply only to absent settings. Choices are independent of team size. [Log](../commands/log.html) handles shared setup and layout reconciliation.
+Defaults apply only to absent settings. Choices are independent of team size. [Log](../commands/log.html#shared-project-instructions) handles shared setup and layout reconciliation.
 
 ## Local work
 
@@ -62,4 +62,4 @@ Results distinguish passed, failed, unavailable, unconfigured and deferred check
 
 [Ship](../commands/ship.html) handles reviewed pushes, optional independent target updates and separately approved releases on ready main/master. Every push needs concrete authorization for its destination, source, refs and effects, including deployment triggers.
 
-Publication uses bounded refs and verified readback, preserving branches by default. Normalized history uses recovery evidence and fixed force-with-lease expectations. Archives use a separate private backup procedure. Permanent base/environment branches and public published tags remain protected.
+Publication uses bounded refs and verified readback, preserving branches by default. [Normalized history](../commands/ship.html#publish-normalized-history) uses recovery evidence and fixed force-with-lease expectations. Archives use a [separate private backup procedure](../commands/ship.html#publish-an-archive-backup). Permanent base/environment branches and public published tags remain protected.

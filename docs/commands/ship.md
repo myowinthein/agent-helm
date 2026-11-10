@@ -42,7 +42,7 @@ flowchart TD
 
 ## Publish the current branch
 
-`ship-method` selects **direct** or **pr**, defaulting to `pr`. Review the changes, destination, checks and deployment effects before publication.
+[`ship-method`](../rules/git.html#configuration-owner) selects **direct** or **pr**, defaulting to `pr`. Review the changes, destination, checks and deployment effects before publication.
 
 | Starting branch | `direct` | `pr` |
 |---|---|---|

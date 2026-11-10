@@ -50,7 +50,7 @@ Task authorization, app approvals and OS restrictions are separate. Markdown rul
 
 ## When to run a safety scan
 
-[Log](../commands/log.html) includes static operational review in Full scan. Material changes to deployment, data, credentials or destructive scripts need focused reassessment; routine prose edits do not trigger a full scan.
+[Log](../commands/log.html#what-the-review-covers) includes static operational review in Full scan. Material changes to deployment, data, credentials or destructive scripts need focused reassessment; routine prose edits do not trigger a full scan.
 
 Findings identify evidence, uncertainty and a proposed instruction:
 

@@ -54,7 +54,7 @@ After Team ready, fresh remote discovery notices branches pushed during team pre
 
 ## Review messages
 
-Default scope is the current local branch. Request named branches, all local branches, a bounded range or full history when needed. Preparing a branch does not automatically expand its message audit; affected local branches still join the consistency rewrite. Project policy and compatible commitlint rules take precedence over Helm defaults.
+Default scope is the current local branch. Request named branches, all local branches, a bounded range or full history when needed. Preparing a branch does not automatically expand its message audit; affected local branches still join the consistency rewrite. Project policy and compatible commitlint rules take precedence over [Helm defaults](../rules/git.html#conventional-commits).
 
 Accepted messages stay unchanged. Corrections normally affect subjects; bodies, trailers and breaking information are preserved unless their edits are shown. Unclear intent needs clarification.
 

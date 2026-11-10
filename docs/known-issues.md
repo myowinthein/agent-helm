@@ -51,6 +51,6 @@ Claude Code ignores the [manifest icon field](https://code.claude.com/docs/en/pl
 
 **Observed:** Installing a plugin through the desktop app's **Code** tab or the **terminal** does not add it to the account's **Claude (Chat + Cowork)** plugin library.
 
-Anthropic documents [one-way plugin sync](https://support.claude.com/en/articles/13837440-use-plugins-in-claude) from Claude (Chat + Cowork) to Claude Code. Code and terminal installs do not sync back.
+Anthropic documents [one-way plugin sync](https://support.claude.com/en/articles/13837440-use-plugins-in-claude#h_891ea8258e) from Claude (Chat + Cowork) to Claude Code. Code and terminal installs do not sync back.
 
 </details>

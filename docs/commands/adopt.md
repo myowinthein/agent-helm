@@ -71,7 +71,7 @@ Equivalent content stays untouched even with an older marker. Keep/Skip preserve
 
 Keeping a rule does not cancel an approved addition or connection. A populated folder without project markers gets a placement warning in the same installation review, rather than a separate Continue question.
 
-Suitable copies can be connected without replacement. Independent instruction files or a `CLAUDE.md`-only layout need [log](log.html) first. A fresh project can receive minimal shared instructions during installation.
+Suitable copies can be connected without replacement. Independent instruction files or a `CLAUDE.md`-only layout need [log](log.html#shared-project-instructions) first. A fresh project can receive minimal shared instructions during installation.
 
 ## Your result
 
