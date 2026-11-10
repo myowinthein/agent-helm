@@ -58,7 +58,9 @@ Command and rule guides, related pages outside navigation and included explanato
 - Keep one authoritative plain Markdown instruction source per command/rule. Detailed site pages render that source through `_plugins/guide_content.rb`; page introductions and Mermaid diagrams add reading context without defining competing policy. Skills load the canonical Markdown directly, without website markup, diagrams or navigation. Shared supporting procedures retain their owners and load conditions.
 - Migrate a source only with its skill links, shared references, package validation and relevant tests. Remove the old copy after the replacement is verified. Preserve operational meaning during readability edits; source relocation and a passing site build alone do not establish behavior equivalence. Link authoritative standards instead of reproducing them.
 
-### README command entries
+### README structure
+
+#### Command entries
 
 Use this frame for every entry in the README's **When I use it** section. Follow the project's active Writing rule and check claims against the canonical workflow and relevant supporting instructions. Retain the project's personal voice and existing heading anchors.
 
@@ -70,6 +72,10 @@ Use this frame for every entry in the README's **When I use it** section. Follow
 | Closing paragraph | Explain the main actions, concrete result and important choices, approvals or limits without repeating the first paragraph. | 70 words. |
 
 Use two prose paragraphs per entry. These are expected limits, not reasons to remove essential warnings or approval boundaries. Keep deeper explanation and argument examples in the linked guides; add other contextual links only when they help readers take a distinct next step. Keep command names bare in general prose. Follow the Writing rule's reference-link workflow and use absolute published documentation URLs for this project's site so links work on GitHub and the site.
+
+#### Closing sections
+
+End with two separate level-two sections: **Contributing**, then **License**. Contributing uses one short paragraph inviting bug reports, feedback on unclear guides and ideas through a meaningful issue-tracker link. Ask briefly for useful context and match the project's voice; do not invent a PR process or promise response times. License uses one sentence stating the actual project license with a link. Preserve existing license meaning and old section anchors.
 
 Keep this section identical in Agent Helm and Agent Compass. When changing the frame, update and compare both copies; report any copy that cannot be synchronized. Each README keeps its own voice and command-specific content.
 

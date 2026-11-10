@@ -132,9 +132,13 @@ Codex → $archive    Claude → /archive
 
 We agree what I need to recover. It then reviews the project, helps restore and freeze the setup, and prepares useful API materials and recovery instructions. I approve each phase’s report and its planned operations. It records the local kit’s recovery limits. I use [ship](https://myowinthein.github.io/agent-helm/docs/commands/ship.html#publish-an-archive-backup) separately to approve and verify a private backup.
 
-## Help me improve it
+<span id="help-me-improve-it"></span>
 
-If something does not work or you have an idea that would make working with agents easier, [share it on GitHub](https://github.com/myowinthein/agent-helm/issues).
+## Contributing
+
+If a command doesn’t work as expected, a guide is unclear or you have an idea for Agent Helm, [open an issue on GitHub](https://github.com/myowinthein/agent-helm/issues). Tell me what you were trying to do and what would have helped.
+
+## License
 
 Agent Helm is open source under the [MIT license](https://github.com/myowinthein/agent-helm/blob/main/LICENSE).
 
