@@ -2,10 +2,13 @@
 title: normalize
 description: Review Git commit messages, coordinate affected branches and approve local history corrections with private recovery evidence before publication.
 parent: Commands
+detailed: /docs/commands/normalize/detailed.html
 nav_order: 8
 ---
 
 # normalize
+
+{% include guide-depth.html %}
 
 Use normalize to review commit messages and correct the ones you approve. Applying corrections rewrites Git history, so it includes team coordination, an exact impact review and private recovery evidence. You can also request a read-only review.
 
@@ -63,5 +66,3 @@ Applying needs **git-filter-repo and Python**. Recovery bundles are verified bef
 You get old/new tips, actual verification results and the recovery location. Private pointers let ship find the evidence in another session in the same clone; backups and pointers stay after publication. Another clone or machine may need the files transferred and an explicit path.
 
 Normalize finishes locally. [Ship](ship.html#publish-normalized-history) separately verifies the evidence and asks for publication approval. Review-only runs create no recovery artifacts.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/normalize.md).

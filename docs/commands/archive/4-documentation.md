@@ -3,10 +3,13 @@ title: "Step 4: Documentation"
 description: Prepare a clear recovery entry point, ordered setup procedure and artifact documentation while preserving useful project and historical context.
 parent: archive
 grand_parent: Commands
+detailed: /docs/commands/archive/4-documentation/detailed.html
 nav_order: 4
 ---
 
 # Step 4: Documentation
+
+{% include guide-depth.html %}
 
 Give future developers a clear starting point and an ordered recovery procedure, grounded in what the archive actually contains.
 
@@ -40,5 +43,3 @@ Link to procedures and artifact tables instead of repeating them. Use evidenced 
 Static review checks navigation, paths and command order against recovery evidence. It does not run the app or establish a remote backup.
 
 Approve the report to continue to [Step 5: Prepare locally](5-finalize.html). Earlier reports stay unchanged. This phase does not commit.
-
-[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step4-documentation.md).

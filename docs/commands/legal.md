@@ -2,10 +2,13 @@
 title: legal
 description: Prepare source-based legal document drafts for editor review. Choose document types, review gaps and decide whether to commit the exact content.
 parent: Commands
+detailed: /docs/commands/legal/detailed.html
 nav_order: 7
 ---
 
 # legal
+
+{% include guide-depth.html %}
 
 Use legal to prepare the legal documents a project needs, based on its source and confirmed facts. It writes complete drafts for you to read in your editor; you decide whether to commit them.
 
@@ -68,5 +71,3 @@ You get document links, remaining gaps and the actual commit or draft status, on
 Confirmed document moves or deletions can update saved records automatically; uncertain whereabouts need clarification. Record repair never deletes actual files or counts as a new legal assessment. Unchanged source alone does not prove business or legal freshness.
 
 Use [ship](ship.html) separately for publication.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/legal.md).

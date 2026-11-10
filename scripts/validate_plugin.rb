@@ -5,7 +5,7 @@ require "yaml"
 
 module HelmValidation
   NAMES = %w[adopt archive env legal log manifest normalize refactor ship test].freeze
-  COMPONENTS = %w[.claude-plugin assets skills workflows prompts rules helpers README.md LICENSE].freeze
+  COMPONENTS = %w[.claude-plugin assets skills guides prompts rules helpers README.md LICENSE].freeze
   module_function
 
   def check(condition, message)
@@ -31,6 +31,11 @@ module HelmValidation
     YAML.safe_load(match[1])
   end
 
+  def workflow_path(name)
+    check(NAMES.include?(name), "Unknown command guide: #{name}")
+    "guides/#{name}.md"
+  end
+
   def validate(root)
     root = Pathname(root).realpath
     %w[plugin.json .codex-plugin/plugin.json .agents/plugins/marketplace.json].each do |path|
@@ -42,6 +47,7 @@ module HelmValidation
     check(manifest.fetch("name") == "agent-helm" && marketplace.fetch("name") == "agent-helm-marketplace", "Expected plugin agent-helm in marketplace agent-helm-marketplace")
     check(manifest.fetch("skills") == "./skills/" && manifest.fetch("commands") == [], "Expose skills only; command auto-discovery creates duplicate entries")
     check(root.glob("commands/**/*.md").empty?, "Legacy command adapters must not be packaged")
+    check(root.glob("workflows/**/*.md").empty?, "Do not restore competing legacy workflow sources")
     check(manifest.fetch("version").match?(/\A\d+\.\d+\.\d+\z/), "Invalid plugin version")
     entry = marketplace.fetch("plugins").find { |item| item["name"] == manifest["name"] }
     check(entry && entry.fetch("source") == "./", "Marketplace must expose this package")
@@ -79,12 +85,13 @@ module HelmValidation
       end
     end
 
-    groups = [root.glob("workflows/*.md").map { |path| path.basename(".md").to_s },
+    groups = [root.glob("guides/*.md").map { |path| path.basename(".md").to_s },
               root.glob("skills/*/SKILL.md").map { |path| path.parent.basename.to_s }]
     check(groups.all? { |names| names.sort == NAMES }, "Expected the same ten skills and workflows")
 
     NAMES.each do |name|
-      workflow = read(resource(root, "workflows/#{name}.md"))
+      workflow_file = workflow_path(name)
+      workflow = read(resource(root, workflow_file))
       check(workflow.include?("## Question points") && workflow.include?("[QM](../prompts/shared/question-mechanism.md)"),
             "Workflow must map its question points to shared QM: #{name}")
       check(!workflow.match?(/\b(?:AskUserQuestion|request_user_input(?:_async)?|multiSelect)\b/),
@@ -96,19 +103,19 @@ module HelmValidation
       check(description.is_a?(String) && !description.strip.empty? && description.length <= 1024, "Invalid skill description: #{name}")
       links = read(skill).scan(/\[[^\]]+\]\(([^)]+)\)/).flatten
       targets = links.map { |link| resource(root, skill.parent.join(link).relative_path_from(root)).realpath }
-      check(targets.sort == [root.join("prompts/shared/runtime.md"), root.join("workflows/#{name}.md")].sort, "Skill must load the runtime and its workflow: #{name}")
+      check(targets.sort == [root.join("prompts/shared/runtime.md"), root.join(workflow_file)].sort, "Skill must load the runtime and its workflow: #{name}")
       policy = YAML.safe_load(read(resource(root, "skills/#{name}/agents/openai.yaml")))
       check(policy == { "policy" => { "allow_implicit_invocation" => false } }, "Unexpected Codex skill policy or tool grants: #{name}")
       check(!metadata.key?("allowed-tools") && !metadata.key?("model") && !metadata.key?("disable-model-invocation"), "Do not change Claude permissions, model, or invocation policy in extraction: #{name}")
     end
 
-    root.glob("{skills,prompts}/**/*.md").each do |file|
+    root.glob("{skills,prompts,guides}/**/*.md").each do |file|
       read(file).scan(/\[[^\]]+\]\(([^)]+)\)/).flatten.each do |link|
         next if link.match?(%r{\A(?:https?://|#)})
         resource(root, file.parent.join(link.split("#").first).relative_path_from(root))
       end
     end
-    root.glob("workflows/*.md").each do |file|
+    root.glob("guides/*.md").each do |file|
       read(file).scan(%r{\{package_root\}/([\w./-]+\.md)}).flatten.each { |path| resource(root, path) }
     end
     check(root.glob("prompts/archive/step*.md").length == 5, "Archive steps must stay separate from discoverable entry points")

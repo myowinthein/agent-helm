@@ -2,12 +2,15 @@
 title: archive
 description: Restore an agreed project scope and prepare source, setup, data and recovery instructions locally for a separately approved private backup.
 parent: Commands
+detailed: /docs/commands/archive/detailed.html
 nav_order: 10
 has_children: true
 has_toc: false
 ---
 
 # archive
+
+{% include guide-depth.html %}
 
 Use archive when an older project needs a recovery kit: source, setup, useful runtime/data and instructions for running it again. It prepares the kit locally; ship handles the later private backup.
 
@@ -63,5 +66,3 @@ Rerun archive to check progress and continue pending work. Proven preparation is
 You get a local payload commit or pending drafts, recovery instructions and explicit limitations on the same branch. Deferred checks stay unverified.
 
 **Prepared locally is not backed up remotely.** Use [ship](ship.html#publish-an-archive-backup) separately to approve and verify the private payload and completion receipt.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/archive.md).

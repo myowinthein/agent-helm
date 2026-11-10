@@ -1,8 +1,8 @@
 # Ship release procedure
 
-Ship-only supporting procedure. Load when initial discovery identifies a relevant release candidate, ready integrated main/master needs release assessment (including no-push/first-release runs), or an explicit release question requires this contract. Other source publications do not load this procedure. Step numbers refer to [ship](../../workflows/ship.md).
+Ship-only supporting procedure. Load when initial discovery identifies a relevant release candidate, ready integrated main/master needs release assessment (including no-push/first-release runs), or an explicit release question requires this contract. Other source publications do not load this procedure. Step numbers refer to [ship](../../guides/ship.md).
 
-Reuse resolved source/policy evidence; if missing, load the common preflight in [source preflight](../../workflows/ship.md#step-1-establish-scope-capabilities-and-core-publication) without performing a core push. Read applicable [CI gates](../shared/ci.md) and only the required provider identity/host/action sections. Initial candidate discovery/read-only preparation grants no metadata, tag or publication approval. Preserve the exact release decision and separate hosted-write approval below.
+Reuse resolved source/policy evidence; if missing, load the common preflight in [source preflight](../../guides/ship.md#step-1-establish-scope-capabilities-and-core-publication) without performing a core push. Read applicable [CI gates](../shared/ci.md) and only the required provider identity/host/action sections. Initial candidate discovery/read-only preparation grants no metadata, tag or publication approval. Preserve the exact release decision and separate hosted-write approval below.
 
 ### Release readiness and decision
 

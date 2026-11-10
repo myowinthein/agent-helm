@@ -2,10 +2,13 @@
 title: Design
 description: Guide responsive, accessible interfaces and predictable navigation while preserving project design choices and avoiding generic website defaults.
 parent: Rules
+detailed: /docs/rules/design/detailed.html
 nav_order: 4
 ---
 
 # Design
+
+{% include guide-depth.html %}
 
 Build responsive, accessible interfaces with predictable navigation and choices grounded in the project. Select Design explicitly during [adopt](../commands/adopt.html#available-rules); it is optional and independent of Writing, Git and Safety.
 
@@ -42,5 +45,3 @@ Keep project branding, tokens and known user needs in local guidance or the exis
 Accessibility standards inform the rule; Helm’s mandatory new-context warning and default external icon are local usability policy, not blanket WCAG AA requirements. The visual-pattern guidance reflects practitioner observations and editorial choices, not proof of AI authorship or universal design failures.
 
 A requested review identifies concrete issues, their effect and bounded improvements. Loading the rule starts no redesign or scan. Check affected viewport sizes, zoom, keyboard interaction and links with available tools; report material verification limits.
-
-[View the rule source](https://github.com/myowinthein/agent-helm/blob/main/rules/design.md).

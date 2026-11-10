@@ -48,6 +48,7 @@ desc "Test offline documentation links and content-based asset versions"
 task :docs_links_test do
   ruby "scripts/test_docs_links.rb"
   ruby "scripts/test_asset_digest.rb"
+  ruby "scripts/test_guide_content.rb"
 end
 
 desc "Check plugin packaging, helpers, smoke assertions and documentation"

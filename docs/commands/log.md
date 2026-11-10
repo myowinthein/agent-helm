@@ -2,10 +2,13 @@
 title: log
 description: Keep project instructions useful across Claude and Codex sessions. Review source, choose context updates and preserve existing project decisions.
 parent: Commands
+detailed: /docs/commands/log/detailed.html
 nav_order: 1
 ---
 
 # log
+
+{% include guide-depth.html %}
 
 Use log when a new agent session needs better project context, or when the project has changed since its instructions were reviewed. It proposes updates to the knowledge and working agreements your agents read.
 
@@ -46,5 +49,3 @@ Review the proposal, then apply all, select changes, revise or cancel. New safet
 You get updated instructions, unresolved findings and a size report. A complete accepted source review advances the review marker; layout-only work and partial acceptance retain the earlier one.
 
 Changes follow your local commit policy and finish on the same branch. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/log.md).

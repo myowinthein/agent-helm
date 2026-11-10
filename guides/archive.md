@@ -2,20 +2,6 @@
 
 Preserve a selected old project, its working environment and useful recovery evidence. Source preservation, frozen-runtime recovery, offline rebuilding, backup coverage and archive publication are separate results.
 
-## Question points
-
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and throughout all five supporting steps; ask only when their conditions hold.
-
-| Point | QM form |
-|---|---|
-| Actual source branch/full HEAD and excluded work | Review Proceed on this branch / Cancel before pending phases. |
-| Recovery goal/features, optional offline goals and missing setup/data facts | Single for alternative goals/data routes; Multi for independent optional scope; Input for missing nonsecret facts/safe supplied paths. |
-| Each phase's proposed actions and exact report | Review at its existing separate plan/report gates. No combined blanket approval across phases. |
-| Restoration feedback/developer check and freeze approach | Single Check / Decline / Defer as applicable, then Input for feedback and Single for actual freeze alternatives; execution retains Review. |
-| API materials Retain / Repair / Create / Skip and useful optional companions | Single per actual artifact; independent optional outputs use Multi within the reviewed phase plan. |
-| Protected output alternatives, documentation/consolidation, storage per artifact | Single for safe placements/storage routes; Input for custom paths; Review for exact content/moves/exclusions. |
-| Cold rehearsal, requests/imports, image exports, service stops and local payload commit | Review of the exact existing action/target gate. Local preparation never asks to publish. |
-
 ## Before starting: recovery goal and policy
 
 Apply the shared runtime and resolve `{memory_file}` before Git actions, following bridges, overrides, and recognized configuration blocks. Configuration remains in that owner, normally AGENTS.md through CLAUDE.md's import on Claude or directly on Codex. Archive does not create, move, consolidate, or edit either instruction entry or Helm settings. Its explicitly confirmed local payload uses the current selected source branch; remote backup publication is separately approved through ship; do not silently apply a normal development branch/commit policy or let auto-commit bypass archive approvals. Resolve conflicts with active project rules before mutation.
@@ -44,7 +30,9 @@ Protect root/nested AGENTS.md, AGENTS.override.md, CLAUDE.md, project-local inst
 
 Validate every output and its parents for project containment and symlink/collision hazards before writes/moves, without following an imported/global file outside the project. Progress, inventory and report filenames remain fixed within the run's validated `{archive_root}` below: a protected/conflicting required checkpoint path stops for reconciliation, not an alternate ledger location. Approved alternative setup/index/collection paths are recorded in existing reports/inventory and referenced consistently. The portable-copy exception validates its external destination separately.
 
-Archive owns only its progress, inventory and five reports within `{archive_root}`. Other `.helm/` content, including the four ordinary ledgers and unknown siblings, `.claude/helm/`, and the known unsupported old Helm JSON paths are preserved at their existing paths as opaque project state. Do not parse their ledgers as source, reconcile copies, migrate, rename, rewrite, or delete them. Unknown files inside either archive directory are not automatically archive-owned or cleanup targets. Preservation inventory may record path/status/fingerprint without exposing contents. Existing tracked copies travel with history. Include an existing untracked state file only through explicit file-inventory review; otherwise record its exclusion without deleting it. Pending changes/conflicting copies belong to their owning workflow, not archive's cleanup. Protecting a file does not authorize publishing secrets or private client settings.
+Archive owns only its progress, inventory and five reports within `{archive_root}`. Other `.helm/` content, including the four ordinary ledgers and unknown siblings, `.claude/helm/`, and the known unsupported old Helm JSON paths are preserved at their existing paths as opaque project state. Do not parse their ledgers as source, reconcile copies, migrate, rename, rewrite, or delete them.
+
+Unknown files inside either archive directory are not automatically archive-owned or cleanup targets. Preservation inventory may record path/status/fingerprint without exposing contents. Existing tracked copies travel with history. Include an existing untracked state file only through explicit file-inventory review; otherwise record its exclusion without deleting it. Pending changes/conflicting copies belong to their owning workflow, not archive's cleanup. Protecting a file does not authorize publishing secrets or private client settings.
 
 ## State tracking and safe resume
 
@@ -159,3 +147,17 @@ After the source-branch confirmation above, work starts at the validated pending
 - Stop at each step's explicit approval gate. Tool/sandbox approval, an old report, a missing answer, and a default selection are not consent. Reuse direct authorization already covering the same unchanged plan; otherwise present pending local actions for approval; publication/cleanup continuation belongs to ship's archive backup procedure.
 - Do not skip, combine, or summarize step reports. Local preparation and later remote publication are separate outcomes; only ship's archive backup procedure reports a newly verified backup seal.
 - A declined/failed operation preserves completed work and the actual branch/index/remote state. Report what happened and what remains; never reset, stash, force-push, or repeat cleanup to make a checkpoint look complete.
+
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and throughout all five supporting steps; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Actual source branch/full HEAD and excluded work | Review Proceed on this branch / Cancel before pending phases. |
+| Recovery goal/features, optional offline goals and missing setup/data facts | Single for alternative goals/data routes; Multi for independent optional scope; Input for missing nonsecret facts/safe supplied paths. |
+| Each phase's proposed actions and exact report | Review at its existing separate plan/report gates. No combined blanket approval across phases. |
+| Restoration feedback/developer check and freeze approach | Single Check / Decline / Defer as applicable, then Input for feedback and Single for actual freeze alternatives; execution retains Review. |
+| API materials Retain / Repair / Create / Skip and useful optional companions | Single per actual artifact; independent optional outputs use Multi within the reviewed phase plan. |
+| Protected output alternatives, documentation/consolidation, storage per artifact | Single for safe placements/storage routes; Input for custom paths; Review for exact content/moves/exclusions. |
+| Cold rehearsal, requests/imports, image exports, service stops and local payload commit | Review of the exact existing action/target gate. Local preparation never asks to publish. |

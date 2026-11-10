@@ -2,10 +2,13 @@
 title: Safety
 description: Define when agents can proceed, need authorization or must stop, with safeguards for user work, credentials, operational state and shared systems.
 parent: Rules
+detailed: /docs/rules/safety/detailed.html
 nav_order: 2
 ---
 
 # Safety
+
+{% include guide-depth.html %}
 
 Protect user work, private information and shared systems while allowing ordinary development to continue. Install with [Git](git.html) through [adopt](../commands/adopt.html).
 
@@ -51,5 +54,3 @@ Findings explain the risk, evidence, uncertainty and proposed instruction. Accep
 ## Operational Helm state
 
 Records under `.helm/`, archive bundles and recovery evidence remain protected. Ordinary source work neither reads nor resets them. Only invoked owning workflows and narrow publication procedures access their permitted state. Unsupported state is not automatically converted or deleted.
-
-[View the rule source](https://github.com/myowinthein/agent-helm/blob/main/rules/safety.md).

@@ -2,10 +2,13 @@
 title: test
 description: Find missing test protection and maintain useful existing tests. Review findings, choose changes and verify results before recording outcomes.
 parent: Commands
+detailed: /docs/commands/test/detailed.html
 nav_order: 4
 ---
 
 # test
+
+{% include guide-depth.html %}
 
 Use test to find missing protection and improve useful existing tests. You choose which cases and tooling changes to implement after reviewing the findings.
 
@@ -53,5 +56,3 @@ Existing tools come first. Installation, upgrades and service/database effects s
 You get test changes, actual check results and remaining work. An approved assessment saves findings before implementation; each case closes only when its protection is verified. Skipped or blocked work stays visible for later runs. Coverage is reported only when measured.
 
 Work finishes on the same branch under your local commit policy. Use [refactor](refactor.html#refactor-vs-test) for behavior-preserving code maintenance and [ship](ship.html) for publication.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/test.md).

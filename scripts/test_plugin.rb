@@ -115,8 +115,14 @@ Dir.mktmpdir("helm-package-") do |temp|
     HelmValidation.check(failure.to_s.include?("Missing packaged resource"), "Missing supporting prompt was accepted: #{path}")
   end
 
-  workflow = installation.join("workflows/log.md")
+  workflow = installation.join(HelmValidation.workflow_path("log"))
   original_workflow = workflow.read
+  duplicate = installation.join("workflows/log.md")
+  duplicate.parent.mkpath
+  duplicate.write(original_workflow)
+  failure = validation_failure(installation)
+  duplicate.delete
+  HelmValidation.check(failure == "Do not restore competing legacy workflow sources", "Validator accepted competing command instruction sources")
   {
     "missing QM map" => original_workflow.sub("## Question points", "## Unmapped questions"),
     "missing QM reference" => original_workflow.sub("[QM](../prompts/shared/question-mechanism.md)", "the native picker"),

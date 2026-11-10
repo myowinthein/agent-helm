@@ -3,10 +3,13 @@ title: "Step 3: Postman collection"
 description: Review and preserve useful API collections and specifications for project recovery, keeping placeholders and distinguishing unverified requests.
 parent: archive
 grand_parent: Commands
+detailed: /docs/commands/archive/3-postman/detailed.html
 nav_order: 3
 ---
 
 # Step 3: Postman collection
+
+{% include guide-depth.html %}
 
 Preserve useful API materials for recovery. Projects without an applicable owned API can record this phase as not applicable.
 
@@ -34,5 +37,3 @@ Preparing files does not send requests. Execution needs separately approved effe
 ## What happens next
 
 Review the files, any executed requests and remaining gaps. Approve the report, including skipped or not-applicable outcomes, to continue to [Step 4: Documentation](4-documentation.html). This phase does not commit.
-
-[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step3-postman.md).

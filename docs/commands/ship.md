@@ -2,10 +2,13 @@
 title: ship
 description: Publish reviewed changes, select independent branch updates and approve releases through separate checks and concrete publication decisions.
 parent: Commands
+detailed: /docs/commands/ship/detailed.html
 nav_order: 9
 ---
 
 # ship
+
+{% include guide-depth.html %}
 
 Use ship when reviewed work is ready to publish. It checks the source and destination, asks for concrete approval and reports what was actually published. Branch updates and releases are separate choices.
 
@@ -77,5 +80,3 @@ This route ends without ordinary branch targets or release tags.
 GitHub and GitLab have dedicated PR/MR and release support. Other hosts use Git and manual provider handoffs where needed.
 
 The result separates source publication, branch updates, PRs, releases and pending checks. Partial success is preserved and interrupted work is checked before retrying. Publication alone does not prove integration or deployment.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/ship.md).

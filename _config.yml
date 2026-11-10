@@ -62,7 +62,7 @@ exclude:
   - rules/
   - prompts/
   - skills/
-  - workflows/
+  - guides/
   - helpers/
   - scripts/
   - Rakefile

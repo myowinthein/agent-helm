@@ -1,17 +1,5 @@
 # manifest
 
-## Question points
-
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
-
-| Point | QM form |
-|---|---|
-| README target, format/placement conflict or instruction dependency | Single for known safe alternatives; Input for a custom target. |
-| Missing/requested README style and eligible scan/repair/style-only route | Single, preserving Save style only and Cancel as distinct outcomes. |
-| Custom outline/reference and unknown contribution/license facts | Input; the proposed outline's names/order require Review before drafting. |
-| Existing README/content conversion, pending style diff and eligible marker-only choice | Review; Apply some/Choose → Multi, Revise → Input. Offer Keep README unchanged and record review when eligible. Full scan alone grants no replacement approval. |
-| Local commit when invocation policy requires approval | Review of the actual README/configuration diff and subject. |
-
 ## Before starting
 
 Resolve `{memory_file}` through the shared runtime before any Git mutation or file write. If the resolved owner does not exist, stop: "Run the log workflow first to establish shared project instructions, then re-run manifest." Do not create instruction files, migrate an owner, or automatically invoke log. Existing bridges, overrides, conflicts, and missing import targets follow the runtime's resolution rules.
@@ -160,7 +148,9 @@ A verified same-review ID repair follows the shared recovery procedure and can a
 
 Advance/create it only when the selected snapshot scope was fully investigated, no unresolved substantive findings remain and inputs are unchanged. A substantive finding is inaccurate, materially misleading or materially incomplete information within the README's stated scope. Optional clarifications, style and convenience suggestions are not substantive; declining them, including within a partially accepted patch, does not block the marker. A completed full/gap review finding no prose changes may make a marker-only update after explaining the result, without an unnecessary prose-change approval. Verified own-output-only maintenance or no new source must not cause recurring marker churn.
 
-Incomplete evidence or unresolved substantive findings retain the previous marker; a new incomplete README gets none. Declining a known factual correction does not resolve it: advancing the source anchor could hide it from later Gap scans. Marker eligibility is separate from write permission; Cancel, read-only requests or an ambiguous rejection of a bundled patch authorize no marker write. Reuse a clear marker-only decision without reconfirmation. Repair/style-only/outline-only work does not advance it unless a separate complete snapshot review was actually done. Never stamp a later documentation, merge or publication tip. Preserve existing marker placement on targeted edits; for eligible new Markdown generation, append it at the end, after License when applicable. For a selected non-Markdown format, do not invent an incompatible marker syntax; explain any unsupported checkpointing before choosing the mode.
+Incomplete evidence or unresolved substantive findings retain the previous marker; a new incomplete README gets none. Declining a known factual correction does not resolve it: advancing the source anchor could hide it from later Gap scans. Marker eligibility is separate from write permission; Cancel, read-only requests or an ambiguous rejection of a bundled patch authorize no marker write.
+
+Reuse a clear marker-only decision without reconfirmation. Repair/style-only/outline-only work does not advance it unless a separate complete snapshot review was actually done. Never stamp a later documentation, merge or publication tip. Preserve existing marker placement on targeted edits; for eligible new Markdown generation, append it at the end, after License when applicable. For a selected non-Markdown format, do not invent an incompatible marker syntax; explain any unsupported checkpointing before choosing the mode.
 
 ### Apply the exact approved outputs
 
@@ -183,3 +173,15 @@ Report:
 - Sections changed, unresolved facts and evidence/quality-review limits. State which commands/checks were actually run; static review is not runtime verification.
 - Pinned source SHA and marker written/retained, with the reason when not advanced. For a preflight exit, state that remote freshness was not checked.
 - Actual local drafts/verified commits, current branch, preserved local-only edits and remaining checks/dependencies. Publication, PR, integration, promotion and checkout were not performed; invoke ship separately when ready.
+
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| README target, format/placement conflict or instruction dependency | Single for known safe alternatives; Input for a custom target. |
+| Missing/requested README style and eligible scan/repair/style-only route | Single, preserving Save style only and Cancel as distinct outcomes. |
+| Custom outline/reference and unknown contribution/license facts | Input; the proposed outline's names/order require Review before drafting. |
+| Existing README/content conversion, pending style diff and eligible marker-only choice | Review; Apply some/Choose → Multi, Revise → Input. Offer Keep README unchanged and record review when eligible. Full scan alone grants no replacement approval. |
+| Local commit when invocation policy requires approval | Review of the actual README/configuration diff and subject. |

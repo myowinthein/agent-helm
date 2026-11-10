@@ -2,18 +2,6 @@
 
 Install or update selected Helm rules as shared local copies in `.claude/rules/`. Claude and Codex use the same files. External installation/cache/GitHub references are unsupported; preserve any such pointers and stop with upgrade guidance before dependent writes. This command has no reference-mode converter or unavailable-external-target recovery.
 
-## Question points
-
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
-
-| Point | QM form |
-|---|---|
-| Ambiguous project/adoption root or supplied copy source | Single for known candidates; Input for an explicit safe path or missing facts. |
-| Populated directory without project markers | Include the directory warning in the concrete installation Review; no preliminary Continue question. |
-| Installation, replacement, repair, connection or an optional rule | Review of a concise file/action/version proposal, source identity, pointer effects and material changes; approve the named actions together or as a subset. Preserve the Git/safety dependency. |
-| Missing overwrite, rollback or pointer approval after changed inputs | Review only the new or changed effects; reuse unchanged concrete approval. |
-| Local commit when approval is missing | Review of the exact adoption diff and commit. |
-
 ## Rule catalog and selection
 
 Use this catalog for inventory, source validation, per-file decisions, copy/update, pointer handling and reporting. `{name}` is a catalog filename, never an arbitrary path. Do not infer a fixed two-rule installation from older copies or examples.
@@ -48,7 +36,7 @@ Adopt is for consumer projects. It must not install copied rules or change instr
 Use only read-only path/metadata and bundled-source evidence before any proposal or mutation:
 
 - Resolve the selected adoption root and relevant enclosing workspace/project/Git roots to their physical paths, including existing symlinked parents. Compare with the actual loaded `{package_root}` and any selected alternative `{rule_source_root}` once resolved. A target at or below either package root is blocked. Do not traverse unresolved/unsafe paths or infer containment from a string prefix.
-- At the selected root and its already identified enclosing workspace/project/Git roots, check for Helm's own package identity: a readable `.claude-plugin/plugin.json` with `name: agent-helm`, together with its canonical `workflows/adopt.md`, `skills/adopt/SKILL.md`, `prompts/shared/runtime.md` and maintained `rules/git.md` and `rules/safety.md` sources. Optional rule sources need not exist to establish protected identity. This also identifies renamed checkouts, clones, forks retaining that identity, and nested targets inside them; a nested `.git` never bypasses a proven containing Helm source root. Version equality, a particular remote or matching rule bytes are not prerequisites. Inspect this known layout only, without a directory crawl, client-cache search or operational-state access.
+- At the selected root and its already identified enclosing workspace/project/Git roots, check for Helm's own package identity: a readable `.claude-plugin/plugin.json` with `name: agent-helm`, together with its canonical `guides/adopt.md`, `skills/adopt/SKILL.md`, `prompts/shared/runtime.md` and maintained `rules/git.md` and `rules/safety.md` sources. Optional rule sources need not exist to establish protected identity. This also identifies renamed checkouts, clones, forks retaining that identity, and nested targets inside them; a nested `.git` never bypasses a proven containing Helm source root. Version equality, a particular remote or matching rule bytes are not prerequisites. Inspect this known layout only, without a directory crawl, client-cache search or operational-state access.
 - A folder named `agent-helm`, existing adopted `.claude/rules/` copies, or an unrelated plugin project is not sufficient evidence. A consumer merely containing Helm as a nested dependency/package remains eligible when the actual adoption target is outside all protected roots. A disposable consumer fixture must likewise be outside the protected source/installation roots.
 - On a protected target, explain the observed path/identity and stop without writes, Git preparation, copied-rule creation, instruction/bootstrap/pointer edits or cleanup. State that this source project should load its maintained source rules directly, or that an installation is not a consumer project; direct testing to a separate consumer fixture. Do not offer Continue anyway, a version override or automatic relocation/update/removal of existing copies.
 - If relevant identity, containment or symlink evidence leaves a material ambiguity, report the unresolved target and stop dependent adoption rather than treating it as an ordinary non-project directory. Resolve only the missing scope facts through the existing clarification path; no bypass approval or new persistent record is introduced.
@@ -324,3 +312,15 @@ ADOPT NO CHANGES — {current-checkout snapshot / verified prepared destination}
 - Keep the leading marker on a copied file as recorded-version evidence. It never proves a body is pristine or disposable. Preserved managed markers stay unchanged; differing marked bodies require review before replacement. Adopt has no delete-to-reference path. Adopt does not merge policy files automatically or add a provenance ledger.
 - This command writes only approved catalog copies at `.claude/rules/{name}` and owner pointers, a missing root CLAUDE.md adapter for fresh/AGENTS.md-owned setup. It creates no host-specific second rule copy and deletes no rule or external source. It does not migrate existing owners; use log for that reviewed change.
 - Read only the verified selected copy package and scoped existing project copies for comparison. Never write installations, search homes/caches, remove checkouts or change client/plugin settings. Plugin updates do not silently update copied project rules; rerun adopt for reviewed updates. Adopt never reads operational state.
+
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Ambiguous project/adoption root or supplied copy source | Single for known candidates; Input for an explicit safe path or missing facts. |
+| Populated directory without project markers | Include the directory warning in the concrete installation Review; no preliminary Continue question. |
+| Installation, replacement, repair, connection or an optional rule | Review of a concise file/action/version proposal, source identity, pointer effects and material changes; approve the named actions together or as a subset. Preserve the Git/safety dependency. |
+| Missing overwrite, rollback or pointer approval after changed inputs | Review only the new or changed effects; reuse unchanged concrete approval. |
+| Local commit when approval is missing | Review of the exact adoption diff and commit. |

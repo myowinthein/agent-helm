@@ -3,10 +3,13 @@ title: "Step 5: Prepare locally"
 description: Review artifact storage, recovery materials and exclusions, then commit an approved local recovery kit before separate private backup publication.
 parent: archive
 grand_parent: Commands
+detailed: /docs/commands/archive/5-finalize/detailed.html
 nav_order: 5
 ---
 
 # Step 5: Prepare locally
+
+{% include guide-depth.html %}
 
 Review and commit the local recovery kit. A private remote backup is a separate action through ship.
 
@@ -36,5 +39,3 @@ Choose **Commit reviewed local archive** or **Leave uncommitted**. Exact approva
 You receive **ARCHIVE PREPARED LOCALLY** with the payload commit and limitations, or a pending-draft result. A rerun validates existing preparation without repeating it. **The local commit does not prove a remote backup.**
 
 Use [ship’s private backup procedure](../ship.html#publish-an-archive-backup) for payload and receipt publication. Cleanup is optional. After a verified receipt, ship can separately offer a portable copy; a Git bundle alone omits external data, images and LFS bytes.
-
-[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step5-finalize.md).

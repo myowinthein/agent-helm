@@ -3,10 +3,13 @@ title: "Step 2: Restore and freeze"
 description: Restore an approved project scope in an identified setup, verify what works and capture the runtime, data and configuration needed for later recovery.
 parent: archive
 grand_parent: Commands
+detailed: /docs/commands/archive/2-restore-and-freeze/detailed.html
 nav_order: 2
 ---
 
 # Step 2: Restore and freeze
+
+{% include guide-depth.html %}
 
 Restore the agreed scope, then capture what later recovery needs. What works now and what remains unverified are recorded separately.
 
@@ -40,5 +43,3 @@ Artifacts retain identities and checksums. Real credentials stay out of the kit.
 The setup instructions put validation, preparation, data restore, startup, demonstration and shutdown in order. Review completed and deferred checks before approving the report and continuing to [Step 3: Postman collection](3-postman.html).
 
 A cold-recovery rehearsal needs separate approval and isolation. Existing caches and volumes are preserved. This phase does not commit.
-
-[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step2-restore-and-freeze.md).

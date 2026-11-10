@@ -2,10 +2,13 @@
 title: refactor
 description: Find worthwhile code improvements, review the proposed changes and apply selected fixes while preserving behavior and existing test guarantees.
 parent: Commands
+detailed: /docs/commands/refactor/detailed.html
 nav_order: 5
 ---
 
 # refactor
+
+{% include guide-depth.html %}
 
 Use refactor when code has become harder to understand or maintain. It finds worthwhile improvements, then applies the ones you choose while preserving behavior and existing test guarantees.
 
@@ -63,5 +66,3 @@ Refactor can maintain existing tests and add guards needed for a chosen change. 
 You get verified local changes, actual check results and remaining findings. Saved history supports later runs; skipped, deferred or accepted-risk findings are not treated as fixed.
 
 Work finishes on the same branch under your local commit policy. Use [ship](ship.html) separately to publish.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/refactor.md).

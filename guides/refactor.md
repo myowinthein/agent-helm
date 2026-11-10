@@ -2,20 +2,6 @@
 
 Find worthwhile code improvements and apply selected, behavior-preserving transformations in bounded units. Claude and Codex use the same assessment, review, verification, and resumable local procedure. A finding, an attempted edit, a verified fix, and publication are separate outcomes.
 
-## Question points
-
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
-
-| Point | QM form |
-|---|---|
-| Preview/report-only and eligible Full scan / Gap scan / Fix Backlog / Skip routes | Single, preserving independently eligible exits and complete choices. |
-| Unresolved branch role, improvement value, intent, remedy or blocker | Input; Single for evidenced remedy alternatives. No speculative value or safe label. |
-| Unavailable Python path in the owning-state helper | Single Set up Python / Continue without Python / Stop; actual setup effects require their existing Review. |
-| Recommended / All listed ready / Choose / None | Single; Choose → Multi by exact IDs/groups/filters/exclusions. |
-| Whole selected coherent unit, prerequisites, companions, guards and checks | Review; Input for revisions. Resolve needs-review choices before editing any member. |
-| Actual skip/defer/accepted-risk decisions | Single only when a decision is needed; Input for its human reason/context. Nonselection is not a decision. |
-| Eligible assessment/code/closure commits when approval is missing | Review of the exact checkpoint or code unit under invocation policy; no duplicate approval. |
-
 ## Before starting: scope and policy
 
 Read the shared runtime and resolve `{memory_file}`, bridges/overrides, recognized configuration and local `git-auto-commit` policy (default false) before dependent writes. Ship method does not select a branch or finalization route here. Never change instruction/configuration ownership or Helm settings.
@@ -101,7 +87,9 @@ Use one ordered `findings` array with permanent opaque IDs, current raw categori
 
 Build the bounded working view from complete validated own inputs; retrieve relevant records across **all states** for semantic deduplication, decisions, dependencies and recurrence. Never reconstruct the array from truncated context, dump every historical High into the prompt or mistake empty scoped results for whole-project currency. Recompute coherent units transiently; shared files or direct links alone do not merge a connected module graph. Whole-file validation does not claim fresh semantic review of every record.
 
-Revalidate logical issues and applicable human decisions against actual current patterns, contracts and consumers. `skip`, `defer` and `accepted-risk` remain open but held, separate from ordinary actionable proposals. Preserve decisions through closure; missing/changed context requires current review, never automatic application. Missing/moved files or unavailable objects alone prove no resolution. Semantically proved absence becomes `obsolete`; a genuine verified fix becomes `resolved` with actual evidence. Preserve real past closures; a later recurrence gets a new ID with `recurrence_of`. A same-run disproved attempt may reopen its entry with the false closure removed and failure evidence retained. Explicit duplicate reconciliation preserves all IDs/human facts and requires review of any dependency changes. Full scan covers its full inspected scope; targeted reconciliation preserves out-of-scope records.
+Revalidate logical issues and applicable human decisions against actual current patterns, contracts and consumers. `skip`, `defer` and `accepted-risk` remain open but held, separate from ordinary actionable proposals. Preserve decisions through closure; missing/changed context requires current review, never automatic application. Missing/moved files or unavailable objects alone prove no resolution. Semantically proved absence becomes `obsolete`; a genuine verified fix becomes `resolved` with actual evidence.
+
+Preserve real past closures; a later recurrence gets a new ID with `recurrence_of`. A same-run disproved attempt may reopen its entry with the false closure removed and failure evidence retained. Explicit duplicate reconciliation preserves all IDs/human facts and requires review of any dependency changes. Full scan covers its full inspected scope; targeted reconciliation preserves out-of-scope records.
 
 ### Choose review work
 
@@ -179,7 +167,9 @@ Use six defined review perspectives, with no finding quotas or category-based se
 
 Every perspective can require cross-file context. Apply the relevant inspection responsibilities to all components in the selected assessment, without requiring every lens for every file; report not-applicable and unknown/incomplete scope honestly. No findings is valid. Consolidate one logical issue into one finding, assign its existing category by the remedy's main benefit and mention other relevant lenses in prose. For overlap, use Code Quality for local simplification, Architecture for moving responsibilities, Consistency for confirmed cross-flow coordination and Dependencies for external/package seams; do not multiply IDs or merge unrelated work to satisfy labels. Report concrete cost, smallest remedy, tradeoffs, invariant, confidence and verification.
 
-Test-owned gaps are conversation follow-ups with exact paths/case names where known, the missing guarantee and reason for a later explicit test task. Do not automatically invoke test, read/write its ledger, invent cross-ledger IDs or require test to run before refactor. Refactor may record its own concrete maintenance remedy while reporting a separate protection gap; do not persist a test-only gap as refactor-owned work. Each invoked command deduplicates against its own permitted history; rediscovery across separate tasks is acceptable. A separate follow-up alone does not make a complete refactor assessment unrecordable; actual incomplete inspection still blocks its scan checkpoint, while a genuine fully assessed unclear refactor-owned finding may be recorded as unknown with a clarification blocker.
+Test-owned gaps are conversation follow-ups with exact paths/case names where known, the missing guarantee and reason for a later explicit test task. Do not automatically invoke test, read/write its ledger, invent cross-ledger IDs or require test to run before refactor. Refactor may record its own concrete maintenance remedy while reporting a separate protection gap; do not persist a test-only gap as refactor-owned work.
+
+Each invoked command deduplicates against its own permitted history; rediscovery across separate tasks is acceptable. A separate follow-up alone does not make a complete refactor assessment unrecordable; actual incomplete inspection still blocks its scan checkpoint, while a genuine fully assessed unclear refactor-owned finding may be recorded as unknown with a clarification blocker.
 
 ### Gap scan: changed source plus affected surface
 
@@ -308,3 +298,17 @@ Distinguish the following in the report:
 - Local completion, pending drafts/IDs/checks and the precise current-branch continuation action. No review request, publication, integration, promotion or branch cleanup occurred; ship is a separate later action.
 
 Show up to five representative verified fixes if useful. Static review/source editing does not establish runtime/client success. A no-op, advisory plan, assessment checkpoint, draft, applied fix and completed publication must each be described as what actually occurred.
+
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Preview/report-only and eligible Full scan / Gap scan / Fix Backlog / Skip routes | Single, preserving independently eligible exits and complete choices. |
+| Unresolved branch role, improvement value, intent, remedy or blocker | Input; Single for evidenced remedy alternatives. No speculative value or safe label. |
+| Unavailable Python path in the owning-state helper | Single Set up Python / Continue without Python / Stop; actual setup effects require their existing Review. |
+| Recommended / All listed ready / Choose / None | Single; Choose → Multi by exact IDs/groups/filters/exclusions. |
+| Whole selected coherent unit, prerequisites, companions, guards and checks | Review; Input for revisions. Resolve needs-review choices before editing any member. |
+| Actual skip/defer/accepted-risk decisions | Single only when a decision is needed; Input for its human reason/context. Nonselection is not a decision. |
+| Eligible assessment/code/closure commits when approval is missing | Review of the exact checkpoint or code unit under invocation policy; no duplicate approval. |

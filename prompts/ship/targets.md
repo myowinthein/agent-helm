@@ -1,6 +1,6 @@
 # Ship optional targets
 
-Ship-only supporting procedure. Load for applicable optional target selection/actions or an explicitly requested published-source promotion; not for an already supplied None with no remaining target work. Step numbers refer to [ship](../../workflows/ship.md). Use [source preflight](../../workflows/ship.md#step-1-establish-scope-capabilities-and-core-publication) for any missing core preflight, applicable [CI gates](../shared/ci.md) and only relevant provider identity/host/action sections. Do not repeat proven source publication or release assessment.
+Ship-only supporting procedure. Load for applicable optional target selection/actions or an explicitly requested published-source promotion; not for an already supplied None with no remaining target work. Step numbers refer to [ship](../../guides/ship.md). Use [source preflight](../../guides/ship.md#step-1-establish-scope-capabilities-and-core-publication) for any missing core preflight, applicable [CI gates](../shared/ci.md) and only relevant provider identity/host/action sections. Do not repeat proven source publication or release assessment.
 
 ## Step 6 — Optional targets and an explicitly selected published source
 

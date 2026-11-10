@@ -2,22 +2,6 @@
 
 Publish reviewed work through one workflow: inspect pending work, use verified history-replacement or private archive procedures when applicable, handle selected branch targets and offer an approved release on ready main/master. Never publish registry packages or upload release assets automatically.
 
-## Question points
-
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and in the selected publication/provider helpers; ask only when their conditions hold.
-
-| Point | QM form |
-|---|---|
-| Missing source, role, destination, product/public API, stream, version or required private-evidence facts after local handoff discovery | Input or Single for actual candidates; never infer scope from divergence or a branch prefix. |
-| Conflicting special routes or prepared-candidate status/resume | Single; archive inspection itself uses its existing Review before bundle access. |
-| Base preparation commit, exact source push/helper/PR creation and target action | Review of each concrete operation, reusing only sufficient same-action approval. |
-| Optional targets | Multi with None / Finish; Single Yes/Skip for one target. Target selection precedes exact action Review when not already concrete. |
-| Release / Skip / Choose another version / relevant Use 1.0.0 | Review of the shown release plan; custom/initial version → Input, then refresh Review. |
-| No configured test framework, supported sequential publication or hosted release | Review with the existing explicit proceed/leave-pending choices; failed/unavailable required checks remain blockers. |
-| History publication and archive payload/receipt publication | Separate Review of the exact selected protocol, fixed expectations and effects. |
-| Archive destination/privacy facts, preservation/cleanup, portable copy | Input for safe identity/paths; Single for retention route, Multi for independent candidates, then Review of exact effects. |
-| CI wait/recheck versus pending and missing resume operations | Single for wait/pending; Review only for missing mutations lacking valid approval. |
-
 ## Publication rules
 
 Apply throughout this workflow and its selected supporting procedures:
@@ -139,3 +123,19 @@ Report assessed work, chosen publication procedure, release offered/skipped/pend
 For an accepted or pending release also report product/stream, prior/exact version/tag rationale, actual integrated release SHA, metadata PR/commit, local/remote tag, hosted URL/channel and missing same-version actions. Source/target publication alone reports **release not performed** until the optional release stage actually succeeds. Main-only release requires its reviewed approval after integration/reconciliation; no new code PR is needed merely to tag ready integrated content, while genuinely new metadata may require its own reviewed PR.
 
 A source/PR URL or preflight cannot certify deployment; report package/registry/asset actions as not performed or independently observed CI behavior with evidence. List exact pending manual work; never invent a tag for ordinary resume, recalculate a release to recover partial publication, overwrite published refs or claim unperformed tests/provider support passed. Read-only/no-op/cancel creates no state or cosmetic cleanup.
+
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and in the selected publication/provider helpers; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Missing source, role, destination, product/public API, stream, version or required private-evidence facts after local handoff discovery | Input or Single for actual candidates; never infer scope from divergence or a branch prefix. |
+| Conflicting special routes or prepared-candidate status/resume | Single; archive inspection itself uses its existing Review before bundle access. |
+| Base preparation commit, exact source push/helper/PR creation and target action | Review of each concrete operation, reusing only sufficient same-action approval. |
+| Optional targets | Multi with None / Finish; Single Yes/Skip for one target. Target selection precedes exact action Review when not already concrete. |
+| Release / Skip / Choose another version / relevant Use 1.0.0 | Review of the shown release plan; custom/initial version → Input, then refresh Review. |
+| No configured test framework, supported sequential publication or hosted release | Review with the existing explicit proceed/leave-pending choices; failed/unavailable required checks remain blockers. |
+| History publication and archive payload/receipt publication | Separate Review of the exact selected protocol, fixed expectations and effects. |
+| Archive destination/privacy facts, preservation/cleanup, portable copy | Input for safe identity/paths; Single for retention route, Multi for independent candidates, then Review of exact effects. |
+| CI wait/recheck versus pending and missing resume operations | Single for wait/pending; Review only for missing mutations lacking valid approval. |

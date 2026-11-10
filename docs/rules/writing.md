@@ -2,10 +2,13 @@
 title: Writing
 description: Guide clear, useful prose for replies, documentation and interface text while preserving meaning, material limitations and the project voice.
 parent: Rules
+detailed: /docs/rules/writing/detailed.html
 nav_order: 3
 ---
 
 # Writing
+
+{% include guide-depth.html %}
 
 Write clear, useful prose for people: replies, guides, UI text, comments and commit or release descriptions. Helm commands load this rule; [adopt](../commands/adopt.html) can install it independently.
 
@@ -53,5 +56,3 @@ Check the resulting sentence, destination and fragment. Preserve existing anchor
 ## Scope and safeguards
 
 Follow explicit requirements, required formats, voice and locale. Edit only the requested scope; protect code, quotations, legal obligations and material limitations. Brevity is neither a word quota nor an authorship test. Loading the rule starts no scan or bulk rewrite.
-
-[View the rule source](https://github.com/myowinthein/agent-helm/blob/main/rules/writing.md).

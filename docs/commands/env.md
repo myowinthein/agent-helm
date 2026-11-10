@@ -2,10 +2,13 @@
 title: env
 description: Review environment configuration, credible secret exposure and Git ignore rules, then choose scoped fixes or a safe environment template.
 parent: Commands
+detailed: /docs/commands/env/detailed.html
 nav_order: 3
 ---
 
 # env
+
+{% include guide-depth.html %}
 
 Use env when environment settings or Git ignore rules have become hard to trust. It checks how configuration is used, reports problems and lets you choose fixes or a safe template.
 
@@ -48,5 +51,3 @@ Choose Env files, `.gitignore` or both, then review the exact changes. The plan 
 You get verified changes and remaining follow-up. Operational env contents are never staged; tracked or managed env files remain report-only. Approved ignored, untracked env edits stay local.
 
 The audit does not start the app or contact services. Static checks cannot prove credentials work or a deployment is ready. Work finishes on the same branch; use [ship](ship.html) separately to publish source changes.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/env.md).

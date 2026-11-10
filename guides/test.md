@@ -2,20 +2,6 @@
 
 Assess important project behaviors, review existing and missing tests, and write or maintain approved cases using the project's actual stack and conventions. Gap scan and Full scan share this workflow on Claude and Codex.
 
-## Question points
-
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
-
-| Point | QM form |
-|---|---|
-| Eligible Full scan / Gap scan / Skip and unavailable-Python route | Single; runtime setup effects still need their existing Review. |
-| Missing branch role, expected behavior, impact, requirements or manual criteria | Input; unclear behavior uses Single Clarify / Characterize current behavior / Defer, then Input as needed. |
-| Recommended / All ready proposals / Choose / None | Single; Choose → Multi by case IDs/groups/tiers/exclusions. |
-| Case maintenance action, conflicting tools or runner/setup alternatives | Single for real alternatives; Input for intent. Selection does not approve removal, replacement or installation. |
-| Assessment-only record, selected cases/setup and mapped replacement guarantees | Review of the existing complete plan; preserve separately required setup/side-effect approval. |
-| Required manual acceptance and actual defer/accepted-risk reasons | Input for human evidence/reason; Review for a decision whose effects require authorization. No automatic sign-off. |
-| Local setup/case/ledger commits when approval is missing | Review of the exact completed unit under invocation policy. |
-
 ## Evidence rule
 
 Keep static assessment, setup/runner readiness, executed verification, case closure, human sign-off and publication separate. Only actual scoped evidence supports each claim. Installation, executable presence, version output or exit zero alone does not prove the intended tests ran. Never report unrun, deferred, unavailable, failed or incomplete checks as passed. Static review and assessment checkpoints certify no runtime result; Keep alone proves neither adequacy nor passing verification. Apply throughout, including the final report.
@@ -169,7 +155,9 @@ The parent reconciles exact assignments, duplicate findings and cross-cutting be
 
 When this workflow reaches a Full scan / Gap scan depth choice, read `{package_root}/prompts/shared/scan-scope.md` using only its already permitted request, source/anchor-validation result, impact evidence and prior-coverage facts. The helper grants no additional state access or execution permission.
 
-Default choices remain Gap scan / Full scan / Skip when the incremental baseline is usable. Preserve the existing Full scan recommendation for no tests, no established prior Full scan, unusable baseline or insufficient/broad impact evidence. The separate Full-scan anchor is this workflow's prior-coverage fact, not a shared schema invariant or a reason to interpret log/manifest's unknown Full-scan history as proof no Full scan occurred. A local unknown may instead need clarification or case reassessment. No counters, fixed file counts or Git-distance thresholds are introduced. Malformed/conflicting state still blocks dependent work under Step 2; Full scan never bypasses Step 2's unsupported-state stop. Retained backlog, schema-3 case selection and assessment/closure checkpoints keep their existing contracts. Use QM Single within the workflow's four-choice limit and the current host's supported limits/fallback.
+Default choices remain Gap scan / Full scan / Skip when the incremental baseline is usable. Preserve the existing Full scan recommendation for no tests, no established prior Full scan, unusable baseline or insufficient/broad impact evidence. The separate Full-scan anchor is this workflow's prior-coverage fact, not a shared schema invariant or a reason to interpret log/manifest's unknown Full-scan history as proof no Full scan occurred.
+
+A local unknown may instead need clarification or case reassessment. No counters, fixed file counts or Git-distance thresholds are introduced. Malformed/conflicting state still blocks dependent work under Step 2; Full scan never bypasses Step 2's unsupported-state stop. Retained backlog, schema-3 case selection and assessment/closure checkpoints keep their existing contracts. Use QM Single within the workflow's four-choice limit and the current host's supported limits/fallback.
 
 When no relevant changes are found, say "No new relevant changes found since {snapshot}; {retained open findings and evidence limits}." Offer relevant backlog work, reassessment or Skip when findings remain. Never say "tests are up to date" merely because a diff is empty or a prior Full scan ran. A genuine no-op exits without preparation, refreshed provenance, migration or an empty ledger commit.
 
@@ -293,7 +281,9 @@ Use the normal exact-path ledger write/readback/commit procedure, with meaningfu
 
 Before any installation, collection, test, coverage, build or service command, inspect its actual scripts/configuration and targets. Identify required runtimes, credentials without values, network/service/container/database/filesystem effects, resource/time expectations and owned cleanup. Use isolated synthetic fixtures, temporary resources and explicit test environments; no real user data, secrets in output, assumed disposable DB, or implicit production/external actions. Reuse safety.md's confirmations for evidenced destructive/migration/deployment/external effects; ordinary approved safe tests do not need a duplicate permission gate. Unknown safety or missing capability blocks affected execution and dependent actions, not static planning.
 
-For selected specialist execution, make relevant limits concrete in that same plan: fuzz/input size and iteration/time limits; load rate, concurrency, duration and stop conditions; mutation modules/operators and timeout; selected platform/browser targets; and fault/migration resources, recovery and owned cleanup. State target identity, approved test environment, expected costs/network effects and artifact paths where applicable. Expensive stress/soak, operational fault injection/recovery drills and intrusive scans are never implied by Full scan or a general test approval. Do not create infrastructure, alter CI/deployment matrices, use shared/live targets or upload artifacts as an incidental setup step; those effects need their own reviewed scope and authorization. Missing criteria or capability leave the affected execution pending without expanding scope or relabelling it passed. Ordinary approved bounded tests, including simulated failures in isolated fixtures, use the existing gate, not an extra universal confirmation.
+For selected specialist execution, make relevant limits concrete in that same plan: fuzz/input size and iteration/time limits; load rate, concurrency, duration and stop conditions; mutation modules/operators and timeout; selected platform/browser targets; and fault/migration resources, recovery and owned cleanup. State target identity, approved test environment, expected costs/network effects and artifact paths where applicable. Expensive stress/soak, operational fault injection/recovery drills and intrusive scans are never implied by Full scan or a general test approval.
+
+Do not create infrastructure, alter CI/deployment matrices, use shared/live targets or upload artifacts as an incidental setup step; those effects need their own reviewed scope and authorization. Missing criteria or capability leave the affected execution pending without expanding scope or relabelling it passed. Ordinary approved bounded tests, including simulated failures in isolated fixtures, use the existing gate, not an extra universal confirmation.
 
 ### Restore, add, repair or upgrade setup
 
@@ -328,7 +318,9 @@ Full scan means complete static assessment, not compulsory full-project runtime 
 
 Group approved cases into bounded coherent domain/module units with the reviewed prerequisites/mappings, then process sequentially by priority. Unrelated features do not share a commit just because both are High; a shared fixture alone does not merge a whole module graph. Every member retains its own priority and explicit selection. Preserve project naming/placement conventions. Large units can use coherent sequential batches with an actual completed/pending list.
 
-Write tests that assert meaningful observable results, errors or invariants and would detect the intended regression. Establish controlled inputs/preconditions where correct and regressed behavior produce different observable results; shared/seeded fixtures are valid when those relevant preconditions are verified and isolation is adequate. For unchanged-state guarantees, assert exact before/after equality; negative assertions remain valid for a contract of "not X". Use realistic fixtures and mocks at actual external boundaries without mocking away the behavior being tested. Keep cases independent; control time/randomness and await actual conditions instead of arbitrary sleeps. Include cleanup on failure. Avoid tautologies, implementation duplication, fragile internal-call assertions, blindly accepted snapshots and accidental real side effects. Parameterize when shared setup/assertion shape remains clear with useful case IDs; there is no rigid three-case requirement.
+Write tests that assert meaningful observable results, errors or invariants and would detect the intended regression. Establish controlled inputs/preconditions where correct and regressed behavior produce different observable results; shared/seeded fixtures are valid when those relevant preconditions are verified and isolation is adequate. For unchanged-state guarantees, assert exact before/after equality; negative assertions remain valid for a contract of "not X".
+
+Use realistic fixtures and mocks at actual external boundaries without mocking away the behavior being tested. Keep cases independent; control time/randomness and await actual conditions instead of arbitrary sleeps. Include cleanup on failure. Avoid tautologies, implementation duplication, fragile internal-call assertions, blindly accepted snapshots and accidental real side effects. Parameterize when shared setup/assertion shape remains clear with useful case IDs; there is no rigid three-case requirement.
 
 For each cluster:
 
@@ -405,3 +397,17 @@ Apply the Evidence rule; report no-write/Skip and pending paths too:
 - Local outputs/commits/checkpoints, actual current branch, retained drafts, performed/deferred checks and exact continuation action. Publication is not performed; invoke ship later.
 
 Never run missing checks, create commits, migrate state or publish merely to improve the report's appearance.
+
+## Question points
+
+Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+
+| Point | QM form |
+|---|---|
+| Eligible Full scan / Gap scan / Skip and unavailable-Python route | Single; runtime setup effects still need their existing Review. |
+| Missing branch role, expected behavior, impact, requirements or manual criteria | Input; unclear behavior uses Single Clarify / Characterize current behavior / Defer, then Input as needed. |
+| Recommended / All ready proposals / Choose / None | Single; Choose → Multi by case IDs/groups/tiers/exclusions. |
+| Case maintenance action, conflicting tools or runner/setup alternatives | Single for real alternatives; Input for intent. Selection does not approve removal, replacement or installation. |
+| Assessment-only record, selected cases/setup and mapped replacement guarantees | Review of the existing complete plan; preserve separately required setup/side-effect approval. |
+| Required manual acceptance and actual defer/accepted-risk reasons | Input for human evidence/reason; Review for a decision whose effects require authorization. No automatic sign-off. |
+| Local setup/case/ledger commits when approval is missing | Review of the exact completed unit under invocation policy. |

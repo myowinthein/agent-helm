@@ -2,10 +2,13 @@
 title: manifest
 description: Create or update a README using source evidence while preserving the project voice, useful content and chosen document structure.
 parent: Commands
+detailed: /docs/commands/manifest/detailed.html
 nav_order: 6
 ---
 
 # manifest
+
+{% include guide-depth.html %}
 
 Use manifest to create a README or keep an existing one accurate. It checks the project, proposes changes and preserves the voice and useful structure you already have.
 
@@ -56,5 +59,3 @@ When a complete review finds only optional improvements, you can **keep the READ
 You get the README, approved preferences and unresolved facts. A complete Full or Gap review can advance its review marker even when optional suggestions are declined. Unresolved factual gaps, partial repairs and style-only work do not establish a complete new review.
 
 Changes follow your local commit policy and stay on the same branch. Use [ship](ship.html) to publish.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/manifest.md).

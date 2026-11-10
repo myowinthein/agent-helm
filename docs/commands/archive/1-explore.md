@@ -3,10 +3,13 @@ title: "Step 1: Explore"
 description: Identify project recovery goals, components, setup, data and missing materials through local source inspection before approving restoration work.
 parent: archive
 grand_parent: Commands
+detailed: /docs/commands/archive/1-explore/detailed.html
 nav_order: 1
 ---
 
 # Step 1: Explore
+
+{% include guide-depth.html %}
 
 Agree what you want to preserve before attempting recovery. This phase inspects local source and metadata without running the project or contacting services.
 
@@ -34,5 +37,3 @@ Choose source preservation, a runnable demonstration, offline runtime recovery o
 Approve the findings and proposed approach, request changes or stop without saving. Approval saves the initial report, inventory and progress under `.helm/archive/`.
 
 [Step 2: Restore and freeze](2-restore-and-freeze.html) proposes the actual restoration work.
-
-[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step1-explore.md).

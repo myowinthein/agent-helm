@@ -2,10 +2,13 @@
 title: adopt
 description: Install reviewed working rules for Claude and Codex in a consumer project, then approve updates when the bundled rules change.
 parent: Commands
+detailed: /docs/commands/adopt/detailed.html
 nav_order: 2
 ---
 
 # adopt
+
+{% include guide-depth.html %}
 
 Use adopt to give Claude and Codex shared working rules in a consumer project. Run it again when you want to review updates from the installed Helm package.
 
@@ -52,5 +55,3 @@ A `CLAUDE.md`-only project or independent instruction files may need [log's shar
 Approved copies live in `.claude/rules/`, connected through shared project instructions. The report separates installed, kept, skipped and missing rules. Start a fresh agent session after changes; file checks alone do not prove native startup loading.
 
 Plugin updates do not refresh these copies automatically. Rerun adopt to review them, and use [ship](ship.html) separately for publication.
-
-[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/adopt.md).

@@ -92,7 +92,7 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
   if scenario[:expected_answer]
     answer = result.fetch(:answer).sub(/\A```(?:json)?\s*/, "").sub(/\s*```\z/, "")
     raise "Incorrect release proposal rubric" unless JSON.parse(answer) == scenario.fetch(:expected_answer)
-    raise "Release rubric skipped its actual workflow source" unless result.fetch(:calls).any? { |c| HelmAcceptance.strings(c["input"]).any? { |s| s.include?("workflows/ship.md") } }
+    raise "Release rubric skipped its actual workflow source" unless result.fetch(:calls).any? { |c| HelmAcceptance.strings(c["input"]).any? { |s| s.include?("guides/ship.md") } }
   end
   if scenario[:positive_control]
     begin
