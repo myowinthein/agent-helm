@@ -98,6 +98,8 @@ After an own-target PR handoff, proceed only to selected independent Step 6 acti
 
 Read [release](../prompts/ship/release.md) only for an identified candidate, an explicit release assessment/question or ready integrated main/master's release assessment. Initial discovery still identifies incomplete metadata/tag/PR candidates before misrouting them as application work. Feature/environment invocations do not acquire a release offer. Ready main includes no-push reruns and first releases; do not skip them as ordinary source no-ops.
 
+For that selected procedure, prepare and reuse the fields from its [release output contract](../prompts/ship/release.md#release-output-contract) through the existing release and hosted-publication reviews.
+
 Where already relevant, collect cheap version/tag/candidate identities with the source snapshot and reuse pinned history. Do not speculate about product versions or build notes for an ineligible/unselected source. Revalidate release eligibility after selected publication/targets; read-only preparation never supplies release or hosted-write approval. Reuse an incomplete version rather than bumping again.
 
 ## Step 6 — Optional targets and an explicitly selected published source

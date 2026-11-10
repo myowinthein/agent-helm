@@ -61,6 +61,8 @@ A release requires ship to start on **main/master with ready integrated work**. 
 
 Review the version, tag, metadata, notes and checks in a separate release decision. Proposals follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and actual compatibility changes; 0.x, initial and prerelease versions need an explicit suitable choice.
 
+New tag annotations and hosted release titles normally match the exact tag. Notes explain the main benefit, necessary upgrade steps and relevant changes, with empty sections omitted. Prerelease and Latest settings are explicit choices, subject to hosting support.
+
 Skipping a release keeps published source intact. If metadata needs a PR, tagging waits for integration. Published tags and versions stay immutable. Package publication, asset uploads and deployment are separate work.
 
 ## Publish normalized history
