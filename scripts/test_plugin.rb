@@ -23,6 +23,8 @@ HelmValidation.check(manifest.fetch("name") == "agent-helm", "Plugin name must m
 HelmValidation.check(manifest.fetch("displayName") == "Agent Helm", "Claude must display Agent Helm")
 HelmValidation.check(manifest.fetch("interface").fetch("displayName") == manifest.fetch("displayName"), "Codex and Claude must use the same display name")
 HelmValidation.check(HelmValidation.read(root.join("README.md")).match?(/^# Agent Helm$/), "README heading must use the product display name")
+HelmValidation.check(HelmValidation.frontmatter(root.join("README.md")).fetch("description") == YAML.safe_load_file(root.join("docs/_config.yml")).fetch("description"),
+                     "README description must exactly copy the site summary in docs/_config.yml")
 HelmValidation.check(manifest.fetch("icon") == "./assets/icon.svg", "Claude must reference the shared SVG icon")
 %w[logo composerIcon].each do |field|
   HelmValidation.check(manifest.fetch("interface").fetch(field) == manifest.fetch("icon"), "Claude and Codex must share one icon")
