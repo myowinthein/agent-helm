@@ -48,6 +48,8 @@ The list is illustrative and maintained, not exhaustive. Check for the same habi
 
 ## Links and navigation
 
+For prose references, opening behavior and indicators are decisions within the same reference pass. When Writing is loaded, use its self-contained [Reference links](writing.md#reference-links) sequence; these interface requirements apply within it, without a second selection or review pass. Design remains usable on its own.
+
 Use real links with working destinations for navigation and resource downloads, and buttons for in-page actions. Link directly to the relevant page or existing section ID. Do not present invented URLs or placeholder destinations as working links. Keep each link's purpose clear from its label or associated context.
 
 Open navigation links in the current tab by default. Apply the following behavior unless an explicit project requirement specifies otherwise; do not infer a requirement merely from an existing `target="_blank"`.

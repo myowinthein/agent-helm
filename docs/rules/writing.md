@@ -30,9 +30,25 @@ Depth follows the audience and task. A guide need not mirror its source's detail
 | Links and quotations | Descriptive link labels, useful destinations and attributed evidence. |
 | Notes, images and diagrams | Information clearer to highlight or show. |
 
-Use supported Markdown, HTML or plain text and existing conventions. Formatting does not justify extra content. Make a link's purpose clear in context, name an external source when useful and avoid crowding sentences with repeated links. Link optional detail without hiding necessary warnings. Avoid em dashes in new prose while preserving exact syntax and meaningful punctuation.
+Use supported Markdown, HTML or plain text and existing conventions. Formatting does not justify extra content. Link optional detail without hiding necessary warnings. Avoid em dashes in new prose while preserving exact syntax and meaningful punctuation.
 
-Describe material link outcomes, such as a login requirement, file download, application launch or deliberately configured new tab. Use known facts and respect what the renderer can control. Writing governs this wording; [Design](design.html#responsive-interfaces-and-links) owns interface tab behavior and icons. Neither rule requires the other.
+## Reference links
+
+Writing handles references as one ordered workflow:
+
+1. Find potential internal and external references within the requested scope.
+2. Select links that help readers, avoiding unnecessary repetition and reading noise.
+3. Match and verify the relevant page or section, including the source's meaning and actual fragment ID.
+4. Embed the URL in a meaningful phrase, preserving existing wording unless a small correction is needed.
+5. Choose opening behavior: current tab by default, with warned exceptions for specific task needs, explicit user choice or project requirements.
+6. Apply the external-link symbol when appropriate, independently of tab behavior.
+7. Verify the finished reference and report any unchecked behavior.
+
+The default is one useful contextual occurrence per destination per page. Distant sections, independent tasks and necessary citations can justify repetition; every product mention need not become a link. Specific topics can link to sections, while broad references can link to whole pages. External sources should be authoritative and relevant to the claim.
+
+The default symbol is a northeast arrow leaving an open square for external text navigation links. Internal links get no external arrow, including new-tab exceptions. Downloads and email, phone or application links keep their native handling and clear outcome wording. Explicit project conventions and renderer limits remain respected.
+
+This sequence is complete in Writing. [Design](design.html#responsive-interfaces-and-links) provides the broader interface standard when selected; no second reference pass or Design dependency is introduced. The approach draws on [Google's cross-reference guidance](https://developers.google.com/style/cross-references#choose-links-selectively) and [GOV.UK's effective links guidance](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/add-links/).
 
 ## Examples
 
