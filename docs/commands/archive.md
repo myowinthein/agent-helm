@@ -9,7 +9,17 @@ has_toc: false
 
 # archive
 
-Preserve an old project's source, setup and useful recovery materials. Archive helps restore the selected scope, capture a suitable setup and prepare it locally for private backup through ship.
+Use archive when an older project needs a recovery kit: source, setup, useful runtime/data and instructions for running it again. It prepares the kit locally; ship handles the later private backup.
+
+## Flow
+
+```mermaid
+flowchart TD
+  Explore["Understand the recovery goal"] --> Restore["Restore and freeze the setup"]
+  Restore --> API["Preserve useful API materials"]
+  API --> Docs["Write recovery instructions"]
+  Docs --> Review["Review and commit the local kit"]
+```
 
 ## Start the command
 
@@ -17,58 +27,41 @@ Preserve an old project's source, setup and useful recovery materials. Archive h
 archive
 ```
 
-Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on the branch you want to preserve and confirm its commit and exclusions. Archive does not switch branches or merge missing work.
 
-Start on the branch you want to preserve. Confirm its commit and excluded work before pending phases begin. Archive does not switch branches or merge missing work.
-
-## Flow
-
-```mermaid
-flowchart TD
-  Start(["Start archive"]) --> Progress["Validate existing progress<br/>and the current source"]
-  Progress --> Done{"Already prepared<br/>or completed?"}
-  Done -->|Verified| Existing(["Report the existing result"])
-  Done -->|No| Branch["Confirm the source branch<br/>and preservation scope"]
-  Branch --> Explore["1. Explore the project"]
-  Explore --> Restore["2. Restore and freeze<br/>the selected setup"]
-  Restore --> API["3. Preserve useful API materials"]
-  API --> Docs["4. Prepare recovery documentation"]
-  Docs --> Payload["5. Review and commit<br/>the local archive payload"]
-  Payload --> End(["Prepared locally;<br/>use ship later for private backup"])
-```
-
-Each phase needs report approval. Execution, data operations and the payload commit retain their concrete approvals; approving a report does not authorize unseen actions.
+Choose what recovery should achieve: source preservation, a runnable demonstration, offline runtime recovery or rebuild inputs. Those goals need different evidence; a saved image alone cannot prove them all.
 
 ## The five steps
 
-1. [Explore](archive/1-explore.html): inspect dependencies, data and preservation gaps without execution.
-2. [Restore and freeze](archive/2-restore-and-freeze.html): restore the agreed scope, review results and capture a suitable setup.
-3. [Postman collection](archive/3-postman.html): retain, repair or create useful API recovery files.
-4. [Documentation](archive/4-documentation.html): prepare the recovery entry point, procedure and artifact inventory.
-5. [Prepare locally](archive/5-finalize.html): review storage and the exact payload, then approve its commit.
+| Step | What you review |
+|---|---|
+| [Explore](archive/1-explore.html) | The project, recovery goal and missing materials. |
+| [Restore and freeze](archive/2-restore-and-freeze.html) | An isolated restoration plan, results and capture choices. |
+| [Postman collection](archive/3-postman.html) | Useful API collections or specifications, when applicable. |
+| [Documentation](archive/4-documentation.html) | The recovery entry point and ordered instructions. |
+| [Prepare locally](archive/5-finalize.html) | Storage, exclusions and the exact local payload commit. |
 
-Choose source preservation, a runnable demonstration, offline runtime recovery or additional rebuild inputs. Each needs different evidence; a saved image alone cannot prove all of them.
+Each phase needs report approval. Execution, data operations and the payload commit keep their own concrete approvals; a report never approves unseen actions.
 
 ## Output files
 
-Only useful outputs are created. Existing suitable locations can stay in use.
+Existing suitable locations can stay. The kit normally includes:
 
-| Output | Purpose |
-|---|---|
-| `.helm/archive/` | Saved progress, file inventory and five approved reports. |
-| Archive index, normally `README.md` | Where to start and what recovery can achieve. |
-| `docs/setup.md` | Ordered recovery, data, run/demo and stop instructions. |
-| `docs/archive-metadata.md` | Artifact identities, checksums, storage and verification. |
-| Selected `recovery/` files | Captured images, API materials, data or supplementary assets. |
+- An index, usually `README.md`, explaining what recovery can achieve.
+- Setup instructions and artifact metadata under `docs/`.
+- Selected runtime, API and data materials under `recovery/`.
+- Progress and approved reports in `.helm/archive/`.
+
+Only useful outputs are created. Secrets and unrelated work stay out.
 
 ## Returning to an existing archive
 
-Rerun to validate progress and continue incomplete local work. Unexplained source or output changes need reconciliation. Proven prepared payloads are reported without repeating restoration or replacing reports.
-
-Unsupported bundles remain intact. Missing remote proof does not authorize restarting. Instructions, rules, other commands' records and existing recovery evidence are protected from blanket cleanup.
+Rerun archive to check progress and continue pending work. Proven preparation is reported without repeating restoration or replacing reports. Unexplained changes need reconciliation; unsupported bundles and existing recovery evidence remain intact.
 
 ## Your result
 
-You get the local payload commit or pending drafts, recovery instructions and limitations on the same branch. Deferred checks stay unverified.
+You get a local payload commit or pending drafts, recovery instructions and explicit limitations on the same branch. Deferred checks stay unverified.
 
-Use [ship](ship.html#publish-an-archive-backup) separately to select a private destination, publish the payload and verify its completion receipt. Local preparation does not prove a remote backup.
+**Prepared locally is not backed up remotely.** Use [ship](ship.html#publish-an-archive-backup) separately to approve and verify the private payload and completion receipt.
+
+[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/archive.md).

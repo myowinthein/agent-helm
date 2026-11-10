@@ -7,59 +7,49 @@ nav_order: 1
 
 # Git
 
-Keep local changes, commits and publication consistent across Claude and Codex. Install it with [Safety](safety.html) through [adopt](../commands/adopt.html); Helm commands already load both.
+Keep local work, commits and publication consistent across Claude and Codex. Install with [Safety](safety.html) through [adopt](../commands/adopt.html); Helm commands already load both.
 
 ## Configuration owner
 
-Shared settings normally live in `AGENTS.md`, imported by `CLAUDE.md`. Actual imports, nested instructions and overrides determine the effective policy. Conflicts block dependent actions.
+Shared settings normally live in `AGENTS.md`, imported by `CLAUDE.md`. Actual imports, nested instructions and overrides determine the policy. Conflicts block dependent actions; [log’s shared setup](../commands/log.html#shared-project-instructions) handles reconciliation.
 
-New Project Config sections use Markdown bullets. Existing plain or recognized fenced declarations remain supported.
-
-| Setting | Default | Purpose |
+| Setting | Default | What it controls |
 |---|---|---|
-| `ship-method` | `pr` | Push directly or create/reuse PR/MR handoffs through ship. |
-| `git-auto-commit` | `false` | Allow completed local commits without another question when true. |
-| `git-merge-strategy` | `squash` | Use squash, merge or rebase of reviewed private, unpushed work for integration. |
+| `ship-method` | `pr` | Direct pushes or PR/MR handoffs. |
+| `git-auto-commit` | `false` | Whether completed local work can be committed without another question. |
+| `git-merge-strategy` | `squash` | Squash, merge or rebase of reviewed private, unpushed work. |
 
-Defaults apply only to absent settings. Choices are independent of team size. [Log](../commands/log.html#shared-project-instructions) handles shared setup and layout reconciliation.
+Defaults apply only when a setting is absent. Team size does not select a mode. New configuration uses Markdown bullets; supported existing formats are preserved.
 
 ## Local work
 
-Local edits stay on the current permitted branch. Each [command](../commands) keeps its own preparation requirements and finishes locally.
-
-Requested edits may include uncommitted files. The agent preserves unrelated work rather than resetting, stashing or cleaning it away. Static inspection does not authorize executing project code or opening operational records.
+Edits stay on the current permitted branch, subject to each command’s preparation requirements. The agent preserves unrelated changes, including staged work, without automatic resets, stashes or cleanup. Static inspection does not authorize code execution or access to operational records.
 
 ## Auto-commit
 
-With auto-commit off or absent, the agent asks before committing. With it on, completed coherent work can be committed after required checks, honoring explicit deferral. The agent reviews the full content and index, staging only intended paths and hunks.
+When enabled, completed coherent work can be committed after required checks unless you defer it. Otherwise the agent asks. It reviews the content and index, then stages only intended paths and hunks.
 
-Public legal-document commits always need exact content and commit approval. Auto-commit never approves publication.
-
-New commits carry a `Co-authored-by` trailer naming the committing agent. Existing trailers are preserved and not duplicated, and the agent does not ask who wrote the changes.
+Public legal-document commits still need exact content and commit approval. **Auto-commit never approves publication.** New commits name the committing agent in a `Co-authored-by` trailer.
 
 ## Conventional Commits
 
-Based on [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), with project or user policy taking precedence over Helm defaults.
+Helm uses scoped messages, with project or user policy taking precedence:
 
 ```text
 fix(payment): handle expired cards
 feat(auth)!: replace sessions with JWT
 ```
 
-Helm requires a lowercase module or domain scope; the external specification makes scope optional. Prefer one dominant area, short comma-separated scopes for inseparable changes, or `project`/`core` for broad work.
-
-Bodies and footers are optional, separated by blank lines. Mark breaking changes with `!`, an uppercase `BREAKING CHANGE:` footer, or both. With `!`, explain the break in the description.
-
-Use `feat` for features and `fix` for bugs. Helm also uses `refactor`, `revert`, `test`, `docs`, `chore`, `style`, `perf`, `ci` and `build`. [Ship](../commands/ship.html#optional-versioned-release) interprets complete messages when proposing releases. Loading rules never authorizes rewriting history.
+Use `feat` for features, `fix` for bugs and suitable types such as `docs`, `test` or `refactor` for other work. Helm requires a lowercase module/domain scope; [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) makes scope optional. Mark breaking changes with `!`, a `BREAKING CHANGE:` footer or both, and explain the break.
 
 ## Quality checks
 
-The agent uses configured checks for changed code and affected consumers, formatting before final verification. Shared changes require the full suite unless another plan is explicitly authorized.
-
-Results distinguish passed, failed, unavailable, unconfigured and deferred checks. Required failures block publication; required CI and reviews must match the intended commit. No automatic unrelated repairs or tool installs follow.
+Use configured checks for changed code and affected consumers. Shared changes require the full suite unless another plan is explicitly authorized. Report passed, failed, unavailable and deferred checks accurately. Required checks and reviews must match the intended commit; failures block publication.
 
 ## Publication
 
-[Ship](../commands/ship.html) handles reviewed pushes, optional independent target updates and separately approved releases on ready main/master. Every push needs concrete authorization for its destination, source, refs and effects, including deployment triggers.
+[Ship](../commands/ship.html) handles reviewed pushes, optional target updates and separately approved releases on ready, integrated main/master. Each push needs concrete authorization for its destination, source, refs and effects, including deployment triggers.
 
-Publication uses bounded refs and verified readback, preserving branches by default. [Normalized history](../commands/ship.html#publish-normalized-history) uses recovery evidence and fixed force-with-lease expectations. Archives use a [separate private backup procedure](../commands/ship.html#publish-an-archive-backup). Permanent base/environment branches and public published tags remain protected.
+Results are read back before claiming success. Branches stay intact by default; base/environment branches and public published tags remain protected. Normalized history and private archive backups follow ship’s specialist procedures.
+
+[View the rule source](https://github.com/myowinthein/agent-helm/blob/main/rules/git.md).

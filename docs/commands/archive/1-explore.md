@@ -8,39 +8,31 @@ nav_order: 1
 
 # Step 1: Explore
 
-Identify what recovery needs through local source and metadata inspection, without running the project or contacting services.
+Agree what you want to preserve before attempting recovery. This phase inspects local source and metadata without running the project or contacting services.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start(["Source branch confirmed"]) --> Inventory["Inspect components, setup,<br/>data and recovery materials"]
-  Inventory --> Scope["Agree recovery goals;<br/>identify missing and excluded inputs"]
-  Scope --> Report["Present findings and<br/>the proposed restoration approach"]
-  Report --> Approval{"Approve the report?"}
-  Approval -->|Revise| Report
-  Approval -->|Stop| End(["Leave exploration unsaved"])
-  Approval -->|Yes| Save["Save report and initial<br/>file inventory"]
-  Save --> Next(["Continue to Restore and Freeze"])
+  Inspect["Inspect the project and recovery materials"] --> Goal["Agree the preservation goal"]
+  Goal --> Review["Review findings and restoration approach"]
+  Review --> Next["Approve the report to continue"]
 ```
 
 ## What gets discovered
 
-- Project purpose, architecture and useful demonstration scope.
-- Last-working stack, toolchain, platform and missing inputs.
-- Data sources, provenance and sensitivity.
-- External integrations and isolation needs.
-- Setup notes, API materials and useful artifacts or history.
-- Branches, tags and external objects outside the selected snapshot.
+The agent looks for the last-working stack, setup instructions, data, integrations and useful artifacts. It identifies missing inputs and anything outside the selected snapshot, such as other branches or externally stored objects.
 
-Secret values and private records stay out of reports. Cached remote information does not prove current availability.
+Secret values and private records stay out of reports. Cached information does not prove that an external resource is still available.
 
 ## Agree the preservation goal
 
-Choose source preservation, a runnable demonstration, offline runtime recovery or rebuild inputs. Missing data, services, licensed tools or hardware remain explicit limits. Restoration does not imply modernization.
+Choose source preservation, a runnable demonstration, offline runtime recovery or rebuild inputs. The goal determines what needs capturing. Missing services, data, licensed tools or hardware remain explicit limits; restoration does not imply modernization.
 
 ## What happens next
 
-Review the findings and restoration approach, then approve, revise or stop without saving. Approval creates the initial report, inventory and progress under `.helm/archive/`.
+Approve the findings and proposed approach, request changes or stop without saving. Approval saves the initial report, inventory and progress under `.helm/archive/`.
 
 [Step 2: Restore and freeze](2-restore-and-freeze.html) proposes the actual restoration work.
+
+[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step1-explore.md).

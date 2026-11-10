@@ -7,7 +7,16 @@ nav_order: 6
 
 # manifest
 
-Create a useful README or keep one accurate. Manifest checks what readers need to understand and use the project while preserving its voice and useful content.
+Use manifest to create a README or keep an existing one accurate. It checks the project, proposes changes and preserves the voice and useful structure you already have.
+
+## Flow
+
+```mermaid
+flowchart TD
+  Review["Review the README against the project"] --> Choose{"Accept proposed updates?"}
+  Choose -->|All or selected| Update["Update and check the README"]
+  Choose -->|Keep or cancel| Keep["Preserve existing content"]
+```
 
 ## Start the command
 
@@ -15,61 +24,37 @@ Create a useful README or keep one accurate. Manifest checks what readers need t
 manifest
 ```
 
-Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
-
-Run [log](log.html#shared-project-instructions) first if there is no shared instruction owner. Updates require a clean **main or master** branch.
-
-## Flow
-
-```mermaid
-flowchart TD
-  Start(["Start manifest"]) --> Target["Confirm the README<br/>and its style"]
-  Target --> Scope{"What review is needed?"}
-  Scope -->|Already current or skip| Finish(["Report the local result"])
-  Scope -->|Full scan or Gap scan| Scan["Verify README claims and<br/>missing reader information"]
-  Scope -->|Structure repair| Repair["Investigate the specific<br/>content or layout gaps"]
-  Scan --> Review["Review proposed section changes"]
-  Repair --> Review
-  Review --> Choice{"Apply the proposal?"}
-  Choice -->|Revise| Review
-  Choice -->|Skip| Finish
-  Choice -->|Keep prose and record review, when eligible| Marker["Update only the review marker"]
-  Marker --> Finish
-  Choice -->|All or selected changes| Write["Update and read back<br/>the approved content"]
-  Write --> Finish
-```
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Updates require clean **main or master**. Run [log's shared setup](log.html#shared-project-instructions) first if there is no shared instruction owner.
 
 ## Choose the README and style
 
-Manifest normally maintains the root README. It checks GitHub's precedence and asks if the target is ambiguous. Translations and package READMEs are not rewritten together automatically.
+Manifest normally works on the root README. If the target is ambiguous, it asks; translations and package READMEs are not rewritten together automatically.
 
-| Style | Approach |
+| Style | What happens |
 |---|---|
-| **Standard** | Follow the applicable [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md). |
-| **Custom** | Preserve the existing outline. For a new README, approve an outline or adapted reference before drafting. |
+| Standard | Follow the applicable [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md). |
+| Custom | Preserve the existing outline, or agree one before drafting a new README. |
 
-An approved choice can be saved as `readme-style`. Full scan does not authorize replacing a custom structure. Generated content follows its producer; active agent instructions embedded in a README need reconciliation before prose maintenance.
+Your approved preference can be saved as `readme-style`. Choosing Full scan does not authorize replacing a custom structure.
 
 ## What the review covers
 
-- **Full scan:** check existing claims and missing reader information across relevant project workflows, from prerequisites and installation to use and support.
-- **Gap scan:** follow changes since the saved review point to affected sections. A rewritten marker is automatically checked for a verified equivalent before falling back to Full scan.
-- **Repair structure:** address specific content or layout gaps without claiming a complete source review.
+- **Full scan:** check the README's claims and missing reader information across relevant project workflows.
+- **Gap scan:** follow changes since a valid saved review to the affected sections.
+- **Repair structure:** address a particular layout or content problem without claiming a complete source review.
 
-An explicit style-only change is also possible. Skip and already-current outcomes leave content untouched.
-
-Marker recovery tries preserved normalize maps, the native backend map, then verified local object/history correspondence. A short recovery note precedes the normal choices, with no extra approval gate. Any marker repair is included in the existing approved output and preserves the earlier review; Skip, Cancel and read-only/no-op outcomes write nothing. Missing local proof or incomplete comparison history still prevents Gap scan.
+You can also request a style-only change. If history was rewritten, manifest tries to recover the earlier review point before falling back to Full scan.
 
 ## Review the update
 
-Manifest checks commands, examples and links against source, preserving banners, frontmatter, custom context and generated blocks. It links to detailed guides instead of copying them. Missing policy or support facts need confirmation.
+Review all proposed changes or a subset, ask for revision, or cancel. Commands, examples and links are checked against source without running example commands just to write documentation. Custom content and generated blocks are preserved.
 
-For existing content, choose all proposed section changes, a subset, revision or cancellation. Only approved edits are written and read back. Example commands are not executed merely to write the README.
-
-When a complete review finds only optional improvements, the same question also offers **Keep README unchanged and record review**. This preserves the prose and records the reviewed source commit without another approval gate.
+When a complete review finds only optional improvements, you can **keep the README unchanged and record the review**.
 
 ## Your result
 
-You get the README, any approved style preference and unresolved facts. The `last-reviewed` comment records a complete Full or Gap assessment of the relevant source snapshot. Declined optional suggestions do not block it, including when only some edits are accepted. Incomplete review or unresolved inaccuracies and material gaps retain earlier provenance; declining a factual correction does not resolve it. Repairs and style-only changes do not establish a new review baseline. Cancellation writes nothing.
+You get the README, approved preferences and unresolved facts. A complete Full or Gap review can advance its review marker even when optional suggestions are declined. Unresolved factual gaps, partial repairs and style-only work do not establish a complete new review.
 
 Changes follow your local commit policy and stay on the same branch. Use [ship](ship.html) to publish.
+
+[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/manifest.md).

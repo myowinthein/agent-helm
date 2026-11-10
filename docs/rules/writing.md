@@ -7,48 +7,40 @@ nav_order: 3
 
 # Writing
 
-Write clear, useful prose for people: replies, guides, UI text, comments and commit or release descriptions. Helm commands load this rule; [adopt](../commands/adopt.html) can install it independently of Git and Safety.
+Write clear, useful prose for people: replies, guides, UI text, comments and commit or release descriptions. Helm commands load this rule; [adopt](../commands/adopt.html) can install it independently.
 
 ## What it asks the agent to do
 
-- Lead with the answer, purpose or action.
-- Include what the reader needs to understand, decide or act, then stop.
-- Use familiar words and consistent technical terms.
-- Connect ideas without filler, hype or invented facts.
-- Preserve material meaning, uncertainty and warnings.
+Lead with the answer, purpose or action. Give readers what they need to understand, decide or act, using familiar words and consistent terms. Remove filler and hype while preserving facts, uncertainty and warnings.
 
-Depth follows the audience and task. A guide need not mirror its source's detail. During maintenance, rewrite the affected passage at its intended depth rather than continually appending text. Required steps and decision context stay visible.
+Depth follows the audience and task. A guide need not mirror its source’s detail. Maintenance should improve the affected passage at its intended depth, keeping necessary steps and decision context visible.
 
 ## Choose useful formatting
 
-| Element | Use |
-|---|---|
-| Paragraphs and headings | Connected explanations and sections readers need to find. |
-| Lists | Parallel choices or ordered steps. |
-| Tables | Concise comparisons with shared attributes. |
-| Code and blocks | Exact identifiers, commands and configuration. |
-| Links and quotations | Descriptive link labels, useful destinations and attributed evidence. |
-| Notes, images and diagrams | Information clearer to highlight or show. |
+Use paragraphs for connected explanations, lists for choices or steps, and tables for comparisons. Code blocks preserve exact commands and configuration. Add diagrams or examples when they explain the subject more clearly.
 
-Use supported Markdown, HTML or plain text and existing conventions. Formatting does not justify extra content. Link optional detail without hiding necessary warnings. Avoid em dashes in new prose while preserving exact syntax and meaningful punctuation.
+Follow the destination’s supported formatting and existing conventions. Formatting should help readers find information without adding padding or hiding essential warnings. Avoid em dashes in new prose while preserving exact syntax and meaningful punctuation.
 
 ## Reference links
 
-Writing handles references as one ordered workflow:
+Treat references as one workflow, from finding useful phrases to checking the finished link:
 
-1. Find potential internal and external references within the requested scope.
-2. Select links that help readers, avoiding unnecessary repetition and reading noise.
-3. Match and verify the relevant page or section, including the source's meaning and actual fragment ID.
-4. Embed the URL in a meaningful phrase, preserving existing wording unless a small correction is needed.
-5. Choose opening behavior: current tab by default, with warned exceptions for specific task needs, explicit user choice or project requirements.
-6. Apply the external-link symbol when appropriate, independently of tab behavior.
-7. Verify the finished reference and report any unchecked behavior.
+```mermaid
+flowchart TD
+  Find["Find and select useful references"] --> Match["Verify the destination and embed it in a clear phrase"]
+  Match --> Behavior["Apply opening behavior and indicators"]
+  Behavior --> Check["Check the finished reference"]
+```
 
-The default is one useful contextual occurrence per destination per page. Distant sections, independent tasks and necessary citations can justify repetition; every product mention need not become a link. Specific topics can link to sections, while broad references can link to whole pages. External sources should be authoritative and relevant to the claim.
+Link when it helps readers act, understand context or verify a claim. Default to one useful contextual link per destination per page; distant sections, independent tasks and required citations can justify repetition. Every mention need not become a link.
 
-The default symbol is a northeast arrow leaving an open square for external text navigation links. Internal links get no external arrow, including new-tab exceptions. Downloads and email, phone or application links keep their native handling and clear outcome wording. Explicit project conventions and renderer limits remain respected.
+Specific topics point to the relevant section; broad introductions point to the page. Prefer authoritative external sources. Check meaning and actual section anchors, then wrap an existing clear phrase. Change wording only as much as needed to correct a vague or mismatched label.
 
-This sequence is complete in Writing. [Design](design.html#responsive-interfaces-and-links) provides the broader interface standard when selected; no second reference pass or Design dependency is introduced. The approach draws on [Google's cross-reference guidance](https://developers.google.com/style/cross-references#choose-links) and [GOV.UK's effective links guidance](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/add-links/).
+**Current tab is the default for internal and external links.** New tabs are limited to preserving an active task, explicit user choice or a project requirement. Deliberate new contexts need visible and accessible warnings; native browser choices remain available.
+
+A northeast arrow leaving an open square marks external text links, independently of tab behavior. Internal new-tab links get no external arrow. Downloads and email, phone or app links use native handling and clear outcome wording. Respect established project conventions and renderer limits.
+
+Check the resulting sentence, destination and fragment. Preserve existing anchors when headings change and report verification gaps. [Design](design.html#responsive-interfaces-and-links) adds interface guidance when selected; it requires no second reference pass.
 
 ## Examples
 
@@ -60,6 +52,6 @@ This sequence is complete in Writing. [Design](design.html#responsive-interfaces
 
 ## Scope and safeguards
 
-Explicit requirements, required formats, voice and locale take priority. Edit only the requested scope; preserve code, quotations, legal obligations and material limitations. Brevity is not a word quota or an authorship test.
+Follow explicit requirements, required formats, voice and locale. Edit only the requested scope; protect code, quotations, legal obligations and material limitations. Brevity is neither a word quota nor an authorship test. Loading the rule starts no scan or bulk rewrite.
 
-Loading the rule starts no bulk rewrite, tool or approval process. [Git](git.html) and [Safety](safety.html) retain their boundaries. The final prose check is silent.
+[View the rule source](https://github.com/myowinthein/agent-helm/blob/main/rules/writing.md).

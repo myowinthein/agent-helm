@@ -7,7 +7,16 @@ nav_order: 1
 
 # log
 
-Keep project instructions useful for new agent sessions. Log reviews the project and proposes lasting context, working agreements and lessons.
+Use log when a new agent session needs better project context, or when the project has changed since its instructions were reviewed. It proposes updates to the knowledge and working agreements your agents read.
+
+## Flow
+
+```mermaid
+flowchart TD
+  Review["Review project and instructions"] --> Choose{"Apply proposed updates?"}
+  Choose -->|All or selected| Save["Update and check instructions"]
+  Choose -->|Not now| Keep["Keep current files"]
+```
 
 ## Start the command
 
@@ -15,57 +24,27 @@ Keep project instructions useful for new agent sessions. Log reviews the project
 log
 ```
 
-Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
-
-Git-backed updates require a clean **main or master** branch. Without Git history, log can create instructions and leave them uncommitted.
-
-## Flow
-
-```mermaid
-flowchart TD
-  Start(["Start log"]) --> Inspect["Check instruction files<br/>and the saved review point"]
-  Inspect --> Layout{"Shared setup needed?"}
-  Layout -->|Yes| Connect["Review layout changes<br/>for the selected work"]
-  Layout -->|No| Scope{"Source review selected?"}
-  Connect --> Scope
-  Scope -->|No| Current(["Report the local result"])
-  Scope -->|Yes| Scan["Investigate the selected<br/>Full scan or Gap scan"]
-  Scan --> Review["Review findings and<br/>proposed instruction changes"]
-  Review --> Choice{"Apply the proposal?"}
-  Choice -->|Revise| Review
-  Choice -->|Skip| Finish(["Finish locally"])
-  Choice -->|All or selected changes| Write["Update and verify<br/>the accepted instructions"]
-  Write --> Finish
-```
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Updates require clean **main or master**. Without Git history, log can create instructions and leave them uncommitted.
 
 ## Shared project instructions
 
-`AGENTS.md` holds shared knowledge and Helm settings; `CLAUDE.md` imports it with `@AGENTS.md` and keeps any Claude-specific additions.
+Log connects Claude and Codex to shared project knowledge: `AGENTS.md` holds the common instructions, while `CLAUDE.md` imports it and keeps any Claude-specific additions.
 
-| Existing files | Proposed setup |
-|---|---|
-| Neither | Create both during the first Full scan. |
-| Only `AGENTS.md` | Keep it and add the Claude import. |
-| Only `CLAUDE.md` | Review moving shared content into `AGENTS.md`. |
-| Both | Keep a working connection or review reconciliation. |
-
-Custom content, imports, settings and adopted rules are preserved unless you approve a specific change. Conflicting or shadowed instructions need reconciliation first.
+It can set this up for a new project or reconcile existing files. You review the changes first; custom content, settings, imports and adopted rules are preserved unless you approve a specific change.
 
 ## What the review covers
 
-- **Full scan:** trace important workflows, setup, configuration and tests across every first-party package. This gathers project knowledge rather than auditing every line for code quality.
-- **Gap scan:** review commits and relevant patches since the saved review point, including affected code. If a rewrite changed that commit's ID, log first tries to recover its verified equivalent automatically. Only an unrecoverable baseline or incomplete required history prevents Gap scan.
+- **Full scan:** learn the project's important workflows, setup, architecture and constraints across its first-party packages.
+- **Gap scan:** follow changes since a valid saved review point and update the affected knowledge.
 
-Recovery tries preserved normalize maps, Git-filter-repo's native map, then verified local object/history correspondence. Success adds a short note before the normal scan choices, without another approval gate. Any marker repair joins the existing approved output; Skip and read-only/no-op outcomes leave files unchanged. This restores the earlier review, not a new one. Missing local evidence in another clone may mean Full scan is still needed.
+You can also supply lessons from the current conversation. Log checks them alongside source evidence and proposes lasting guidance. If rewritten history changed the saved review point, it tries to recover a verified equivalent before requiring a Full scan.
 
-The review looks for useful identity, configuration, development commands, architecture, domain rules, working agreements, safety hazards and traps. Relevant corrections from the current conversation can become proposed lessons too.
-
-For existing instructions, review one proposal and apply all, select changes, revise or cancel. New safety instructions need explicit approval. Custom layouts receive focused edits.
+Review the proposal, then apply all, select changes, revise or cancel. New safety instructions need explicit approval.
 
 ## Your result
 
-You get updated instructions, unresolved findings and a size report. Missing Helm preferences are saved only through approved changes. New configuration uses Markdown bullets; existing supported formats stay intact.
+You get updated instructions, unresolved findings and a size report. A complete accepted source review advances the review marker; layout-only work and partial acceptance retain the earlier one.
 
-The `last-reviewed` comment advances only after a complete source review and acceptance of all substantive changes. Partial acceptance and layout-only work keep the earlier marker.
+Changes follow your local commit policy and finish on the same branch. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish.
 
-Changes follow your local commit policy and stay on the same branch. Use [adopt](adopt.html) for copied rules and [ship](ship.html) for publication.
+[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/log.md).

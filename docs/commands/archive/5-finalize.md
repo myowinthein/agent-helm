@@ -8,39 +8,33 @@ nav_order: 5
 
 # Step 5: Prepare locally
 
-Review and commit the local recovery kit. Private backup publication happens later through ship.
+Review and commit the local recovery kit. A private remote backup is a separate action through ship.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start(["Documentation report approved"]) --> Storage["Review artifact storage<br/>and preservation exclusions"]
-  Storage --> Assets["Keep or approve moves of<br/>supplementary documents/assets"]
-  Assets --> Services["Stop only identified owned<br/>services when approved"]
-  Services --> Review["Review the final report,<br/>exact payload and limitations"]
-  Review --> Approval{"Commit the local archive?"}
-  Approval -->|Revise| Review
-  Approval -->|Leave uncommitted| Pending(["Keep drafts and pending work"])
-  Approval -->|Yes| Commit["Verify files and recovery bytes;<br/>commit the approved payload"]
-  Commit --> End(["Prepared locally;<br/>ship is a separate next action"])
+  Review["Review storage, files and recovery limits"] --> Choose{"Commit the reviewed kit?"}
+  Choose -->|Yes| Commit["Verify and commit locally"]
+  Choose -->|Not now| Draft["Keep the work uncommitted"]
 ```
 
 ## Review storage and supplementary assets
 
-Choose regular Git, supported LFS with actual objects, or an explicit separate/local-only exclusion per artifact. Use actual sizes and available limits; LFS pointers alone do not preserve bytes. Exclusions can leave recovery incomplete.
+For each artifact, choose regular Git, supported LFS with actual objects, or an explicit separate/local-only exclusion. LFS pointers alone do not preserve bytes, and exclusions can leave recovery incomplete.
 
-Keep organized design and history material in place. Approved consolidation preserves originals and updates references. Runtime assets and data are not generic cleanup targets.
-
-Only currently identified owned services may be stopped, with approval. There is no blanket daemon or volume cleanup.
+Keep organized design and history material in place. Approved consolidation preserves originals and updates references. Runtime assets and data are not cleanup targets. Only identified, owned services may be stopped with approval; no blanket daemon or volume cleanup follows.
 
 ## Approve the local payload
 
-Review exact files, storage, exclusions, actual changes and verification limits. Credentials, private records and unrelated work stay out; protected instructions and other commands' state remain intact.
+Review the exact files, storage, exclusions, changes and verification limits. Credentials, private records and unrelated work stay out. Protected instructions and other commands’ state remain intact.
 
-Choose **Commit reviewed local archive** or **Leave uncommitted**. This approval is required even with [auto-commit](../../rules/git.html#auto-commit) enabled. The verified commit proves local preparation, not remote backup.
+Choose **Commit reviewed local archive** or **Leave uncommitted**. Exact approval is required even with [auto-commit](../../rules/git.html#auto-commit) enabled.
 
 ## What happens next
 
-You get **ARCHIVE PREPARED LOCALLY** with the payload commit and limitations, or a pending-draft result. A rerun validates existing preparation without repeating it.
+You receive **ARCHIVE PREPARED LOCALLY** with the payload commit and limitations, or a pending-draft result. A rerun validates existing preparation without repeating it. **The local commit does not prove a remote backup.**
 
-Use [ship](../ship.html#publish-an-archive-backup) to approve private payload and receipt publication. Cleanup is optional. After a verified receipt, ship can separately offer a portable copy; a Git bundle alone does not include external data, images or LFS bytes.
+Use [ship’s private backup procedure](../ship.html#publish-an-archive-backup) for payload and receipt publication. Cleanup is optional. After a verified receipt, ship can separately offer a portable copy; a Git bundle alone omits external data, images and LFS bytes.
+
+[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step5-finalize.md).

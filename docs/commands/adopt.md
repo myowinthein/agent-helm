@@ -7,7 +7,16 @@ nav_order: 2
 
 # adopt
 
-Install shared working rules for Claude and Codex, then approve updates when the bundled rules change.
+Use adopt to give Claude and Codex shared working rules in a consumer project. Run it again when you want to review updates from the installed Helm package.
+
+## Flow
+
+```mermaid
+flowchart TD
+  Compare["Compare project and bundled rules"] --> Choose{"Apply the proposed set?"}
+  Choose -->|All or selected| Apply["Install, update or connect rules"]
+  Choose -->|Keep or cancel| Keep["Preserve current files"]
+```
 
 ## Start the command
 
@@ -15,68 +24,33 @@ Install shared working rules for Claude and Codex, then approve updates when the
 adopt
 ```
 
-Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Git-backed writes require clean **main or master**; a project without Git history can receive uncommitted files.
 
-Preview rules in a consumer project. Git-backed writes require clean **main or master**; a folder without Git history can receive uncommitted files.
-
-Adopt blocks Helm's own source checkout, its nested directories and package installations. These use maintained source rules directly; copied rules could redirect them to an older version. Test adoption in a separate consumer project.
-
-## Flow
-
-```mermaid
-flowchart TD
-  Start(["Start adopt"]) --> Guard{"Helm source or<br/>installation target?"}
-  Guard -->|Yes| Stop(["Explain and stop<br/>without changes"])
-  Guard -->|No| Inspect["Check the project, instruction<br/>connections and existing rules"]
-  Inspect --> Compare["Compare each rule with<br/>the loaded Helm package"]
-  Compare --> Needed{"Changes needed?"}
-  Needed -->|No| Current(["Report existing rules<br/>and connectivity"])
-  Needed -->|Yes| Review["Summarize file actions, versions<br/>and meaningful policy changes"]
-  Review --> Decision{"Apply the proposed changes?"}
-  Decision -->|Cancel or keep| Finish(["Finish without replacing rules"])
-  Decision -->|Yes| Apply["Copy approved rules and<br/>connect project instructions"]
-  Apply --> Verify["Verify content and<br/>both instruction paths"]
-  Verify --> Done(["Finish locally"])
-```
+**Adopt cannot run on Helm's own source checkout or a plugin installation.** Those use maintained source rules directly. Try adoption in a separate consumer project.
 
 ## Available rules
 
-| Rule | Purpose |
+| Rule | What it guides |
 |---|---|
-| [Git](../rules/git.html) | Commit conventions and publication policy. |
-| [Safety](../rules/safety.html) | Boundaries around consequential actions. |
-| [Writing](../rules/writing.html) | Clear, useful prose. |
-| [Design](../rules/design.html) | Responsive, accessible interfaces and predictable links, without repetitive AI website defaults. |
+| [Git](../rules/git.html) | Local work, commits and publication. |
+| [Safety](../rules/safety.html) | Decisions about consequential actions and preserving work. |
+| [Writing](../rules/writing.html) | Clear prose and useful reference links. |
+| [Design](../rules/design.html) | Responsive, accessible interfaces and predictable navigation. |
 
-New adoption proposes Git, Safety and Writing; you can omit Writing. Design is available but unselected until explicitly included. Git and Safety stay paired; Writing and Design can each be adopted alone or together. Existing installations offer missing independent rules as optional additions in the same review.
+Git and Safety stay paired. New adoption also proposes Writing, which you can omit. Design is optional and needs explicit selection; Writing and Design can each be adopted independently.
 
 ## What to expect
 
-Adopt compares complete files internally, not just version markers. You see a compact **File | Action | Local → Source version** table, the selected package, pointer changes and a short summary of meaningful policy changes. Named custom-file overwrites and downgrades are disclosed. Approve the proposed set or a subset once; available but unselected rules need explicit inclusion. No review-first or repeated per-file confirmation follows unchanged approval.
+You see which files would be installed, replaced, connected or kept, with versions and meaningful policy changes. Custom-file overwrites and downgrades are called out. Approve the whole proposal or a subset once; full rule bodies and diffs are available on request.
 
-Full rule bodies/diffs are available on request or through editor links, rather than printed by default. Approval covers exact copies from the identified package and the stated instruction changes; internal comparison and byte-for-byte verification still apply.
+Matching content stays untouched even if its version marker differs. Keeping a rule preserves its file and pointers; adopt does not merge customizations automatically. Missing files or connections can be repaired as part of the same review.
 
-Equivalent content stays untouched even with an older marker. Keep/Skip preserves existing files and pointers; customizations are not merged automatically.
-
-| Situation | Result |
-|---|---|
-| No rules installed | Summarize installations, purposes and instruction changes; install after approval. |
-| All bodies match, even with older/newer markers | Preserve files and markers; no update question. |
-| Managed bodies differ | Summarize named replacements and meaningful changes; apply the approved set. |
-| Copies or references are missing | Summarize missing copies and exact connection effects; apply approved repairs. |
-| An independent rule is available but unselected | Include its purpose/version/pointer as an optional addition in the same proposal. |
-| Custom files or a downgrade | Name the overwrite or lower version explicitly; apply only approved changes. |
-| Mixed updates, repairs and kept files | Use one proposal and accept all shown actions or a named subset. |
-| Comparison source is unavailable | Keep copies; allow valid connection-only work and report blocked updates. |
-
-Keeping a rule does not cancel an approved addition or connection. A populated folder without project markers gets a placement warning in the same installation review, rather than a separate Continue question.
-
-Suitable copies can be connected without replacement. Independent instruction files or a `CLAUDE.md`-only layout need [log](log.html#shared-project-instructions) first. A fresh project can receive minimal shared instructions during installation.
+A `CLAUDE.md`-only project or independent instruction files may need [log's shared setup](log.html#shared-project-instructions) first.
 
 ## Your result
 
-Selected copies live under `.claude/rules/`, using the catalog filenames: `git.md`, `safety.md`, `writing.md` and `design.md`. Shared pointers belong in `AGENTS.md`; `CLAUDE.md` imports it. Keep project branding and design-system choices in separate local guidance by default, so reviewed Design updates can preserve those choices without a policy merge.
+Approved copies live in `.claude/rules/`, connected through shared project instructions. The report separates installed, kept, skipped and missing rules. Start a fresh agent session after changes; file checks alone do not prove native startup loading.
 
-The report shows installed, kept, skipped and missing rules. File connections are checked; native startup loading needs separate observation. Start a fresh agent session after instruction changes.
+Plugin updates do not refresh these copies automatically. Rerun adopt to review them, and use [ship](ship.html) separately for publication.
 
-Updates follow your local commit policy on the same branch. Plugin updates do not refresh project copies: rerun adopt to review them. External installation references need separate maintenance; adopt does not convert them. Use [ship](ship.html) to publish.
+[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/adopt.md).

@@ -8,53 +8,37 @@ nav_order: 2
 
 # Step 2: Restore and freeze
 
-Restore the agreed scope, review what works and capture what later recovery needs. The approach follows the project and goal.
+Restore the agreed scope, then capture what later recovery needs. What works now and what remains unverified are recorded separately.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Start(["Exploration report approved"]) --> Plan["Cross-check setup and data;<br/>review the isolated restoration plan"]
-  Plan --> Restore["Run only approved restoration<br/>and relevant checks"]
-  Restore --> Check["Report actual results and offer<br/>a developer inspection"]
-  Check --> Freeze["Recommend the final freeze<br/>from the recovery goal and evidence"]
-  Freeze --> Capture["Approve and capture selected<br/>runtime, data and configuration"]
-  Capture --> Report["Review artifacts, recovery commands<br/>and remaining limitations"]
-  Report --> Approval{"Approve the phase report?"}
-  Approval -->|Revise| Report
-  Approval -->|Stop| Pending(["Keep actual work and pending checks"])
-  Approval -->|Yes| Next(["Save progress;<br/>continue to API materials"])
+  Plan["Review an isolated restoration plan"] --> Restore["Restore and check the agreed scope"]
+  Restore --> Capture["Choose and capture recovery materials"]
+  Capture --> Review["Review results and remaining limits"]
 ```
 
 ## Restore from reliable inputs
 
-Cross-check setup notes against manifests, locks, scripts and platform requirements. Resolve conflicts before execution, favoring compatibility over upgrades.
+The agent compares setup notes with manifests, locks and scripts, favoring compatibility over upgrades. You review the edits, commands, downloads, targets and checks before execution.
 
-Review exact edits, commands, downloads, targets and checks first. Execution uses owned isolated resources without live-service contact; uncertain isolation leaves affected work pending.
+Work uses owned, isolated resources without live-service contact. Uncertain isolation leaves affected work pending; a localhost address alone proves no safety.
 
 ## Choose and preserve data
 
-Use suitable synthetic or sanitized inputs. Missing data can mean waiting for an approved local export or accepting empty/schema-only recovery.
-
-Imports need fresh owned empty targets and the correct initialization order. Partial failure stops dependent work without automatic reset or retry. Localhost alone does not establish safety.
+Use synthetic or sanitized data, an approved local export, or accept empty/schema-only recovery. Imports require a fresh, owned, empty target and an approved plan. A partial failure stops dependent work without automatic reset or retry.
 
 ## Freeze what the project needs
 
-After restoration, you can inspect the result before choosing the final capture approach.
+You can inspect the restored result before choosing the capture. A server might need images, stores and recovery configuration; a static site might need built output and build inputs. Libraries, native apps and hardware projects need their own useful distributables and platform requirements.
 
-| Project | Possible route |
-|---|---|
-| Server or full-stack app | Runtime/images, stores and recovery configuration. |
-| Self-contained static site | Built output and selected build inputs. |
-| Library or CLI | Source, locked environment and useful distributables. |
-| Native, data or hardware project | Useful builds, models or firmware with platform requirements. |
-
-Selected artifacts retain identities and checksums. Real env credentials are not copied into the kit. A working app does not prove offline rebuilding or future platform availability.
+Artifacts retain identities and checksums. Real credentials stay out of the kit. A working app does not prove offline rebuilding or future platform availability.
 
 ## What happens next
 
-The setup file records artifact validation, runtime preparation, data restore, startup, demonstration and shutdown in order.
+The setup instructions put validation, preparation, data restore, startup, demonstration and shutdown in order. Review completed and deferred checks before approving the report and continuing to [Step 3: Postman collection](3-postman.html).
 
-Review performed and deferred checks separately. An optional cold-recovery rehearsal needs separate approval and isolation; existing caches and volumes are preserved.
+A cold-recovery rehearsal needs separate approval and isolation. Existing caches and volumes are preserved. This phase does not commit.
 
-Approve the report to continue to [Step 3: Postman collection](3-postman.html), including any accepted limitations. This phase does not commit.
+[Read the full step](https://github.com/myowinthein/agent-helm/blob/main/prompts/archive/step2-restore-and-freeze.md).

@@ -7,9 +7,19 @@ nav_order: 9
 
 # ship
 
-Publish reviewed work, optionally update other branches and prepare a versioned release. Publication and release need separate approval.
+Use ship when reviewed work is ready to publish. It checks the source and destination, asks for concrete approval and reports what was actually published. Branch updates and releases are separate choices.
 
-For a long-running chat, a fresh session can avoid carrying unrelated context. Ship still discovers pending work and verifies the selected source; changing sessions does not waive checks or approvals.
+## Flow
+
+Ordinary source publication follows this outline. History rewrites and private archive backups use the dedicated routes below.
+
+```mermaid
+flowchart TD
+  Review["Review changes and destination"] --> Approve{"Approve publication?"}
+  Approve -->|Yes| Publish["Publish source or open a PR"]
+  Approve -->|Not now| Keep["Keep work local"]
+  Publish --> Next["Optional targets or release"]
+```
 
 ## Start the command
 
@@ -17,85 +27,55 @@ For a long-running chat, a fresh session can avoid carrying unrelated context. S
 ship
 ```
 
-Use the prefix for your app or terminal from [Setup]({{ '/docs/setup/' | relative_url }}#run-a-command).
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on **main/master, an established feature or a confirmed environment branch**. Commit pending edits first; on main/master, ship can offer a reviewed safe commit.
 
-Start on **main/master, an established feature or a confirmed environment branch**. Commit pending edits first; on main/master, ship can offer a reviewed safe commit.
-
-## Flow
-
-```mermaid
-flowchart TD
-  Start(["Start ship"]) --> Inspect["Review current work, remote state,<br/>existing PRs and release candidates"]
-  Inspect --> Special{"Special publication<br/>handoff identified?"}
-  Special -->|Archive| Backup["Approve and verify<br/>private archive backup"]
-  Backup --> End(["Report verified results<br/>and any pending actions"])
-  Special -->|Normalized history| History["Review private evidence;<br/>approve and verify history publication"]
-  Special -->|Ordinary work| Source["Approve source publication<br/>or reuse a verified handoff"]
-  History --> Targets["Optionally choose and approve<br/>independent branch updates"]
-  Source --> Targets
-  Targets --> Ready{"Started on main/master<br/>with a ready release?"}
-  Ready -->|No or skip| End
-  Ready -->|Yes| Release["Review version and notes;<br/>approve the release plan"]
-  Release --> Result["Verify checks, then publish tag<br/>or hand off a metadata PR"]
-  Result --> End
-```
+A fresh session is useful for a long-running chat, but ship still discovers pending work and verifies the source.
 
 ## Publish the current branch
 
-[`ship-method`](../rules/git.html#configuration-owner) selects **direct** or **pr**, defaulting to `pr`. Review the changes, destination, checks and deployment effects before publication.
+[`ship-method`](../rules/git.html#configuration-owner) selects the approach:
 
-| Starting branch | `direct` | `pr` |
-|---|---|---|
-| **main/master** | Push the reviewed tip. | Publish a `ship/*` source and open/reuse its PR into main/master. |
-| **Feature** | Push the feature branch. | Push it; choose PR targets afterward. |
-| **Environment** | Push the reviewed tip. | Publish a `ship/*` source and open/reuse its PR into that environment. |
+- **direct:** publish the reviewed current branch.
+- **pr:** publish source and create or reuse review handoffs. Main and environment work use a separate `ship/*` source; features use their own branch.
 
-Already-published work needs no duplicate push or empty PR. Protection and required checks still apply. Later source pushes update all open PRs using it; merged PRs need a new handoff for further changes.
+The default is `pr`. Each push needs concrete approval covering its destination, content and effects. Required checks and protection still apply. Already-published work needs no duplicate push.
+
+Ship does not wait for reviews, merge PRs or delete branches. New pushes update open PRs sharing that source; an already merged PR needs a new handoff for later changes.
 
 ## Optional branch updates
 
-Choose independent targets or **None / Finish**:
-
 | Starting branch | Optional targets |
 |---|---|
-| **main/master** | Confirmed environments. |
-| **Feature** | main/master and environments. |
-| **Environment** | main/master and other environments. |
+| main/master | Confirmed environments. |
+| Feature | main/master and environments. |
+| Environment | main/master and other environments. |
 
-`direct` integrates, checks and pushes each target using the permitted merge strategy, defaulting to squash. `pr` creates/reuses independent handoffs from the same source. Review each target's delta and effects; there is no automatic main-first chain.
-
-Ship does not wait for reviews, merge PRs or delete branches. You may also request environment updates from a specific published base or release without publishing unrelated work.
+Choose targets or finish without them. Direct shipping integrates, checks and pushes each target; PR shipping creates independent review handoffs from the same source. There is no automatic main-first chain. You can also request updates from a specific published base or release.
 
 ## Optional versioned release
 
-A release requires ship to **start on main/master** with ready integrated work. An open code PR must be merged independently before rerunning.
+A release requires ship to start on **main/master with ready integrated work**. An open code PR must be merged independently before rerunning.
 
-Version proposals follow [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) and actual public compatibility changes. For stable versions, compatible fixes suggest patch, compatible public additions or deprecations minor, and incompatible changes major. Initial versions, 0.x and prereleases need a suitable explicit choice.
+Review the version, tag, metadata, notes and checks in a separate release decision. Proposals follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and actual compatibility changes; 0.x, initial and prerelease versions need an explicit suitable choice.
 
-Review the version, tag, metadata, notes, destination and checks. **Skip release** keeps published code intact. If metadata needs a PR, tagging waits for integration; rerun to continue the same candidate.
-
-Required checks must pass. Published tags and versions stay immutable. Interrupted releases verify completed actions before resuming; no unreleased work or pending action means no new release.
-
-Hosted release creation is optional after Git publication. Packages, assets and deployment are separate work.
+Skipping a release keeps published source intact. If metadata needs a PR, tagging waits for integration. Published tags and versions stay immutable. Package publication, asset uploads and deployment are separate work.
 
 ## Publish normalized history
 
-Ship automatically finds [normalize](normalize.html)'s local recovery pointers, including across terminal or agent sessions in the same clone. It matches and verifies the actual history before publication approval. Multiple rewrites retain separate evidence; ship never simply picks the newest backup. Missing, invalid or ambiguous required evidence prompts for a path or reconciliation. Another clone/machine needs the recovery files transferred.
+Ship finds and verifies [normalize's recovery evidence](normalize.html#your-result-and-later-publication), including across sessions in the same clone. Ambiguous or missing evidence needs reconciliation rather than a guessed backup.
 
-Fixed remote expectations and `--force-with-lease` protect the agreed rewrite; a discovered pointer never approves a push, and a PR cannot replace commit IDs.
-
-Existing tags stay fixed. Rewording released history alone does not create a product release.
-
-After publication, ship reports old/new branch tips and guidance for owners to reconcile their local work. It keeps its exact push approval and does not repeat normalize's team-readiness question or automatically update other clones.
+Publication uses fixed `--force-with-lease` expectations and separate approval. A PR cannot replace published commit IDs. Other clone owners receive sync guidance; existing tags stay fixed, and rewording released history alone creates no release.
 
 ## Publish an archive backup
 
-For a prepared [archive](archive.html), approve an existing private destination. Ship verifies the payload backup, then commits and publishes its completion receipt. Cleanup is optional and separately reviewed.
+For a prepared [archive](archive.html), approve an existing private destination. Ship verifies the payload backup, then commits and publishes its completion receipt. Cleanup and portable copies are optional, separately reviewed work.
 
-This route ends without ordinary targets or release tags. Interrupted steps are checked before retrying.
+This route ends without ordinary branch targets or release tags.
 
 ## Hosting support and your result
 
-GitHub and GitLab have dedicated PR/MR and release support. Other hosts use Git with manual provider handoffs where needed.
+GitHub and GitLab have dedicated PR/MR and release support. Other hosts use Git and manual provider handoffs where needed.
 
-The report separates pushes, target updates, PRs, releases and pending checks. Blocked actions preserve earlier successes. Ship returns to the original branch when safe; publication alone does not prove deployment.
+The result separates source publication, branch updates, PRs, releases and pending checks. Partial success is preserved and interrupted work is checked before retrying. Publication alone does not prove integration or deployment.
+
+[Read the full workflow](https://github.com/myowinthein/agent-helm/blob/main/workflows/ship.md).
