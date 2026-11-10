@@ -40,11 +40,21 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `workflows/archive.md` sequences the five supporting `prompts/archive/step*.md` files. These steps are not independently discoverable skills.
 - `workflows/ship.md` holds routing and ordinary source publication together. `prompts/ship/{targets,release}.md` load only for their selected procedures; they are supporting prompts, never skills. History/archive protocols remain in `prompts/shared/`; `ci.md` and relevant provider sections define exact-source checks and handoffs.
 - `prompts/shared/normalize-handoff.md` owns normalize-to-ship discovery across sessions; `review-anchor.md` lazily permits log/manifest to recover their own rewritten review baseline from bounded read-only evidence. `helpers/normalize_handoff.py` only registers/reads immutable private locators in the actual Git common directory; it executes no Git, reads no recovery bodies/ledgers and grants no publication authority. Source work leaves real locators untouched.
-- `docs/commands/` and `docs/rules/` are concise guides for people deciding whether and how to use Helm. Explain purpose, choices, outcomes and constraints that affect use. Workflows and rules hold the complete behavior. Update what readers need to know at the guide's intended depth; consistency does not require matching source detail. Link authoritative standards instead of reproducing them.
 - `.claude-plugin/plugin.json` owns the release version; ship synchronizes `.claude-plugin/marketplace.json`. Keep their plugin identity, version and description aligned, preserving `commands: []` and avoiding legacy command adapters.
 - `_config.yml`, `Gemfile`, `Rakefile` and `.github/workflows/docs.yml` own the docs build. Main pushes, PRs and manual dispatch build; only main publishes Pages. CI resolves the latest stable Just the Docs release and does not run package, helper, native-client or model checks.
 - `docs/setup/{claude,codex}.md` use `_includes/setup-tabs.html` and four `_includes/setup/` instruction bodies. The four older setup URLs use `_layouts/setup-redirect.html`; preserve panel/heading anchors and redirect fragments together with `assets/js/setup-tabs.js`.
 - `_includes/head_custom.html` loads `assets/js/theme-switcher.js` before content. Header markup and `_sass/custom/custom.scss` provide System/Light/Dark selection with a site-specific saved preference.
+
+## Documentation
+
+Command and rule guides, related pages outside navigation and included explanatory content should give people a comfortable working understanding of Helm. Follow `rules/writing.md` for prose and reference links; this section defines the project's documentation experience.
+
+- Explain when to use the command/rule, what happens, the choices readers make and the result they can expect. Complete operational behavior belongs in the workflows and rules; guides need not explain every internal detail.
+- Introduce a command with its purpose and a compact Mermaid overview of the main phases, meaningful user decisions and outcome. Omit bookkeeping, validation/recovery branches and repeated approval loops unless they change the reader's understanding or decision. Use diagrams in rule/supporting guides when they clarify the subject; do not force a process onto material without one.
+- Let interested readers explore text that adds practical explanations, selected detail and examples beyond the diagram. Avoid both a step-by-step transcription of the diagram and an exhaustive account of the source.
+- Choose connected paragraphs, short lists, comparisons, tables and examples to suit the content. Keep the page comfortable to scan and read without padding it into a fixed template or chasing word/node quotas.
+- Preserve decision-changing constraints, consequential effects and required approvals, including history rewrites and publication. Keep necessary warnings visible even when internal mechanics are omitted.
+- Offer clearly labelled links such as "Read the full workflow" or "View the rule source" for deeper investigation. Link authoritative standards instead of reproducing them. Keep guides accurate at their intended depth as sources change; consistency does not require matching source detail.
 
 ## Domain Rules
 
