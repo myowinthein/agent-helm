@@ -58,9 +58,22 @@ Command and rule guides, related pages outside navigation and included explanato
 - Keep one authoritative plain Markdown instruction source per command/rule. Detailed site pages render that source through `_plugins/guide_content.rb`; page introductions and Mermaid diagrams add reading context without defining competing policy. Skills load the canonical Markdown directly, without website markup, diagrams or navigation. Shared supporting procedures retain their owners and load conditions.
 - Migrate a source only with its skill links, shared references, package validation and relevant tests. Remove the old copy after the replacement is verified. Preserve operational meaning during readability edits; source relocation and a passing site build alone do not establish behavior equivalence. Link authoritative standards instead of reproducing them.
 
+### README command entries
+
+Keep each entry in `README.md`'s **When I use it** section in this order, following `rules/writing.md` and checking claims against the canonical command and its relevant supporting procedures. Retain the personal voice and existing heading anchors.
+
+| Element | Purpose | Expected maximum |
+|---|---|---|
+| Heading | Identify the command by name alone. | Command name only. |
+| First paragraph | Explain when I use it and the benefit I want. Link a meaningful purpose phrase to the command's Overview guide. | 45 words. |
+| Invocation block | Show both client invocations in one `text` block, such as `Codex → $log    Claude → /log`. | One line. |
+| Closing paragraph | Explain the main actions, concrete result and important choices, approvals or limits without repeating the first paragraph. | 70 words. |
+
+Use two prose paragraphs per entry. These are expected limits, not reasons to remove essential warnings or approval boundaries. Keep deeper explanation in the linked guides; add other contextual links only when they help readers take a distinct next step. Follow the reference-link workflow and the absolute documentation URL convention below.
+
 ## Domain Rules
 
-- Use bare Helm command names in general prose and examples. Keep literal platform invocation syntax in platform setup instructions and `docs/setup/index.md`.
+- Use bare Helm command names in general prose. Show literal platform invocation syntax in platform setup instructions, `docs/setup/index.md` and dedicated launch blocks in the README and command Overview pages. Other examples use bare names.
 - Operational records live under `.helm/`: refactor/normalize schema 2, test schema 3, legal schema 1. Only the invoked owning workflow accesses its record. Source maintenance leaves live records and protected legacy paths opaque; unsupported state has no automatic migration/reset.
 - Refactor/test helpers load lazily at their eligible owning-state steps. Source-only previews require no helper or Python setup. Maintaining this repo uses a separate installed package rather than treating the checkout as both package and consumer.
 - A source assessment, human selection, edit approval, verified fix and publication are separate results. Preserve stable identities, unknown fields, human decisions and useful closed history; skip/defer/accepted risk does not mean resolved. Follow the owning workflow rather than inventing schema fields or shared cross-ledger access.
