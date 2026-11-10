@@ -436,8 +436,22 @@
       "reason": "These guards bound which refs and messages reach review planning, and their clauses can regress without a failing check.",
       "action": "add",
       "layer": "unit",
-      "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2"
+      "state": "resolved",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "tests": [
+        "scripts/test_normalize.py::test_invalid_tips_branch_names_recheck_ids_and_messages_are_rejected"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_normalize.py::test_invalid_tips_branch_names_recheck_ids_and_messages_are_rejected"
+        ],
+        "method": "runtime",
+        "outcome": "The new test passes (35 tests OK) and fails four subtests when branch-name validation is disabled.",
+        "commit": "65808a8ff02c2e1cfd4ef739daf21e3fd71e86e2",
+        "command": "python3 -I -B scripts/test_normalize.py",
+        "scope": "Disposable temp directories on macOS Ruby 4.0.6 and Python 3.14.7; red/green checked by temporarily breaking each guarded input; no network."
+      }
     },
     {
       "id": "g-b38adff8-a9fd-4f1b-be78-dec4165f9593",
@@ -457,8 +471,23 @@
       "reason": "The upload path and working directory are coupled to the Jekyll destination, and only a push to main exercises the upload.",
       "action": "add",
       "layer": "unit",
-      "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2"
+      "state": "resolved",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "tests": [
+        "docs/tests/test_docs_workflow.rb"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "docs/tests/test_docs_workflow.rb",
+          "docs/tasks.rb"
+        ],
+        "method": "runtime",
+        "outcome": "The check passes on the real workflow and config, rejects all six mutated layouts, fails when the upload path is wrong, and runs in rake docs_links_test.",
+        "commit": "df855bb25b52a2a781e662de514e4435a3fef104",
+        "command": "BUNDLE_GEMFILE=docs/Gemfile BUNDLE_VERSION=4.0.22 BUNDLE_FROZEN=true bundle _4.0.22_ exec rake docs_links_test",
+        "scope": "Disposable temp directories on macOS Ruby 4.0.6 and Python 3.14.7; red/green checked by temporarily breaking each guarded input; no network."
+      }
     },
     {
       "id": "g-bbdbcac6-97c7-418d-8eeb-5ac6504e40b6",
@@ -682,8 +711,22 @@
       "reason": "Several description locations exist and only the plugin-to-marketplace copy is checked, so an edit to one summary owner passes every offline check.",
       "action": "add",
       "layer": "unit",
-      "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2"
+      "state": "resolved",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "tests": [
+        "scripts/test_plugin.rb"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_plugin.rb"
+        ],
+        "method": "runtime",
+        "outcome": "ruby scripts/test_plugin.rb passes with the README description matching docs/_config.yml and fails with the exact message when the two differ.",
+        "commit": "3942f198cfd888bcf4951595e00a03c2d0a82dc8",
+        "command": "ruby scripts/test_plugin.rb",
+        "scope": "Disposable temp directories on macOS Ruby 4.0.6 and Python 3.14.7; red/green checked by temporarily breaking each guarded input; no network."
+      }
     },
     {
       "id": "g-de1ca2e5-a51a-447e-861c-c8b059572a22",
