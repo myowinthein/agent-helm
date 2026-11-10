@@ -12,9 +12,9 @@ Take the helm.
 
 <img src="https://myowinthein.github.io/agent-helm/docs/images/banner.jpg" alt="agent-helm" width="600" height="400">
 
-Agent Helm is a plugin for developers who work with Claude or Codex.
+Agent Helm is a workflow plugin for developers using Claude or Codex.
 
-It gives your agent reusable workflows during project development, from keeping project context across sessions and improving code and tests to maintaining documentation, preparing releases and preserving older projects.
+It helps you keep project context between sessions and handle recurring development tasks consistently. Reusable workflows guide your agent as it improves code and tests, maintains documentation and configuration, publishes reviewed changes and preserves older projects.
 
 [Documentation site](https://myowinthein.github.io/agent-helm)
 
