@@ -45,11 +45,14 @@ module HelmGuideContent
     path
   end
 
-  def render(site, source, markdown, contents: false)
+  def render(site, source, markdown, contents: false, trim_leading_dividers: false)
     if contents
       markdown = "**In this guide**\n\n* Contents\n{:toc}\n\n#{markdown}"
     end
     document = Kramdown::Document.new(markdown, input: "GFM", syntax_highlighter: "rouge", toc_levels: "2")
+    if trim_leading_dividers
+      document.root.children.shift while %i[hr blank].include?(document.root.children.first&.type)
+    end
     walk = lambda do |element|
       if element.type == :a && element.attr["href"]
         element.attr["href"] = destination(site, source, element.attr["href"])
@@ -65,7 +68,7 @@ module HelmGuideFilters
   def guide_intro(source)
     site = @context.registers[:site]
     intro, = HelmGuideContent.parts(site, source)
-    HelmGuideContent.render(site, source, intro.to_s)
+    HelmGuideContent.render(site, source, intro.to_s, trim_leading_dividers: true)
   end
 
   def guide_body(source)
