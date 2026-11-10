@@ -123,13 +123,13 @@
       "id": "g-3f2c6d53-58b0-4386-8bf1-a85fe0b011bf",
       "expected": "Legal's automatic record repair updates only a verified moved document path or removes a verified deleted document's record, preserves dates, source IDs and unknown fields, deletes no document and asks for no commit approval",
       "basis": [
-        "workflows/legal.md Reconcile recorded document paths",
+        "guides/legal.md Reconcile recorded document paths",
         "prompts/shared/project-state.md legal exception",
         "857fd55 feat(legal): reconcile missing document records from local evidence",
         "cd4b91a fix(legal): reconcile records before document assessment"
       ],
       "paths": [
-        "workflows/legal.md",
+        "guides/legal.md",
         "prompts/shared/project-state.md",
         "scripts/acceptance_cases.rb",
         "scripts/acceptance_support.rb"
@@ -139,7 +139,7 @@
       "action": "add",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
@@ -188,15 +188,15 @@
       "expected": "After a normalize rewrite, log and manifest recover only a verified equivalent review baseline from preserved maps or the native filter-repo map; a missing, tampered or ambiguous map, a map from a later reverted or unapplied run, or a native map target that is not reachable from the pinned tip leaves Full scan or Skip instead of a guessed anchor",
       "basis": [
         "prompts/shared/review-anchor.md",
-        "workflows/log.md Step 0",
-        "workflows/manifest.md Step 1",
+        "guides/log.md Step 0",
+        "guides/manifest.md Step 1",
         "12f2089 feat(review): recover rewritten log and manifest baselines",
         "Observed in this project: after three normalize runs the last was reverted, so its map and the native filter-repo commit-map named a commit outside the pinned tip; only the verified published chain gave the reachable equivalent"
       ],
       "paths": [
         "prompts/shared/review-anchor.md",
-        "workflows/log.md",
-        "workflows/manifest.md",
+        "guides/log.md",
+        "guides/manifest.md",
         "scripts/acceptance_cases.rb",
         "scripts/git_acceptance.rb"
       ],
@@ -205,10 +205,34 @@
       "action": "add",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
+      }
+    },
+    {
+      "id": "g-5e63f3ff-b540-4c02-b93b-668bfd2b2429",
+      "expected": "The overview menu entry stays open on detailed guide pages: the CSS-only fallback applies before the script runs and the script then sets the active link and aria-current",
+      "basis": [
+        "docs/assets/js/guide-nav.js",
+        "docs/_includes/head_custom.html page.overview fallback style and script",
+        "AGENTS.md Architecture Pointers: guide-nav.js keeps the overview's menu entry open"
+      ],
+      "paths": [
+        "docs/assets/js/guide-nav.js",
+        "docs/_includes/head_custom.html",
+        "docs/_includes/guide-depth.html"
+      ],
+      "priority": "low",
+      "reason": "The script has no automated or browser check and is absent from the acceptance plan; a regression leaves navigation collapsed on detailed pages.",
+      "action": "manual",
+      "layer": "browser",
+      "state": "open",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "blocker": {
+        "kind": "execution",
+        "note": "Needs a real browser run of the built site; the project has no browser automation."
       }
     },
     {
@@ -216,12 +240,12 @@
       "expected": "Registering a recovery directory whose home path crosses a symlinked ancestor (for example /home linking to /var/home) follows an explicitly chosen behavior: refused with a clear stop, or resolved before registration",
       "basis": [
         "helpers/normalize_handoff.py directory() refuses symlinks at every component",
-        "workflows/normalize.md recovery path under Path.home() (c99a0b2)",
+        "guides/normalize.md recovery path under Path.home() (c99a0b2)",
         "scripts/test_normalize_handoff.py::test_symlinked_locators_and_recovery_ancestors_are_not_followed"
       ],
       "paths": [
         "helpers/normalize_handoff.py",
-        "workflows/normalize.md",
+        "guides/normalize.md",
         "scripts/test_normalize_handoff.py"
       ],
       "priority": "unknown",
@@ -229,7 +253,7 @@
       "action": "add",
       "layer": "unit",
       "state": "open",
-      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
       "blocker": {
         "kind": "clarification",
         "note": "Clarify the intended behavior for symlinked home ancestors, or Characterize the current refusal"
@@ -329,7 +353,7 @@
       "id": "g-8ddcab2e-624a-4259-bec5-a867d5809294",
       "expected": "The normalize-rewrite acceptance scenario exercises the workflow's fixed per-run recovery folder under the OS user's home (Agent Helm/normalize/<run-id>) with no custom path, and its oracle verifies the locator, owner-only proof, saved map and self-contained bundle there",
       "basis": [
-        "workflows/normalize.md recovery storage (c99a0b2)",
+        "guides/normalize.md recovery storage (c99a0b2)",
         "docs/commands/normalize.md",
         "scripts/acceptance_cases.rb prepare_normalize",
         "scripts/acceptance_support.rb verify_normalize!"
@@ -338,14 +362,14 @@
         "scripts/acceptance_cases.rb",
         "scripts/acceptance_support.rb",
         "scripts/test_acceptance_oracles.rb",
-        "workflows/normalize.md"
+        "guides/normalize.md"
       ],
       "priority": "medium",
       "reason": "Commit 78eb686 moved the fixture and oracle to the standard recovery folder, and commit ee8fb38 now tests the pre-filter locator branch of verify_normalize! directly; the end-to-end live normalize-rewrite scenario is still unrun, so only the offline oracle is verified",
       "action": "improve",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
       "tests": [
         "scripts/test_acceptance_oracles.rb::direct normalize oracle",
         "scripts/test_acceptance_oracles.rb::normalize fixture",
@@ -398,39 +422,70 @@
       }
     },
     {
+      "id": "g-92731cc4-a747-4909-b1a4-a38f0f5d4754",
+      "expected": "Invalid requested tips or branch names, unknown recheck IDs and NUL or oversized messages are rejected with fixed diagnostics and never echoed",
+      "basis": [
+        "helpers/normalize_check.py branch_name, plan_review and precheck",
+        "scripts/test_normalize.py covers graph, ledger, page-bound and header rules but none of these guards"
+      ],
+      "paths": [
+        "helpers/normalize_check.py",
+        "scripts/test_normalize.py"
+      ],
+      "priority": "low",
+      "reason": "These guards bound which refs and messages reach review planning, and their clauses can regress without a failing check.",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2"
+    },
+    {
+      "id": "g-b38adff8-a9fd-4f1b-be78-dec4165f9593",
+      "expected": "The docs workflow builds from docs/ and uploads the directory Jekyll writes, so a mismatch between the workflow and docs/_config.yml fails offline instead of on the first push to main",
+      "basis": [
+        ".github/workflows/docs.yml working-directory and upload path",
+        "docs/_config.yml source and destination",
+        "e2b4d5e moved the site sources into docs/",
+        "Pull requests build the site but never run the upload step"
+      ],
+      "paths": [
+        ".github/workflows/docs.yml",
+        "docs/_config.yml",
+        "docs/tasks.rb"
+      ],
+      "priority": "low",
+      "reason": "The upload path and working directory are coupled to the Jekyll destination, and only a push to main exercises the upload.",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2"
+    },
+    {
       "id": "g-bbdbcac6-97c7-418d-8eeb-5ac6504e40b6",
       "expected": "Saved/invalid settings, System/explicit mode, storage failure and cross-tab resets preserve expected theme and selector behavior.",
       "basis": [
-        "assets/js/theme-switcher.js",
-        "_includes/head_custom.html",
-        "_includes/header_custom.html"
+        "docs/assets/js/theme-switcher.js",
+        "docs/_includes/head_custom.html",
+        "docs/_includes/header_custom.html"
       ],
       "paths": [
-        "assets/js/theme-switcher.js",
-        "_includes/head_custom.html",
-        "_includes/header_custom.html"
+        "docs/assets/js/theme-switcher.js",
+        "docs/_includes/head_custom.html",
+        "docs/_includes/header_custom.html"
       ],
       "priority": "medium",
-      "reason": "Theme persistence, OS following and storage failure handling are supported behavior but only static assets and links are checked.",
+      "reason": "Theme persistence, OS following and storage failure handling are supported behavior; the stylesheet-swap path added in cb5dc0a has neither browser evidence nor an automated check.",
       "action": "add",
       "layer": "browser",
-      "state": "resolved",
-      "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+      "state": "open",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
       "tests": [
-        "scripts/browser_acceptance.py",
+        "docs/scripts/browser_acceptance.py",
         "scripts/acceptance-plan.md::Browser and host acceptance"
       ],
-      "closure": {
-        "reason": "tested",
-        "refs": [
-          "scripts/browser_acceptance.py",
-          "scripts/acceptance-plan.md::Browser and host acceptance"
-        ],
-        "method": "runtime",
-        "outcome": "Real Chrome passed explicit Light/Dark/System, saved reload and invalid preference, cross-tab change/remove/clear, and switching despite an injected localStorage SecurityError before the actual script. Actual DevTools media emulation verified System follows changes while explicit Light remains fixed; emulation and site preference were restored.",
-        "commit": "a4685657ad2b7229c10dfe1c1a8740bf2ae986fd",
-        "command": "python3 -I -B -u scripts/browser_acceptance.py; CUA Chrome theme controls/reloads/cross-tab checks and DevTools prefers-color-scheme emulation",
-        "scope": "Current Chrome/macOS, 2026-10-27. Blocked-storage evidence uses API fault injection, not a changed browser privacy setting. No browser support matrix or human sign-off."
+      "blocker": {
+        "kind": "verification",
+        "note": "The 2026-10-27 real-browser pass predates cb5dc0a, which replaced the jtd.setTheme call with a stylesheet swap; rerun docs/scripts/browser_acceptance.py and the P9 checks in a browser."
       }
     },
     {
@@ -482,7 +537,7 @@
       "action": "manual",
       "layer": "ci",
       "state": "open",
-      "assessed_commit": "38151c5f13419c9242582eda3ee357c7ece9cbb0",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
       "blocker": {
         "kind": "clarification",
         "note": "Owner decision: add an offline CI job, or defer"
@@ -608,6 +663,27 @@
         "command": "ruby scripts/test_plugin.rb",
         "scope": "Mutated temporary package copies, real static icon, relocated package and Git-export checks; no external resource fetching or live workflow models."
       }
+    },
+    {
+      "id": "g-ddfc941a-a41d-4a3d-98d7-7f87cada8233",
+      "expected": "The README front-matter description is an exact copy of docs/_config.yml's description, so the site summary and homepage metadata cannot drift apart",
+      "basis": [
+        ".github/project-description.md Copies and variants",
+        "README.md front matter",
+        "docs/_config.yml description",
+        "scripts/validate_plugin.rb checks only the plugin-to-marketplace copy"
+      ],
+      "paths": [
+        "README.md",
+        "docs/_config.yml",
+        "scripts/test_plugin.rb"
+      ],
+      "priority": "low",
+      "reason": "Several description locations exist and only the plugin-to-marketplace copy is checked, so an edit to one summary owner passes every offline check.",
+      "action": "add",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2"
     },
     {
       "id": "g-de1ca2e5-a51a-447e-861c-c8b059572a22",
