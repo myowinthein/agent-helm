@@ -8,4 +8,4 @@ permalink: /docs/rules
 
 # Rules
 
-Guides to Agent Helm's rules for Git work, safety, writing and responsive, accessible design without generic AI defaults. Each page explains what the rule covers and how it guides agents working in your project.
+Guides to Agent Helm’s rules for Git, safety, writing and responsive, accessible design without generic AI defaults. Each page explains the rule’s scope and how it guides agents in your project.
