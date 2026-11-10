@@ -24,7 +24,7 @@ flowchart TD
 ## Start the command
 
 ```text
-adopt
+Codex → $adopt    Claude → /adopt
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Git-backed writes require clean **main or master**; a project without Git history can receive uncommitted files.

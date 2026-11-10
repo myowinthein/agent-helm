@@ -26,7 +26,7 @@ flowchart TD
 ## Start the command
 
 ```text
-normalize
+Codex → $normalize    Claude → /normalize
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Read-only review can use a dirty or detached checkout. Rewriting needs a clean attached branch, no ongoing Git operation and safe access to every affected local branch.

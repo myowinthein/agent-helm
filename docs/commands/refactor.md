@@ -25,7 +25,7 @@ flowchart TD
 ## Start the command
 
 ```text
-refactor
+Codex → $refactor    Claude → /refactor
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Source-only advice works on any checkout. Saved scans and edits need a clean, eligible **main/master, feature or existing refactor branch**. Confirmed environment branches remain report-only, even when named `refactor/*`.

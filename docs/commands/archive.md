@@ -27,7 +27,7 @@ flowchart TD
 ## Start the command
 
 ```text
-archive
+Codex → $archive    Claude → /archive
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on the branch you want to preserve and confirm its commit and exclusions. Archive does not switch branches or merge missing work.

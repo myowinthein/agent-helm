@@ -27,7 +27,7 @@ flowchart TD
 ## Start the command
 
 ```text
-ship
+Codex → $ship    Claude → /ship
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on **main/master, an established feature or a confirmed environment branch**. Commit pending edits first; on main/master, ship can offer a reviewed safe commit.

@@ -24,7 +24,7 @@ flowchart TD
 ## Start the command
 
 ```text
-log
+Codex → $log    Claude → /log
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Updates require clean **main or master**. Without Git history, log can create instructions and leave them uncommitted.

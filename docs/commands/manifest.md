@@ -24,7 +24,7 @@ flowchart TD
 ## Start the command
 
 ```text
-manifest
+Codex → $manifest    Claude → /manifest
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Updates require clean **main or master**. Run [log's shared setup](log.html#shared-project-instructions) first if there is no shared instruction owner.

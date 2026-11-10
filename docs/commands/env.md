@@ -25,7 +25,7 @@ flowchart TD
 ## Start the command
 
 ```text
-env
+Codex → $env    Claude → /env
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). The audit can inspect pending edits. Fixes require a clean, eligible **main/master, feature or confirmed environment branch**.

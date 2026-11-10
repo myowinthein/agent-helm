@@ -26,7 +26,7 @@ flowchart TD
 ## Start the command
 
 ```text
-legal
+Codex → $legal    Claude → /legal
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on clean **main or master**. Legal document commits need explicit content and commit approval, even with [auto-commit](../rules/git.html#auto-commit) enabled.

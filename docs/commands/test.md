@@ -25,7 +25,7 @@ flowchart TD
 ## Start the command
 
 ```text
-test
+Codex → $test    Claude → /test
 ```
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Static review works on the current checkout. Edits and saved assessments need a clean, eligible **main/master, feature, maintenance or confirmed environment branch**.
