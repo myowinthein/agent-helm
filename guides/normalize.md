@@ -47,7 +47,7 @@ Approved preparation uses only explicit selected refs, without tags, pruning, co
 
 Re-enumerate and freeze the actual local branches after preparation, including branches pushed while the readiness question was pending. Discovery/preparation grants no broader message audit: keep current/requested review scope, while every affected prepared local branch joins the later consistency rewrite. Recheck missing/unprepared agreed branches before Apply, reporting unresolved remote-only histories explicitly rather than claiming coordinated completeness. If the developer selects local-only review, retain its no-write/no-Apply outcome. No extra configuration, ledger field or saved preparation receipt is introduced.
 
-For a resume request, use [local handoff discovery](../prompts/shared/normalize-handoff.md) or explicitly identified prior evidence, then inspect the verified own record branch/commit and current local/remote facts as applicable. Offer only missing actions under Step 8. A rewrite continuation still requires its private recovery evidence; a locator proves no completion and never authorizes rerunning the filter.
+For a resume request, use [local handoff discovery](../prompts/shared/normalize-handoff.md) or explicitly identified prior evidence, then inspect the verified own record branch/commit and current local/remote facts as applicable. Offer only missing actions under [Step 8](#step-8-resume-and-report-actual-state). A rewrite continuation still requires its private recovery evidence; a locator proves no completion and never authorizes rerunning the filter.
 
 History review after readiness/branch preparation is read-only, including on dirty or detached checkouts. Freeze committed objects; staged/untracked/worktree changes remain outside the message review and dirty policy inputs are disclosed. Use `GIT_OPTIONAL_LOCKS=0` where needed. Outside the specifically approved preparation above, do not fetch/hydrate, start filtering or a backend dry-run, execute project configuration/hooks/checks, create files/branches/bundles, write refs/index/state or migrate records.
 
@@ -69,7 +69,7 @@ Classify full messages as **accepted**, **spec-valid but outside project policy*
 
 ### Code-assisted checks and reusable semantic coverage
 
-Read `{package_root}/prompts/normalize-review.md` for the pure helper interface and authoritative schema-2 baseline contract. Resolve the complete effective policy, including non-mechanical rules/owner directives, into its canonical policy snapshot. At this owning-state entry, read `{package_root}/prompts/shared/project-state.md`, then validate only `.helm/normalize-log.json` as schema 2 using that contract. Missing state means no baseline. Unsupported/malformed state blocks reuse and dependent checkpoint/rewrite actions, while independent full committed-message review remains possible; never convert, reset or silently omit invalid records. No other ledger is opened.
+Read [`{package_root}/prompts/normalize-review.md`](../prompts/normalize-review.md) for the pure helper interface and authoritative schema-2 baseline contract. Resolve the complete effective policy, including non-mechanical rules/owner directives, into its canonical policy snapshot. At this owning-state entry, read `{package_root}/prompts/shared/project-state.md`, then validate only `.helm/normalize-log.json` as schema 2 using that contract. Missing state means no baseline. Unsupported/malformed state blocks reuse and dependent checkpoint/rewrite actions, while independent full committed-message review remains possible; never convert, reset or silently omit invalid records. No other ledger is opened.
 
 Use `helpers/normalize_check.py check` with complete committed messages for deterministic supported-rule checks, paged by exact IDs. Its pass is mechanical only, not acceptance; resolve unsupported rules/exceptions manually. Batch local Git object reads where available, without dumping the entire history to the model. The pure helper takes structured JSON stdin and has no Git, file, network or mutation access. Do not execute arbitrary commitlint configs or install dependencies to speed up inspection. Unavailable Python/helper execution permits equivalent bounded checks and conservative manual review, never fabricated results or automatic setup.
 
@@ -284,7 +284,7 @@ Preserve local work and coordinate deliberate reconciliation in other clones aft
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

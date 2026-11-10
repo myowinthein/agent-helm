@@ -8,10 +8,10 @@ Use this catalog for inventory, source validation, per-file decisions, copy/upda
 
 | Name | Packaged source | Shared destination | Purpose |
 |---|---|---|---|
-| `git.md` | `{package_root}/rules/git.md` | `.claude/rules/git.md` | Git/configuration/commit/publication policy, paired with safety. |
-| `safety.md` | `{package_root}/rules/safety.md` | `.claude/rules/safety.md` | Operational boundaries, paired with Git policy. |
-| `writing.md` | `{package_root}/rules/writing.md` | `.claude/rules/writing.md` | Independent guidance for clear, natural prose. |
-| `design.md` | `{package_root}/rules/design.md` | `.claude/rules/design.md` | Independent guidance for responsive, accessible interfaces and predictable links, avoiding repetitive AI defaults and decorative filler. |
+| [`git.md`](../rules/git.md) | `{package_root}/rules/git.md` | `.claude/rules/git.md` | Git/configuration/commit/publication policy, paired with safety. |
+| [`safety.md`](../rules/safety.md) | `{package_root}/rules/safety.md` | `.claude/rules/safety.md` | Operational boundaries, paired with Git policy. |
+| [`writing.md`](../rules/writing.md) | `{package_root}/rules/writing.md` | `.claude/rules/writing.md` | Independent guidance for clear, natural prose. |
+| [`design.md`](../rules/design.md) | `{package_root}/rules/design.md` | `.claude/rules/design.md` | Independent guidance for responsive, accessible interfaces and predictable links, avoiding repetitive AI defaults and decorative filler. |
 
 - **New adoption:** propose Git, Safety and Writing unless the developer explicitly scoped the request; writing may be omitted before approval. List Design as **available, not selected** unless explicitly requested. Summarize purposes, destinations and instruction-pointer effects in the same review; do not infer design selection from project files. Proposed defaults are not consent, and foreign/custom-file protections still apply.
 - **Existing installation:** inventory all catalog rows, preserving established Git/safety dependencies. For each independent rule with no established Helm copy/pointer, list it as **new rule available, not selected**. Include its purpose, source version when available and pointer effect in the general proposal so Install {name} / Not now is an installation decision, not permission for another review. Explicit inclusion in the approved named actions covers it too. A request limited to other rules reports availability without an extra question; never install an independent rule as a repair side effect.
@@ -21,7 +21,7 @@ Use this catalog for inventory, source validation, per-file decisions, copy/upda
 
 ## Read-only preflight
 
-Resolve the selected adoption root under **Before starting** and apply **Source-project and installation guard** before installation/connection proposals or Git preparation. Inspect an eligible consumer, then show concrete changes before asking to apply them. Reuse explicit Keep/Skip/Cancel answers without asking whether to review excluded work. Prepare Git only when the approved action needs writes.
+Resolve the selected adoption root under [**Before starting**](#before-starting-scope-and-policy-without-git-preparation) and apply [**Source-project and installation guard**](#source-project-and-installation-guard) before installation/connection proposals or Git preparation. Inspect an eligible consumer, then show concrete changes before asking to apply them. Reuse explicit Keep/Skip/Cancel answers without asking whether to review excluded work. Prepare Git only when the approved action needs writes.
 
 Pass developer requests and answers safely and unchanged, never as shell code. An explicit source location is evidence to validate under Step 2, not permission to install/update plugins or change client settings. Clarify ambiguous requests before dependent work.
 
@@ -315,7 +315,7 @@ ADOPT NO CHANGES — {current-checkout snapshot / verified prepared destination}
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

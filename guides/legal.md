@@ -6,7 +6,7 @@ Draft or maintain practical legal documents from the project's source, existing 
 
 Apply the shared runtime and resolve effective instructions, `{memory_file}` and invocation policy without changing either instruction file. Read configuration through the existing owner/bridges on both hosts; never create settings, a profile file or another command's state. Legal document commits always require explicit approval, regardless of `git-auto-commit`.
 
-Read `{package_root}/prompts/shared/content-sync.md`. This workflow uses its normal clean-base preparation, not log's first-run policy overlay. Read `{package_root}/prompts/shared/project-state.md` before any manifest use; only the invoked legal workflow may access its own manifest.
+Read [`{package_root}/prompts/shared/content-sync.md`](../prompts/shared/content-sync.md). This workflow uses its normal clean-base preparation, not log's first-run policy overlay. Read `{package_root}/prompts/shared/project-state.md` before any manifest use; only the invoked legal workflow may access its own manifest.
 
 ## Step 1 — Scope and prepare
 
@@ -22,7 +22,7 @@ At actual product-source investigation, read `{package_root}/prompts/shared/inve
 
 For each document's source delta, review the complete relevant changed behaviors and affected unchanged consumers, not only filenames or net counts. Parent synthesis must distinguish adequate source coverage from separately confirmed business/provider facts and applicable current legal research. No signals or unchanged source never certifies absence of legal need or compliance. Preserve the existing narrow exits and freshness dimensions; do not add generic Full/Gap choices or new manifest fields.
 
-Derive the product, distribution, audience, public identity/contact and language from source, existing project documentation and supplied context first. Do not begin with a standard operator/country/markets/roles interview. Distinguish developer facts from inference; source cannot establish every off-code practice. Ask only for missing facts that survive Step 3's test. If country is essential to an actual legal-dependent question, ask only for that coarse fact and explain why; never request a home address.
+Derive the product, distribution, audience, public identity/contact and language from source, existing project documentation and supplied context first. Do not begin with a standard operator/country/markets/roles interview. Distinguish developer facts from inference; source cannot establish every off-code practice. Ask only for missing facts that survive [Step 3's test](#omit-narrow-ask-or-hold). If country is essential to an actual legal-dependent question, ask only for that coarse fact and explain why; never request a home address.
 
 Repository location, author metadata and hosting region do not establish domicile or governing law. Worldwide availability alone does not establish targeting of every jurisdiction; do not enumerate global laws as an intake prerequisite. Free, solo or unregistered status is neither proof of exemption nor a reason to invent business obligations.
 
@@ -259,7 +259,7 @@ Describe documents as AI-assisted drafting for owner review; material legal deci
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

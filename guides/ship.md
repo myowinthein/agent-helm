@@ -12,13 +12,13 @@ Apply throughout this workflow and its selected supporting procedures:
 
 ## Before starting: policy and permissions
 
-Apply the shared runtime and resolve effective instructions and `{memory_file}`. Resolve only the settings/capabilities needed by the selected work: `ship-method` (`direct`/`pr`, default pr; retired-key leftovers follow the Git rules' stop guard), independent `git-merge-strategy` (default squash), applicable base identity and provider policy. Freeze/recheck invocation policy; never write settings or migrate instruction ownership. Read `{package_root}/prompts/shared/ci.md` before an applicable check/integration/promotion gate. Load only the relevant identity and host/action sections of [provider procedures](../prompts/shared/release-providers.md) when provider inspection or a provider write is needed; do not load unrelated recipes. Independent optional targets have no tier ordering. Pass developer requests and answers unchanged, never as shell code.
+Apply the shared runtime and resolve effective instructions and `{memory_file}`. Resolve only the settings/capabilities needed by the selected work: `ship-method` (`direct`/`pr`, default pr; retired-key leftovers follow the Git rules' stop guard), independent `git-merge-strategy` (default squash), applicable base identity and provider policy. Freeze/recheck invocation policy; never write settings or migrate instruction ownership. Read [`{package_root}/prompts/shared/ci.md`](../prompts/shared/ci.md) before an applicable check/integration/promotion gate. Load only the relevant identity and host/action sections of [provider procedures](../prompts/shared/release-providers.md) when provider inspection or a provider write is needed; do not load unrelated recipes. Independent optional targets have no tier ordering. Pass developer requests and answers unchanged, never as shell code.
 
 Initial assessment uses safe local Git and authenticated read-only provider evidence, plus the exact read-only local handoff discovery below. It performs no fetch, optional index refresh, checkout, project hooks/checks, commits, file/ref writes or publication. Suppress executable Git helpers and lazy fetching where supported; unavailable reads remain unknown. A request to run ship approves inspection, not pushes, history replacement, backup, metadata changes or tags. Present concrete effects at the existing approval gates and reuse still-valid same-action approval. Ship creates no setting, tracked state, ledger, locator or recovery writer.
 
 ## Step 0 — Identify pending work and choose the safe publication procedure
 
-Inspect the actual repository/current branch, relevant local/remote refs, existing PRs, known release candidates and explicitly identified retained work. Build a transient per-action assessment: new source work, existing handoff, selected target work, pending history publication, prepared archive backup, unreleased product changes, unfinished release or proven no-op. Unknown remote/history/provider evidence is not absence of work. Use Step 7's evidence and continuation rules before creating a helper, release commit or tag.
+Inspect the actual repository/current branch, relevant local/remote refs, existing PRs, known release candidates and explicitly identified retained work. Build a transient per-action assessment: new source work, existing handoff, selected target work, pending history publication, prepared archive backup, unreleased product changes, unfinished release or proven no-op. Unknown remote/history/provider evidence is not absence of work. Use [Step 7's evidence and continuation rules](#step-7--assess-current-results-and-continue-only-missing-work) before creating a helper, release commit or tag.
 
 ### Detect special publication work without reading unrelated state
 
@@ -126,7 +126,7 @@ A source/PR URL or preflight cannot certify deployment; report package/registry/
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and in the selected publication/provider helpers; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below and in the selected publication/provider helpers; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

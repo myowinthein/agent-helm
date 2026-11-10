@@ -75,7 +75,7 @@ Moving synchronous work to a queue can change result/error timing, ordering, tra
 
 ### Ledger ownership and schema
 
-On the selected clean branch, pin HEAD as `{scan_head}` before output commits. Only now load `{package_root}/prompts/refactor-ledger.md`, `{package_root}/prompts/shared/project-state.md` and `{package_root}/prompts/shared/ledger-helper.md` before own-state access. The parent prefers packaged Python `ledger-check` for complete native schema-2 structural validation and digest-bound `ledger-view` for bounded indexes/full records across all states.
+On the selected clean branch, pin HEAD as `{scan_head}` before output commits. Only now load [`{package_root}/prompts/refactor-ledger.md`](../prompts/refactor-ledger.md), `{package_root}/prompts/shared/project-state.md` and `{package_root}/prompts/shared/ledger-helper.md` before own-state access. The parent prefers packaged Python `ledger-check` for complete native schema-2 structural validation and digest-bound `ledger-view` for bounded indexes/full records across all states.
 
 If Python/execution is unavailable, offer/reuse Set up Python / Continue without Python / Stop once for this run. Approved available equivalent tools may perform the same complete validation, safe-path, resource, digest/retrieval and preservation checks, including later canonical readback. Without equivalent evidence, keep ledger-dependent edits/writes pending and continue only independent source assessment/planning. Unsupported/invalid inputs, drift and helper/package defects still block dependent work with files preserved; fallback bypasses none of these. No converter or helper writer is supplied.
 
@@ -153,7 +153,7 @@ Use six defined review perspectives, with no finding quotas or category-based se
 
 - **Purpose/applicability:** improve existing test code's maintenance/verification burden while preserving what it proves; inspect actual cases, fixtures, helpers, mocks and selectors in scope.
 - **Inspect:** readable case structure, useful parameterization, shared setup, isolation, deterministic time/async handling and mechanical adaptations to selected production refactors. Parameterize only when clearer, not from a three-case/DRY quota. Weak assertions or brittle mocks can signal missing protection rather than refactor-owned cleanup.
-- **Evidence/invariants:** preserve intended scenarios, inputs/asserted behavior, fixture responsibilities, effective layer/environment, isolation and regression context. Shared line coverage or similar mocks do not prove equivalence. Apply Step 6's test-preservation rules to every selected test change.
+- **Evidence/invariants:** preserve intended scenarios, inputs/asserted behavior, fixture responsibilities, effective layer/environment, isolation and regression context. Shared line coverage or similar mocks do not prove equivalence. Apply [Step 6's test-preservation rules](#step-6-apply-serial-coherent-units-and-verify-progressively) to every selected test change.
 - **Permitted remedy:** guarantee-preserving restructuring and necessary companion changes, plus explicitly planned additive guards tied to a selected refactor's invariants. Production testability work may instead belong to Architecture.
 - **Separate scope:** missing/stronger protection, independent runner/framework migrations, changed layer/strategy or standalone retirement campaigns belong to an explicit test task. Ordinary refactor approval never authorizes fixing a product bug found by tests.
 
@@ -301,7 +301,7 @@ Show up to five representative verified fixes if useful. Static review/source ed
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

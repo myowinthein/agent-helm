@@ -4,7 +4,7 @@
 
 Resolve `{memory_file}` through the shared runtime before any Git mutation or file write. If the resolved owner does not exist, stop: "Run the log workflow first to establish shared project instructions, then re-run manifest." Do not create instruction files, migrate an owner, or automatically invoke log. Existing bridges, overrides, conflicts, and missing import targets follow the runtime's resolution rules.
 
-Read `{package_root}/prompts/shared/content-sync.md` and record the normal invocation Git policy. Manifest reviews the merged, stable project state. Its read-only preflight precedes **Prepare the current branch**; selected real work still requires that helper's clean-tree, actual main/master base, ownership, local commit and verification rules; publication belongs to ship. Do not borrow log's first-run policy overlay or initialize Git in an unversioned project.
+Read [`{package_root}/prompts/shared/content-sync.md`](../prompts/shared/content-sync.md) and record the normal invocation Git policy. Manifest reviews the merged, stable project state. Its read-only preflight precedes **Prepare the current branch**; selected real work still requires that helper's clean-tree, actual main/master base, ownership, local commit and verification rules; publication belongs to ship. Do not borrow log's first-run policy overlay or initialize Git in an unversioned project.
 
 ## Scope
 
@@ -176,7 +176,7 @@ Report:
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

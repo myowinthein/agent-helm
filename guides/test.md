@@ -90,7 +90,7 @@ Do not store per-file priorities, scan counters, branch identity, tool inventory
 | Optional `tests` | Array of actual existing/protecting file-and-case references. Planned output paths remain in the plan until they exist. |
 | Optional `blocker` | `{kind, note}` for clarification/execution/verification, last observed while open. Revalidate it; never use it as a tool/version inventory or a global claim about host readiness. |
 | Optional `decision` | `{type, note, date, commit}` for an explicit human deferred/accepted-risk decision. Keep its exact context, including after closure; never infer it from nonselection. |
-| Optional `closure` | Required for resolved/obsolete: `{reason, refs, method, outcome, commit}`, plus `command` and `scope` for runtime evidence. See Step 6. |
+| Optional `closure` | Required for resolved/obsolete: `{reason, refs, method, outcome, commit}`, plus `command` and `scope` for runtime evidence. See [Step 6](#step-6-persist-assessments-and-supported-case-closures). |
 
 A dummy structural example, not live records or executable inputs:
 
@@ -265,7 +265,7 @@ For ledger-only work use **Record assessed findings / Cancel** only when that co
 
 ## Step 4: Prepare selected writes and safe execution
 
-Only now apply **Prepare the current branch** from `{package_root}/prompts/shared/content-sync.md` for selected test/setup or meaningful checkpoint writes. Require clean eligible state on current actual main/master, an established current feature/maintenance branch or a confirmed current environment branch. Unresolved/unsupported roles block writes without switching/updating/creating one. Re-resolve effective instructions and the canonical own-state file on this branch before dependent work.
+Only now apply [**Prepare the current branch**](../prompts/shared/content-sync.md#prepare-the-current-branch) from `{package_root}/prompts/shared/content-sync.md` for selected test/setup or meaningful checkpoint writes. Require clean eligible state on current actual main/master, an established current feature/maintenance branch or a confirmed current environment branch. Unresolved/unsupported roles block writes without switching/updating/creating one. Re-resolve effective instructions and the canonical own-state file on this branch before dependent work.
 
 Immediately pin clean source HEAD as `{assessment_head}`, before setup/framework/test/ledger commits. If it differs from the advisory plan's SHA or source branch, show the difference and reassess/reapprove affected work before writing; do not rely on filename intersection or silently transfer feature-branch assumptions to main. A changed plan's policy/settings require reconciliation. Preserve this source baseline throughout the run, through all approved local units. Approved setup/test changes are identified outputs/overlays, not permission for unrelated source drift. Re-read affected context after setup, but never replace the source baseline with an install/test commit just for convenience.
 
@@ -400,7 +400,7 @@ Never run missing checks, create commits, migrate state or publish merely to imp
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

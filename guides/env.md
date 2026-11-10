@@ -6,7 +6,7 @@ Audit environment files, `.gitignore` and relevant project code/configuration, t
 
 Apply the shared runtime's instruction/configuration resolution first. Read effective Helm settings from `{memory_file}` when present, including bridges, overrides and recognized fenced configuration; genuinely absent settings use the Git rules' defaults. Env never creates/migrates an instruction owner, writes settings to AGENTS.md/CLAUDE.md, invokes log, or reads/writes/migrates operational Helm state. It owns no ledger or review marker.
 
-Read `{package_root}/prompts/shared/content-sync.md`, but do not apply **Prepare the current branch** until selected fixes need a write. The initial audit runs on the current checkout with no checkout, fetch, branch, index or file changes. Record branch/HEAD (or unavailable), dirty/staged state and relevant input identities without printing contents. A dirty/staged checkout may be audited; disclose that normal write preparation is blocked. Never commit, unstage, stash, reset or absorb pre-existing work to proceed.
+Read [`{package_root}/prompts/shared/content-sync.md`](../prompts/shared/content-sync.md), but do not apply **Prepare the current branch** until selected fixes need a write. The initial audit runs on the current checkout with no checkout, fetch, branch, index or file changes. Record branch/HEAD (or unavailable), dirty/staged state and relevant input identities without printing contents. A dirty/staged checkout may be audited; disclose that normal write preparation is blocked. Never commit, unstage, stash, reset or absorb pre-existing work to proceed.
 
 Writes are eligible on the actual current main/master base, an established existing current feature branch or a confirmed current environment branch, under project policy and the helper's role checks. Unresolved or unsupported branch roles block writes with an explanation, never an automatic checkout. Recommend feature/main for shared configuration fixes and an environment branch for its intentional configuration differences or integrated-source problems; the same approved workflow actions remain available on every eligible role. Branch eligibility does not establish a safe runtime target or authorize publication, live provisioning or synchronization to another branch.
 
@@ -175,7 +175,7 @@ Report audit scope and fixes separately:
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

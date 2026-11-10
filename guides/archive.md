@@ -124,7 +124,7 @@ Fresh runs start at Step 1. On Steps 1–4 approval, create `{archive_root}` if 
 
 Step 5 prepares the approved fifth report/inventory with cursor 4/phase prepared and commits the local payload, then stops without a post-commit tracked journal update. Exact Git/source/report/manifest proof identifies local completion even with null payload/destination fields; reruns reuse that proven payload without replacing reports.
 
-`ship` alone continues the two-phase backup protocol in `prompts/shared/archive-publication.md`: verify/publish payload, perform only opted-in bounded cleanup, then commit/publish the approved completion receipt with cursor 5/phase receipt_prepared. A local cursor 5 never certifies remote completion. Preserve current schema 1, historical reports and any verified interrupted publication journal at the canonical root. Archive itself never resumes pushes or post-backup cleanup. The committed receipt remains receipt_prepared with no post-push tracked update; final Git readback proves remote sealing. Optional portable copying after verified receipt belongs to that separately approved ship continuation and never updates tracked state.
+`ship` alone continues the two-phase backup protocol in [`prompts/shared/archive-publication.md`](../prompts/shared/archive-publication.md): verify/publish payload, perform only opted-in bounded cleanup, then commit/publish the approved completion receipt with cursor 5/phase receipt_prepared. A local cursor 5 never certifies remote completion. Preserve current schema 1, historical reports and any verified interrupted publication journal at the canonical root. Archive itself never resumes pushes or post-backup cleanup. The committed receipt remains receipt_prepared with no post-push tracked update; final Git readback proves remote sealing. Optional portable copying after verified receipt belongs to that separately approved ship continuation and never updates tracked state.
 
 ## Current-host capabilities
 
@@ -136,11 +136,11 @@ Honor explicit verification deferral throughout. Static planning/documentation a
 
 After the source-branch confirmation above, work starts at the validated pending step/operation in the same `{archive_root}`. The list is the fresh-run order, not an instruction to replay completed phases or invoke ship automatically; a verified prepared/completed report-only exit needs no new branch question.
 
-1. Read `{package_root}/prompts/archive/step1-explore.md` and follow it exactly.
-2. Read `{package_root}/prompts/archive/step2-restore-and-freeze.md` and follow it exactly.
-3. Read `{package_root}/prompts/archive/step3-postman.md` and follow it exactly.
-4. Read `{package_root}/prompts/archive/step4-documentation.md` and follow it exactly.
-5. Read `{package_root}/prompts/archive/step5-finalize.md` and follow it exactly.
+1. Read [`{package_root}/prompts/archive/step1-explore.md`](../prompts/archive/step1-explore.md) and follow it exactly.
+2. Read [`{package_root}/prompts/archive/step2-restore-and-freeze.md`](../prompts/archive/step2-restore-and-freeze.md) and follow it exactly.
+3. Read [`{package_root}/prompts/archive/step3-postman.md`](../prompts/archive/step3-postman.md) and follow it exactly.
+4. Read [`{package_root}/prompts/archive/step4-documentation.md`](../prompts/archive/step4-documentation.md) and follow it exactly.
+5. Read [`{package_root}/prompts/archive/step5-finalize.md`](../prompts/archive/step5-finalize.md) and follow it exactly.
 
 ## Important
 
@@ -150,7 +150,7 @@ After the source-branch confirmation above, work starts at the validated pending
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below and throughout all five supporting steps; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below and throughout all five supporting steps; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

@@ -56,4 +56,4 @@ For applicable projects, preserve the following report sections:
 - **Unverified Requests:** excluded/deferred/unreachable/unsafe requests and reasons; no quotas or blanket success.
 - **Known Limitations:** unsupported scripts/import behavior, external dependencies, missing context and remaining gaps.
 
-Preserve the literal `Postman collection generated:` field for Step 4's structured snapshot. Step 4 also uses the actual outcome and retained/updated paths, never this flag alone to infer API applicability or artifact absence. Present the report, including a not-applicable or skipped result, and wait for explicit approval before recording it/proceeding to Step 4. Do not commit or push.
+Preserve the literal `Postman collection generated:` field for Step 4's structured snapshot. Step 4 also uses the actual outcome and retained/updated paths, never this flag alone to infer API applicability or artifact absence. Present the report, including a not-applicable or skipped result, and wait for explicit approval before recording it/proceeding to [Step 4](step4-documentation.md). Do not commit or push.

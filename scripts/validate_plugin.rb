@@ -92,7 +92,7 @@ module HelmValidation
     NAMES.each do |name|
       workflow_file = workflow_path(name)
       workflow = read(resource(root, workflow_file))
-      check(workflow.include?("## Question points") && workflow.include?("[QM](../prompts/shared/question-mechanism.md)"),
+      check(workflow.include?("## Question points") && workflow.include?("[question mechanism (QM)](../prompts/shared/question-mechanism.md)"),
             "Workflow must map its question points to shared QM: #{name}")
       check(!workflow.match?(/\b(?:AskUserQuestion|request_user_input(?:_async)?|multiSelect)\b/),
             "Workflow must use shared QM instead of native question fields: #{name}")

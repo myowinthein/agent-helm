@@ -125,7 +125,7 @@ Dir.mktmpdir("helm-package-") do |temp|
   HelmValidation.check(failure == "Do not restore competing legacy workflow sources", "Validator accepted competing command instruction sources")
   {
     "missing QM map" => original_workflow.sub("## Question points", "## Unmapped questions"),
-    "missing QM reference" => original_workflow.sub("[QM](../prompts/shared/question-mechanism.md)", "the native picker"),
+    "missing QM reference" => original_workflow.sub("[question mechanism (QM)](../prompts/shared/question-mechanism.md)", "the native picker"),
     "Claude-only question" => original_workflow + "\nAskUserQuestion:\n",
     "Codex-only question" => original_workflow + "\nrequest_user_input_async\n",
     "native selection field" => original_workflow + "\nmultiSelect: true\n"

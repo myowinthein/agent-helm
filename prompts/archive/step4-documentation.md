@@ -28,7 +28,7 @@ Present the complete coherent consolidation/output plan and wait for approval be
 
 Preserve useful existing README content and style through focused edits where possible. Propose a fresh archive-focused index only when the reviewed content/value plan justifies it. For a protected README, offer **Keep protected README and create an archive index** at a reviewed unused path such as `docs/archive-index.md`, or **Stop for instruction reconciliation**. Keep protected files/imports byte-for-byte; do not extract from or repoint them. Record actual index/setup/metadata paths in report/inventory/metadata, including approved alternatives for other protected outputs.
 
-Use an archive-specific information contract, independent of manifest and `readme-style`; do not invoke manifest or introduce a shared README helper. Fit these facts into useful existing structure, with a whole rewrite only under the reviewed plan:
+Use an archive-specific information contract, independent of [manifest](../../guides/manifest.md#standard-and-custom-structure-contract) and `readme-style`; do not invoke manifest or introduce a shared README helper. Fit these facts into useful existing structure, with a whole rewrite only under the reviewed plan:
 
 - Snapshot/source/date and current preparation status; distinguish snapshot date from actual scoped verification dates/platforms.
 - Project purpose/stack, last known working state and selected recovery goal/complexity.
@@ -79,4 +79,4 @@ Step 5 may move assets only through its reviewed dependency/reference check. It 
 - **Navigation:** approved index and reachable active recovery docs, image/data/config/reference consistency and protected-file exemptions; report gaps rather than claiming unperformed checks.
 - **Gaps:** missing/deferred/unverified inputs, backup and runtime/rebuild limits, exact pending actions.
 
-No commit or push. Present this report and wait for explicit approval before Step 5, which separately approves the local payload commit; only a later ship invocation's selected archive backup procedure approves private backup publication/receipt and any opt-in ref cleanup.
+No commit or push. Present this report and wait for explicit approval before [Step 5](step5-finalize.md), which separately approves the local payload commit; only a later ship invocation's selected archive backup procedure approves private backup publication/receipt and any opt-in ref cleanup.

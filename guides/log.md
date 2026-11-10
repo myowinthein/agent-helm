@@ -2,7 +2,7 @@
 
 ## Ownership, scope and preservation
 
-Analyze the project when the developer invokes log, report the findings and update the project instructions through the review below. Read `{package_root}/prompts/shared/project-layout.md` and perform its read-only preflight. Resolve both hosts' effective entries, chains, overrides, existing configuration and any conflicts before Git mutations. Shared setup uses root AGENTS.md as owner and a real CLAUDE.md importing `@AGENTS.md`. A pointer-only entry is not an incomplete knowledge document. Preserve personal/global/nested instructions and external targets; an unconnected root override stops setup on either host.
+Analyze the project when the developer invokes log, report the findings and update the project instructions through the review below. Read [`{package_root}/prompts/shared/project-layout.md`](../prompts/shared/project-layout.md) and perform its read-only preflight. Resolve both hosts' effective entries, chains, overrides, existing configuration and any conflicts before Git mutations. Shared setup uses root AGENTS.md as owner and a real CLAUDE.md importing `@AGENTS.md`. A pointer-only entry is not an incomplete knowledge document. Preserve personal/global/nested instructions and external targets; an unconnected root override stops setup on either host.
 
 Use existing memory as the baseline. Preserve durable knowledge, confirmed settings and fenced configuration, imports, adopted Rules, host-specific additions and review-marker provenance. Failure to rediscover a fact does not justify deleting it. A removal, contradiction, restructuring or scope conversion needs evidence and approval of its exact diff; retain uncertain entries and report them for follow-up. Layout preserves instructions according to the layout procedure; scan proposals use the post-layout contents as their baseline.
 
@@ -182,7 +182,7 @@ Use output verification captured on the same actual current branch. Distinguish 
 
 ## Question points
 
-Use [QM](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
+Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the existing gates below; ask only when their conditions hold.
 
 | Point | QM form |
 |---|---|

@@ -78,4 +78,4 @@ Confirm the recovery goal and scope; identify Step 2's proposed edits, acquisiti
 
 The literal `Project name:`, `Archiving from:` and `Source commit:` fields bind later filenames/context checks; never infer a destructive choice from narrative prose. Existing reports remain historical evidence on resume.
 
-Present this report and wait for explicit approval before recording it and proceeding to Step 2. Offer a stop-here/no-write choice; a missing answer is not approval.
+Present this report and wait for explicit approval before recording it and proceeding to [Step 2](step2-restore-and-freeze.md). Offer a stop-here/no-write choice; a missing answer is not approval.
