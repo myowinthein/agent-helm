@@ -309,6 +309,20 @@ class NormalizeTests(unittest.TestCase):
                 self.assertEqual(accepted.returncode, 0, accepted.stderr)
                 self.assertEqual(json.loads(accepted.stdout), last)
 
+    def test_invalid_tips_branch_names_recheck_ids_and_messages_are_rejected(self):
+        commits = graph((1, []), (2, [1]))
+        invalid_plans = [{"tips": {"bad..name": oid(2)}}, {"tips": {"-leading": oid(2)}},
+                         {"tips": {"topic.lock": oid(2)}}, {"tips": {"main": "not-an-id"}},
+                         {"tips": {"main": oid(9)}}, {"tips": {}},
+                         {"tips": {"main": oid(2)}, "recheck_ids": [oid(9)]},
+                         {"tips": {"main": oid(2)}, "ledger": ledger({"bad..name": baseline(1)})}]
+        for extra in invalid_plans:
+            with self.subTest(extra=extra), self.assertRaises(mod.Invalid):
+                mod.execute({"policy": policy(), "commits": commits, **extra}, "plan")
+        for message in ("fix(api): update\0 hidden", "fix(api): " + "x" * mod.MAX_MESSAGE_BYTES, "fix(api): \ud800"):
+            with self.subTest(message_length=len(message)), self.assertRaises(mod.Invalid):
+                self.check_message(message)
+
     def test_cli_parse_failure_never_echoes_input(self):
         for data in ('{"private":"SYNTHETIC_SENTINEL",', '{"policy":null,"policy":null}', '{"policy":NaN}'):
             run = subprocess.run([sys.executable, "-I", "-B", str(HELPER), "check"], input=data,
