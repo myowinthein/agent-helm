@@ -48,7 +48,7 @@ The default is one useful contextual occurrence per destination per page. Distan
 
 The default symbol is a northeast arrow leaving an open square for external text navigation links. Internal links get no external arrow, including new-tab exceptions. Downloads and email, phone or application links keep their native handling and clear outcome wording. Explicit project conventions and renderer limits remain respected.
 
-This sequence is complete in Writing. [Design](design.html#responsive-interfaces-and-links) provides the broader interface standard when selected; no second reference pass or Design dependency is introduced. The approach draws on [Google's cross-reference guidance](https://developers.google.com/style/cross-references#choose-links-selectively) and [GOV.UK's effective links guidance](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/add-links/).
+This sequence is complete in Writing. [Design](design.html#responsive-interfaces-and-links) provides the broader interface standard when selected; no second reference pass or Design dependency is introduced. The approach draws on [Google's cross-reference guidance](https://developers.google.com/style/cross-references#choose-links) and [GOV.UK's effective links guidance](https://guidance.publishing.service.gov.uk/writing-to-gov-uk-standards/writing-guidelines/add-links/).
 
 ## Examples
 
