@@ -23,7 +23,11 @@ The rule gives practical constraints rather than a general design course. Its pa
 
 New interfaces should work across narrow and wide viewports, using flexible layouts and content-driven changes. Preserve access to information and actions as navigation collapses or content moves. [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) is the default accessibility reference, including reflow, text resizing and orientation requirements with their stated exceptions.
 
-Links lead to relevant working pages or sections; actions use buttons. Links open in the current tab by default, including external destinations. A new tab needs a clear task reason or explicit project requirement, with a visible and accessible warning. External-link icons follow the project's convention consistently; no particular glyph is required, and leaving the site is separate from opening a new tab.
+Links lead to relevant working pages or sections; buttons perform in-page actions. Current-tab navigation is the default for internal and external destinations, including references, repositories and viewable documents. New tabs are limited to preserving an active task, explicit user-selected opening or an explicit project requirement. Every deliberate new tab/window has a visible and accessible warning; normal browser choices remain available.
+
+The default external-link icon is a northeast arrow leaving an open square. It marks external text navigation links consistently, regardless of tab behavior. Internal new-tab links get opening warnings without that icon. Established project design-system requirements take precedence. Internal/external classification follows the actual site/service boundary and explicit aliases, not whether the URL is absolute.
+
+Downloads use download wording and native handling; email, phone and application links use their native protocols. Identify file formats, known login requirements and other material outcomes. The rule also covers accessible icon treatment, opener protection and renderer limits; it does not require custom HTML in plain Markdown or chat.
 
 ## Preserve project choices
 
@@ -33,7 +37,7 @@ Keep project branding, tokens, component choices and known user needs in local g
 
 ## Basis and review
 
-Google's [responsive-design guidance](https://web.dev/articles/responsive-web-design-basics) informs implementation alongside WCAG. [W3C's new-window guidance](https://www.w3.org/WAI/WCAG22/Techniques/general/G201) is advisory; the rule's new-tab warning is a usability default, not a blanket WCAG AA requirement. [GOV.UK](https://design-system.service.gov.uk/styles/links/) and [USWDS](https://designsystem.digital.gov/components/link/) inform link guidance but differ on icon conventions.
+Google's [responsive-design guidance](https://web.dev/articles/responsive-web-design-basics) informs implementation alongside WCAG. W3C's guidance on [limiting new tabs](https://www.w3.org/WAI/WCAG22/Techniques/general/G200) and [advance warnings](https://www.w3.org/WAI/WCAG22/Techniques/general/G201) is advisory; Helm's mandatory warning and default icon are local usability policy, not blanket WCAG AA requirements. [GOV.UK](https://design-system.service.gov.uk/styles/links/) and [USWDS](https://designsystem.digital.gov/components/link/) inform link guidance but differ on icon conventions, so symbols never replace clear wording.
 
 The pattern list draws on [Anthropic's frontend observations](https://claude.com/resources/articles/improving-frontend-design-through-skills), its [frontend-design guidance](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md), [Impeccable's catalog](https://impeccable.style/slop/) and [kill-ai-slop](https://github.com/yetone/kill-ai-slop). These are practitioner observations and editorial choices. They do not establish AI authorship, a scientific slop score or universal usability failures.
 
