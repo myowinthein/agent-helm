@@ -15,6 +15,7 @@ desc "Test offline documentation links and content-based asset versions"
 task :docs_links_test do
   ruby "docs/tests/test_repository_content.rb"
   ruby "docs/tests/test_docs_links.rb"
+  ruby "docs/tests/test_docs_workflow.rb"
   ruby "docs/tests/test_asset_digest.rb"
   ruby "docs/tests/test_guide_content.rb"
 end
