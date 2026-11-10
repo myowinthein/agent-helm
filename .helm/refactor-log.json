@@ -251,8 +251,27 @@
         ],
         "invariant": "Preserve every access boundary: only normalize registers locators, ship and review-anchor discovery stay read-only and bounded, no live-ledger access, and copied-rule sessions gain no locator or state access. Copied rules remain self-sufficient without the package."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "6df270f1abcb13af76c982c214b39585478e5402",
+        "date": "2026-11-11",
+        "method": "runtime",
+        "evidence": [
+          "prompts/shared/runtime.md:15 no longer restates the handoff location or fallbacks; it points to prompts/shared/normalize-handoff.md, which already owns them, and keeps 'normalize alone registers locators' and the no-live-ledger, no-broad-search, no-force-update limits.",
+          "rules/safety.md:24 and rules/git.md:49 are unchanged so copied rules stay self-sufficient without the package.",
+          "Behavioral equivalence is static review only; the paid history-auto-discovery acceptance scenario was not run."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Package validation, link and QM routing, relocated-package and Git-archive checks on commit 6df270f",
+            "outcome": "Passed"
+          }
+        ]
+      }
     },
     {
       "id": "r-9a8e6bdd-d532-4997-aa46-a8ba4b7d460e",
