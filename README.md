@@ -1,7 +1,7 @@
 ---
 layout: home
 title: Agent Helm
-description: Reusable workflows for Claude and Codex to keep project context, improve code and tests, maintain documentation and ship reviewed changes.
+description: Workflows for Claude and Codex to keep project context, improve code and tests, maintain docs and publish reviewed changes.
 nav_order: 1
 permalink: /
 ---

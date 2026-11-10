@@ -9,7 +9,7 @@
       "name": "agent-helm",
       "version": "3.6.0",
       "source": "./",
-      "description": "A workflow plugin for developers using Claude and Codex. Keep project context across sessions, refactor code, write tests, maintain docs, audit configuration, manage Git history, ship releases and archive projects.",
+      "description": "A workflow plugin for developers using Claude and Codex. Keep project context, improve code and tests, maintain docs and configuration, publish reviewed changes and preserve older projects.",
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_USE"
@@ -17,5 +17,5 @@
       "category": "Developer tools"
     }
   ],
-  "description": "Install Helm workflows and shared rules for developers using Claude and Codex."
+  "description": "Install Agent Helm workflows and shared rules for development with Claude and Codex."
 }
