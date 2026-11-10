@@ -10,6 +10,7 @@ end
 
 Dir.mktmpdir("helm-guide-content-") do |temporary|
   root = Pathname(temporary)
+  root.join("docs").mkpath()
   root.join("guides").mkpath
   original = <<~MARKDOWN
     # example
@@ -31,7 +32,7 @@ Dir.mktmpdir("helm-guide-content-") do |temporary|
   MARKDOWN
   root.join("guides/example.md").write(original)
   root.join("guides/no-intro.md").write("# no-intro\n\n## Review\n\nDo the approved work.\n\n## Finish\n\nReport the result.\n")
-  site = Jekyll::Site.new(Jekyll.configuration("source" => temporary, "quiet" => true, "plugins_dir" => [], "baseurl" => "/helm"))
+  site = Jekyll::Site.new(Jekyll.configuration("source" => root.join("docs").to_s, "quiet" => true, "plugins_dir" => [], "baseurl" => "/helm"))
   page = Struct.new(:data, :url).new({ "guide_source" => "guides/other.md", "overview" => "/overview.html" }, "/other/detailed.html")
   site.pages << page
 

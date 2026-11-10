@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/archive.html
 guide_source: guides/archive.md
 permalink: /docs/commands/archive/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # archive

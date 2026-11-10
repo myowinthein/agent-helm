@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/rules/git.html
 guide_source: rules/git.md
 permalink: /docs/rules/git/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Git

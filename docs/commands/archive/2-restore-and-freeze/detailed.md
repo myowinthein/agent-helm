@@ -8,7 +8,7 @@ has_toc: false
 overview: /docs/commands/archive/2-restore-and-freeze.html
 guide_source: prompts/archive/step2-restore-and-freeze.md
 permalink: /docs/commands/archive/2-restore-and-freeze/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Step 2: Restore and freeze

@@ -8,7 +8,7 @@ has_toc: false
 overview: /docs/commands/archive/3-postman.html
 guide_source: prompts/archive/step3-postman.md
 permalink: /docs/commands/archive/3-postman/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Step 3: Postman collection

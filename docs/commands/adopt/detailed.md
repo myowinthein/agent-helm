@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/adopt.html
 guide_source: guides/adopt.md
 permalink: /docs/commands/adopt/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # adopt

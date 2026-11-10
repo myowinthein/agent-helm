@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/manifest.html
 guide_source: guides/manifest.md
 permalink: /docs/commands/manifest/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # manifest

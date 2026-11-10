@@ -3,7 +3,7 @@ require "html-proofer"
 require "pathname"
 require "stringio"
 require "tmpdir"
-require_relative "docs_checks"
+require_relative "../scripts/docs_checks"
 
 CONFIG = { "url" => "https://docs.example.invalid", "baseurl" => "/agent-helm" }.freeze
 PREFIX = "https://docs.example.invalid/agent-helm"

@@ -8,7 +8,7 @@ has_toc: false
 overview: /docs/commands/archive/5-finalize.html
 guide_source: prompts/archive/step5-finalize.md
 permalink: /docs/commands/archive/5-finalize/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Step 5: Prepare locally

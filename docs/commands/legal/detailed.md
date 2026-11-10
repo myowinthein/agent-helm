@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/legal.html
 guide_source: guides/legal.md
 permalink: /docs/commands/legal/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # legal

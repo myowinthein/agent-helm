@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/rules/safety.html
 guide_source: rules/safety.md
 permalink: /docs/rules/safety/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Safety

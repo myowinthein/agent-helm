@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/rules/writing.html
 guide_source: rules/writing.md
 permalink: /docs/rules/writing/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Writing

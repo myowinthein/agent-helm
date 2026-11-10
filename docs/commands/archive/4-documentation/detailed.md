@@ -8,7 +8,7 @@ has_toc: false
 overview: /docs/commands/archive/4-documentation.html
 guide_source: prompts/archive/step4-documentation.md
 permalink: /docs/commands/archive/4-documentation/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Step 4: Documentation

@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/ship.html
 guide_source: guides/ship.md
 permalink: /docs/commands/ship/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # ship

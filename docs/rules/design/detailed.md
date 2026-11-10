@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/rules/design.html
 guide_source: rules/design.md
 permalink: /docs/rules/design/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Design

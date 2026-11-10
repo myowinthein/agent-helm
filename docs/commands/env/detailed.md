@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/env.html
 guide_source: guides/env.md
 permalink: /docs/commands/env/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # env

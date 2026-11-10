@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/normalize.html
 guide_source: guides/normalize.md
 permalink: /docs/commands/normalize/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # normalize

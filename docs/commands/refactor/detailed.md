@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/refactor.html
 guide_source: guides/refactor.md
 permalink: /docs/commands/refactor/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # refactor

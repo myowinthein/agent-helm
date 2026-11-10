@@ -1,3 +1,6 @@
+source: .
+destination: _site
+
 title: Agent Helm
 tagline: Workflows for Claude and Codex
 description: Workflows for Claude and Codex to keep project context, improve code and tests, maintain docs and publish reviewed changes.
@@ -15,22 +18,22 @@ defaults:
         height: 800
         alt: A helmsman steering a ship toward a storm
   - scope:
-      path: "docs"
+      path: ""
       type: pages
     values:
       layout: default
   - scope:
-      path: "docs/commands"
+      path: "commands"
       type: pages
     values:
       title_category: Command guide
   - scope:
-      path: "docs/setup"
+      path: "setup"
       type: pages
     values:
       title_category: Setup
   - scope:
-      path: "docs/rules"
+      path: "rules"
       type: pages
     values:
       title_category: Rules
@@ -47,22 +50,11 @@ plugins:
   - jekyll-remote-theme
   - jekyll-include-cache
 
-# Every new top-level directory must be added here manually or Jekyll will include it in the site build.
+# These files support authoring and checks rather than published pages.
 exclude:
   - Gemfile
   - Gemfile.lock
-  - CLAUDE.md
-  - AGENTS.md
-  - LICENSE
-  - .gitignore
-  - .DS_Store
-  - .claude/
-  - .claude-plugin/
-  - _plugins/
-  - rules/
-  - prompts/
-  - skills/
-  - guides/
-  - helpers/
+  - documentation.md
   - scripts/
-  - Rakefile
+  - tests/
+  - tasks.rb

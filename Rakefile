@@ -1,20 +1,9 @@
 require "rake"
-require_relative "scripts/docs_checks"
+require_relative "docs/tasks"
 
 desc "Validate shared workflows and exported package contents"
 task :plugin_test do
   ruby "scripts/test_plugin.rb"
-end
-
-desc "Build the documentation site and check internal links, images, and scripts"
-task :docs_test do
-  require "html-proofer"
-  require "yaml"
-  ruby Gem.bin_path("jekyll", "jekyll"), "build"
-  config = YAML.safe_load_file("_config.yml")
-  HTMLProofer.check_directory("./_site", HelmDocs.options(config)).run
-  HelmDocs.check_setup("./_site", config)
-  puts "Passed setup fallback destinations and panel markup contracts; browser checks remain separate."
 end
 
 desc "Test pure normalize checks and semantic coverage selection with synthetic inputs"
@@ -42,13 +31,6 @@ task :acceptance_support_test do
   ruby "scripts/test_acceptance_support.rb"
   ruby "scripts/test_git_acceptance.rb"
   ruby "scripts/test_acceptance_oracles.rb"
-end
-
-desc "Test offline documentation links and content-based asset versions"
-task :docs_links_test do
-  ruby "scripts/test_docs_links.rb"
-  ruby "scripts/test_asset_digest.rb"
-  ruby "scripts/test_guide_content.rb"
 end
 
 desc "Check plugin packaging, helpers, smoke assertions and documentation"

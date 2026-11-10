@@ -8,7 +8,7 @@ has_toc: false
 overview: /docs/commands/archive/1-explore.html
 guide_source: prompts/archive/step1-explore.md
 permalink: /docs/commands/archive/1-explore/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # Step 1: Explore

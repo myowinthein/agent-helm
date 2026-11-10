@@ -7,7 +7,7 @@ has_toc: false
 overview: /docs/commands/test.html
 guide_source: guides/test.md
 permalink: /docs/commands/test/detailed.html
-title_category: Detailed guide
+title_category: Details
 ---
 
 # test
