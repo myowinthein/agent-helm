@@ -24,7 +24,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `python3 -I -B scripts/test_ledger.py`: offline ledger isolation, validation and retrieval contracts with disposable consumers.
 - `cd docs && bundle install`: install the docs dependencies from `docs/Gemfile` and `docs/Gemfile.lock`.
 - `cd docs && bundle exec jekyll serve`: preview the docs site.
-- `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake test`: the full offline suite, no models: plugin, normalize, handoff, ledger, smoke-support, acceptance-support, docs-link, asset-digest and guide-content checks, then a Jekyll build with HTMLProofer and setup contract checks. Run one task with `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake <task>`; see `Rakefile`. Remote-theme resolution may need network access.
+- `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake test`: the full offline suite, no models: plugin, normalize, handoff, ledger, smoke-support, acceptance-support, docs-link, asset-digest and guide-content checks, then a Jekyll build with HTMLProofer and setup contract checks. Run one task with `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake <task>`; see `Rakefile` and `docs/tasks.rb`. Remote-theme resolution may need network access.
 - `ruby scripts/smoke_layout.rb [codex|claude] [case ...]`, `ruby scripts/smoke_workflows.rb [codex|claude] [case]` and `ruby scripts/smoke_acceptance.rb [--list|scenario]`: optional behavioral checks that call signed-in models in disposable projects. The first two pin Claude Opus 5.5 at high effort for Claude cases; acceptance runs one bounded Claude scenario (Sonnet 5.5) per invocation and never runs under rake. Review their model, usage and execution effects separately from offline checks.
 - `docs/scripts/browser_acceptance.py` serves the built `docs/_site` for opt-in browser checks; `scripts/acceptance-plan.md` records the acceptance design rationale.
 
@@ -103,4 +103,4 @@ Read and follow all three shipped rules before project work:
 - `rules/safety.md`
 - `rules/writing.md`
 
-<!-- last-reviewed: 0b326e7d78f19755a24fa2e1116cba481dc30511 -->
+<!-- last-reviewed: e2b4d5eb6f4e97ccf34f24c83303276e75787209 -->
