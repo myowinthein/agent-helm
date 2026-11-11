@@ -24,7 +24,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `python3 -I -B scripts/test_ledger.py`: offline ledger isolation, validation and retrieval contracts with disposable consumers.
 - `cd docs && bundle install`: install the docs dependencies from `docs/Gemfile` and `docs/Gemfile.lock`.
 - `cd docs && bundle exec jekyll serve`: preview the docs site.
-- `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake test`: the full offline suite, no models: plugin, normalize, handoff, ledger, smoke-support, acceptance-support, docs-link, asset-digest and guide-content checks, then a Jekyll build with HTMLProofer and setup contract checks. Run one task with `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake <task>`; see `Rakefile` and `docs/tasks.rb`. Remote-theme resolution may need network access.
+- `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake test`: the full offline suite, no models: plugin, normalize, handoff, ledger, smoke-support, acceptance-support, docs-link, asset-digest and human-guide checks, then a Jekyll build with HTMLProofer and setup contract checks. Run one task with `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake <task>`; see `Rakefile` and `docs/tasks.rb`. Remote-theme resolution may need network access.
 - `ruby scripts/smoke_layout.rb [codex|claude] [case ...]`, `ruby scripts/smoke_workflows.rb [codex|claude] [case]` and `ruby scripts/smoke_acceptance.rb [--list|scenario]`: optional behavioral checks that call signed-in models in disposable projects. The first two pin Claude Opus 5.5 at high effort for Claude cases; acceptance runs one bounded Claude scenario (Sonnet 5.5) per invocation and never runs under rake. Review their model, usage and execution effects separately from offline checks.
 - `docs/scripts/browser_acceptance.py` serves the built `docs/_site` for opt-in browser checks; `scripts/acceptance-plan.md` records the acceptance design rationale.
 
@@ -44,7 +44,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `docs/_config.yml`, `docs/Gemfile`, `docs/tasks.rb`, `Rakefile` and `.github/workflows/docs.yml` own the docs build. Main pushes, PRs and manual dispatch build; only main publishes Pages. CI resolves the latest stable Just the Docs release and does not run package, helper, native-client or model checks.
 - `docs/setup/{claude,codex}.md` use `docs/_includes/setup-tabs.html` and four `docs/_includes/setup/` instruction bodies. The four older setup URLs use `docs/_layouts/setup-redirect.html`; preserve panel/heading anchors and redirect fragments together with `docs/assets/js/setup-tabs.js`.
 - `docs/_includes/head_custom.html` loads `docs/assets/js/theme-switcher.js` before content and versions its scripts through `docs/_plugins/asset_digest.rb`, which fails the build for assets that are not published static files. Header markup and `docs/_sass/custom/custom.scss` provide System/Light/Dark selection with a site-specific saved preference.
-- `docs/_plugins/guide_content.rb` renders each detailed page from exactly one `guides/*.md`, `rules/*.md` or `prompts/archive/step[1-5]-*.md` source named by the page's `guide_source` front matter; other paths fail the build. It rewrites the source's relative links to the owning detailed page, or to the GitHub `main` file when none exists. Detailed pages are `nav_exclude`, so `docs/assets/js/guide-nav.js` keeps their overview's menu entry open.
+- Overview and Details are independently authored human guides under `docs/`. Details expands the Overview journey with explanations, examples and meaningful decisions; it never embeds raw agent instructions. `source_files` records reference sources and each page links to the existing repository for implementation depth. `docs/tests/test_human_guides.rb` checks this separation and view pairing. Detailed pages remain `nav_exclude`; `docs/assets/js/guide-nav.js` keeps their overview's menu entry open.
 
 ## Documentation
 
@@ -52,7 +52,7 @@ Website files and documentation checks live under `docs/`; run Jekyll there. `do
 
 Before editing the following content, read and follow its standard alongside the project's active Writing rule:
 
-- Documentation or instruction sources rendered into guides: [docs/standards/documentation.md](docs/standards/documentation.md).
+- Documentation or instruction changes that affect the guides: [docs/standards/documentation.md](docs/standards/documentation.md).
 - README content: [docs/standards/readme.md](docs/standards/readme.md).
 - Project descriptions in GitHub About, plugin manifests, README/site metadata or related variants: [docs/standards/project-description.md](docs/standards/project-description.md).
 
@@ -94,7 +94,7 @@ This covers Helm's agent-facing instructions. Generic prose stays in `rules/writ
 - `README.md` is the Jekyll homepage, a GitHub-rendered document and packaged plugin content. Keep its published documentation links and banner image as absolute `https://myowinthein.github.io/agent-helm/...` URLs. `docs/_sass/custom/custom.scss` exempts that prefix (`$helm-docs-url`) from the external-link icon, so change it together with `docs/_config.yml`'s `url` and `baseurl`.
 - Add documentation-only support files to `docs/_config.yml`'s exclusions when they should not ship as site content.
 - Docs CI is build-only. A green Pages build does not establish that package/helper/client/model checks ran or passed.
-- Canonical guide/rule/supporting sources live outside Jekyll's website source and file watcher. Rebuild the site after editing them; restart the preview after plugin or configuration changes so it loads the current renderer.
+- Canonical agent instructions live outside Jekyll's website source and file watcher. Behavior changes need a separate review of the authored Overview and Details guides; they are not rendered from those instructions. Rebuild after external site inputs such as README changes, and restart the preview after plugin or configuration changes.
 - `scripts/validate_plugin.rb` requires each `guides/*.md` to keep a `## Question points` section and the literal `[question mechanism (QM)](../prompts/shared/question-mechanism.md)` link, and rejects any `workflows/` source. Rewording that link fails `ruby scripts/test_plugin.rb`.
 - Normalize uses explicit `git filter-repo --refs` partial mode to preserve remotes and excluded refs. Default full-rewrite mode removes `origin` and affects more refs; never substitute it or reconstruct a remote from its URL alone.
 - Headless `claude -p` has no native question tool, so workflows ask in chat and end the run; profiling needs `--resume <session_id>` per answer. Runs that return $0 or a 429 hit the usage limit; discard them.

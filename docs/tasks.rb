@@ -5,6 +5,7 @@ task :docs_test do
   require "html-proofer"
   require "yaml"
   Dir.chdir("docs") { ruby Gem.bin_path("jekyll", "jekyll"), "build" }
+  ruby "docs/tests/test_guide_views.rb"
   config = YAML.safe_load_file("docs/_config.yml")
   HTMLProofer.check_directory("./docs/_site", HelmDocs.options(config)).run
   HelmDocs.check_setup("./docs/_site", config)
@@ -17,5 +18,5 @@ task :docs_links_test do
   ruby "docs/tests/test_docs_links.rb"
   ruby "docs/tests/test_docs_workflow.rb"
   ruby "docs/tests/test_asset_digest.rb"
-  ruby "docs/tests/test_guide_content.rb"
+  ruby "docs/tests/test_human_guides.rb"
 end
