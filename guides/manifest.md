@@ -115,11 +115,38 @@ For `standard`, follow the [Standard Readme specification](https://github.com/Ri
 - The spec makes a table of contents optional below 100 lines; include it at 100 or more. Preserve generator-owned contents and account for the renderer's own navigation when explaining a proposed change or an explicit deviation.
 - Install and Usage normally apply, but are optional for documentation-only repositories. Include CLI/import examples when applicable, not placeholder sections for nonexistent interfaces.
 - Additional named sections are allowed after Usage and before API. Use them for reader needs such as configuration, development, limitations or documentation pointers; do not create a literal "Extra Sections" heading or forbid useful sections outside the old checklist.
-- Contributing and License need verified project policy/license facts or a maintainer decision. Never invent a license, permission to contribute, security process or support commitment to fill a required section. Missing facts remain unresolved; do not certify strict compliance.
+- End with separate Contributing and License sections. Contributing identifies the questions channel, PR acceptance and applicable requirements; License names the license or identifier and verified copyright holder, following the contribution and licensing guidance below. Missing facts prevent strict compliance claims.
 
 Preserve locale, frontmatter and rendering requirements. If existing protected content or intentional structure conflicts with strict spec conformance, disclose it and propose an explicit choice. Do not silently convert to custom or claim strict compliance because equivalent information exists.
 
 For `custom`, preserve existing or approved-outline section names/order. Adding, removing, renaming or reordering sections requires explicit approval of the exact change and placement. Investigate each section's subject; never erase it because the generic checklist did not cover it.
+
+### Contribution and licensing
+
+Determine contribution policy and reuse rights independently within the selected review scope. For a new custom outline, recommend separate Contributing and License sections, with License last. An approved compact combined ending is acceptable when both subjects remain easy to identify. Propose separation if licensing is buried or unclear; preserve existing names, order and anchors until a structural change is approved.
+
+Read the relevant license texts, scoped notices, README statements, package declarations and contribution policies, including applicable inherited policies when evidenced. Cross-check their scope and consistency. Public visibility, an open-source license, enabled issues and a package's `private` flag establish neither PR acceptance nor a complete licensing policy. Missing terms, conflicting declarations and uncertain ownership remain explicit gaps, not inferred maintainer decisions.
+
+**Contributing:** usually use one short paragraph stating what help is accepted, where to send it and any established prerequisite readers need before starting. Distinguish reports, ideas, documentation fixes and code contributions; a feedback invitation alone does not settle PR acceptance. Preserve restrictions for personal, closed-to-contribution or inactive projects. Link longer procedures instead of copying them. Include existing sign-off, CLA or other contribution requirements when applicable, without inventing a process or response promise. [GitHub's contribution guidance](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/setting-guidelines-for-repository-contributors) describes these supporting files and channels.
+
+**License:** normally use a brief statement naming the actual terms and linking their repository text. Expand into short bullets or a table only when needed to distinguish terms or scopes. Preserve verified copyright attribution; do not invent holders or years. Apply the following cases:
+
+| Evidence | README treatment |
+|---|---|
+| One standard license, such as MIT or Apache-2.0 | State the exact name or SPDX identifier and version where applicable; link the project license file. |
+| Copyleft terms or an exception | Preserve the exact version, only/or-later choice and declared exception; do not replace them with a broader family name. |
+| Multiple licenses | Explain whether terms are alternatives or apply together; preserve the evidenced SPDX `OR`, `AND` or `WITH` meaning and link the relevant texts. |
+| Different terms for code, documentation, images, data or components | Identify the meaningful scopes and their governing texts/notices. Do not extend a code license to all assets or imply it replaces third-party terms. |
+| Custom, proprietary or source-available terms | Use the actual designation and link the governing terms; do not infer open-source status from source availability. |
+| CC0 or The Unlicense | Name and link the actual dedication. `Unlicense` is distinct from `UNLICENSED`; never interchange them. |
+| Confirmed absence of a project license | State that no project license is provided; for standard style, use `UNLICENSED` with that explanation. Preserve any established rights-reserved statement without inventing one. Public visibility does not establish general reuse permission. |
+| Missing, ambiguous or conflicting evidence | Report the unresolved facts in the proposal and obtain only the decisions needed for the requested content. Do not silently choose a license or label uncertain intent `UNLICENSED`. |
+
+[GitHub's licensing guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository) recommends including the actual license text. [SPDX expressions](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) distinguish choices, cumulative terms and exceptions; [no-license guidance](https://choosealicense.com/no-permission/) explains the difference between public access and reuse permission. These references inform presentation; project evidence determines the claims.
+
+Use the active Writing rule's reference-link workflow. Prefer the actual issue/template, questions channel, contribution guide and license text; add an applicable Code of Conduct, contributor agreement, security policy or scoped notice only when it serves a distinct reader need. Follow the established private vulnerability-reporting route rather than directing sensitive reports to public issues. Verify destinations and fragments in the README's actual GitHub/site/package contexts; a generic license website does not replace project-specific terms. Create no policy files, metadata changes or new channels merely to supply links.
+
+Handle unknown decisions in the existing content/outline review, without another approval stage. README maintenance does not select or change licensing or contribution policy. Preserve governing legal wording and its applicable exact-content review requirements; broader policy or license work needs its own authorized scope.
 
 ## Step 4: Quality review and approved writes
 
@@ -130,7 +157,7 @@ Before writing, check the changed content and its dependencies:
 - Purpose and first useful action are easy to find. Prerequisites and the smallest copyable example reflect actual scripts/interfaces, correct working directory and required setup. Use fenced examples with a language and without copied shell prompts; show expected results only when supported.
 - Installation, versions, package/release availability and functionality have evidence. Flag uncertainty instead of inventing published artifacts or promises. Environment examples use key names/placeholders, never real secrets.
 - Links, anchors, assets and commands fit the real GitHub/site/package contexts. Preserve intentional absolute/relative conventions, frontmatter, banners, badges, HTML and generated blocks. Link detailed docs instead of expanding inventories.
-- Contribution, help and license claims match actual policy. Preserve unique human context and unaffected custom content. Report unresolved facts/conflicts and relevant evidence limitations.
+- Contribution channels, PR acceptance, requirements and license identity/scope match the verified policies and linked terms; no unresolved conflict is presented as permission. Preserve unique human context and unaffected custom content. Report unresolved facts/conflicts and relevant evidence limitations.
 
 Use static evidence for this review; do not run installation, tests, migrations or operational commands just to draft examples, and never describe unexecuted examples as tested. Required later publication checks still apply; unavailable checks are not passes.
 
