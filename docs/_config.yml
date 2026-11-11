@@ -54,7 +54,7 @@ plugins:
 exclude:
   - Gemfile
   - Gemfile.lock
-  - documentation.md
+  - standards/
   - scripts/
   - tests/
   - tasks.rb

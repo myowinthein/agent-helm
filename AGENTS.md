@@ -40,7 +40,7 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `guides/archive.md` sequences the five supporting `prompts/archive/step*.md` files. These steps are not independently discoverable skills.
 - `guides/ship.md` holds routing and ordinary source publication together. `prompts/ship/{targets,release}.md` load only for their selected procedures; they are supporting prompts, never skills. History/archive protocols remain in `prompts/shared/`; `ci.md` and relevant provider sections define exact-source checks and handoffs.
 - `prompts/shared/normalize-handoff.md` owns normalize-to-ship discovery across sessions; `review-anchor.md` lazily permits log/manifest to recover their own rewritten review baseline from bounded read-only evidence. `helpers/normalize_handoff.py` only registers/reads immutable private locators in the actual Git common directory; it executes no Git, reads no recovery bodies/ledgers and grants no publication authority. Source work leaves real locators untouched.
-- `.claude-plugin/plugin.json` owns the release version; ship synchronizes `.claude-plugin/marketplace.json`. Keep their plugin identity, version and description aligned, preserving `commands: []` and avoiding legacy command adapters. Project descriptions follow [.github/project-description.md](.github/project-description.md).
+- `.claude-plugin/plugin.json` owns the release version; ship synchronizes `.claude-plugin/marketplace.json`. Keep their plugin identity, version and description aligned, preserving `commands: []` and avoiding legacy command adapters.
 - `docs/_config.yml`, `docs/Gemfile`, `docs/tasks.rb`, `Rakefile` and `.github/workflows/docs.yml` own the docs build. Main pushes, PRs and manual dispatch build; only main publishes Pages. CI resolves the latest stable Just the Docs release and does not run package, helper, native-client or model checks.
 - `docs/setup/{claude,codex}.md` use `docs/_includes/setup-tabs.html` and four `docs/_includes/setup/` instruction bodies. The four older setup URLs use `docs/_layouts/setup-redirect.html`; preserve panel/heading anchors and redirect fragments together with `docs/assets/js/setup-tabs.js`.
 - `docs/_includes/head_custom.html` loads `docs/assets/js/theme-switcher.js` before content and versions its scripts through `docs/_plugins/asset_digest.rb`, which fails the build for assets that are not published static files. Header markup and `docs/_sass/custom/custom.scss` provide System/Light/Dark selection with a site-specific saved preference.
@@ -50,7 +50,11 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 
 Website files and documentation checks live under `docs/`; run Jekyll there. `docs/_plugins/repository_content.rb` renders the root README and shared plugin icon while retaining published URLs. Canonical agent instructions stay at their package paths.
 
-Before editing documentation, README content or instruction sources rendered into guides, read and follow [docs/documentation.md](docs/documentation.md) alongside the project's active Writing rule.
+Before editing the following content, read and follow its standard alongside the project's active Writing rule:
+
+- Documentation or instruction sources rendered into guides: [docs/standards/documentation.md](docs/standards/documentation.md).
+- README content: [docs/standards/readme.md](docs/standards/readme.md).
+- Project descriptions in GitHub About, plugin manifests, README/site metadata or related variants: [docs/standards/project-description.md](docs/standards/project-description.md).
 
 ## Domain Rules
 
