@@ -136,10 +136,10 @@ We agree what I need to recover. It then reviews the project, helps restore and 
 
 ## Contributing
 
-If a command doesn’t work as expected, a guide is unclear or you have an idea for Agent Helm, [open an issue on GitHub](https://github.com/myowinthein/agent-helm/issues). Tell me what you were trying to do and what would have helped.
+If a command behaves unexpectedly, a guide is unclear or you have an idea for Agent Helm, [open an issue on GitHub](https://github.com/myowinthein/agent-helm/issues). For bugs, tell me which client you use, what you tried, what you expected and what happened.
 
 ## License
 
-Agent Helm is open source under the [MIT license](https://github.com/myowinthein/agent-helm/blob/main/LICENSE).
+Agent Helm is licensed under the [MIT License](https://github.com/myowinthein/agent-helm/blob/main/LICENSE).
 
 <!-- last-reviewed: d324e0003e14fba62f45658d4a28fdbe0c2d8e8b -->
