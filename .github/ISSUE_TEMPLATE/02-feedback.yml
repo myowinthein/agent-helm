@@ -1,17 +1,25 @@
-name: Idea or documentation feedback
-description: Suggest an improvement or point out something unclear in a guide.
+name: Share feedback
+description: Suggest an improvement or clearer guidance for Agent Helm.
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Share one idea or documentation suggestion per issue and give it a specific title.
+
+        Reports are public. Remove API keys and private project details from text, links and attachments.
   - type: textarea
     id: feedback
     attributes:
       label: What could be better?
-      description: Describe your idea or link to the guide passage that was unclear.
+      description: Describe the improvement or unclear passage and why it matters. Include the command, rule or guide link when relevant.
+      placeholder: I'd like a short example of how to resume a refactor review after starting a new session.
     validations:
       required: true
   - type: textarea
     id: suggestion
     attributes:
-      label: Suggested change
+      label: Suggested change (optional)
       description: Share a possible solution or clearer wording, if you have one.
+      placeholder: Add a follow-up example to the refactor guide.
     validations:
       required: false
