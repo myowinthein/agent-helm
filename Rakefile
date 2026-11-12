@@ -34,5 +34,5 @@ task :acceptance_support_test do
 end
 
 desc "Check plugin packaging, helpers, smoke assertions and documentation"
-task test: %i[plugin_test normalize_test normalize_handoff_test ledger_test smoke_support_test acceptance_support_test docs_links_test docs_test]
+task test: %i[plugin_test normalize_test normalize_handoff_test ledger_test smoke_support_test acceptance_support_test docs_links_test docs_test docs_browser_test]
 task default: :test

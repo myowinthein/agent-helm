@@ -18,5 +18,11 @@ task :docs_links_test do
   ruby "docs/tests/test_docs_links.rb"
   ruby "docs/tests/test_docs_workflow.rb"
   ruby "docs/tests/test_asset_digest.rb"
+  ruby "docs/tests/test_frontend.rb"
   ruby "docs/tests/test_human_guides.rb"
+end
+
+desc "Check theme loading, static diagrams and on-demand search in Chrome"
+task docs_browser_test: :docs_test do
+  sh "node", "docs/tests/browser_frontend.mjs"
 end

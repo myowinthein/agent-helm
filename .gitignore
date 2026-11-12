@@ -7,3 +7,4 @@ _site/
 .sass-cache/
 vendor/
 .bundle/
+docs/node_modules/
