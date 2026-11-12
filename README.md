@@ -140,6 +140,6 @@ If a command behaves unexpectedly, a guide is unclear or you have an idea for Ag
 
 ## License
 
-Agent Helm is licensed under the [MIT License](https://github.com/myowinthein/agent-helm/blob/main/LICENSE).
+Agent Helm is licensed under the [MIT License](https://github.com/myowinthein/agent-helm/blob/main/LICENSE). © Myo Win Thein.
 
 <!-- last-reviewed: d324e0003e14fba62f45658d4a28fdbe0c2d8e8b -->
