@@ -136,7 +136,7 @@ We agree what I need to recover. It then reviews the project, helps restore and 
 
 ## Contributing
 
-If a command behaves unexpectedly, a guide is unclear or you have an idea for Agent Helm, [open an issue on GitHub](https://github.com/myowinthein/agent-helm/issues). Tell me which command and client you used, what you tried, what you expected and what happened.
+If a command behaves unexpectedly, a guide is unclear or you have an idea for Agent Helm, [open an issue](https://github.com/myowinthein/agent-helm/issues/new/choose).
 
 ## License
 
