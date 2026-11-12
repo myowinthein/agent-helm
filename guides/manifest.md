@@ -129,6 +129,8 @@ Read the relevant license texts, scoped notices, README statements, package decl
 
 **Contributing:** usually use one short paragraph stating what help is accepted, where to send it and any established prerequisite readers need before starting. Distinguish reports, ideas, documentation fixes and code contributions; a feedback invitation alone does not settle PR acceptance. Preserve restrictions for personal, closed-to-contribution or inactive projects. Link longer procedures instead of copying them. Include existing sign-off, CLA or other contribution requirements when applicable, without inventing a process or response promise. [GitHub's contribution guidance](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/setting-guidelines-for-repository-contributors) describes these supporting files and channels.
 
+For a general README reporting or feedback invitation, prefer one meaningful link to the existing issue chooser when forms are configured (`/issues/new/choose` on GitHub). Let forms collect reporting details instead of repeating their fields or checklists. Without forms, use the established intake channel and only essential reporting guidance. Keep distinct questions, security and contribution links when they serve different needs. Specific product actions may still link directly to their matching form.
+
 **License:** normally use a brief statement naming the actual terms and linking their repository text. Expand into short bullets or a table only when needed to distinguish terms or scopes. Preserve verified copyright attribution; do not invent holders or years. Apply the following cases:
 
 | Evidence | README treatment |
@@ -139,8 +141,10 @@ Read the relevant license texts, scoped notices, README statements, package decl
 | Different terms for code, documentation, images, data or components | Identify the meaningful scopes and their governing texts/notices. Do not extend a code license to all assets or imply it replaces third-party terms. |
 | Custom, proprietary or source-available terms | Use the actual designation and link the governing terms; do not infer open-source status from source availability. |
 | CC0 or The Unlicense | Name and link the actual dedication. `Unlicense` is distinct from `UNLICENSED`; never interchange them. |
-| Confirmed absence of a project license | State that no project license is provided; for standard style, use `UNLICENSED` with that explanation. Preserve any established rights-reserved statement without inventing one. Public visibility does not establish general reuse permission. |
+| Confirmed absence of a project license | State plainly that no project-wide reuse license is provided. Use this default in both styles without automatically adding `UNLICENSED`. Preserve established rights-reserved wording and verified attribution without inventing either. Public visibility does not establish general reuse permission. |
 | Missing, ambiguous or conflicting evidence | Report the unresolved facts in the proposal and obtain only the decisions needed for the requested content. Do not silently choose a license or label uncertain intent `UNLICENSED`. |
+
+Standard Readme requires `UNLICENSED` for an unlicensed repository. Disclose the plain-language default as a presentation deviation in the existing content review; do not claim strict conformance or silently change `readme-style`. Resolve an explicit strict-compliance request through that same review, without another approval stage. Keep package metadata outside this README wording choice.
 
 [GitHub's licensing guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository) recommends including the actual license text. [SPDX expressions](https://spdx.github.io/spdx-spec/v3.0.1/annexes/spdx-license-expressions/) distinguish choices, cumulative terms and exceptions; [no-license guidance](https://choosealicense.com/no-permission/) explains the difference between public access and reuse permission. These references inform presentation; project evidence determines the claims.
 
