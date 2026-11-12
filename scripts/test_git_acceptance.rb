@@ -81,6 +81,37 @@ Dir.mktmpdir("helm-git-acceptance-") do |temporary|
   HelmGitAcceptance.assert_publication!(HelmGitAcceptance.remote_refs(repo, remote), { "refs/heads/main" => new_merge, "refs/heads/feature" => right })
   puts "PASS publication oracle: moved remote, fixed stale lease, partial success and missing-action completion"
 
+  replacement_remote = root.join("manual-history.git")
+  HelmSmoke.git(repo, "init", "--quiet", "--bare", replacement_remote.to_s)
+  HelmSmoke.git(repo, "push", "--quiet", "--no-follow-tags", replacement_remote.to_s,
+    "#{left}:refs/heads/main", "#{first}:refs/tags/keep")
+  replacement_before = HelmGitAcceptance.remote_refs(repo, replacement_remote)
+  consumer_before = HelmGitAcceptance.graph(repo)
+  isolated = root.join("replacement-backup.git")
+  HelmSmoke.git(repo, "init", "--quiet", "--bare", isolated.to_s)
+  HelmSmoke.git(isolated, "fetch", "--quiet", "--no-tags", "--no-write-fetch-head",
+    "--no-recurse-submodules", "--no-auto-maintenance", replacement_remote.to_s,
+    "refs/heads/main:refs/heads/remote-main")
+  raise "Backup fetched the wrong remote tip" unless HelmSmoke.git(isolated, "rev-parse", "refs/heads/remote-main").strip == left
+  replacement_bundle = root.join("remote-before.bundle")
+  HelmSmoke.git(isolated, "bundle", "create", replacement_bundle.to_s, "refs/heads/remote-main")
+  bundle_bytes = replacement_bundle.binread
+  replacement_recovery = root.join("replacement recovery")
+  replacement_recovery.mkpath
+  HelmGitAcceptance.verify_bundle!(isolated, replacement_bundle, [left], replacement_recovery,
+    expected_refs: { "refs/heads/remote-main" => left })
+  raise "Remote backup changed consumer refs or commits" unless HelmGitAcceptance.graph(repo) == consumer_before
+  raise "Isolated fetch wrote consumer FETCH_HEAD" if repo.join(".git/FETCH_HEAD").exist?
+  HelmSmoke.git(repo, "push", "--quiet", "--no-follow-tags",
+    "--force-with-lease=refs/heads/main:#{left}", replacement_remote.to_s, "#{new_merge}:refs/heads/main")
+  HelmGitAcceptance.assert_publication!(HelmGitAcceptance.remote_refs(repo, replacement_remote),
+    { "refs/heads/main" => new_merge })
+  raise "Replacement changed the preserved tag" unless HelmSmoke.git(repo, "ls-remote", replacement_remote.to_s, "refs/tags/keep").split.first == first
+  raise "Publication changed the original remote backup" unless replacement_bundle.binread == bundle_bytes
+  raise "Original remote snapshot was lost" unless HelmSmoke.git(replacement_recovery, "cat-file", "-e", "#{replacement_before.fetch("refs/heads/main")}^{commit}").empty?
+  raise "Replacement invented normalize state" if isolated.join("agent-helm/normalize-handoffs").exist?
+  puts "PASS replacement backup: isolated fetch, independent old-history recovery, unchanged consumer, fixed-lease push and preserved tag/bundle"
+
   report = repo.join(".helm/archive/step1-explore.md")
   report.parent.mkpath
   report.write("Approved fictional report\n")

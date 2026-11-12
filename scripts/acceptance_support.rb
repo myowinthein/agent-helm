@@ -266,7 +266,7 @@ module HelmAcceptance
         (command.include?("ls-remote") || command.include?(scenario.fetch(:local_remote).to_s)) &&
         HelmAcceptance.strings(call["output"]).any? { |text| text.include?(remote_tip) }
     end
-    raise "Actual remote main was not inspected" unless inspected || scenario[:missing_handoff]
+    raise "Actual remote main was not inspected" unless inspected
     if scenario[:immutable_proof]
       proof = JSON.parse(HelmSmoke.read_regular(scenario.fetch(:private_path), "handoff.json"))
       raise "Original proof or fixed expectations were replaced" unless scenario.fetch(:immutable_proof).all? { |key,value| proof[key] == value }
