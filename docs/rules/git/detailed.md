@@ -82,7 +82,7 @@ A test name, green result from an older commit or successful source build does n
 
 [Ship](../../commands/ship.html) reviews the actual destination, outgoing commit, refs and effects before each approved push. Deploy-on-push behavior is part of that decision. PR handoffs, integrations, releases and deployment each need their own evidence.
 
-Results are read back after publication or uncertainty before retries. Branches remain by default; base/environment branches and public published tags are protected. [Normalized history](../../commands/ship.html#publish-normalized-history) and [private archive backups](../../commands/ship.html#publish-an-archive-backup) use their dedicated proof and approval procedures.
+Results are read back after publication or uncertainty before retries. Branches remain by default; base/environment branches and public published tags are protected. [Normalized history](../../commands/ship.html#publish-normalized-history) and [private archive backups](../../commands/ship.html#publish-an-archive-backup) use their dedicated proof and approval procedures. When original rewrite proof is unavailable, ship can offer an explicitly approved replacement with a verified current-remote backup and fixed leases, while reporting the original rewrite as unverified.
 
 ## Explore the source
 

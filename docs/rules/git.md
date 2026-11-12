@@ -53,4 +53,4 @@ Use configured checks for changed code and affected consumers. Shared changes re
 
 [Ship](../commands/ship.html) handles reviewed pushes, optional target updates and separately approved releases on ready, integrated main/master. Each push needs concrete authorization for its destination, source, refs and effects, including deployment triggers.
 
-Results are read back before claiming success. Branches stay intact by default; base/environment branches and public published tags remain protected. Normalized history and private archive backups follow ship’s specialist procedures.
+Results are read back before claiming success. Branches stay intact by default; base/environment branches and public published tags remain protected. Normalized history and private archive backups follow ship’s specialist procedures. Without original rewrite proof, ship can instead review an explicit [history replacement](../commands/ship.html#publish-normalized-history), backed by a verified copy of the current remote history and fixed leases.
