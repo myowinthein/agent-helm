@@ -50,6 +50,8 @@ You can also request a style-only change. If history was rewritten, manifest tri
 
 Manifest checks [contribution and licensing]({{ page.detailed | relative_url }}#contribution-and-licensing) separately: what help is accepted, where to send it and what reuse terms apply. It preserves different terms for code and assets when relevant. Standard READMEs keep the sections separate; custom layouts follow your approved outline. Missing or conflicting policies stay visible for review.
 
+When issue forms are configured, general reporting links use their chooser and leave reporting details to the forms. When no project-wide reuse license exists, the README says so in plain language; any departure from the selected spec is disclosed.
+
 ## Review the update
 
 Review all proposed changes or a subset, ask for revision, or cancel. Commands, examples and links are checked against source without running example commands just to write documentation. Custom content and generated blocks are preserved.

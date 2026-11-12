@@ -62,7 +62,13 @@ History markers are evidence of an earlier review, not a reason to discard writi
 
 These answer separate questions: how can someone help, and what may they reuse? A public repository or an MIT license does not automatically mean pull requests are accepted.
 
-The README names established channels and requirements, then summarizes the actual license with a link to its text. Different terms for code, images or other assets remain distinct. Missing terms and conflicting declarations are reported for a decision; manifest does not choose a new license or create a contribution policy to fill a heading.
+Contribution instructions usually fit in one short paragraph. When issue forms are configured, a general reporting link opens the chooser and the form asks for the details. A specific Report a problem action can still open its matching form directly. Existing questions channels, PR restrictions and contribution requirements remain in place; without forms, the README uses the established intake channel and essential reporting guidance.
+
+License summaries name the actual terms and link their text. When no project-wide reuse license is provided, a short statement saying so is enough. Existing rights-reserved wording and verified attribution are preserved, without automatically adding an `UNLICENSED` label.
+
+Standard Readme requires that identifier for unlicensed repositories. Manifest flags the plain wording as a presentation deviation in the same content review. It does not claim strict conformance, change your saved style or edit package metadata to make the wording fit. An explicit request for strict compliance is resolved in that review too.
+
+Different terms for code, images or other assets remain distinct. Missing terms and conflicting declarations are reported for a decision; manifest does not choose a new license or create a contribution policy to fill a heading.
 
 ## Review the update
 
