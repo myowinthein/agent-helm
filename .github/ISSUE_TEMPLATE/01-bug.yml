@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a command, rule or docs page that behaves unexpectedly.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe what you expected and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: context
+    attributes:
+      label: Where did it happen?
+      description: Name the command or rule and client, or link to the affected docs page.
+      placeholder: ship in Codex CLI
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: What did you try?
+      description: Share the steps or a small example, if you can.
+    validations:
+      required: false
+  - type: input
+    id: versions
+    attributes:
+      label: Versions and model
+      description: Include the Helm version, client version, model or operating system, if known.
+    validations:
+      required: false
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Relevant output or screenshots
+      description: Share a short excerpt or attach a screenshot. Remove secrets and private project details.
+    validations:
+      required: false
