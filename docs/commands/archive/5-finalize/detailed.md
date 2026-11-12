@@ -1,5 +1,5 @@
 ---
-title: "Step 5: Prepare locally"
+title: "step 5: prepare locally"
 description: "The final archive phase turns the reviewed recovery kit into an explicitly approved local payload commit. Its report makes storage choices and remaining recovery limits clear before any later private backup publication."
 parent: archive
 grand_parent: Commands

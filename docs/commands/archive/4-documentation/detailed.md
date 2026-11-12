@@ -1,5 +1,5 @@
 ---
-title: "Step 4: Documentation"
+title: "step 4: documentation"
 description: "Recovery documentation should help a future developer choose a route and follow it without reconstructing the archive from scattered reports. The writing reflects preserved evidence, including what still cannot be verified."
 parent: archive
 grand_parent: Commands

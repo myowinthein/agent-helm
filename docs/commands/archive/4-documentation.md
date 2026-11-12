@@ -1,5 +1,5 @@
 ---
-title: "Step 4: Documentation"
+title: "step 4: documentation"
 description: Prepare a clear recovery entry point, ordered setup procedure and artifact documentation while preserving useful project and historical context.
 parent: archive
 grand_parent: Commands
