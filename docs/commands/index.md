@@ -23,3 +23,16 @@ Guides to using Agent Helm at different points during project development. Each 
 | Review and standardize commit messages | [normalize]({{ '/docs/commands/normalize.html' | relative_url }}) |
 | Publish reviewed work or prepare a release | [ship]({{ '/docs/commands/ship.html' | relative_url }}) |
 | Preserve a project for later recovery | [archive]({{ '/docs/commands/archive.html' | relative_url }}) |
+
+## Where files are saved
+
+Helm saves workflow records in your project and recovery backups in your home directory. Claude and Codex share these locations in the same project folder and OS account.
+
+| OS | Folder |
+|---|---|
+| Project records | `<project>/.helm/` |
+| macOS | `/Users/<username>/Agent Helm/` |
+| Windows | `C:\Users\<username>\Agent Helm\` |
+| Linux | `/home/<username>/Agent Helm/` |
+
+These files help agents resume unfinished work and restore earlier Git history if needed.
