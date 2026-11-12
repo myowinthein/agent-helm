@@ -4,8 +4,6 @@ body:
   - type: markdown
     attributes:
       value: |
-        Report one problem per issue and give it a specific title.
-
         Reports are public. Remove API keys and private project details from text, links and attachments.
   - type: textarea
     id: problem
@@ -20,7 +18,7 @@ body:
   - type: input
     id: context
     attributes:
-      label: Where did it happen? (optional)
+      label: Where did it happen?
       description: Name the command, rule or setup step and your Claude or Codex client, or link to the affected guide.
       placeholder: log in Codex CLI, while reviewing AGENTS.md
     validations:
@@ -28,7 +26,7 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: Steps to reproduce (optional)
+      label: Steps to reproduce
       description: Share the steps or a small example we can follow. If it happens intermittently, describe what led up to it and how often it occurs.
       placeholder: |
         1. Start log in a project with custom notes in AGENTS.md.
@@ -39,7 +37,7 @@ body:
   - type: textarea
     id: versions
     attributes:
-      label: Versions and environment (optional)
+      label: Versions and environment
       description: Include the Agent Helm version, Claude or Codex app/CLI version, model and operating system, if known.
       placeholder: |
         Helm: <version>
@@ -51,7 +49,7 @@ body:
   - type: textarea
     id: evidence
     attributes:
-      label: Screenshots or extra details (optional)
+      label: Screenshots or extra details
       description: Share a relevant output excerpt, proposed change or screenshot. Text is helpful for commands and error messages.
     validations:
       required: false
