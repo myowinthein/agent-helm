@@ -16,8 +16,8 @@ Use env when environment settings or Git ignore rules have become hard to trust.
 
 ```mermaid
 flowchart TD
-  Audit["Review configuration and ignore rules"] --> Select["Choose fixes or a template"]
-  Select --> Approve{"Approve the plan?"}
+  Audit["Review configuration and ignore rules"] --> Plan["Review fixes or a template"]
+  Plan --> Approve{"Apply the shown plan?"}
   Approve -->|Yes| Apply["Apply and verify selected changes"]
   Approve -->|Not now| Report["Keep findings for follow-up"]
 ```
@@ -42,7 +42,7 @@ The audit follows actual services and configuration layers. An override need not
 
 ## Choose the fixes
 
-Choose Env files, `.gitignore` or both, then review the exact changes. The plan separates committable source/templates from local-only work and external setup. Templates use placeholders, and edits preserve the loader's meaning and intentional environment differences.
+Review one plan covering environment files, `.gitignore` or both, then approve the changes you want. A separate scope question is needed only when the plan depends on your answer. Source/templates, local-only work and external setup stay distinct; templates use placeholders and edits preserve configuration meaning.
 
 **Untracking needs separate approval.** It keeps the local file, but other clean copies may disappear when collaborators update. Moving or untracking a secret does not revoke it or erase its history.
 

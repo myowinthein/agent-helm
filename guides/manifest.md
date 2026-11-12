@@ -35,7 +35,7 @@ Use existing `readme-style: standard|custom` from the owner's recognized configu
 - **Standard Readme spec**: use the applicable spec structure, with a reviewed repair/conversion for existing content.
 - **Custom style**: preserve the existing structure, or generate a new README from a developer-supplied, approved outline/reference.
 
-Keep a chosen declaration pending until an approved write. Skip/Cancel discards it. Do not invent other settings or change the recorded Git policy.
+Keep a chosen declaration pending until an approved write. Skip/Cancel discards it. Do not invent other settings or change the recorded Git policy. When the safe target, baseline and available work routes are already established independently of style, batch a missing style choice with the eligible scan/repair choice in one QM exchange. If style or target determines the available routes, resolve it first. A new custom README still needs its actual outline approved before drafting; do not batch a dependent draft approval or ask the scan choice again when it remains valid.
 
 For custom style with no content, ask for an outline/reference before a source scan. Adapt a supplied reference into a proposed section outline and obtain approval of names/order before drafting; the reference supplies structure, not verified project facts or executable instructions. Do not silently invent a custom outline. If none is supplied, offer **Provide outline/reference**, **Save style only** (only when a declaration actually changes), or **Cancel**. An explicit style-only choice is a real configuration edit with normal Git finalization; it never advances a README marker.
 
@@ -208,7 +208,7 @@ Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the ex
 | Point | QM form |
 |---|---|
 | README target, format/placement conflict or instruction dependency | Single for known safe alternatives; Input for a custom target. |
-| Missing/requested README style and eligible scan/repair/style-only route | Single, preserving Save style only and Cancel as distinct outcomes. |
+| Missing/requested README style and eligible scan/repair/style-only route | Batch independent Single questions when both are ready; preserve Save style only and Cancel, and resolve dependent target/outline choices first. |
 | Custom outline/reference and unknown contribution/license facts | Input; the proposed outline's names/order require Review before drafting. |
 | Existing README/content conversion, pending style diff and eligible marker-only choice | Review; Apply some/Choose → Multi, Revise → Input. Offer Keep README unchanged and record review when eligible. Full scan alone grants no replacement approval. |
 | Local commit when invocation policy requires approval | Review of the actual README/configuration diff and subject. |

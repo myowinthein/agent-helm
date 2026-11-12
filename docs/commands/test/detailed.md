@@ -24,7 +24,7 @@ flowchart TD
   Start(["Start test"]) --> Inspect["Identify project behavior,<br/>existing tests and tooling"]
   Inspect --> Scope["Choose Full scan or Gap scan<br/>using valid review history"]
   Scope --> Assess["Review behavior and tests;<br/>report prioritized cases"]
-  Assess --> Select["Choose cases and review<br/>the test and setup plan"]
+  Assess --> Select["Review prepared plans<br/>or choose specific cases"]
   Select --> Choice{"What should proceed?"}
   Choice -->|Skip| End(["Report findings and pending work"])
   Choice -->|Record findings only| Record["Save the approved assessment"]
@@ -57,7 +57,9 @@ For example, a payment retry case should verify the externally important outcome
 
 Each finding explains the missing protection, evidence, priority and readiness. Priority describes risk; implementation cost is separate. Unclear intended behavior is surfaced before a case is written, rather than turned into an invented expectation.
 
-Choose recommended work, all ready cases, a subset or none. The implementation plan identifies the cases, paths, tools and execution effects. Findings can be saved before implementation; selecting none does not mark them fixed.
+Choose recommended work, all ready cases, a subset or none. A fully prepared recommended plan or plan for all ready cases can be selected and approved in one decision, with exact cases, paths, tools, execution effects and record changes visible first. There is no repeated Apply question for that unchanged plan.
+
+Custom selections need their resulting plan reviewed, including replacement guarantees and prerequisites. Unresolved intent or intrusive execution stays pending until its own required decision is made. Findings are saved before implementation under the approved checkpoint plan; selecting none does not authorize a new record write or mark findings fixed. Unknown implementation diffs and later commits are not pre-approved.
 
 ## Tools and verification
 

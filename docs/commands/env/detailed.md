@@ -24,8 +24,7 @@ flowchart TD
   Start(["Start env"]) --> Audit["Inspect configuration usage,<br/>env files and Git ignore rules"]
   Audit --> Findings{"Actionable findings or<br/>a requested template?"}
   Findings -->|No| Report(["Report the scoped audit"])
-  Findings -->|Yes| Select["Choose Env files,<br/>.gitignore or both"]
-  Select --> Plan["Review exact fixes,<br/>local-only work and dependencies"]
+  Findings -->|Yes| Plan["Review ready fixes or resolve<br/>missing scope before planning"]
   Plan --> Choice{"Apply the plan?"}
   Choice -->|Revise| Plan
   Choice -->|Skip| Finish(["Finish locally"])
@@ -49,7 +48,7 @@ For example, an ignored local file can still lack shared protection if only your
 
 ## Choose the fixes
 
-Findings identify paths and key names, explain the evidence and distinguish confirmed problems from uncertainty. Select environment configuration, `.gitignore` or both, then review the concrete plan.
+Findings identify paths and key names, explain the evidence and distinguish confirmed problems from uncertainty. When the fixes are clear, one review shows the exact environment and `.gitignore` changes and lets you approve all or a coherent subset. The agent asks about scope first only when your answer would change the plan. A changed selection is checked for dependencies before editing.
 
 | Output | How it is handled |
 |---|---|
@@ -72,7 +71,7 @@ Untracking is a separate decision: `git rm --cached` keeps your local file, but 
 
 The report separates verified source changes, local configuration work and pending external actions. Syntax and ignore checks are different from working credentials or a ready deployment. Manual or deferred work remains explicit.
 
-Only approved credential-free source, templates and ignore changes enter commits. Operational values stay local, and work finishes on the same branch. Use [ship](../ship.html) separately to publish source changes.
+Only approved credential-free source, templates and ignore changes enter commits. With auto-commit off, a fully known source diff can be approved with or without its local commit in the same review. Operational values stay local, and work finishes on the same branch. Use [ship](../ship.html) separately to publish source changes.
 
 ## Explore the source
 

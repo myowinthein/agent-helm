@@ -33,7 +33,7 @@ Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-com
 
 Log connects Claude and Codex to shared project knowledge: `AGENTS.md` holds the common instructions, while `CLAUDE.md` imports it and keeps any Claude-specific additions.
 
-It can set this up for a new project or reconcile existing files. You review the changes first; custom content, settings, imports and adopted rules are preserved unless you approve a specific change.
+It can set this up for a new project or reconcile existing files. Ready setup choices are grouped, and a clear reconciliation goes straight to its proposed diff. Custom content, settings, imports and adopted rules are preserved unless you approve a specific change.
 
 ## What the review covers
 
@@ -48,4 +48,4 @@ Review the proposal, then apply all, select changes, revise or cancel. New safet
 
 You get updated instructions, unresolved findings and a size report. A complete accepted source review advances the review marker; layout-only work and partial acceptance retain the earlier one.
 
-Changes follow your local commit policy and finish on the same branch. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish.
+With auto-commit off, a fully shown diff can be approved with or without its local commit. Changes follow your local commit policy and finish on the same branch. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish.

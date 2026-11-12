@@ -23,8 +23,8 @@ Log helps agents pick up a project with useful context. It combines source evide
 flowchart TD
   Inspect["Check the project, instruction owner and saved review"] --> Current{"Already current with no requested work?"}
   Current -->|Yes| Noop["Report without writes"]
-  Current -->|No| Scope["Choose Full scan, Gap scan or layout only"]
-  Scope --> Policy["Resolve missing settings and freeze local commit policy"]
+  Current -->|No| Scope["Choose scope and resolve<br/>independent missing settings together"]
+  Scope --> Policy["Freeze local commit policy"]
   Policy --> Eligible{"Write prerequisites met?"}
   Eligible -->|No| Block["Report the blocker and preserve work"]
   Eligible -->|Yes| Layout{"Shared setup needs changes?"}
@@ -64,7 +64,9 @@ An already-current result names the local commit it checked. It does not claim t
 
 The usual arrangement is `AGENTS.md` for shared knowledge and `CLAUDE.md` for its import plus Claude-specific additions. Log first follows the actual instruction files, imports and overrides. It preserves custom layouts, adopted rule pointers and confirmed settings; missing standard headings do not make an existing file broken.
 
-For a new setup, you choose missing settings such as local auto-commit and future shipping preferences. The exact file changes are shown before they are applied. Existing settings are not silently replaced with defaults.
+For a new setup, missing settings such as local auto-commit and future shipping preferences can share a question batch with scan depth when the choices are independent. Existing settings are not silently replaced with defaults, and cancelling the work discards pending preferences.
+
+When the existing instruction files can be reconciled without an unresolved policy choice, you see the recommended merge diff directly. A baseline question is reserved for real ambiguity; it does not replace approval of the resulting changes.
 
 For example, a project may have a useful deployment warning in a custom section. Log keeps it even if the current scan does not rediscover why it was added; removing or contradicting it needs evidence and a reviewed change.
 
@@ -83,6 +85,8 @@ Lessons from your conversation also count. The agent checks what is confirmed, d
 ## Review and apply the proposal
 
 The proposal explains what to add, update or remove and why it matters to future work. You can accept all, choose specific changes, revise or cancel. Project-specific safety restrictions need your explicit agreement.
+
+When auto-commit is off and the exact diff, paths and commit subject are ready, the same review can offer Apply and commit or Apply without committing. Unwritten later knowledge changes need their own review; an uncommitted layout checkpoint leaves dependent scanning pending.
 
 Approved layout work is verified separately from knowledge changes. Cancelling a later source update preserves an earlier layout change you already approved. Log does not install or refresh adopted rules; use [adopt](../adopt.html#available-rules) for that.
 

@@ -16,8 +16,7 @@ Use refactor when code has become harder to understand or maintain. It finds wor
 
 ```mermaid
 flowchart TD
-  Review["Review source or saved findings"] --> Select["Choose improvements"]
-  Select --> Plan["Approve the change plan"]
+  Review["Review source or saved findings"] --> Plan["Choose and approve a prepared plan"]
   Plan --> Work["Apply and verify changes"]
   Work --> Result["Report fixes and remaining work"]
 ```
@@ -51,7 +50,7 @@ Bugs, new features, behavior-changing security fixes, upgrades and migrations re
 
 Priority describes the present cost or benefit. Transformation risk describes how confidently behavior can be preserved. A high-priority finding can still need clarification before it is ready.
 
-Choose recommended work, all ready findings, a subset or none. Before edits, approve one plan covering dependencies, preserved behavior and checks. Unselected findings are not added automatically.
+Choose recommended work, all ready findings, a subset or none. A fully prepared plan can be selected and approved together, covering dependencies, preserved behavior and checks. Custom selections get their resulting plan reviewed first; unselected findings are not added automatically.
 
 ## Apply and verify
 

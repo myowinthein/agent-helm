@@ -69,6 +69,8 @@ Keeping a rule also preserves its existing pointers. Adopt does not blend custom
 
 After applying the chosen set, adopt checks the installed content and instruction connections. The report separates installed, updated, kept, skipped and missing items. Matching files stay unchanged.
 
+When auto-commit is off and the exact copies, pointer changes, paths and commit subject are known, the same review can offer Apply and commit or Apply without committing. Installation approval alone does not approve a commit. Changed results need affected review; unchanged approved content is verified without another commit question.
+
 Start a fresh agent session to load the new instructions. File checks establish what was installed, not that every client's next startup has already loaded it. Publication remains a separate [ship](../ship.html) action.
 
 ## Explore the source

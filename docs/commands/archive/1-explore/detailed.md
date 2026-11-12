@@ -25,11 +25,12 @@ flowchart TD
   Start(["Source branch confirmed"]) --> Inventory["Inspect components, setup,<br/>data and recovery materials"]
   Inventory --> Scope["Agree recovery goals;<br/>identify missing and excluded inputs"]
   Scope --> Report["Present findings and<br/>the proposed restoration approach"]
-  Report --> Approval{"Approve the report?"}
+  Report --> Approval{"Approve the report<br/>and any ready restoration plan?"}
   Approval -->|Revise| Report
   Approval -->|Stop| End(["Leave exploration unsaved"])
-  Approval -->|Yes| Save["Save report and initial<br/>file inventory"]
-  Save --> Next(["Continue to Restore and Freeze"])
+  Approval -->|Report only| Saved["Save report and inventory;<br/>stop before restoration"]
+  Approval -->|Report and ready plan| Save["Save and verify report,<br/>inventory and checkpoint"]
+  Save --> Next(["Run only the approved restoration plan"])
 ```
 
 ## What gets discovered
@@ -52,9 +53,9 @@ The report separates confirmed facts, plausible restoration approaches and unkno
 
 ## What happens next
 
-Review the proposed scope and approach, request corrections or stop without saving. Approval records the initial report, inventory and progress in archive's own bundle. It does not authorize the commands or data operations suggested for restoration.
+Review the proposed scope and approach, request corrections or stop without saving. Approval records the initial report, inventory and progress in archive's own bundle.
 
-[Restore and freeze](../2-restore-and-freeze.html) turns that approach into a concrete plan with identified targets and execution effects.
+When the exact [Restore and freeze](../2-restore-and-freeze.html) plan is ready, the same review can show its commands, targets and execution effects. Approve both to continue after the exploration checkpoint is verified, or approve only the report and stop. If restoration still depends on missing facts, its plan needs later approval; a suggested approach is not permission to execute it.
 
 ## Explore the source
 

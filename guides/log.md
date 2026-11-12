@@ -49,7 +49,7 @@ Report `up to date at local {base_branch}@{sha}; remote not fetched` and leave t
 | Valid original or verified recovered marker | Gap scan, Full scan, or Skip; include supplied context even without new commits. |
 | Only layout connection/reconciliation remains | Propose the layout-only action or Cancel; do not force an otherwise unnecessary scan. |
 
-An explicitly selected scan depth takes precedence over the recommendation table. Without a valid original or verified recovered baseline, use Full scan or Skip rather than inventing one.
+An explicitly selected scan depth takes precedence over the recommendation table. Without a valid original or verified recovered baseline, use Full scan or Skip rather than inventing one. When the same preflight already establishes eligible routes and missing Step 1 preferences, batch those independent questions in one QM exchange. Skip/Cancel drops their pending values; a preference answer never approves a write. If ownership or another answer changes eligibility, resolve it first rather than batching dependent choices.
 
 Only when choosing Full scan versus Gap scan, read `{package_root}/prompts/shared/scan-scope.md`. Supply the already permitted marker-validation result, inspected snapshot, request and cheap impact index; layout preparation and no-op exits gain no scan prerequisite. Caller input/ownership blockers remain blockers; a missing review anchor does not authorize bypassing them.
 
@@ -188,7 +188,7 @@ Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the ex
 |---|---|
 | Missing scope/ownership facts or developer lessons | Input; Single for evidenced alternative interpretations. |
 | Full scan / Gap scan / Skip or layout-only route | Single. |
-| Missing Helm preferences | Independent Single questions, batched when supported; answers remain pending configuration. |
-| Layout baseline and conflicting desired policy | Single; Input for a custom resolution. |
+| Missing Helm preferences | Independent Single questions, batched with eligible scan selection when supported and independent; answers remain pending configuration. |
+| Unresolved layout baseline or conflicting desired policy | Single/Input only for missing intent; a ready recommended reconciliation goes directly to its exact-diff Review. |
 | Layout diff, knowledge/configuration diff and new safety wording | Review; Apply some → Multi, Revise → Input. Preserve separate completed phases. |
 | Local commit when invocation policy requires approval | Review of the exact completed diff, paths and subject. |
