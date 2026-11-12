@@ -28,9 +28,11 @@ Links navigate; buttons perform in-page actions. Destinations should answer the 
 |---|---|
 | Internal page or section | Current tab; no external-link icon. |
 | External text link | Current tab; northeast arrow leaving an open square. |
-| Necessary new tab/window | Visible and accessible opening warning; external icon only if the destination is external. |
+| Necessary new tab/window | No opening notice; external icon only if the destination is external. |
 
 New contexts are limited to preserving an active task, explicit user choice or project requirements. Keep native browser opening choices available. Downloads and email, phone or app links use native handling and clear outcome wording. Identify material surprises such as a login requirement or file format.
+
+Do not add visible or hidden notices solely to announce a new tab/window, including label suffixes, tooltips or screen-reader-only equivalents. Keep labels and accessible names focused on the destination.
 
 Classify destinations by the actual site/service boundary and explicit aliases; absolute URLs can be internal. Follow established design-system conventions and renderer limits. When Writing is also selected, apply these choices within its [reference-link workflow](writing.html#reference-links).
 
@@ -42,6 +44,6 @@ Keep project branding, tokens and known user needs in local guidance or the exis
 
 ## Basis and review
 
-Accessibility standards inform the rule; Helm’s mandatory new-context warning and default external icon are local usability policy, not blanket WCAG AA requirements. The visual-pattern guidance reflects practitioner observations and editorial choices, not proof of AI authorship or universal design failures.
+Accessibility standards inform the rule; Helm’s default external icon is local usability policy, not a blanket WCAG AA requirement. The visual-pattern guidance reflects practitioner observations and editorial choices, not proof of AI authorship or universal design failures.
 
 A requested review identifies concrete issues, their effect and bounded improvements. Loading the rule starts no redesign or scan. Check affected viewport sizes, zoom, keyboard interaction and links with available tools; report material verification limits.
