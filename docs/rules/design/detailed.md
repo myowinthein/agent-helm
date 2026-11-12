@@ -46,12 +46,12 @@ Links navigate to destinations; buttons perform actions. A phrase about a partic
 |---|---|
 | Internal page or section | Current tab, without an external-link icon. |
 | External text navigation | Current tab, with the northeast arrow leaving an open square. |
-| Required new tab or window | Visible and accessible opening warning; external icon only for an external destination. |
+| Required new tab or window | No opening notice; external icon only for an external destination. |
 | Download or email/phone/app action | Native handling and wording that explains the outcome. |
 
 A shared organization or parent domain does not automatically make two services internal. Use the actual site boundary and configured aliases. Preserve native middle-click, modified-click and browser menu choices.
 
-A new context can preserve an unfinished task or meet an explicit product requirement. Merely being external is insufficient. The icon identifies where a link goes; the opening warning explains what the click does. When Writing is also selected, use its [reference workflow](../writing.html#reference-links) to decide which phrases need links before applying these interface choices.
+A new context can preserve an unfinished task or meet an explicit product requirement. Merely being external is insufficient. Do not add visible or hidden announcements for opening behavior: no label suffixes, tooltips, accessible-only text, live announcements, dialogs or shared group notices. Keep labels focused on the destination; the icon identifies an external destination independently of tab behavior. When Writing is also selected, use its [reference workflow](../writing.html#reference-links) to decide which phrases need links before applying these interface choices.
 
 ## Preserve project choices
 
@@ -61,7 +61,7 @@ Record project-specific decisions in existing local guidance or the design syste
 
 ## Basis and review
 
-Accessibility standards inform the rule, while Helm's default external icon and mandatory new-context wording are local usability policy. They are not blanket WCAG AA requirements. Visual-pattern guidance is an editorial preference, not proof that a design was produced by AI.
+Accessibility standards inform the rule, while Helm's default external icon is local usability policy rather than a blanket WCAG AA requirement. Visual-pattern guidance is an editorial preference, not proof that a design was produced by AI.
 
 A useful review points to concrete issues, explains their effect and proposes bounded improvements. Verify the affected viewport sizes, zoom, keyboard use, focus and links with available tools. A static screenshot cannot establish every interaction, and unavailable checks remain explicit.
 

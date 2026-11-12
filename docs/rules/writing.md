@@ -41,7 +41,7 @@ Specific topics point to the relevant section; broad introductions point to the 
 
 Use the project's verified canonical URLs, preferring HTTPS where supported. Preserve working hostnames; non-www is a default for new projects only when hosting and HTTPS support it. Display origins like `https://example.com` without a trailing slash, while page paths follow the site's routing; a serialized root `/` remains valid. Preserve queries, fragments and external sites' canonical addresses.
 
-**Current tab is the default for internal and external links.** New tabs are limited to preserving an active task, explicit user choice or a project requirement. Deliberate new contexts need visible and accessible warnings; native browser choices remain available.
+**Current tab is the default for internal and external links.** New tabs are limited to preserving an active task, explicit user choice or a project requirement. Do not add visible or hidden opening announcements, including label suffixes, tooltips or screen-reader-only notices. Native browser choices remain available.
 
 A northeast arrow leaving an open square marks external text links, independently of tab behavior. Internal new-tab links get no external arrow. Downloads and email, phone or app links use native handling and clear outcome wording. Respect established project conventions and renderer limits.
 
