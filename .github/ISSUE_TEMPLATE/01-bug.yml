@@ -1,39 +1,57 @@
-name: Bug report
-description: Report a command, rule or docs page that behaves unexpectedly.
+name: Report a problem
+description: Report a problem with a Helm command, rule, setup or guide.
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Report one problem per issue and give it a specific title.
+
+        Reports are public. Remove API keys and private project details from text, links and attachments.
   - type: textarea
     id: problem
     attributes:
       label: What happened?
-      description: Describe what you expected and what happened instead.
+      description: Describe what you expected and what happened instead. Include any error message.
+      placeholder: |
+        Expected: log would preserve my custom project notes.
+        Actual: the proposed AGENTS.md update removed them.
     validations:
       required: true
   - type: input
     id: context
     attributes:
-      label: Where did it happen?
-      description: Name the command or rule and client, or link to the affected docs page.
-      placeholder: ship in Codex CLI
+      label: Where did it happen? (optional)
+      description: Name the command, rule or setup step and your Claude or Codex client, or link to the affected guide.
+      placeholder: log in Codex CLI, while reviewing AGENTS.md
     validations:
       required: false
   - type: textarea
     id: steps
     attributes:
-      label: What did you try?
-      description: Share the steps or a small example, if you can.
+      label: Steps to reproduce (optional)
+      description: Share the steps or a small example we can follow. If it happens intermittently, describe what led up to it and how often it occurs.
+      placeholder: |
+        1. Start log in a project with custom notes in AGENTS.md.
+        2. Review the proposed instruction changes.
+        3. The custom notes are missing from the proposal.
     validations:
       required: false
-  - type: input
+  - type: textarea
     id: versions
     attributes:
-      label: Versions and model
-      description: Include the Helm version, client version, model or operating system, if known.
+      label: Versions and environment (optional)
+      description: Include the Agent Helm version, Claude or Codex app/CLI version, model and operating system, if known.
+      placeholder: |
+        Helm: <version>
+        Client: Codex CLI <version>
+        Model: <model>
+        OS: <operating system>
     validations:
       required: false
   - type: textarea
     id: evidence
     attributes:
-      label: Relevant output or screenshots
-      description: Share a short excerpt or attach a screenshot. Remove secrets and private project details.
+      label: Screenshots or extra details (optional)
+      description: Share a relevant output excerpt, proposed change or screenshot. Text is helpful for commands and error messages.
     validations:
       required: false
