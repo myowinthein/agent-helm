@@ -22,7 +22,7 @@ Before entering any pending phase, perform only the local read-only prerequisite
 
 Ask **Proceed on this branch / Cancel** and wait for an explicit answer before step discovery, execution or writes. Reuse direct human approval already covering this same repository, branch, inspected snapshot and preservation scope; the bare command, auto-commit, saved reports, cursor, silence and picker defaults are not that confirmation. Cancel preserves files/index/refs and progress; if the branch is wrong, explain that the developer must switch manually and rerun. Do not create a confirmation file or add a state/schema field.
 
-Recheck the confirmed branch/source and scope before dependent actions. Unexpected branch/HEAD changes or materially different exclusions require refreshed evidence and confirmation, never a silent source switch or waived resume validator. Verified expected outputs/commits within the already approved preservation plan do not themselves require another branch question; a resumed run must prove that continuity through existing context/checkpoints. Keep all later report, runtime/data and payload-commit approvals separate.
+Recheck the confirmed branch/source and scope before dependent actions. Unexpected branch/HEAD changes or materially different exclusions require refreshed evidence and confirmation, never a silent source switch or waived resume validator. Verified expected outputs/commits within the already approved preservation plan do not themselves require another branch question; a resumed run must prove that continuity through existing context/checkpoints. Later report and prepared-plan approvals may share the transition Review below; source readiness, restoration feedback and the final payload content/commit decision remain separate.
 
 ## Preserve agent instructions and existing state
 
@@ -132,6 +132,16 @@ Before each step, verify its required filesystem, shell/Git, Docker context/daem
 
 Honor explicit verification deferral throughout. Static planning/documentation and explicitly approved partial preservation can continue within their stated limits, but build/run/load/request/cold-recovery tests are not implicitly authorized or reported as passed. Do not mark an unverified runtime Fully Restored. Use progressive relevant checks only when authorized and safe, without a mandatory cross-stack test suite. Preserve actual drafts and pending artifacts on failure; do not re-export, import data, restart services or replay cleanup merely to advance a cursor.
 
+## Adjacent report and plan review
+
+At a completed phase, prepare the next phase's concrete plan from permitted static source reads and the current findings when possible. Its supporting prompt may be previewed for planning without entering that phase or reading unwritten checkpoint files. Do not execute project code, use runtime/data targets or write the next phase's outputs to make the plan ready.
+
+Present the complete current report and the next plan together, with exact files/actions, targets, commands/effects, exclusions and required checks. Offer **Approve report and next plan / Approve report only / Revise / Stop**. Only the first choice authorizes the shown next actions. Report-only approval records just that phase and ends this invocation without a follow-up continue question; a later invocation may prepare the remaining plan. Stop leaves the current report unsaved and preserves actual work and earlier approved checkpoints.
+
+Before next-phase actions, persist and verify the approved report, inventory and checkpoint in order, then revalidate the plan's inputs and targets. Failed/declined checkpoint work stops dependents. Keep each report complete and separately recorded; never mark a future report approved or a phase complete from its plan. If the next plan needs unknown facts or results, seek approval only for the ready report and leave dependent work pending. Reuse approved exact actions without a duplicate plan gate; changed scope/effects need affected review. A skipped/not-applicable phase keeps its own factual report, which may share this same next-plan review.
+
+Approval covers only the shown report and next plan. Keep the initial source confirmation, restored-result inspection/final freeze decision, any still-missing action-specific authorization and the final Step 5 payload content/commit Review. Step 4's transition may approve ready storage/move/stop preparation, never the unknown final payload or report. Historical reports, state schema, checkpoint order and ship's publication boundary stay unchanged.
+
 ## Sequence
 
 After the source-branch confirmation above, work starts at the validated pending step/operation in the same `{archive_root}`. The list is the fresh-run order, not an instruction to replay completed phases or invoke ship automatically; a verified prepared/completed report-only exit needs no new branch question.
@@ -156,7 +166,7 @@ Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the ex
 |---|---|
 | Actual source branch/full HEAD and excluded work | Review Proceed on this branch / Cancel before pending phases. |
 | Recovery goal/features, optional offline goals and missing setup/data facts | Single for alternative goals/data routes; Multi for independent optional scope; Input for missing nonsecret facts/safe supplied paths. |
-| Each phase's proposed actions and exact report | Review at its existing separate plan/report gates. No combined blanket approval across phases. |
+| Completed phase report and next prepared plan | One transition Review for the exact report and ready next actions, with report-only/revise/stop exits; otherwise separate dependent review. No blanket approval or future report acceptance. |
 | Restoration feedback/developer check and freeze approach | Single Check / Decline / Defer as applicable, then Input for feedback and Single for actual freeze alternatives; execution retains Review. |
 | API materials Retain / Repair / Create / Skip and useful optional companions | Single per actual artifact; independent optional outputs use Multi within the reviewed phase plan. |
 | Protected output alternatives, documentation/consolidation, storage per artifact | Single for safe placements/storage routes; Input for custom paths; Review for exact content/moves/exclusions. |

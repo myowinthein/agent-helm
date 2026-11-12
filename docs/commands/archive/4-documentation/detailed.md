@@ -24,13 +24,16 @@ Recovery documentation should help a future developer choose a route and follow 
 flowchart TD
   Start(["API-materials report approved"]) --> Inventory["Review existing documentation<br/>and verified recovery evidence"]
   Inventory --> Plan["Propose focused outputs<br/>and any consolidation"]
-  Plan --> Approval{"Approve the editing plan?"}
+  Plan --> Approval{"Editing plan approved<br/>here or with the prior report?"}
   Approval -->|Revise| Plan
   Approval -->|Stop| End(["Keep prior work"])
   Approval -->|Yes| Write["Update the index, setup and<br/>artifact metadata where useful"]
   Write --> Check["Verify links, paths,<br/>commands and preserved context"]
-  Check --> Report["Present the phase report<br/>for approval"]
-  Report --> Next(["Save approved progress;<br/>continue to local preparation"])
+  Check --> Report{"Review the report<br/>and any ready preparation plan"}
+  Report -->|Revise| Check
+  Report -->|Stop| End
+  Report -->|Report only| Saved(["Save progress and stop"])
+  Report -->|Report and ready plan| Next(["Verify checkpoint;<br/>continue approved local preparation"])
 ```
 
 ## Keep useful documentation
@@ -64,7 +67,7 @@ For example, a database restore must precede the application feature that needs 
 
 Static review follows the index to the recovery documents and checks actual file paths, configuration references and command order against earlier evidence. It does not run the app or establish a remote backup.
 
-Approve the report before [Prepare locally](../5-finalize.html). Earlier approved reports remain historical evidence; current guides explain the current checked snapshot without rewriting that history.
+A ready [Prepare locally](../5-finalize.html) plan can share this report's review, including exact storage, move or service-stop actions when known. Report-only approval saves progress and stops. The final payload and fifth report are reviewed separately once their actual contents and results are known. Earlier approved reports remain historical evidence; current guides explain the current checked snapshot without rewriting that history.
 
 ## Explore the source
 

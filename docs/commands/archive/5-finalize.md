@@ -24,7 +24,7 @@ flowchart TD
 
 ## Review storage and supplementary assets
 
-For each artifact, choose regular Git, supported LFS with actual objects, or an explicit separate/local-only exclusion. LFS pointers alone do not preserve bytes, and exclusions can leave recovery incomplete.
+Ready storage, move and service-stop preparation can be approved with the documentation report; unchanged actions need no repeated question. For each artifact, choose regular Git, supported LFS with actual objects, or an explicit separate/local-only exclusion. LFS pointers alone do not preserve bytes, and exclusions can leave recovery incomplete.
 
 Keep organized design and history material in place. Approved consolidation preserves originals and updates references. Runtime assets and data are not cleanup targets. Only identified, owned services may be stopped with approval; no blanket daemon or volume cleanup follows.
 

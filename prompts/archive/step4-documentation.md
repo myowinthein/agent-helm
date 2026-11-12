@@ -20,7 +20,7 @@ For each proposed action, explain value, exact paths and effects, retaining usef
 | Duplicate/outdated content | Prefer links or a reviewed minimal merge/update; preserve useful originals/history when necessary. |
 | Proven no recovery/historical value | Remove only by explicit per-file reason and approval, checking references first. |
 
-Present the complete coherent consolidation/output plan and wait for approval before edits. Reuse approval already covering the exact unchanged plan. A generic cleanup approval never permits protected-file changes or wholesale history loss. An approved tracked-file removal does not rewrite Git history, but can make recovery evidence less discoverable; disclose that effect. Do not move everything into one historical file merely because it is old.
+Present the complete coherent consolidation/output plan and wait for approval before edits, unless the exact unchanged plan was approved with Step 3's report and that checkpoint is verified. Reuse that approval without another plan question. A generic cleanup approval never permits protected-file changes or wholesale history loss. An approved tracked-file removal does not rewrite Git history, but can make recovery evidence less discoverable; disclose that effect. Do not move everything into one historical file merely because it is old.
 
 ## Current recovery outputs
 
@@ -79,4 +79,4 @@ Step 5 may move assets only through its reviewed dependency/reference check. It 
 - **Navigation:** approved index and reachable active recovery docs, image/data/config/reference consistency and protected-file exemptions; report gaps rather than claiming unperformed checks.
 - **Gaps:** missing/deferred/unverified inputs, backup and runtime/rebuild limits, exact pending actions.
 
-No commit or push. Present this report and wait for explicit approval before [Step 5](step5-finalize.md), which separately approves the local payload commit; only a later ship invocation's selected archive backup procedure approves private backup publication/receipt and any opt-in ref cleanup.
+No commit or push. Present this complete report using the orchestrator's adjacent report/plan Review for any ready [Step 5](step5-finalize.md) preparation, or obtain approval for this report alone. Verify the checkpoint first. The final exact payload/report and local commit still need Step 5's separate Review; only a later ship invocation's selected archive backup procedure approves private backup publication/receipt and any opt-in ref cleanup.

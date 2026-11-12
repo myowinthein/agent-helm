@@ -26,14 +26,15 @@ flowchart TD
   API -->|No| NA["Report not applicable"]
   API -->|Yes| Inspect["Compare existing collections/specs<br/>with routes, validation and auth"]
   Inspect --> Plan["Review Retain, Repair,<br/>Create or Skip"]
-  Plan --> Prepare["Apply approved file changes;<br/>keep portable placeholders"]
+  Plan --> Prepare["Apply or reuse the exact approved plan;<br/>keep portable placeholders"]
   Prepare --> Verify["Review static validity and<br/>any separately approved local requests"]
   Verify --> Report["Report saved materials<br/>and unverified behavior"]
-  NA --> Approval{"Approve the phase report?"}
+  NA --> Approval{"Approve the report<br/>and any ready documentation plan?"}
   Report --> Approval
   Approval -->|Revise| Report
   Approval -->|Stop| End(["Keep actual work and pending items"])
-  Approval -->|Yes| Next(["Save progress;<br/>continue to Documentation"])
+  Approval -->|Report only| Saved(["Save progress and stop"])
+  Approval -->|Report and ready plan| Next(["Verify checkpoint;<br/>continue approved documentation"])
 ```
 
 ## Retain, repair, create or skip
@@ -65,7 +66,7 @@ For example, a sample create request can be useful without running it. If later 
 
 The report lists the retained or prepared files, applicability, static checks, any executed requests and unresolved gaps. You can approve a skipped or not-applicable result as well as a completed collection.
 
-Approval continues to [Documentation](../4-documentation.html). This phase does not make a commit or turn an unexecuted collection into a passing API test.
+A complete [Documentation](../4-documentation.html) plan can be reviewed alongside this report, even when API materials are not applicable. Approve both to continue after saving and verifying this checkpoint, or approve only the report and stop. Each phase keeps its own complete report. This phase does not make a commit or turn an unexecuted collection into a passing API test.
 
 ## Explore the source
 

@@ -248,7 +248,7 @@ Separate adequately protected/covered-elsewhere behavior (cite the protection), 
 
 For each proposal show the durable finding ID when present, expected result/evidence, priority/reason, action, layer, paths and prerequisites. New report proposals may use aliases P1/P2 that map unambiguously to stable IDs at the assessment checkpoint; aliases never encode priority or persist as another ID system. Group display by module/behavior; categories, layers, techniques and priorities are overlapping filters, not exclusive queues. Count one finding once across views. For large reports, summarize by module/tier with reasons and expand/page details without hiding proposed edits or truncating independent choices.
 
-Use the same selection semantics for Full scan and Gap scan. For a small clear set, go directly to its concrete proposed plan and existing approval, accepting free-text refinements. For a larger set, offer one scope question:
+Use the same selection semantics for Full scan and Gap scan. When **Recommended** or **All ready proposals** already has a complete plan, present its complete IDs, paths, dependencies, effects, checks and checkpoint scope with an explicit **Apply recommended plan** or **Apply all ready plan** choice. That Review both selects and approves the shown plan, regardless of set size; do not follow it with another identical Apply question. Keep **Choose cases or groups** and **None** available within the four-choice limit; omit empty or identical plans. A custom selection or a set needing unresolved remedies/setup remains scope-only until its concrete resulting plan is reviewed. Otherwise use the scope choices below:
 
 1. **Recommended**: exact listed ready proposals and reasons. Full scan normally starts with actionable High; Gap scan also includes relevant Medium in its changed surface. Adjust from actual evidence, never silently broaden scope. If empty, say so and omit this option rather than inventing work.
 2. **All ready proposals**: explicitly listed ready ordinary work, including labelled cleanup.
@@ -259,7 +259,7 @@ Keep blocked, unknown-intent and expensive/intrusive work visible separately. In
 
 Before approval, resolve prerequisites and coherent replacement/fixture mappings. List required dependent edits as required by the selected IDs; do not silently add independent unselected cases. Each case keeps its own priority; sequence an indivisible unit by its highest-priority member without relabelling the others. If a prerequisite is excluded, explain and revise/defer dependents. Explicit maintenance requests remain eligible even when ordinary risk recommendations omit cleanup.
 
-Show the complete selected plan: source snapshot/destination, cases and expected results, exact paths, action/mappings, remaining gaps, setup, safe execution commands/targets, coverage, commit units and the assessment/closure ledger writes described in Steps 4/6. Ask **Write or maintain selected tests and approved setup / Cancel** before the selected test/setup writes. Reuse existing exact authorization; custom scope selection alone is not approval.
+Show the complete selected plan: source snapshot/destination, cases and expected results, exact paths, action/mappings, remaining gaps, setup, safe execution commands/targets, coverage, commit units and the assessment/closure ledger writes described in Steps 4/6. Ask **Write or maintain selected tests and approved setup / Cancel** before selected test/setup writes only when that concrete plan lacks approval; reuse the prepared-plan Review above. Custom scope selection alone is not approval.
 
 For ledger-only work use **Record assessed findings / Cancel** only when that concrete write lacks authorization. None/silence is never a ledger approval. The existing Git commit policy still applies; do not add per-case/per-stage prompts for already approved work.
 
@@ -406,7 +406,7 @@ Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the ex
 |---|---|
 | Eligible Full scan / Gap scan / Skip and unavailable-Python route | Single; runtime setup effects still need their existing Review. |
 | Missing branch role, expected behavior, impact, requirements or manual criteria | Input; unclear behavior uses Single Clarify / Characterize current behavior / Defer, then Input as needed. |
-| Recommended / All ready proposals / Choose / None | Single; Choose → Multi by case IDs/groups/tiers/exclusions. |
+| Recommended / All ready proposals / Choose / None | Review with explicit Apply choices for fully prepared plans; otherwise Single scope choice. Choose → Multi by case IDs/groups/tiers/exclusions, then Review of its concrete plan. |
 | Case maintenance action, conflicting tools or runner/setup alternatives | Single for real alternatives; Input for intent. Selection does not approve removal, replacement or installation. |
 | Assessment-only record, selected cases/setup and mapped replacement guarantees | Review of the existing complete plan; preserve separately required setup/side-effect approval. |
 | Required manual acceptance and actual defer/accepted-risk reasons | Input for human evidence/reason; Review for a decision whose effects require authorization. No automatic sign-off. |

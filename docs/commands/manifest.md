@@ -38,7 +38,7 @@ Manifest normally works on the root README. If the target is ambiguous, it asks;
 | Standard | Follow the applicable [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md). |
 | Custom | Preserve the existing outline, or agree one before drafting a new README. |
 
-Your approved preference can be saved as `readme-style`. Choosing Full scan does not authorize replacing a custom structure.
+A missing style preference and scan choice can be asked together when independent. Your approved preference can be saved as `readme-style`. Choosing Full scan does not authorize replacing a custom structure.
 
 ## What the review covers
 
@@ -60,4 +60,4 @@ When a complete review finds only optional improvements, you can **keep the READ
 
 You get the README, approved preferences and unresolved facts. A complete Full or Gap review can advance its review marker even when optional suggestions are declined. Unresolved factual gaps, partial repairs and style-only work do not establish a complete new review.
 
-Changes follow your local commit policy and stay on the same branch. Use [ship](ship.html) to publish.
+With auto-commit off, a fully shown diff can be approved with or without its local commit. Changes follow your local commit policy and stay on the same branch. Use [ship](ship.html) to publish.

@@ -85,7 +85,7 @@ Present an `ENV AUDIT REPORT` grouped by the eleven checks, with:
 
 If no actionable findings exist and no template creation was requested, report the scoped audit result and finish without questions, writes or branch creation. Unknown/blocked coverage stays visible; do not claim the whole project is clean. Skip/none also exits without mutation.
 
-For both targets with findings, offer **Env files** and **.gitignore** as the existing multi-select; honor an explicit target choice already made. For one target, use **Work through findings** / **Skip**, not a one-option picker. Choosing a target only selects planning scope, not every fix. Keep all pickers at two to four options; group larger lists behind finding IDs/free text rather than silently truncating. Preserve Other and explicit none.
+When the audit supports a complete concrete plan, proceed directly to Step 3 and present Env files and .gitignore changes together as selectable coherent units; do not ask a preliminary target/Continue question. Honor explicit target exclusions. If missing intent would materially change planning, ask only that scope decision: **Env files** / **.gitignore** as an independent selection, or **Work through findings** / **Skip** for one target. Plain target selection does not approve fixes. Keep pickers within QM limits, with exact finding IDs/free text, Other and explicit none.
 
 If a dirty/staged tree or missing Git capability prevents normal fixes, explain that before collecting dependent write approvals. Keep the audit usable, leave files/index untouched and stop the write route. No automatic stash, owner setup or repository initialization.
 
@@ -180,7 +180,7 @@ Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the ex
 | Point | QM form |
 |---|---|
 | Unresolved loader/file role, environment branch or intended key behavior | Input using paths/key names only; Single for evidenced alternatives. Never request secret values. |
-| Env files and .gitignore target selection | Multi for both independent targets; Single Work through findings / Skip for one. |
+| Env files and .gitignore work | One Review of the concrete selectable plan when ready; Multi/Single scope input only when needed before planning. |
 | Coherent redacted fix/template plan | Review; Choose changes → Multi by finding IDs, Revise → Input. |
 | Duplicate assignments or existing-key conflicts | Single for exact safe location/action alternatives; Input for missing nonsecret intent. Resolve before the unit's Review. |
 | Exact untracking operation | Separate Review preserving local files and explaining history limits. |

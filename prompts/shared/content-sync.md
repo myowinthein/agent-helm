@@ -2,7 +2,7 @@
 
 For log, manifest, env, legal and test. Apply only when the invoking workflow selects a write. This helper never loads another command's state and never publishes. Adopt and refactor use the same local-only boundary through their own preparation; normalize owns its coordinated existing-ref rewrite.
 
-Inherit the caller's QM map: unresolved branch-role facts use Input, and any missing local commit approval uses Review of the exact diff/paths/subject. No new branch or commit question follows already sufficient authorization.
+Inherit the caller's QM map: unresolved branch-role facts use Input, and any missing local commit approval uses Review of the exact diff/paths/subject. When auto-commit is off and the complete proposed bytes, paths and subject are already known, include Apply and commit / Apply without committing in the content Review, retaining its revise/partial/cancel exits through QM. Commit only if readback and required checks verify that exact result. A plan for unwritten code, generated dependencies or unknown later checkpoints cannot approve their commits. An explicit leave-uncommitted choice ends that unit without another commit question; workflows requiring a committed checkpoint stop its dependents with actual drafts preserved. No new branch or commit question follows already sufficient authorization. Legal retains its own mandatory file-based content/commit Review.
 
 ## Prepare the current branch
 

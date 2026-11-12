@@ -54,4 +54,4 @@ A `CLAUDE.md`-only project or independent instruction files may need [log's shar
 
 Approved copies live in `.claude/rules/`, connected through shared project instructions. The report separates installed, kept, skipped and missing rules. Start a fresh agent session after changes; file checks alone do not prove native startup loading.
 
-Plugin updates do not refresh these copies automatically. Rerun adopt to review them, and use [ship](ship.html) separately for publication.
+With auto-commit off, an exact known update can be approved with or without its local commit. Plugin updates do not refresh these copies automatically. Rerun adopt to review them, and use [ship](ship.html) separately for publication.

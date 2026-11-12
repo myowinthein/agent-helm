@@ -21,7 +21,7 @@ Manifest keeps a README useful to someone evaluating or using the project. It ch
 
 ```mermaid
 flowchart TD
-  Start(["Start manifest"]) --> Target["Confirm the README<br/>and its style"]
+  Start(["Start manifest"]) --> Target["Resolve the README;<br/>group independent style and scope choices"]
   Target --> Scope{"What review is needed?"}
   Scope -->|Already current or skip| Finish(["Report the local result"])
   Scope -->|Full scan or Gap scan| Scan["Verify README claims and<br/>missing reader information"]
@@ -50,7 +50,7 @@ The root README is the normal target. GitHub can prefer a README under `.github/
 | Standard | The applicable Standard Readme structure and required reader information. |
 | Custom | Your existing outline, voice, front matter, banners and useful sections. A new empty README needs an agreed outline. |
 
-Choosing a Full scan expands investigation, not permission to replace a custom document. Generated blocks stay with their actual generator.
+A missing style preference and review depth can share one question batch when neither answer changes the other's options. Ambiguous targets and a new custom outline are resolved first when needed. Choosing a Full scan expands investigation, not permission to replace a custom document. Generated blocks stay with their actual generator.
 
 ## What the review covers
 
@@ -67,6 +67,8 @@ The README names established channels and requirements, then summarizes the actu
 ## Review the update
 
 The proposal shows section-level changes and any structure or preference change. You can apply all, select changes, request revision or cancel. Existing legal wording, custom content, anchors and generated material remain protected.
+
+With auto-commit off, the review can include Apply and commit or Apply without committing when the exact diff, paths and subject are known. The approved result still needs readback and required checks; materially changed content needs a refreshed review.
 
 Examples and commands are checked against source; they are not executed merely to write instructions. If a complete review finds only optional improvements, you can keep the prose and record that review instead.
 

@@ -24,7 +24,7 @@ flowchart TD
 
 ## Keep useful documentation
 
-Retain useful setup, domain, API and historical material, including licenses and legal notices. Review consolidation or removals before editing. Protected instructions, imports, rules and operational records stay intact; conflicting output paths need agreed alternatives.
+Retain useful setup, domain, API and historical material, including licenses and legal notices. Review consolidation or removals before editing; an unchanged plan approved with the API report needs no repeated confirmation. Protected instructions, imports, rules and operational records stay intact; conflicting output paths need agreed alternatives.
 
 ## Give each output a clear purpose
 
@@ -42,4 +42,4 @@ Link to procedures and artifact tables instead of repeating them. Use evidenced 
 
 Static review checks navigation, paths and command order against recovery evidence. It does not run the app or establish a remote backup.
 
-Approve the report to continue to [Step 5: Prepare locally](5-finalize.html). Earlier reports stay unchanged. This phase does not commit.
+A ready [Step 5: Prepare locally](5-finalize.html) preparation plan can share the report approval, or you can save only the report and stop. The final payload still needs its own content-and-commit approval. Earlier reports stay unchanged; this phase does not commit.

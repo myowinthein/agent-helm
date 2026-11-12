@@ -36,4 +36,4 @@ Preparing files does not send requests. Execution needs separately approved effe
 
 ## What happens next
 
-Review the files, any executed requests and remaining gaps. Approve the report, including skipped or not-applicable outcomes, to continue to [Step 4: Documentation](4-documentation.html). This phase does not commit.
+Review the files, any executed requests and remaining gaps, including skipped or not-applicable outcomes. A ready [Step 4: Documentation](4-documentation.html) plan can share the report approval; report-only approval saves progress and stops. This phase does not commit.

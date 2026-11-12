@@ -35,6 +35,8 @@ flowchart TD
 
 ## Review storage and supplementary assets
 
+A complete preparation plan may already have been approved with the documentation report. After that checkpoint is verified, unchanged storage, move and service-stop actions reuse that approval. New effects need review, and the final payload content/commit decision still follows preparation.
+
 Choose storage for each real artifact using its actual size, identity and retrieval needs. Regular Git, supported LFS and an explicitly accepted separate or local-only exclusion have different consequences. Unknown provider limits are recorded rather than guessed from one hosting service.
 
 An LFS pointer is not the image, database or dataset it describes. Verify the actual local object bytes and retain any known retrieval limitations. An exclusion can be a sensible choice, but it may leave the promised recovery goal incomplete.

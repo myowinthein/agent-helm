@@ -47,9 +47,11 @@ Existing tests can be improved, consolidated or replaced. Removal requires prove
 
 Findings explain the risk left unprotected, separately from implementation cost. Choose recommended cases, all ready proposals, a subset or none. Review the actual cases, paths and setup before changes. Unknown behavior needs clarification or an explicit decision; production fixes remain separate work.
 
+A fully prepared recommended plan or plan for all ready cases can be selected and approved together. Custom selections need their resulting plan reviewed before edits.
+
 ## Tools and verification
 
-Existing tools come first. Installation, upgrades and service/database effects stay within the approved plan and isolated targets. When required checks cannot run, findings remain unverified and approved additive drafts stay uncommitted.
+Existing tools come first; installation, upgrades and service/database effects stay within the approved plan and isolated targets. When required checks cannot run, findings remain unverified and approved additive drafts stay uncommitted.
 
 ## Your result and the next run
 

@@ -12,7 +12,7 @@ Consult version-matched official guidance only when needed to resolve a real set
 
 ## Plan before execution
 
-Prefer compatibility fixes and restoration over modernization. Reuse existing project conventions and native tools. Before mutations, present one coherent plan covering:
+Prefer compatibility fixes and restoration over modernization. Reuse existing project conventions and native tools. Before mutations, present one coherent plan covering the items below, or reuse an unchanged exact plan approved with Step 1's report after that checkpoint is verified:
 
 - Selected recovery goal/features, original versus proposed versions/platform, exact file/output changes, missing inputs and accepted limitations. Apply protected-import checks before every write; use reviewed alternate paths or stop, never edit instruction owners/imports or opaque Helm ledgers.
 - Intended commands, installs/pulls, project lifecycle hooks, Dockerfile steps/build context and entrypoints. Separate explicitly approved package/image acquisition from runtime service contact. No production/live database or external-service access; waiting for access is not permission to connect later. A developer may provide an approved export or choose a limited fallback.
@@ -113,4 +113,4 @@ Preserve these sections, keeping factual evidence and unknowns separate:
 - **Restoration Outcome:** Fully Restored / Partially Restored / Buildable But Not Runnable / Blocked / Cannot Be Restored Without Missing Dependencies, with an evidence-based sentence. No full/offline promise from static checks or local startup alone.
 - **Remaining Blockers:** missing artifacts/features, rough versus verified storage route, local-only backup needs and exact next actions.
 
-Present the report and stop for explicit approval before [Step 3](step3-postman.md). Warn when the outcome is not Fully Restored; the developer can approve continuing with stated limitations without certifying unverified recovery. Do not commit or push.
+Present the complete report and use the orchestrator's adjacent report/plan Review if the concrete [Step 3](step3-postman.md) plan is ready. Otherwise obtain approval for the report alone and leave later work pending. Warn when the outcome is not Fully Restored; approving the stated limits never certifies unverified recovery. Verify the checkpoint before next-phase actions. Do not commit or push.

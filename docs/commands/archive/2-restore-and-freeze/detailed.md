@@ -22,23 +22,24 @@ Restoration establishes what can actually run; freezing preserves the materials 
 
 ```mermaid
 flowchart TD
-  Start(["Exploration report approved"]) --> Plan["Cross-check setup and data;<br/>review the isolated restoration plan"]
+  Start(["Exploration checkpoint verified"]) --> Plan["Cross-check setup and data;<br/>approve or reuse the exact restoration plan"]
   Plan --> Restore["Run only approved restoration<br/>and relevant checks"]
   Restore --> Check["Report actual results and offer<br/>a developer inspection"]
   Check --> Freeze["Recommend the final freeze<br/>from the recovery goal and evidence"]
   Freeze --> Capture["Approve and capture selected<br/>runtime, data and configuration"]
   Capture --> Report["Review artifacts, recovery commands<br/>and remaining limitations"]
-  Report --> Approval{"Approve the phase report?"}
+  Report --> Approval{"Approve the report<br/>and any ready API plan?"}
   Approval -->|Revise| Report
   Approval -->|Stop| Pending(["Keep actual work and pending checks"])
-  Approval -->|Yes| Next(["Save progress;<br/>continue to API materials"])
+  Approval -->|Report only| Saved(["Save progress and stop"])
+  Approval -->|Report and ready plan| Next(["Verify checkpoint;<br/>continue approved API work"])
 ```
 
 ## Restore from reliable inputs
 
 The agent cross-checks setup notes, manifests, locks, build scripts and platform requirements. Compatible restoration is the goal. Modernizing a framework or runtime is not an automatic part of recovering an older project.
 
-Before execution, review the exact edits, commands, dependency or image acquisitions, isolated targets and checks. An approved download is separate from allowing the restored app to contact live services. Runtime isolation must account for inherited endpoints, jobs, telemetry, storage and integrations; a localhost address or a new container name is insufficient.
+Before execution, review the exact edits, commands, dependency or image acquisitions, isolated targets and checks. A ready restoration plan may have been approved with the exploration report; it is reused after that checkpoint is verified, without another identical question. An approved download is separate from allowing the restored app to contact live services. Runtime isolation must account for inherited endpoints, jobs, telemetry, storage and integrations; a localhost address or a new container name is insufficient.
 
 If the no-live-contact requirement cannot be met, the affected execution remains pending or source-only. It is not silently attempted against a production dependency.
 
@@ -66,7 +67,7 @@ Credentials stay out of the kit. A working frozen runtime does not prove an offl
 
 The recovery procedure records prerequisite validation, preparation, data restoration, startup, demonstration and shutdown in the correct order. Deferred checks stay unverified when you review the phase report.
 
-A cold-recovery rehearsal needs its own approved isolation and effects. Existing caches and volumes are preserved, and this phase does not commit. Continue to [API materials](../3-postman.html) after approving the report.
+A cold-recovery rehearsal needs its own approved isolation and effects. Existing caches and volumes are preserved, and this phase does not commit. A complete [API-materials plan](../3-postman.html) can share this report's review. Approve both to continue after checkpoint verification, or approve only the report and stop; unknown later actions remain pending.
 
 ## Explore the source
 

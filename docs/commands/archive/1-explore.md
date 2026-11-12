@@ -36,4 +36,4 @@ Choose source preservation, a runnable demonstration, offline runtime recovery o
 
 Approve the findings and proposed approach, request changes or stop without saving. Approval saves the initial report, inventory and progress under `.helm/archive/`.
 
-[Step 2: Restore and freeze](2-restore-and-freeze.html) proposes the actual restoration work.
+A ready [Step 2: Restore and freeze](2-restore-and-freeze.html) plan can share that review. You can approve both, or save only the report and stop; suggested actions alone are not approved execution.

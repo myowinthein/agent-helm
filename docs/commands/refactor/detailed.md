@@ -27,7 +27,7 @@ flowchart TD
   Route -->|Full scan or Gap scan| Scan["Assess source and reconcile<br/>new and existing findings"]
   Route -->|Fix Backlog| Backlog["Revalidate selected<br/>existing findings"]
   Scan --> Assess["Record the completed assessment<br/>under local commit policy"]
-  Assess --> Plan["Choose findings and approve<br/>one dependency-aware plan"]
+  Assess --> Plan["Review prepared plans<br/>or choose specific findings"]
   Backlog --> Plan
   Plan --> Choice{"Apply selected work?"}
   Choice -->|No| Finish(["Report results and pending work"])
@@ -61,7 +61,9 @@ A proposal needs a concrete benefit. Extracting a small function may clarify dup
 
 Priority estimates the current cost or benefit. Transformation risk describes how confidently existing behavior can be preserved. A high-priority issue can still be unready because a contract is unclear or its tests do not establish the necessary guarantees.
 
-Choose recommended work, all ready findings, a subset or none. One plan brings selected changes, dependencies, preserved behavior and required checks together. It does not quietly add unselected improvements while implementation is underway.
+Choose recommended work, all ready findings, a subset or none. When a recommended plan or the plan for all ready findings already identifies the exact findings, paths, dependencies, preserved behavior and checks, Apply selects and approves it in one decision. The agent does not ask again to approve the unchanged plan.
+
+A custom selection or unresolved remedy needs its resulting plan reviewed before edits. This applies to large and small sets alike; no ready-plan shortcut adds hidden findings or bypasses the earlier assessment checkpoint. Approval of a transformation plan does not approve an unknown implementation diff or later commit.
 
 ## Apply and verify
 

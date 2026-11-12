@@ -15,7 +15,7 @@ Use the workflow's **Question points**, including conditional questions in its b
 | **Input** | Missing facts, intent, path, contact, version, outline, explanation or feedback. | Exact missing facts and why needed; include units/format or known candidates when useful, never fabricated alternatives. |
 | **Review** | Authorization of a shown diff, plan, commit, publication or consequential operation. | Concrete content/paths/targets/effects and the workflow's exact approve/revise/partial/decline choices. |
 
-Compose forms without combining decisions: Single → Input for a custom version or manual contact; Multi → Review for selected work; Review → Multi/Input for Apply some or Revise. A selection alone is not authorization unless the existing workflow and the shown concrete action already make it so. A Review can approve only the described unit; preserve separate push, release, legal, per-file and archive gates.
+Keep each decision and its effects explicit. Batch independent inputs against one prerequisite snapshot. Where the owning workflow permits it, a Review may both select a fully prepared plan and approve its exact actions, or approve a completed archive report alongside the next prepared phase plan. Plain scope selection supplies no execution authority. Use Single → Input for missing custom facts and Review → Multi/Input for a subset or revision; review only affected changes afterward. Preserve caller-required separate gates, including publication, release, legal content/commit, per-file decisions, restoration feedback and archive payload approval. Never approve unknown later results or add a second question solely to repeat valid approval.
 
 ## Route once, then ask
 

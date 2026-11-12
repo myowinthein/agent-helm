@@ -24,7 +24,7 @@ flowchart TD
 
 ## Restore from reliable inputs
 
-The agent compares setup notes with manifests, locks and scripts, favoring compatibility over upgrades. You review the edits, commands, downloads, targets and checks before execution.
+The agent compares setup notes with manifests, locks and scripts, favoring compatibility over upgrades. You review the edits, commands, downloads, targets and checks before execution. An unchanged plan already approved with the exploration report needs no repeated confirmation.
 
 Work uses owned, isolated resources without live-service contact. Uncertain isolation leaves affected work pending; a localhost address alone proves no safety.
 
@@ -40,6 +40,6 @@ Artifacts retain identities and checksums. Real credentials stay out of the kit.
 
 ## What happens next
 
-The setup instructions put validation, preparation, data restore, startup, demonstration and shutdown in order. Review completed and deferred checks before approving the report and continuing to [Step 3: Postman collection](3-postman.html).
+The setup instructions put validation, preparation, data restore, startup, demonstration and shutdown in order. Review completed and deferred checks. A ready [Step 3: Postman collection](3-postman.html) plan can share the report approval; report-only approval saves progress and stops.
 
 A cold-recovery rehearsal needs separate approval and isolation. Existing caches and volumes are preserved. This phase does not commit.
