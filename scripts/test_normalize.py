@@ -1,12 +1,16 @@
 """Offline normalize mechanics tests; synthetic inputs only, no Git/live state."""
 
+import contextlib
 import copy
 import importlib.util
+import io
 import json
 from pathlib import Path
 import subprocess
 import sys
+import types
 import unittest
+from unittest import mock
 
 sys.dont_write_bytecode = True
 HELPER = Path(__file__).resolve().parents[1] / "helpers/normalize_check.py"
@@ -322,6 +326,43 @@ class NormalizeTests(unittest.TestCase):
         for message in ("fix(api): update\0 hidden", "fix(api): " + "x" * mod.MAX_MESSAGE_BYTES, "fix(api): \ud800"):
             with self.subTest(message_length=len(message)), self.assertRaises(mod.Invalid):
                 self.check_message(message)
+
+    def test_commit_count_limit_rejects_one_over_and_accepts_the_limit(self):
+        commits = graph((1, []), (2, [1]), (3, [2]))
+        with mock.patch.object(mod, "MAX_COMMITS", 3):
+            for operation in ("check", "plan"):
+                with self.subTest(operation=operation):
+                    payload = {"policy": policy(), "tips": {"main": oid(3)}, "commits": [
+                        dict(commit, message="fix(api): update") for commit in commits]}
+                    self.assertEqual(len(mod.execute(payload, operation)["records"]), 3)
+                    payload["commits"].append({"id": oid(4), "parents": [oid(3)], "message": "fix(api): update"})
+                    with self.assertRaises(mod.Invalid):
+                        mod.execute(payload, operation)
+
+    def test_parent_count_limit_rejects_one_over_and_accepts_the_limit(self):
+        parents = [(number, []) for number in range(1, 1026)]
+        accepted = graph(*parents[:1024], (2000, list(range(1, 1025))))
+        mod.graph_order(accepted)
+        with self.assertRaises(mod.Invalid):
+            mod.graph_order(graph(*parents, (2000, list(range(1, 1026)))))
+
+    def test_message_size_limit_accepts_exactly_the_limit(self):
+        message = "fix(api): " + "x" * (mod.MAX_MESSAGE_BYTES - len("fix(api): "))
+        self.assertEqual(len(message.encode("utf-8")), mod.MAX_MESSAGE_BYTES)
+        self.assertEqual(self.check_message(message)["records"][0]["semantic"], "not_reviewed")
+
+    def test_cli_input_byte_limit_rejects_one_over_and_accepts_the_limit_without_echo(self):
+        raw = json.dumps({"policy": policy(), "commits": [], "private": "SYNTHETIC_SENTINEL"}).encode("utf-8")
+        for limit, expected in ((len(raw), 0), (len(raw) - 1, 2)):
+            with self.subTest(limit=limit):
+                output = io.StringIO()
+                with mock.patch.object(mod, "MAX_BYTES", limit), \
+                        mock.patch.object(sys, "stdin", types.SimpleNamespace(buffer=io.BytesIO(raw))), \
+                        mock.patch.object(sys, "argv", ["normalize_check.py", "check"]), \
+                        contextlib.redirect_stdout(output):
+                    code = mod.main()
+                self.assertEqual(code, expected)
+                self.assertNotIn("SYNTHETIC_SENTINEL", output.getvalue())
 
     def test_cli_parse_failure_never_echoes_input(self):
         for data in ('{"private":"SYNTHETIC_SENTINEL",', '{"policy":null,"policy":null}', '{"policy":NaN}'):
