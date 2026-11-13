@@ -134,11 +134,26 @@
       "reason": "Only the message-size limit is tested; the commit-count, input-size and parent-count caps could regress unnoticed, but they bound resource use on private review input and fail closed today.",
       "action": "improve",
       "layer": "unit",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "tests": [
-        "scripts/test_normalize.py::test_invalid_tips_branch_names_recheck_ids_and_messages_are_rejected"
-      ]
+        "scripts/test_normalize.py::test_invalid_tips_branch_names_recheck_ids_and_messages_are_rejected",
+        "scripts/test_normalize.py::test_commit_count_limit_rejects_one_over_and_accepts_the_limit",
+        "scripts/test_normalize.py::test_parent_count_limit_rejects_one_over_and_accepts_the_limit",
+        "scripts/test_normalize.py::test_message_size_limit_accepts_exactly_the_limit",
+        "scripts/test_normalize.py::test_cli_input_byte_limit_rejects_one_over_and_accepts_the_limit_without_echo"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_normalize.py"
+        ],
+        "method": "runtime",
+        "outcome": "Commit count, parent count, input bytes and message bytes reject one over and accept the limit; removing each guard from a copy makes its test fail.",
+        "commit": "5cb2afbdd44112be8a77f8ff7fe950bd8b54351a",
+        "command": "python3 -I -B scripts/test_normalize.py",
+        "scope": "Offline synthetic inputs; 39 tests passed, no Git or live state"
+      }
     },
     {
       "id": "g-3f2c6d53-58b0-4386-8bf1-a85fe0b011bf",
@@ -300,13 +315,39 @@
       "reason": "None of these guard messages appears in any test, so a validator regression would let a wrong invocation policy or drifted release metadata ship while the positive package check still passes.",
       "action": "improve",
       "layer": "integration",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "tests": [
         "scripts/test_plugin.rb::shadowing metadata",
         "scripts/test_plugin.rb::workflow question-mechanism mapping",
-        "scripts/test_plugin.rb::missing supporting resources"
-      ]
+        "scripts/test_plugin.rb::missing supporting resources",
+        "scripts/test_plugin.rb::implicit Codex invocation",
+        "scripts/test_plugin.rb::Codex tool grant",
+        "scripts/test_plugin.rb::skill name differing from its directory",
+        "scripts/test_plugin.rb::blank skill description",
+        "scripts/test_plugin.rb::over-long skill description",
+        "scripts/test_plugin.rb::skill link outside the runtime and workflow",
+        "scripts/test_plugin.rb::broken relative guide link",
+        "scripts/test_plugin.rb::missing package_root target",
+        "scripts/test_plugin.rb::helper contract schema drift",
+        "scripts/test_plugin.rb::marketplace version drift",
+        "scripts/test_plugin.rb::marketplace description drift",
+        "scripts/test_plugin.rb::unavailable Codex installation",
+        "scripts/test_plugin.rb::command auto-discovery",
+        "scripts/test_plugin.rb::extra skill",
+        "scripts/test_plugin.rb::extra archive step"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_plugin.rb"
+        ],
+        "method": "runtime",
+        "outcome": "Fifteen guard mutations each fail with the validator's specific message; removing the Codex policy, release-drift or helper-contract guard from a copy makes the test fail.",
+        "commit": "18b6e4051b8c33957024c6ebaf7598ca77989f19",
+        "command": "ruby scripts/test_plugin.rb",
+        "scope": "Offline package validator and temporary-installation checks; no models or clients"
+      }
     },
     {
       "id": "g-883157be-d653-4d08-b856-3cccf54c7a00",
