@@ -132,6 +132,15 @@ class HandoffTests(unittest.TestCase):
         self.recovery.symlink_to(actual, target_is_directory=True)
         self.assertEqual(mod.discover(str(self.common))["candidates"][0]["availability"], "invalid")
 
+    def test_symlinked_ancestor_is_refused_until_the_path_is_resolved(self):
+        link = self.root / "linked home"
+        link.symlink_to(self.root, target_is_directory=True)
+        through_link = link / self.recovery.name
+        with self.assertRaises(mod.Invalid):
+            mod.register(str(self.common), dict(self.data, recovery_directory=str(through_link)))
+        mod.register(str(self.common), dict(self.data, recovery_directory=str(through_link.resolve())))
+        self.assertEqual(mod.discover(str(self.common))["candidates"][0]["availability"], "present")
+
     def test_symlinked_registry_and_nonprivate_permissions_are_rejected(self):
         outer = self.common / "agent-helm"
         outer.symlink_to(self.recovery, target_is_directory=True)
