@@ -98,6 +98,8 @@ This covers Helm's agent-facing instructions. Generic prose stays in `rules/writ
 - `scripts/validate_plugin.rb` requires each `guides/*.md` to keep a `## Question points` section and the literal `[question mechanism (QM)](../prompts/shared/question-mechanism.md)` link, and rejects any `workflows/` source. Rewording that link fails `ruby scripts/test_plugin.rb`.
 - Normalize uses explicit `git filter-repo --refs` partial mode to preserve remotes and excluded refs. Default full-rewrite mode removes `origin` and affects more refs; never substitute it or reconstruct a remote from its URL alone.
 - Headless `claude -p` has no native question tool, so workflows ask in chat and end the run; profiling needs `--resume <session_id>` per answer. Runs that return $0 or a 429 hit the usage limit; discard them.
+- `docs/_plugins/frontend.rb` and `docs/_plugins/repository_content.rb` patch Just the Docs output with exact-string replacements and raise `Just the Docs theme changed`. CI resolves the latest stable theme, so a theme release can fail the Pages build until those patterns and `docs/tests/test_frontend.rb` or `test_repository_content.rb` are updated.
+- `docs/tests/test_guide_views.rb` and `docs/tests/test_human_guides.rb` hard-code the expected Overview and Details pair count per site (19 here). Adding or removing a pair fails both until the count changes.
 
 ## Rules
 
@@ -107,4 +109,4 @@ Read and follow all three shipped rules before project work:
 - `rules/safety.md`
 - `rules/writing.md`
 
-<!-- last-reviewed: e2b4d5eb6f4e97ccf34f24c83303276e75787209 -->
+<!-- last-reviewed: a2b92e52aec29c9df986590a5326c1d1f5bb7434 -->
