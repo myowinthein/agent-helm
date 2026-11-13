@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
-  "assessed_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
-  "full_scan_commit": "c14ae88f4b978c33b5b1c4d5d09f5745488b20e2",
+  "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
+  "full_scan_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
   "cases": [
     {
       "id": "g-24eb63fb-bb89-48ff-9536-68837c401ff6",
@@ -120,6 +120,27 @@
       }
     },
     {
+      "id": "g-378fcb9e-affb-4867-8efa-1c221ee3e86d",
+      "expected": "normalize_check.py rejects input over its documented limits (input bytes, commit count, parents per commit and message bytes at the exact boundary) with the fixed diagnostic and no echo, and accepts values exactly at each limit.",
+      "basis": [
+        "helpers/normalize_check.py",
+        "scripts/test_normalize.py"
+      ],
+      "paths": [
+        "helpers/normalize_check.py",
+        "scripts/test_normalize.py"
+      ],
+      "priority": "low",
+      "reason": "Only the message-size limit is tested; the commit-count, input-size and parent-count caps could regress unnoticed, but they bound resource use on private review input and fail closed today.",
+      "action": "improve",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
+      "tests": [
+        "scripts/test_normalize.py::test_invalid_tips_branch_names_recheck_ids_and_messages_are_rejected"
+      ]
+    },
+    {
       "id": "g-3f2c6d53-58b0-4386-8bf1-a85fe0b011bf",
       "expected": "Legal's automatic record repair updates only a verified moved document path or removes a verified deleted document's record, preserves dates, source IDs and unknown fields, deletes no document and asks for no commit approval",
       "basis": [
@@ -226,13 +247,13 @@
       ],
       "priority": "low",
       "reason": "The script has no automated or browser check and is absent from the acceptance plan; a regression leaves navigation collapsed on detailed pages.",
-      "action": "manual",
+      "action": "add",
       "layer": "browser",
       "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "blocker": {
         "kind": "execution",
-        "note": "Needs a real browser run of the built site; the project has no browser automation."
+        "note": "The Chrome harness (docs/tests/browser_frontend.mjs) now exists but needs Bundler, npm ci and Chrome to build and run; assert the active overview entry, aria-current and expanded ancestors on a detailed guide page."
       }
     },
     {
@@ -253,11 +274,39 @@
       "action": "add",
       "layer": "unit",
       "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "blocker": {
         "kind": "clarification",
         "note": "Clarify the intended behavior for symlinked home ancestors, or Characterize the current refusal"
       }
+    },
+    {
+      "id": "g-86f69c76-c828-4d10-b05b-96585899a677",
+      "expected": "The package validator rejects each documented skill, release-metadata and helper-contract violation with its specific message: a Codex policy that allows implicit invocation or grants tools, a skill name that differs from its directory, a blank or over-long description, a skill link outside the runtime and its workflow, a broken relative link in guides or prompts, a missing {package_root} target, a changed archive step count, a different helper schema version, and marketplace version or description drift.",
+      "basis": [
+        "scripts/validate_plugin.rb",
+        "scripts/test_plugin.rb",
+        "AGENTS.md#Architecture Pointers"
+      ],
+      "paths": [
+        "scripts/validate_plugin.rb",
+        "scripts/test_plugin.rb",
+        "skills/log/SKILL.md",
+        "skills/log/agents/openai.yaml",
+        "helpers/ledger-contract.json",
+        ".claude-plugin/marketplace.json"
+      ],
+      "priority": "medium",
+      "reason": "None of these guard messages appears in any test, so a validator regression would let a wrong invocation policy or drifted release metadata ship while the positive package check still passes.",
+      "action": "improve",
+      "layer": "integration",
+      "state": "open",
+      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
+      "tests": [
+        "scripts/test_plugin.rb::shadowing metadata",
+        "scripts/test_plugin.rb::workflow question-mechanism mapping",
+        "scripts/test_plugin.rb::missing supporting resources"
+      ]
     },
     {
       "id": "g-883157be-d653-4d08-b856-3cccf54c7a00",
@@ -369,7 +418,7 @@
       "action": "improve",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "tests": [
         "scripts/test_acceptance_oracles.rb::direct normalize oracle",
         "scripts/test_acceptance_oracles.rb::normalize fixture",
@@ -377,7 +426,7 @@
       ],
       "blocker": {
         "kind": "verification",
-        "note": "The live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run; offline oracle checks pass (ruby scripts/test_acceptance_oracles.rb)"
+        "note": "The live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run; offline oracle checks pass (ruby scripts/test_acceptance_oracles.rb), including the fixed Agent Helm/normalize/<uuid> recovery location."
       }
     },
     {
@@ -507,14 +556,18 @@
       "action": "add",
       "layer": "browser",
       "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "tests": [
+        "docs/tests/browser_frontend.mjs::saved-light",
+        "docs/tests/browser_frontend.mjs::saved-dark",
+        "docs/tests/browser_frontend.mjs::storage-blocked",
+        "docs/tests/browser_frontend.mjs::dark-css-failed",
         "docs/scripts/browser_acceptance.py",
         "scripts/acceptance-plan.md::Browser and host acceptance"
       ],
       "blocker": {
         "kind": "verification",
-        "note": "The 2026-10-27 real-browser pass predates cb5dc0a, which replaced the jtd.setTheme call with a stylesheet swap; rerun docs/scripts/browser_acceptance.py and the P9 checks in a browser."
+        "note": "Saved light/dark, blocked storage, system scheme and a failed stylesheet are covered by browser_frontend.mjs. Still unprotected: an invalid saved value, persistence after choosing a mode, cross-tab storage changes and removal, and an explicit mode ignoring system changes. Running it needs Bundler, npm ci and Chrome."
       }
     },
     {
@@ -566,10 +619,10 @@
       "action": "manual",
       "layer": "ci",
       "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "blocker": {
         "kind": "clarification",
-        "note": "Owner decision: add an offline CI job, or defer"
+        "note": "Owner decision: add an offline CI job, or keep the build-only policy that AGENTS.md now documents"
       }
     },
     {
