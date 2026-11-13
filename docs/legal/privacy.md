@@ -5,7 +5,7 @@ nav_exclude: true
 
 # Privacy Notice
 
-**Last updated:** October 27, 2026
+**Last updated:** November 13, 2026
 
 Agent Helm is a free, MIT-licensed developer workflow plugin maintained by Myo Win Thein ([myowinthein on GitHub](https://github.com/myowinthein)), based in Thailand. This notice covers the plugin, its documentation site and project correspondence.
 
@@ -17,11 +17,7 @@ Your coding agent and chosen tools can read project content, create local files 
 
 ## Visiting the documentation site
 
-I have not added advertising or visitor-analytics scripts. Hosting and external resources still involve technical requests:
-
-- **GitHub Pages** hosts the documentation. GitHub logs visitor IP addresses for security, including when visitors are signed out. See [GitHub Pages data collection](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) and the [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
-- **jsDelivr** serves the Mermaid library used for diagrams. Loading it sends a request to the CDN, with connection information such as your IP address and browser details. See the [jsDelivr Privacy Policy](https://www.jsdelivr.com/terms/privacy-policy).
-- **myowin.dev**, my portfolio hosted on Vercel, serves the site's favicon. Your browser requests that file from the separate host, which receives connection information such as your IP address. See the [Vercel Privacy Notice](https://vercel.com/legal/privacy-notice).
+I have not added advertising or visitor-analytics scripts. The site serves its pages, diagrams and favicon from GitHub Pages, which logs visitor IP addresses for security, including when visitors are signed out. See [GitHub Pages data collection](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection) and the [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 
 The theme selector stores your System, Light or Dark choice in browser local storage under `agent-helm-theme`. The site sets no expiry for this preference. You can change it using the selector or remove the saved value through your browser's site-data controls.
 
