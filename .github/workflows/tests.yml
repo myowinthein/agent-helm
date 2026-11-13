@@ -1,0 +1,38 @@
+name: Offline tests
+
+"on":
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@de492cf36cbab201753d720ce4f4e336cd688c94 # v1.336.0
+        with:
+          ruby-version: '3.4'
+
+      - name: Test the package and helpers
+        run: |
+          ruby scripts/test_plugin.rb
+          python3 -I -B scripts/test_normalize.py
+          python3 -I -B scripts/test_normalize_handoff.py
+          python3 -I -B scripts/test_ledger.py
+
+      - name: Test the smoke and acceptance support
+        run: |
+          ruby scripts/test_smoke_support.rb
+          ruby scripts/test_acceptance_support.rb
+          ruby scripts/test_git_acceptance.rb
+          ruby scripts/test_acceptance_oracles.rb
