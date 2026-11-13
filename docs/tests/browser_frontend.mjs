@@ -103,6 +103,64 @@ try {
   assert(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)));
   console.log(`PASS ${fault}: readable ${expected} theme and diagrams`);assertions++;await context.close();
  }
+ const background=expected=>page=>page.waitForFunction(expected=>{
+  const color=getComputedStyle(document.body).backgroundColor;
+  return expected==='dark'?color==='rgb(39, 38, 43)':color==='rgb(255, 255, 255)';
+ },expected);
+ // An unrecognized saved value falls back to the system theme.
+ {
+  const context=await createContext({colorScheme:'dark'});const page=await context.newPage();
+  await page.addInitScript(()=>localStorage.setItem('agent-helm-theme','invalid-fixture'));
+  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await background('dark')(page);
+  assert.equal(await page.locator('#theme-mode').inputValue(),'system');
+  console.log('PASS invalid saved theme: system theme and System selection');assertions+=2;await context.close();
+ }
+ // A chosen mode persists across reloads.
+ {
+  const context=await createContext({colorScheme:'dark'});const page=await context.newPage();
+  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.locator('#theme-mode').selectOption('light');
+  await background('light')(page);
+  await page.reload();
+  await background('light')(page);
+  assert.equal(await page.locator('#theme-mode').inputValue(),'light');
+  console.log('PASS chosen theme: saved and restored after reload');assertions++;await context.close();
+ }
+ // An explicit mode ignores system scheme changes.
+ {
+  const context=await createContext({colorScheme:'dark'});const page=await context.newPage();
+  await page.addInitScript(()=>localStorage.setItem('agent-helm-theme','light'));
+  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await background('light')(page);
+  await page.emulateMedia({colorScheme:'light'});await page.emulateMedia({colorScheme:'dark'});
+  await page.waitForTimeout(200);
+  await background('light')(page);
+  console.log('PASS explicit theme: system scheme changes ignored');assertions++;await context.close();
+ }
+ // Another tab's choice and reset apply to open pages.
+ {
+  const context=await createContext({colorScheme:'dark'});const first=await context.newPage();const second=await context.newPage();
+  for(const tab of [first,second])await tab.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await first.locator('#theme-mode').selectOption('light');
+  await background('light')(second);
+  assert.equal(await second.locator('#theme-mode').inputValue(),'light');
+  await first.evaluate(()=>localStorage.removeItem('agent-helm-theme'));
+  await background('dark')(second);
+  assert.equal(await second.locator('#theme-mode').inputValue(),'system');
+  console.log('PASS cross-tab theme: choice applied, reset returns to system');assertions+=2;await context.close();
+ }
+ // A detailed guide keeps its overview entry active in the menu.
+ {
+  const context=await createContext();const page=await context.newPage();
+  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.waitForSelector('#site-nav[data-guide-nav-ready]');
+  const current=page.locator('#site-nav a[aria-current="location"]');
+  assert.equal(await current.count(),1);
+  assert((await current.getAttribute('href')).endsWith('/docs/commands/ship.html'));
+  assert.equal(await current.evaluate(link=>link.classList.contains('active')),true);
+  console.log('PASS detailed guide: overview menu entry active');assertions+=3;await context.close();
+ }
  const shortcut = (await readFile(resolve(root, 'assets/js/just-the-docs.js'), 'utf8')).match(/add event listener on ctrl[^]*?e\.key === '([^']+)'/);
  if (shortcut) {
   const context=await createContext();const page=await context.newPage();
