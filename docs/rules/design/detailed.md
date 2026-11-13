@@ -22,7 +22,7 @@ Design guides interfaces around real content and user tasks. It combines respons
 ```mermaid
 flowchart TD
   Task["Understand the content, user task and existing design"] --> Structure["Choose useful layout and navigation"]
-  Structure --> Access["Handle responsive and accessible behavior"]
+  Structure --> Access["Handle responsive behavior, accessibility and themes"]
   Access --> Links["Verify destinations, opening behavior and indicators"]
   Links --> Review["Check the affected views and interactions"]
   Review --> Result["Keep established choices and report remaining gaps"]
@@ -39,6 +39,29 @@ For example, a short reference page may need a clear reading column and section 
 ## Responsive interfaces and links
 
 Layouts should preserve access to content and actions as the viewport narrows, text grows or navigation changes. Consider keyboard operation, focus, reading order, contrast and reduced motion as part of normal interface work. WCAG 2.2 Level AA is the default accessibility reference, including its stated exceptions.
+
+### Theme preferences
+
+Automatic behavior can work behind a simple Light/Dark toggle. Keep the project's existing control and settings mechanism; a System option is useful when already supported, but the rule does not require adding one.
+
+The important distinction is between the visitor's choice and the appearance currently shown:
+
+| Situation | Expected behavior |
+|---|---|
+| No valid saved choice | Follow the browser-reported system preference, subject to an explicit project default. Use the project default or light if the browser cannot report a preference. |
+| Visitor chooses Light or Dark | Apply and remember that choice, even when it matches the current system theme. |
+| System theme changes | Update only while following the system; preserve manual overrides. |
+| Another tab changes this project's preference | Reflect the new choice in its other open tabs and windows. |
+| System is selected, when available, or the override is cleared | Resume automatic behavior. |
+| Storage is blocked | Keep switching available for the current page; a later visit may return to the default. |
+
+For example, an initial dark system theme should not create a saved Dark override. If the visitor then chooses Light, the site stays light through later system changes until that override is changed or cleared.
+
+The default scope is one project within one browser profile, including later visits. Different browsers, profiles and devices remain independent unless the project already provides account synchronization or explicitly requires another scope. Since browser storage is [shared by origin](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), projects on the same host need separate preference keys to avoid changing each other's themes. Choices last until changed or browser data is removed; private browsing can shorten that lifetime.
+
+Set the initial theme before the page appears so the wrong scheme does not flash first, and keep browser-drawn controls aligned with it. Verify the automatic and manual paths, updates in another tab and unavailable storage. These defaults guide theme work; they do not introduce a new control, account service or redesign into unrelated tasks.
+
+### Links
 
 Links navigate to destinations; buttons perform actions. A phrase about a particular procedure should reach the relevant section rather than making readers search from a homepage.
 

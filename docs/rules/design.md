@@ -22,6 +22,12 @@ Choose structure, typography and interaction for the actual content and user tas
 
 Layouts should work across narrow and wide viewports, preserving access to content and actions as navigation changes. [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) is the default accessibility reference, including its stated exceptions.
 
+### Theme preferences
+
+When a theme control is part of the task, use the system preference initially unless a valid saved choice or project requirement takes priority. Manual Light/Dark choices win; system changes apply only in automatic mode. Remember choices per project and browser profile across open tabs and later visits. Preserve the existing toggle or selector; a visible System option is optional. Keep the control usable when storage is blocked.
+
+### Links
+
 Links navigate; buttons perform in-page actions. Destinations should answer the link’s promise, including specific sections where useful.
 
 | Link situation | Default behavior and indication |
