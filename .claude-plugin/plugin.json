@@ -1,7 +1,7 @@
 {
   "name": "agent-helm",
   "displayName": "Agent Helm",
-  "version": "3.7.0",
+  "version": "3.8.0",
   "description": "A workflow plugin for developers using Claude and Codex. Keep project context, improve code and tests, maintain docs and configuration, publish reviewed changes and preserve older projects.",
   "author": {
     "name": "Myo Win Thein",
