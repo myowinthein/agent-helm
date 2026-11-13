@@ -179,6 +179,12 @@
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Deferred: a new scenario plus a paid, nondeterministic model run for a rarely used repair path; the guarded behavior stays covered by its written procedure. Decided by the agent on the owner's delegation, 2026-11-13.",
+        "date": "2026-11-13",
+        "commit": "8b26cefcc8d22480819efeb7f291242de1382c5b"
       }
     },
     {
@@ -245,6 +251,12 @@
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Deferred: a new scenario plus a paid, nondeterministic model run; log and manifest already stop at Full scan or Skip when recovery cannot be verified. Decided by the agent on the owner's delegation, 2026-11-13.",
+        "date": "2026-11-13",
+        "commit": "8b26cefcc8d22480819efeb7f291242de1382c5b"
       }
     },
     {
@@ -264,11 +276,21 @@
       "reason": "The script has no automated or browser check and is absent from the acceptance plan; a regression leaves navigation collapsed on detailed pages.",
       "action": "add",
       "layer": "browser",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
-      "blocker": {
-        "kind": "execution",
-        "note": "The Chrome harness (docs/tests/browser_frontend.mjs) now exists but needs Bundler, npm ci and Chrome to build and run; assert the active overview entry, aria-current and expanded ancestors on a detailed guide page."
+      "tests": [
+        "docs/tests/browser_frontend.mjs::detailed guide"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "docs/tests/browser_frontend.mjs"
+        ],
+        "method": "runtime",
+        "outcome": "A detailed guide marks its overview menu entry active with aria-current; removing aria-current from guide-nav.js makes the test fail.",
+        "commit": "d725051b05ec88d5b3a347fb652dc04343d035f6",
+        "command": "cd docs && JEKYLL_ENV=production bundle exec jekyll build && node tests/browser_frontend.mjs",
+        "scope": "Local headless Chrome against the production build; 54 assertions passed"
       }
     },
     {
@@ -288,11 +310,22 @@
       "reason": "Since c99a0b2 the default recovery path starts at Path.home(), so a host whose home path crosses a symlink would be refused today and normalize would stop; whether that is intended or the workflow should resolve the home path is unconfirmed",
       "action": "add",
       "layer": "unit",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
-      "blocker": {
-        "kind": "clarification",
-        "note": "Clarify the intended behavior for symlinked home ancestors, or Characterize the current refusal"
+      "tests": [
+        "scripts/test_normalize_handoff.py::test_symlinked_ancestor_is_refused_until_the_path_is_resolved"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "guides/normalize.md",
+          "scripts/test_normalize_handoff.py"
+        ],
+        "method": "runtime",
+        "outcome": "The workflow resolves the home path before registering; the helper still refuses an unresolved symlinked ancestor and accepts the resolved path.",
+        "commit": "51a3f2cc095f9dcd7af94264074e17bd5a07da47",
+        "command": "python3 -I -B scripts/test_normalize_handoff.py",
+        "scope": "Offline disposable clone with a symlinked ancestor; 18 tests passed"
       }
     },
     {
@@ -468,6 +501,12 @@
       "blocker": {
         "kind": "verification",
         "note": "The live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run; offline oracle checks pass (ruby scripts/test_acceptance_oracles.rb), including the fixed Agent Helm/normalize/<uuid> recovery location."
+      },
+      "decision": {
+        "type": "deferred",
+        "note": "Deferred: the offline oracle already checks the fixed folder; one paid live run adds little. Run `ruby scripts/smoke_acceptance.rb normalize-rewrite` before a release if wanted. Decided by the agent on the owner's delegation, 2026-11-13.",
+        "date": "2026-11-13",
+        "commit": "8b26cefcc8d22480819efeb7f291242de1382c5b"
       }
     },
     {
@@ -596,7 +635,7 @@
       "reason": "Theme persistence, OS following and storage failure handling are supported behavior; the stylesheet-swap path added in cb5dc0a has neither browser evidence nor an automated check.",
       "action": "add",
       "layer": "browser",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "tests": [
         "docs/tests/browser_frontend.mjs::saved-light",
@@ -604,11 +643,22 @@
         "docs/tests/browser_frontend.mjs::storage-blocked",
         "docs/tests/browser_frontend.mjs::dark-css-failed",
         "docs/scripts/browser_acceptance.py",
-        "scripts/acceptance-plan.md::Browser and host acceptance"
+        "scripts/acceptance-plan.md::Browser and host acceptance",
+        "docs/tests/browser_frontend.mjs::invalid saved theme",
+        "docs/tests/browser_frontend.mjs::chosen theme",
+        "docs/tests/browser_frontend.mjs::explicit theme",
+        "docs/tests/browser_frontend.mjs::cross-tab theme"
       ],
-      "blocker": {
-        "kind": "verification",
-        "note": "Saved light/dark, blocked storage, system scheme and a failed stylesheet are covered by browser_frontend.mjs. Still unprotected: an invalid saved value, persistence after choosing a mode, cross-tab storage changes and removal, and an explicit mode ignoring system changes. Running it needs Bundler, npm ci and Chrome."
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "docs/tests/browser_frontend.mjs"
+        ],
+        "method": "runtime",
+        "outcome": "Invalid saved value, persistence after reload, explicit mode and cross-tab choice and reset all behave as expected; mutating the storage listener or the saved write makes the test fail.",
+        "commit": "d725051b05ec88d5b3a347fb652dc04343d035f6",
+        "command": "cd docs && JEKYLL_ENV=production bundle exec jekyll build && node tests/browser_frontend.mjs",
+        "scope": "Local headless Chrome against the production build; 54 assertions passed"
       }
     },
     {
@@ -656,14 +706,14 @@
         "Rakefile"
       ],
       "priority": "unknown",
-      "reason": "CI builds the docs only, so helper and script regressions are caught only by a manual rake test; AGENTS.md records this as deliberate, but the owner's intent for the offline suites is unconfirmed",
+      "reason": "CI builds the docs only, so helper and script regressions are caught only by a manual rake test; AGENTS.md records this as deliberate, but the owner's intent for the offline suites is unconfirmed Owner chose to add an offline CI job on 2026-11-13.",
       "action": "manual",
       "layer": "ci",
       "state": "open",
       "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
       "blocker": {
-        "kind": "clarification",
-        "note": "Owner decision: add an offline CI job, or keep the build-only policy that AGENTS.md now documents"
+        "kind": "verification",
+        "note": "tests.yml now runs the offline suites on push and PR; its commands pass locally. Confirm the first hosted Linux run after the next push."
       }
     },
     {
