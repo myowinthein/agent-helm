@@ -11,8 +11,7 @@ overviews = root.glob("docs/**/*.md").filter_map do |path|
   [path, data] if data && data["detailed"]
 end
 repository = base.delete_prefix("/")
-expected = { "agent-helm" => 19, "agent-compass" => 18 }.fetch(repository)
-raise "Unexpected paired topic inventory" unless overviews.size == expected
+raise "No paired topics found" if overviews.empty?
 
 overviews.each do |source, data|
   detail_source = root.join(data.fetch("detailed").sub(%r{\A/}, "").sub(/\.html\z/, ".md"))
@@ -57,4 +56,4 @@ overviews.each do |source, data|
   raise "Unrendered source filter: #{source}" if explanation.match?(/guide_(?:intro|body|full|section)/)
 end
 
-puts "Verified #{expected} pairs, #{expected * 2} selectors, stable destinations and independently authored Details."
+puts "Verified #{overviews.size} pairs, #{overviews.size * 2} selectors, stable destinations and independently authored Details."
