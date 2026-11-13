@@ -156,6 +156,54 @@ Dir.mktmpdir("helm-package-") do |temp|
   workspace.join("outside.md").delete
   HelmValidation.check(failure.to_s.include?("Resource escapes package"), "Escaping package link was accepted")
 
+  # Each guard must reject its own violation with its specific message.
+  rejection = lambda do |path, change|
+    original = path.read
+    path.write(change.call(original))
+    validation_failure(installation)
+  ensure
+    path.write(original)
+  end
+  edit_json = ->(&change) { ->(text) { JSON.parse(text).tap(&change).then { |value| JSON.pretty_generate(value) } } }
+  skill = installation.join("skills/log/SKILL.md")
+  policy = installation.join("skills/log/agents/openai.yaml")
+  guide = installation.join(HelmValidation.workflow_path("log"))
+  missing_link = "Missing packaged resource: prompts/shared/missing.md"
+  {
+    "implicit Codex invocation" => [policy, ->(text) { text.sub("false", "true") }, "Unexpected Codex skill policy or tool grants: log"],
+    "Codex tool grant" => [policy, ->(text) { text + "tools:\n  - Bash\n" }, "Unexpected Codex skill policy or tool grants: log"],
+    "skill name differing from its directory" => [skill, ->(text) { text.sub("name: log", "name: other") }, "Skill name does not match its directory: log"],
+    "blank skill description" => [skill, ->(text) { text.sub(/^description: .*$/, 'description: ""') }, "Invalid skill description: log"],
+    "over-long skill description" => [skill, ->(text) { text.sub(/^description: .*$/, "description: #{'x' * 1025}") }, "Invalid skill description: log"],
+    "skill link outside the runtime and workflow" => [skill, ->(text) { text + "\n[extra](../../README.md)\n" }, "Skill must load the runtime and its workflow: log"],
+    "broken relative guide link" => [guide, ->(text) { text + "\n[missing](../prompts/shared/missing.md)\n" }, missing_link],
+    "missing package_root target" => [guide, ->(text) { text + "\n{package_root}/prompts/shared/missing.md\n" }, missing_link],
+    "helper contract schema drift" => [installation.join("helpers/ledger-contract.json"),
+                                       edit_json.call { |value| value["owners"]["test"]["schema_version"] = 4 },
+                                       "Helper must retain the current test ledger schema"],
+    "marketplace version drift" => [marketplace_path, edit_json.call { |value| value["plugins"].first["version"] = "0.0.0" }, "Release metadata drift"],
+    "marketplace description drift" => [marketplace_path, edit_json.call { |value| value["plugins"].first["description"] = "Changed" }, "Release metadata drift"],
+    "unavailable Codex installation" => [marketplace_path, edit_json.call { |value| value["plugins"].first["policy"]["installation"] = "NOT_AVAILABLE" },
+                                         "Plugin is not available to Codex"],
+    "command auto-discovery" => [installation.join(".claude-plugin/plugin.json"), edit_json.call { |value| value["commands"] = ["./commands/"] },
+                                 "Expose skills only; command auto-discovery creates duplicate entries"]
+  }.each do |label, (path, change, message)|
+    failure = rejection.call(path, change)
+    HelmValidation.check(failure == message, "Validator did not reject #{label} with its own message: #{failure.inspect}")
+  end
+  {
+    "extra skill" => ["skills/extra/SKILL.md", "Expected the same ten skills and workflows"],
+    "extra archive step" => ["prompts/archive/step6-extra.md", "Archive steps must stay separate from discoverable entry points"]
+  }.each do |label, (relative, message)|
+    extra = installation.join(relative)
+    extra.parent.mkpath
+    extra.write("# Extra\n")
+    failure = validation_failure(installation)
+    extra.delete
+    extra.parent.rmdir if relative.start_with?("skills/")
+    HelmValidation.check(failure == message, "Validator did not reject an #{label} with its own message: #{failure.inspect}")
+  end
+
   state_names = %w[refactor-log.json test-log.json normalize-log.json legal-manifest.json]
   %w[.helm .claude/helm .claude].each do |directory|
     state_names.each do |name|
