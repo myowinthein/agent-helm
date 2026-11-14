@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';
+import assertStrict from 'node:assert/strict';
 import { checkThemeColors } from './check-theme-colors.mjs';
 import { chromium } from 'playwright-core';
 import { readFile } from 'node:fs/promises';
@@ -15,6 +15,11 @@ const { server, origin } = await listenOnLoopback(staticFiles(root, {
  },
  contentType: path => mime[path.split('.').at(-1)] || 'application/octet-stream'
 }));
+const pageUrl=path=>`${origin}/agent-helm/${path}`;
+const background=expected=>page=>page.waitForFunction(expected=>{
+  const color=getComputedStyle(document.body).backgroundColor;
+  return expected==='dark'?color==='rgb(39, 38, 43)':color==='rgb(255, 255, 255)';
+ },expected);
 let browser;
 async function createContext(options = {}) {
  const context = await browser.newContext(options);
@@ -22,6 +27,8 @@ async function createContext(options = {}) {
  return context;
 }
 let assertions=0;
+const counted=check=>(...args)=>{assertions++;return check(...args);};
+const assert=Object.assign(counted(assertStrict),{equal:counted(assertStrict.equal),notEqual:counted(assertStrict.notEqual)});
 try {
  browser=await chromium.launch({executablePath:await chromeExecutable('run the browser checks'),headless:true});
  for(const width of [1280,390]) {
@@ -32,7 +39,7 @@ try {
    page.on('request',r=>requests.push(r.url()));
    page.on('pageerror',e=>errors.push(e.message));
    await page.addInitScript(()=>{window.shifts=[];new PerformanceObserver(list=>window.shifts.push(...list.getEntries().filter(e=>!e.hadRecentInput).map(e=>e.value))).observe({type:'layout-shift',buffered:true});});
-   await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+   await page.goto(pageUrl('docs/commands/ship/detailed.html'));
    await page.waitForTimeout(300);
    assert(!requests.some(url=>url.includes('search-data.json')),'Search downloaded before interaction');
    assert(!requests.some(url=>url.includes('mermaid')),'Browser downloaded Mermaid');
@@ -42,7 +49,7 @@ try {
    assert.equal(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)),true,'Diagram not visible');
    const cls=await page.evaluate(()=>window.shifts.reduce((sum,n)=>sum+n,0));
    assert(cls<0.01,`Initial layout shifted: ${cls}`);
-   assertions += await checkThemeColors(page, scheme);
+   await checkThemeColors(page, scheme, assert);
    const query=page.locator('#search-input');
    if(width===390)await page.locator('#menu-button').click();
    await query.fill('normalize');
@@ -52,15 +59,13 @@ try {
    assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('search-active')),false);
    await query.focus();
    await page.waitForFunction(()=>document.documentElement.classList.contains('search-active'));
-   assertions+=2;
    await query.press('Escape');
    assert.equal(await query.inputValue(),'');
    await page.locator('#theme-mode').selectOption(scheme==='light'?'dark':'light');
    await page.waitForFunction(expected=>document.querySelector('link[rel="stylesheet"]').href.endsWith(`just-the-docs-${expected}.css`),scheme==='light'?'dark':'light');
-   assertions += await checkThemeColors(page, scheme==='light'?'dark':'light');
+   await checkThemeColors(page, scheme==='light'?'dark':'light', assert);
    assert.equal(errors.length,0,errors.join('\n'));
    console.log(`PASS ${width}px ${scheme}: one theme stylesheet, no initial index, static diagrams, CLS ${cls.toFixed(3)}, search and theme switching`);
-   assertions+=10;
    await context.close();
   }
  }
@@ -69,118 +74,111 @@ try {
   const context=await createContext();const page=await context.newPage();
   await page.addInitScript(()=>{window.diagramShift=0;new PerformanceObserver(list=>{for(const e of list.getEntries())if(!e.hadRecentInput)window.diagramShift+=e.value;}).observe({type:'layout-shift',buffered:true});});
   await page.route('**/assets/diagrams/*.svg',async route=>{await new Promise(resolve=>setTimeout(resolve,500));await route.continue();});
-  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   assert(await page.evaluate(()=>window.diagramShift<0.01));
-  console.log('PASS delayed diagram download: reserved space remains stable');assertions++;await context.close();
+  console.log('PASS delayed diagram download: reserved space remains stable');await context.close();
  }
  // A slow first search must retain text typed before the index becomes ready.
  {
   const context=await createContext();const page=await context.newPage();let count=0;
   await page.route('**/search-data.json',async route=>{count++;await new Promise(resolve=>setTimeout(resolve,500));await route.continue();});
-  await page.goto(`${origin}/agent-helm/docs/commands/log.html`);
+  await page.goto(pageUrl('docs/commands/log.html'));
   await page.locator('#search-input').fill('archive');
   await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
   assert.equal(await page.locator('#search-input').inputValue(),'archive');assert.equal(count,1);
-  console.log('PASS slow search: first query preserved, one request');assertions+=2;await context.close();
+  console.log('PASS slow search: first query preserved, one request');await context.close();
  }
  // Failed requests may be retried on the next search interaction.
  {
   const context=await createContext();const page=await context.newPage();let count=0;
   await page.route('**/search-data.json',async route=>{count++;if(count===1)await route.fulfill({status:503,body:'Unavailable'});else await route.continue();});
-  await page.goto(`${origin}/agent-helm/docs/commands/log.html`);
+  await page.goto(pageUrl('docs/commands/log.html'));
   await page.locator('#search-input').focus();await page.waitForTimeout(100);
   await page.locator('#search-input').fill('archive');
   await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
-  assert.equal(count,2);console.log('PASS failed search: retry succeeds');assertions++;await context.close();
+  assert.equal(count,2);console.log('PASS failed search: retry succeeds');await context.close();
  }
  for(const fault of ['no-js','storage-blocked','saved-light','saved-dark','dark-css-failed']) {
   const context=await createContext({javaScriptEnabled:fault!=='no-js',colorScheme:'dark'});const page=await context.newPage();
   if(fault==='storage-blocked')await page.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Blocked','SecurityError');}}));
   if(fault.startsWith('saved-'))await page.addInitScript(mode=>localStorage.setItem('agent-helm-theme',mode),fault.slice(6));
   if(fault==='dark-css-failed')await page.route('**/just-the-docs-dark.css',route=>route.abort());
-  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   const expected=['no-js','saved-light','dark-css-failed'].includes(fault)?'light':'dark';
-  await page.waitForFunction(expected=>{
-   const color=getComputedStyle(document.body).backgroundColor;
-   return expected==='dark'?color==='rgb(39, 38, 43)':color==='rgb(255, 255, 255)';
-  },expected);
+  await background(expected)(page);
   assert(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)));
-  console.log(`PASS ${fault}: readable ${expected} theme and diagrams`);assertions++;await context.close();
+  console.log(`PASS ${fault}: readable ${expected} theme and diagrams`);await context.close();
  }
- const background=expected=>page=>page.waitForFunction(expected=>{
-  const color=getComputedStyle(document.body).backgroundColor;
-  return expected==='dark'?color==='rgb(39, 38, 43)':color==='rgb(255, 255, 255)';
- },expected);
  // An unrecognized saved value falls back to the system theme.
  {
   const context=await createContext({colorScheme:'dark'});const page=await context.newPage();
   await page.addInitScript(()=>localStorage.setItem('agent-helm-theme','invalid-fixture'));
-  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   await background('dark')(page);
   assert.equal(await page.locator('#theme-mode').inputValue(),'system');
-  console.log('PASS invalid saved theme: system theme and System selection');assertions+=2;await context.close();
+  console.log('PASS invalid saved theme: system theme and System selection');await context.close();
  }
  // A chosen mode persists across reloads.
  {
   const context=await createContext({colorScheme:'dark'});const page=await context.newPage();
-  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   await page.locator('#theme-mode').selectOption('light');
   await background('light')(page);
   await page.reload();
   await background('light')(page);
   assert.equal(await page.locator('#theme-mode').inputValue(),'light');
-  console.log('PASS chosen theme: saved and restored after reload');assertions++;await context.close();
+  console.log('PASS chosen theme: saved and restored after reload');await context.close();
  }
  // An explicit mode ignores system scheme changes.
  {
   const context=await createContext({colorScheme:'dark'});const page=await context.newPage();
   await page.addInitScript(()=>localStorage.setItem('agent-helm-theme','light'));
-  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   await background('light')(page);
   await page.emulateMedia({colorScheme:'light'});await page.emulateMedia({colorScheme:'dark'});
   await page.waitForTimeout(200);
   await background('light')(page);
-  console.log('PASS explicit theme: system scheme changes ignored');assertions++;await context.close();
+  console.log('PASS explicit theme: system scheme changes ignored');await context.close();
  }
  // Another tab's choice and reset apply to open pages.
  {
   const context=await createContext({colorScheme:'dark'});const first=await context.newPage();const second=await context.newPage();
-  for(const tab of [first,second])await tab.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  for(const tab of [first,second])await tab.goto(pageUrl('docs/commands/ship/detailed.html'));
   await first.locator('#theme-mode').selectOption('light');
   await background('light')(second);
   assert.equal(await second.locator('#theme-mode').inputValue(),'light');
   await first.evaluate(()=>localStorage.removeItem('agent-helm-theme'));
   await background('dark')(second);
   assert.equal(await second.locator('#theme-mode').inputValue(),'system');
-  console.log('PASS cross-tab theme: choice applied, reset returns to system');assertions+=2;await context.close();
+  console.log('PASS cross-tab theme: choice applied, reset returns to system');await context.close();
  }
  // A detailed guide keeps its overview entry active in the menu.
  {
   const context=await createContext();const page=await context.newPage();
-  await page.goto(`${origin}/agent-helm/docs/commands/ship/detailed.html`);
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   await page.waitForSelector('#site-nav[data-guide-nav-ready]');
   const current=page.locator('#site-nav a[aria-current="location"]');
   assert.equal(await current.count(),1);
   assert((await current.getAttribute('href')).endsWith('/docs/commands/ship.html'));
   assert.equal(await current.evaluate(link=>link.classList.contains('active')),true);
-  console.log('PASS detailed guide: overview menu entry active');assertions+=3;await context.close();
+  console.log('PASS detailed guide: overview menu entry active');await context.close();
  }
  const shortcut = (await readFile(resolve(root, 'assets/js/just-the-docs.js'), 'utf8')).match(/add event listener on ctrl[^]*?e\.key === '([^']+)'/);
  if (shortcut) {
   const context=await createContext();const page=await context.newPage();
-  await page.goto(`${origin}/agent-helm/docs/commands/log.html`);
+  await page.goto(pageUrl('docs/commands/log.html'));
   await page.keyboard.press(`Control+${shortcut[1]}`);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'search-input');
   await page.locator('#search-input').fill('archive');
   await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
-  console.log('PASS configured search shortcut before index loading');assertions++;await context.close();
+  console.log('PASS configured search shortcut before index loading');await context.close();
  }
  // The header shares feedback while keeping home and release as native links.
  for (const width of [320, 390, 800, 1024, 1280]) for (const scheme of ['light', 'dark']) {
   const context=await createContext({viewport:{width,height:900},colorScheme:scheme});
   await context.route('https://github.com/myowinthein/agent-helm/releases/tag/*', route=>route.fulfill({contentType:'text/html',body:'<!doctype html><title>Release fixture</title>'}));
   const page=await context.newPage();
-  await page.goto(`${origin}/agent-helm/docs/commands/log.html`);
+  await page.goto(pageUrl('docs/commands/log.html'));
   const brand=page.locator('.site-brand');
   const title=brand.locator('.site-title');
   const version=brand.locator('.site-version');
@@ -204,8 +202,8 @@ try {
   assert(versionBox.height>=24 && versionBox.width>=24);
   assert(versionBox.x>=box.x && versionBox.x+versionBox.width<=box.x+box.width);
   await page.mouse.click(box.x+box.width-3,box.y+box.height-3);
-  await page.waitForURL(`${origin}/agent-helm/`);
-  await page.goto(`${origin}/agent-helm/docs/commands/log.html`);
+  await page.waitForURL(pageUrl(''));
+  await page.goto(pageUrl('docs/commands/log.html'));
   await page.locator('.site-brand .site-title').focus();
   await page.keyboard.press('Tab');
   const focused=page.locator('.site-brand .site-version');
@@ -214,7 +212,6 @@ try {
   await page.waitForURL(release);
   assert.equal(context.pages().length,1);
   console.log(`PASS ${width}px ${scheme}: shared header hover, home area, separate release link and keyboard activation`);
-  assertions+=14;
   await context.close();
  }
  console.log(`Passed ${assertions} browser assertions.`);

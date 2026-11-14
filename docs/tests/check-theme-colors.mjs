@@ -1,5 +1,3 @@
-import assert from 'node:assert/strict';
-
 function contrast(a, b) {
   const luminance = rgb => rgb.map(v => v / 255).map(v => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)
     .reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0);
@@ -7,7 +5,7 @@ function contrast(a, b) {
   return (high + 0.05) / (low + 0.05);
 }
 
-export async function checkThemeColors(page, scheme) {
+export async function checkThemeColors(page, scheme, assert) {
   const { placeholder, background } = await page.locator('#search-input').evaluate(input => {
     const rgb = color => color.match(/[\d.]+/g).slice(0, 3).map(Number);
     let parent = input;
@@ -47,5 +45,4 @@ export async function checkThemeColors(page, scheme) {
   }, { png: pixels.toString('base64'), colors: [line, surface, [238, 238, 238]] });
   assert(matches[2] === 0, `${scheme} diagram retained a light-only node background`);
   assert(matches.slice(0, 2).every(count => count > 0), `${scheme} diagram did not render its theme's lines and surfaces`);
-  return 5;
 }
