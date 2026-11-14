@@ -43,6 +43,7 @@ try {
    assert(!requests.some(url=>url.includes('mermaid')),'Browser downloaded Mermaid');
    assert.equal(requests.filter(url=>/just-the-docs-(default|light|dark)\.css/.test(url)).length,1,'Duplicate initial theme stylesheets');
    assert(requests.some(url=>url.endsWith(`just-the-docs-${scheme}.css`)),'Wrong system theme');
+   assert(requests.every(url=>new URL(url).origin===origin),'Initial load requested another origin');
    assert.equal(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)),true,'Diagram not visible');
    const cls=await page.evaluate(()=>window.shifts.reduce((sum,n)=>sum+n,0));
    assert(cls<0.01,`Initial layout shifted: ${cls}`);
@@ -64,7 +65,7 @@ try {
    assertions += await checkThemeColors(page, scheme==='light'?'dark':'light');
    assert.equal(errors.length,0,errors.join('\n'));
    console.log(`PASS ${width}px ${scheme}: one theme stylesheet, no initial index, static diagrams, CLS ${cls.toFixed(3)}, search and theme switching`);
-   assertions+=9;
+   assertions+=10;
    await context.close();
   }
  }
