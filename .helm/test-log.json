@@ -23,8 +23,22 @@
       "reason": "An external favicon, font, stylesheet or script would be aborted silently by the browser test and skipped by HTMLProofer, making the public privacy statement false; jsDelivr and myowin.dev requests were only removed recently, so a regression is credible",
       "action": "improve",
       "layer": "integration",
-      "state": "open",
-      "assessed_commit": "6488825d4ccc68e9463b132f28c8d1335614d97c"
+      "state": "resolved",
+      "assessed_commit": "6488825d4ccc68e9463b132f28c8d1335614d97c",
+      "tests": [
+        "docs/tests/browser_frontend.mjs::initial load requests only the site origin"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "docs/tests/browser_frontend.mjs::initial load requests only the site origin"
+        ],
+        "method": "runtime",
+        "outcome": "With an external stylesheet temporarily added to docs/_includes/head_custom.html the browser test failed with 'Initial load requested another origin'; after restoring the file it passed with 246 browser assertions and HTML-Proofer finished successfully",
+        "commit": "8770d511aad014638fc3715997fa295debaf9bb1",
+        "command": "BUNDLE_GEMFILE=docs/Gemfile bundle _4.0.22_ exec rake docs_browser_test",
+        "scope": "Jekyll build with the remote theme, HTML-Proofer and headless Chrome on macOS, Ruby 4.0.6 with bundler 4.0.22 (lockfile records 4.0.11); first-load request origins of docs/commands/ship/detailed.html at 1280px and 390px in light and dark; not a hosted Linux CI run"
+      }
     },
     {
       "id": "g-24eb63fb-bb89-48ff-9536-68837c401ff6",
