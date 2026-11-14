@@ -45,7 +45,7 @@ Use the project's verified canonical URLs, preferring HTTPS where supported. Pre
 
 A northeast arrow leaving an open square marks external text links, independently of tab behavior. Internal new-tab links get no external arrow. Downloads and email, phone or app links use native handling and clear outcome wording. Respect established project conventions and renderer limits.
 
-Check the resulting sentence, destination and fragment. Preserve existing anchors when headings change and report verification gaps. [Design](design.html#responsive-interfaces-and-links) adds interface guidance when selected; it requires no second reference pass.
+Check the resulting sentence, destination and fragment. Where styling is controllable, prose/reference links default to underlines that stay clearly visible at rest, with clear hover and keyboard focus; recognizable navigation and other components can keep their established treatment. Essential labels and indicators stay available without hover. Preserve existing anchors when headings change and report verification gaps. [Design](design.html#link-appearance) adds visual criteria within this same reference pass when selected.
 
 ## Examples
 

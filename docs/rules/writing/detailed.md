@@ -69,9 +69,11 @@ Downloads and email, phone or app links use native handling and clear outcome wo
 
 ### Verify the finished reference
 
-Read the linked phrase back in its sentence, check the destination and fragment, and preserve established anchors when headings change. Interface changes also need the relevant keyboard, focus and opening checks. Report unavailable verification rather than describing inspection as a tested interaction.
+Read the linked phrase back in its sentence, check the destination and fragment, and preserve established anchors when headings change.
 
-When Design is selected, its [interface guidance](../design.html#responsive-interfaces-and-links) applies within this same reference workflow. A second linking pass is unnecessary.
+Where styling is controllable, prose and reference links default to clearly visible underlines at rest. Clearly grouped navigation, button links, cards and icons can use their established component treatment. Keep hover emphasis, visible keyboard focus and any visited styling readable. Essential labels and indicators must work without hover, including on touch devices. A renderer such as GitHub may control those styles itself.
+
+Interface changes also need the relevant visual-state, keyboard, focus and opening checks. When Design is selected, its [link appearance criteria](../design/detailed.html#link-appearance) apply within this verification step. A second linking pass is unnecessary. Report unavailable verification rather than describing inspection as a tested interaction.
 
 ## Examples
 
