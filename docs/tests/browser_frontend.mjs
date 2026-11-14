@@ -1,34 +1,29 @@
 import assert from 'node:assert/strict';
 import { checkThemeColors } from './check-theme-colors.mjs';
 import { chromium } from 'playwright-core';
-import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { dirname, resolve, sep } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { allowOnlyOrigin, chromeExecutable, listenOnLoopback, staticFiles } from '../scripts/browser.mjs';
 
 const root = resolve(process.env.HELM_DOCS_SITE || resolve(dirname(fileURLToPath(import.meta.url)), '../_site'));
 const mime = { html:'text/html',css:'text/css',js:'text/javascript',json:'application/json',svg:'image/svg+xml',jpg:'image/jpeg' };
-const server=createServer(async(request,response)=>{
- try {
-  let pathname=decodeURIComponent(new URL(request.url,'http://localhost').pathname).replace(/^\/agent-helm\//,'/');
-  if(pathname.endsWith('/'))pathname+='index.html';
-  const path=resolve(root,`.${pathname}`);
-  if(!path.startsWith(root+sep))throw new Error('Outside site');
-  response.setHeader('Content-Type',mime[path.split('.').at(-1)]||'application/octet-stream');
-  response.end(await readFile(path));
- } catch {response.writeHead(404).end();}
-});
-await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-const origin=`http://127.0.0.1:${server.address().port}`;
+const { server, origin } = await listenOnLoopback(staticFiles(root, {
+ rewrite: pathname => {
+  const site = pathname.replace(/^\/agent-helm\//, '/');
+  return site.endsWith('/') ? `${site}index.html` : site;
+ },
+ contentType: path => mime[path.split('.').at(-1)] || 'application/octet-stream'
+}));
 let browser;
 async function createContext(options = {}) {
  const context = await browser.newContext(options);
- await context.route('**/*', route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort());
+ await allowOnlyOrigin(context, origin);
  return context;
 }
 let assertions=0;
 try {
- browser=await chromium.launch({executablePath:process.env.HELM_DOCS_CHROME||(process.platform==='darwin'?'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome':'/usr/bin/google-chrome'),headless:true});
+ browser=await chromium.launch({executablePath:await chromeExecutable('run the browser checks'),headless:true});
  for(const width of [1280,390]) {
   for(const scheme of ['light','dark']) {
    const context=await createContext({viewport:{width,height:900},colorScheme:scheme});
