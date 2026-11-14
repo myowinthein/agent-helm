@@ -1,8 +1,31 @@
 {
   "schema_version": 3,
-  "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
+  "assessed_commit": "6488825d4ccc68e9463b132f28c8d1335614d97c",
   "full_scan_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
   "cases": [
+    {
+      "id": "g-1eb1b70f-f70f-4be8-884f-a1d2ff3c16a6",
+      "expected": "The built documentation site requests nothing from another origin when a page loads, so the privacy notice's statement that pages, diagrams and favicon come from GitHub Pages stays true",
+      "basis": [
+        "docs/legal/privacy.md Visiting the documentation site",
+        "d3d1940 docs(legal): update privacy notice for self-hosted assets",
+        "docs/tests/browser_frontend.mjs createContext aborts other origins but only pageerror is asserted",
+        "docs/scripts/docs_checks.rb HTMLProofer runs with disable_external: true"
+      ],
+      "paths": [
+        "docs/tests/browser_frontend.mjs",
+        "docs/legal/privacy.md",
+        "docs/_includes/head_custom.html",
+        "docs/_config.yml",
+        "docs/scripts/render-diagrams.mjs"
+      ],
+      "priority": "medium",
+      "reason": "An external favicon, font, stylesheet or script would be aborted silently by the browser test and skipped by HTMLProofer, making the public privacy statement false; jsDelivr and myowin.dev requests were only removed recently, so a regression is credible",
+      "action": "improve",
+      "layer": "integration",
+      "state": "open",
+      "assessed_commit": "6488825d4ccc68e9463b132f28c8d1335614d97c"
+    },
     {
       "id": "g-24eb63fb-bb89-48ff-9536-68837c401ff6",
       "expected": "Actual HTMLProofer checks configured own-origin absolute targets and hashes/images offline with exact boundaries; external sites remain unfetched and README URLs stay absolute.",
@@ -292,6 +315,25 @@
         "command": "cd docs && JEKYLL_ENV=production bundle exec jekyll build && node tests/browser_frontend.mjs",
         "scope": "Local headless Chrome against the production build; 54 assertions passed"
       }
+    },
+    {
+      "id": "g-7b27a199-0492-4580-b9d3-fcbec4373b35",
+      "expected": "The offline suites listed in .github/workflows/tests.yml cannot silently drift from the non-docs suites of the Rakefile test task",
+      "basis": [
+        ".github/workflows/tests.yml run steps",
+        "Rakefile plugin_test, normalize_test, normalize_handoff_test, ledger_test, smoke_support_test and acceptance_support_test tasks",
+        "8b26cef ci(tests): run the offline suites on every push and PR"
+      ],
+      "paths": [
+        ".github/workflows/tests.yml",
+        "Rakefile"
+      ],
+      "priority": "low",
+      "reason": "A suite added to the Rakefile but not to tests.yml would stay unrun in CI with no failing check; local rake still runs it, so the loss is recoverable",
+      "action": "add",
+      "layer": "ci",
+      "state": "open",
+      "assessed_commit": "6488825d4ccc68e9463b132f28c8d1335614d97c"
     },
     {
       "id": "g-7d59a9cb-8eb8-46c4-bbb5-dc5fcd9121d1",
