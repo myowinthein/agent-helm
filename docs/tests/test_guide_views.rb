@@ -2,21 +2,18 @@ require "jekyll"
 require "nokogiri"
 require "pathname"
 require "yaml"
+require_relative "guide_pairs"
 
 root = Pathname(__dir__).parent.parent
 base = YAML.safe_load_file(root.join("docs/_config.yml")).fetch("baseurl")
-overviews = root.glob("docs/**/*.md").filter_map do |path|
-  frontmatter = path.read.match(/\A---\n(.*?)\n---\n/m)
-  data = frontmatter && YAML.safe_load(frontmatter[1])
-  [path, data] if data && data["detailed"]
-end
+overviews = GuidePairs.overviews(root)
 repository = base.delete_prefix("/")
 raise "No paired topics found" if overviews.empty?
 
 overviews.each do |source, data|
   detail_source = root.join(data.fetch("detailed").sub(%r{\A/}, "").sub(/\.html\z/, ".md"))
   detail_data = YAML.safe_load(detail_source.read.match(/\A---\n(.*?)\n---\n/m)[1])
-  overview_url = data["permalink"] || "/#{source.relative_path_from(root).sub_ext('.html')}"
+  overview_url = GuidePairs.overview_url(root, source, data)
   raise "Detailed guide points to the wrong Overview: #{source}" unless detail_data["overview"] == overview_url
   raise "Detailed guide leaks into navigation: #{source}" unless detail_data["nav_exclude"]
   built_detail = nil

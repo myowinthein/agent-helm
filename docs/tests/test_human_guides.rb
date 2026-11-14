@@ -1,5 +1,6 @@
 require "pathname"
 require "yaml"
+require_relative "guide_pairs"
 
 root = Pathname(__dir__).parent.parent.realpath
 config = YAML.safe_load_file(root.join("docs/_config.yml"))
@@ -13,11 +14,7 @@ def document(path)
   [YAML.safe_load(match[1]), match[2]]
 end
 
-pairs = root.glob("docs/**/*.md").filter_map do |path|
-  next if path.to_s.include?("/_site/")
-  data, = document(path) if path.read.start_with?("---\n")
-  [path, data] if data && data["detailed"]
-end
+pairs = GuidePairs.overviews(root)
 raise "Unexpected paired-guide inventory" unless pairs.size == expected_count
 raise "Source-injection plugin must not return" if root.join("docs/_plugins/guide_content.rb").exist?
 
@@ -25,7 +22,7 @@ pairs.each do |overview, data|
   url = data.fetch("detailed")
   detail = root.join(url.delete_prefix("/").sub(/\.html\z/, ".md"))
   meta, body = document(detail)
-  overview_url = data["permalink"] || "/#{overview.relative_path_from(root).sub_ext('.html')}"
+  overview_url = GuidePairs.overview_url(root, overview, data)
   raise "Broken view pair: #{detail}" unless meta["overview"] == overview_url && meta["permalink"] == url
   raise "Details leaked into the menu: #{detail}" unless meta["nav_exclude"]
   raise "Duplicate title or selector: #{detail}" unless body.scan(/^# /).size == 1 && body.scan("{% include guide-depth.html %}").size == 1
