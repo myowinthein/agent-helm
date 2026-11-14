@@ -1120,8 +1120,27 @@
         ],
         "invariant": "Preserve the pair count of 19, error messages, the no-paired-topics guard, and the split between the built-site test and the source test."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "f5527d49f4a80d058f4531ce6f0a31a648994bd4",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "docs/tests/guide_pairs.rb now owns pair discovery and overview URL derivation; test_guide_views.rb and test_human_guides.rb call it and keep their own assertions, the pair count of 19 and the no-pairs guard.",
+          "A planted docs/node_modules markdown file with a detailed front-matter key made the old glob count 20 pairs while the helper counted 19; the file was removed afterwards.",
+          "The helper now raises 'Missing front matter' for any non-excluded docs file that starts with --- but has no closing delimiter, which test_guide_views.rb previously ignored."
+        ],
+        "checks": [
+          {
+            "command": "BUNDLE_GEMFILE=docs/Gemfile bundle _4.0.22_ exec rake docs_links_test docs_test docs_browser_test",
+            "scope": "Jekyll build with the remote theme, HTML-Proofer, docs Ruby tests and headless Chrome browser suite on macOS (Ruby 4.0.6, bundler 4.0.22 while docs/Gemfile.lock records 4.0.11), on tree 63a8f23; not a hosted Linux CI run",
+            "outcome": "Passed: 24 docs-link scenarios, 19 guide pairs and 38 selectors, HTML-Proofer, setup contracts and the browser suite"
+          }
+        ]
+      }
     },
     {
       "id": "r-5e583e01-a926-4fae-a6bb-d6e9c1d53f3a",
@@ -1150,8 +1169,27 @@
         ],
         "invariant": "Preserve every assertion and message, selectors, the viewport and scheme matrix, the delayed-response fixtures and the PASS log lines."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "63a8f239c51a45aeeea377156d7d1ad83b3d6e89",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "browser_frontend.mjs counts assertions through a wrapper instead of thirteen hand tallies, defines background before its first use and reuses it in the fault loop, and builds page URLs with pageUrl; check-theme-colors.mjs takes the counted assert and no longer returns a constant.",
+          "A mutated copy with 'assert(false)' in place of the wrong-system-theme assertion failed the suite, so the wrapper still fails on a bad assertion.",
+          "The printed total changed from 246 hand-tallied to 220 counted assertions; the 27 PASS lines, selectors and checks are unchanged."
+        ],
+        "checks": [
+          {
+            "command": "BUNDLE_GEMFILE=docs/Gemfile bundle _4.0.22_ exec rake docs_links_test docs_test docs_browser_test",
+            "scope": "Jekyll build with the remote theme, HTML-Proofer, docs Ruby tests and headless Chrome browser suite on macOS (Ruby 4.0.6, bundler 4.0.22 while docs/Gemfile.lock records 4.0.11), on tree 63a8f23; not a hosted Linux CI run",
+            "outcome": "Passed: 24 docs-link scenarios, 19 guide pairs and 38 selectors, HTML-Proofer, setup contracts and the browser suite"
+          }
+        ]
+      }
     },
     {
       "id": "r-777a493a-1e8f-4f23-986e-9d3f339c8f07",
@@ -1181,8 +1219,27 @@
         ],
         "invariant": "Preserve the HELM_DOCS_CHROME override and error text, the loopback-only ephemeral listener, 404 and traversal behaviour, aborted off-origin requests and byte-identical diagram output."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "37355b10a549c83d31d909e2b876176df1756005",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "docs/scripts/browser.mjs now holds Chrome discovery, the traversal-guarded static handler, the loopback listener and the off-origin route guard; render-diagrams.mjs and browser_frontend.mjs import it.",
+          "On identical diagram input (3 diagrams from docs/commands) the previous and the new renderer produced byte-identical JSON (sha256 2b434c8d...).",
+          "Behaviour differences, both in tooling only: the browser checks now also find /usr/bin/chromium and the Windows path, and an unusable HELM_DOCS_CHROME falls through to the other candidates instead of failing at launch."
+        ],
+        "checks": [
+          {
+            "command": "BUNDLE_GEMFILE=docs/Gemfile bundle _4.0.22_ exec rake docs_links_test docs_test docs_browser_test",
+            "scope": "Jekyll build with the remote theme, HTML-Proofer, docs Ruby tests and headless Chrome browser suite on macOS (Ruby 4.0.6, bundler 4.0.22 while docs/Gemfile.lock records 4.0.11), on tree 63a8f23; not a hosted Linux CI run",
+            "outcome": "Passed: 24 docs-link scenarios, 19 guide pairs and 38 selectors, HTML-Proofer, setup contracts and the browser suite"
+          }
+        ]
+      }
     },
     {
       "id": "r-4011d7b5-608c-42e3-a97f-a528725d4353",
