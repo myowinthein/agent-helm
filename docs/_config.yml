@@ -17,10 +17,6 @@ defaults:
         width: 1200
         height: 800
         alt: A helmsman steering a ship toward a storm
-  - scope:
-      path: ""
-      type: pages
-    values:
       layout: default
   - scope:
       path: "commands"
