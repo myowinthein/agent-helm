@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "assessed_commit": "0b23ce0ccf22672297294c74ec0f074decb5f387",
-  "full_scan_commit": "0e3ebe76854df025954259c5f755522179d97d01",
+  "assessed_commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+  "full_scan_commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
   "findings": [
     {
       "id": "r-7d02b3b4-6359-416d-a0d0-29b8f96fc8bb",
@@ -381,6 +381,835 @@
           }
         ]
       }
+    },
+    {
+      "id": "r-981d14fe-f521-4990-9415-ec5848f54f9f",
+      "category": "Dependencies",
+      "summary": "Two ship prompts link to a guide heading with a single hyphen where the heading slug has a double hyphen, so the preflight pointer does not resolve.",
+      "paths": [
+        "prompts/ship/release.md",
+        "prompts/ship/targets.md",
+        "guides/ship.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "The anchor does not resolve for an anchor-following renderer or reader, and validate_plugin.rb strips fragments so nothing reports it; the repository already uses the double-hyphen form for the Step 7 heading.",
+        "evidence": [
+          "prompts/ship/release.md:5 and prompts/ship/targets.md:3 link guides/ship.md#step-1-establish-scope-capabilities-and-core-publication.",
+          "guides/ship.md:49 is '## Step 1 — Establish scope, capabilities and core publication'; the em dash is removed and its surrounding spaces leave a double hyphen.",
+          "guides/ship.md:29 already links the Step 7 heading as #step-7--assess-current-results-and-continue-only-missing-work.",
+          "scripts/validate_plugin.rb strips link fragments and checks only that the target file exists."
+        ],
+        "invariant": "Change only the two fragment strings; the link targets and wording stay the same."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-71851cc4-b872-4888-bc60-12f4737e21ad",
+      "category": "Consistency",
+      "summary": "The 'Python unavailable, use equivalent tools' ledger fallback is restated in six files that a refactor or test run loads together, so any change to it needs six coordinated edits.",
+      "paths": [
+        "prompts/shared/ledger-helper.md",
+        "prompts/shared/runtime.md",
+        "prompts/shared/project-state.md",
+        "prompts/refactor-ledger.md",
+        "guides/refactor.md",
+        "guides/test.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "A refactor run reads the same Set up Python / Continue without Python / Stop rule from ledger-helper.md, runtime.md, project-state.md, refactor-ledger.md and the guide, and the checklist wording already differs between copies; a policy change must be mirrored by hand.",
+        "evidence": [
+          "prompts/shared/ledger-helper.md:20-43 owns the rule and its four-point equivalence checklist.",
+          "prompts/shared/runtime.md:55, prompts/shared/project-state.md:22, prompts/refactor-ledger.md:86 and :94, guides/refactor.md:78-82 and guides/test.md:62-66 restate it.",
+          "runtime.md:55 says 'complete validation, bounded retrieval and preservation'; project-state.md:22 and refactor-ledger.md:86 add 'safe-path, resource, digest/retrieval'; ledger-helper.md:34-39 lists four numbered checks."
+        ],
+        "invariant": "Keep the run-scoped single choice, the advisory-only manual view, the no-writer statement, invalid-state and drift blockers that fallback cannot bypass, and that preview and report-only exits never load the helper."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-1f089f0a-ab11-49c4-b9fd-b46c4c614a62",
+      "category": "Consistency",
+      "summary": "Normalize's schema-2 ledger contract and checkpoint rules are written in both guides/normalize.md and prompts/normalize-review.md, and the two give different outcomes for an invalid coverage record.",
+      "paths": [
+        "guides/normalize.md",
+        "prompts/normalize-review.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "Both files are read in the same normalize run and each carries the schema JSON and checkpoint-eligibility rules, so every schema or coverage change needs two edits and one divergence already exists.",
+        "evidence": [
+          "guides/normalize.md:216-249 repeats the schema-2 JSON at :221-232 that prompts/normalize-review.md:34-55 defines.",
+          "prompts/normalize-review.md:53 allows retaining an invalid policy or coverage entry only as non-reusable historical data or proposing the existing explicit invalidation.",
+          "guides/normalize.md:237 and :243 say that without a safe anchor the developer reviews removal and no null or partial coverage replaces it, and name no retain-as-historical branch."
+        ],
+        "invariant": "Preserve coverage-advancement limits, the no-rehash rule, strict readback, the fixed commit message, and that invalid coverage is never presented as reusable."
+      },
+      "state": "open",
+      "depends_on": [],
+      "blocker": {
+        "kind": "clarification",
+        "reason": "Decide whether an invalid or non-reusable coverage record is retained as historical data or removed through reviewed invalidation; the two documents disagree and the choice is behaviour."
+      }
+    },
+    {
+      "id": "r-44324732-f81b-43ea-9bab-07a540901978",
+      "category": "Consistency",
+      "summary": "The refactor guide and the refactor ledger prompt both define decisions, closure, recurrence and checkpoint eligibility with slightly different lists.",
+      "paths": [
+        "guides/refactor.md",
+        "prompts/refactor-ledger.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "Both files are loaded together at refactor Step 3 and describe the same checkpoint rules in three phrasings, so the lists of conditions that do not make a scan incomplete have already drifted.",
+        "evidence": [
+          "guides/refactor.md:90-92, :198-210 and :276 against prompts/refactor-ledger.md:60-73 and :75-82.",
+          "guides/refactor.md:210 lists unknown priority, held decisions and pending fixes; prompts/refactor-ledger.md:82 also lists nonselection and deferred verification of future fixes; guides/refactor.md:200 lists only unknown priority or a pending remedy.",
+          "prompts/refactor-ledger.md:3 declares itself the authoritative schema, reader and update contract."
+        ],
+        "invariant": "Preserve the A/B/C commit semantics, anchor advancement rules, held-decision handling and every approval gate."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-744f7f67-7069-4963-9729-8a99d7068bb6",
+      "category": "Architecture",
+      "summary": "Ship's missing-proof replacement review, helper/PR reuse, correspondence and CI-gate rules are restated across guides/ship.md and four prompts, so a protocol change needs edits in several files that load together.",
+      "paths": [
+        "guides/ship.md",
+        "prompts/shared/history-publication.md",
+        "prompts/shared/normalize-handoff.md",
+        "prompts/ship/targets.md",
+        "prompts/ship/release.md",
+        "prompts/shared/release-providers.md",
+        "prompts/shared/ci.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "guides/ship.md Step 0 alone is about 300 words restating what history-publication.md owns, and the helper/PR reuse rules appear in ship.md, targets.md and release-providers.md; no conflict exists today but each change is a multi-file edit.",
+        "evidence": [
+          "guides/ship.md:33, :79 and :149 repeat the Publish replacement history / Leave local review, the 'divergence proves nothing' rule and the backup and lease requirements owned by prompts/shared/history-publication.md:3, :23 and :41.",
+          "guides/ship.md:83-103, prompts/shared/release-providers.md:17, :25 and :32, and prompts/ship/targets.md:21 and :43-47 restate the shared-helper rules.",
+          "prompts/ship/release.md:41, prompts/shared/history-publication.md:19 and prompts/shared/normalize-handoff.md:38 each state the per-run correspondence rule.",
+          "AGENTS.md says ship.md holds routing and ordinary publication while protocols stay in prompts/shared."
+        ],
+        "invariant": "Keep every approval, fixed-lease, backup-before-replacement, proof and no-ordinary-force requirement; do not move requirement-bearing text without checking the owner still states it."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-7cabc6ae-bc3a-44cf-9cf2-acf37e1af6ec",
+      "category": "Consistency",
+      "summary": "Archive's local-payload proof set is worded four different ways, the guide's formulation omits items the prompts require, and the payload_committed journal phase is never entered by any procedure.",
+      "paths": [
+        "guides/archive.md",
+        "prompts/archive/step5-finalize.md",
+        "prompts/shared/archive-publication.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "Resume and recovery rely on the proof set, so a reader following guides/archive.md alone checks less than archive-publication.md requires, and the word manifest also names a separate Helm workflow.",
+        "evidence": [
+          "guides/archive.md:118 lists archive ID, reviewed manifest/report, expected parent and committed journal; :125 says exact Git/source/report/manifest proof.",
+          "prompts/archive/step5-finalize.md:49 adds inventory/output fingerprints and local Git proof; prompts/shared/archive-publication.md:57 adds the actual complete tree and :13 says source/report/manifest/journal proof.",
+          "guides/archive.md:113 supports phase payload_committed, while step5-finalize.md:47 and archive-publication.md:13 record prepared with a null payload ID and archive-publication.md:39 says prepared/payload_committed 'as appropriate' without a rule."
+        ],
+        "invariant": "Preserve that a payload is never recommitted, that commit subject or newest HEAD alone is never proof, that cursor 4 with phase prepared and a null payload ID stays valid, and the receipt recovery requirements."
+      },
+      "state": "open",
+      "depends_on": [],
+      "blocker": {
+        "kind": "clarification",
+        "reason": "Confirm whether payload_committed is a reachable phase or a legacy resume-only value; that decides how the proof set can be unified."
+      }
+    },
+    {
+      "id": "r-eed5ad92-e0b3-45c7-b81f-6dd94e56cc3e",
+      "category": "Consistency",
+      "summary": "guides/adopt.md restates the external-pointer stop, the Skip-keeps-pointers rule and the all-foreign-skip rule in three to nine sections each and keeps wording from the removed branch-return flow.",
+      "paths": [
+        "guides/adopt.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "At 326 lines it is the second-largest guide and the same rule is edited in several places, with variant wordings that invite drift.",
+        "evidence": [
+          "guides/adopt.md:3, :56, :86, :96, :119, :146, :217, :235 and :312 restate the external-pointer rule.",
+          "guides/adopt.md:152, :185 and :223 restate Skip, and :150 and :189 the all-foreign-skip rule.",
+          "guides/adopt.md:267 says 'a different original branch after cleanup' although adopt never returns or cleans up (:241, :261), and :162-164 record {original_branch} only to call it the same branch as {branch}.",
+          "{adopt_file} is defined at :48 and again at :56 as {memory_file}."
+        ],
+        "invariant": "Keep every per-step action-boundary reminder, the foreign-file overwrite approval, the external-pointer blocker, and the current-branch-only and no-checkout rules."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-d0c57b64-5022-4dbe-af0d-2cb3e0ffa4a7",
+      "category": "Architecture",
+      "summary": "runtime.md, loaded by all ten skills, carries about 4.6 KB of workflow-specific policy that its owners already state, and its worker-restriction list differs from the owner list in investigation-evidence.md.",
+      "paths": [
+        "prompts/shared/runtime.md",
+        "prompts/shared/investigation-evidence.md",
+        "prompts/shared/ledger-helper.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "About 38% of runtime.md serves only ship/normalize, log/manifest, delegation or the refactor and test ledger helper, so every run reads it; the two worker lists could drift.",
+        "evidence": [
+          "prompts/shared/runtime.md:15, :17, :51, :53 and :55 are the workflow-specific paragraphs.",
+          "prompts/shared/investigation-evidence.md:34-47 and prompts/shared/ledger-helper.md:3 own the delegation and helper rules.",
+          "runtime.md:53 lists worker restrictions; investigation-evidence.md:36 adds probes, collection, tests, builds, installers, services, network actions and writes.",
+          "runtime.md:11 relies on 'the narrow exceptions below', so any trimming must keep them discoverable."
+        ],
+        "invariant": "Keep every access boundary, read-only exception scope and sequential-editing rule, and use the stricter union of the two worker lists."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-7b9d0875-b0c3-4880-9399-d84d56355f4d",
+      "category": "Code Quality",
+      "summary": "The 'Finish verified local work' paragraph is copied into five guides and the scan-depth recommendation rules are restated in three guides, although content-sync.md and scan-scope.md own them.",
+      "paths": [
+        "guides/env.md",
+        "guides/log.md",
+        "guides/legal.md",
+        "guides/manifest.md",
+        "guides/test.md",
+        "guides/refactor.md",
+        "prompts/shared/content-sync.md",
+        "prompts/shared/scan-scope.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "About 430 bytes per guide copy are read next to the identical text in content-sync.md, and the scan-depth rule appears twice inside guides/test.md.",
+        "evidence": [
+          "guides/env.md:165, guides/log.md:171, guides/legal.md:248, guides/manifest.md:198 and guides/test.md:378 repeat the finish paragraph that prompts/shared/content-sync.md:17-23 states.",
+          "guides/refactor.md:102 and :104, guides/test.md:79 and :160, and guides/manifest.md:58 restate prompts/shared/scan-scope.md:29-30 and :35."
+        ],
+        "invariant": "Keep a short action-boundary reminder in each guide, the no-push/PR/branch-change boundary, the workflow-specific suffixes, and the rule that a recommendation is never a selection."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-e3a5e312-b30b-4116-961b-cbb4d830c391",
+      "category": "Code Quality",
+      "summary": "Several guides contain stale or changelog-style wording: a migration outcome that cannot exist, a reference to a removed rule, and 'old'/'now' comparisons to text the reader never loads.",
+      "paths": [
+        "guides/legal.md",
+        "guides/env.md",
+        "guides/manifest.md",
+        "guides/ship.md",
+        "guides/test.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "An agent following the text may report a nonexistent migration status or look for rules that are gone; none of the strings is asserted by a test.",
+        "evidence": [
+          "guides/legal.md:256 asks for a 'migration outcome (not needed/completed/pending/blocked)' while legal.md:54 and :246 and prompts/shared/project-state.md:16 say no migration or reader exists.",
+          "guides/legal.md:267 says the omit/narrow/ask test is 'below' but it is at :119.",
+          "guides/env.md:161 says 'Replace the old greater-than-ten-findings rule'; repository-wide grep finds no other mention.",
+          "guides/manifest.md:111 and :117 ('old reduced template', 'old checklist'), guides/ship.md:55 ('now permits') and guides/test.md:76 ('Replaces the old boolean')."
+        ],
+        "invariant": "Preserve every prohibition and requirement; restate each only as a timeless positive rule."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-a9670ebe-e80c-4477-85ce-1e78815e9dfe",
+      "category": "Consistency",
+      "summary": "Normalize uses 'local-only' for a request with no discovery and for a no-Apply outcome, so a reader cannot tell whether a local-only request can still rewrite local branches.",
+      "paths": [
+        "guides/normalize.md"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "unknown",
+        "risk": "needs-review",
+        "reason": "The guide's own wording leaves the outcome of a local-only request open, but which outcome is intended is a product decision I cannot infer.",
+        "evidence": [
+          "guides/normalize.md:40 says 'explicit no-remote/local-only request', :44 offers 'Review local history only', and :48 both rechecks agreed branches before Apply and says a local-only review retains a no-write/no-Apply outcome.",
+          "guides/normalize.md:32 and the question table at :291-292 do not settle whether a no-discovery request still permits Apply."
+        ],
+        "invariant": "Preserve that readiness and branch preparation grant no rewrite permission and that no claim of coordinated completeness is made."
+      },
+      "state": "open",
+      "depends_on": [],
+      "blocker": {
+        "kind": "clarification",
+        "reason": "State which outcome a local-only request has (review only, or review plus an approved local rewrite); the wording can then be made unambiguous without changing behaviour."
+      }
+    },
+    {
+      "id": "r-598fcf7d-f1d7-41dc-91c6-a2321998f990",
+      "category": "Dependencies",
+      "summary": "prompts/shared/normalize-handoff.md describes run IDs as lowercase letters, digits and hyphens, but the helper also requires the first character to be a letter or digit.",
+      "paths": [
+        "prompts/shared/normalize-handoff.md",
+        "helpers/normalize_handoff.py"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "A non-Python fallback implementation following the prompt could accept an ID that the packaged helper rejects.",
+        "evidence": [
+          "prompts/shared/normalize-handoff.md:27 says IDs contain only lowercase ASCII letters, digits and hyphens, at most 80 characters.",
+          "helpers/normalize_handoff.py:16 requires [a-z0-9][a-z0-9-]{0,79}."
+        ],
+        "invariant": "Only add the leading-character requirement to the prompt text; the helper and the 80-character limit stay unchanged."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-6dc9803b-6e4f-4711-953c-715406dc45f7",
+      "category": "Tests",
+      "summary": "Several Python test loops give no case identity: bare for loops with no subTest, and subTest labels that are lengths rather than the rejected contract.",
+      "paths": [
+        "scripts/test_normalize.py",
+        "scripts/test_ledger.py",
+        "scripts/test_normalize_handoff.py"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "A failing case in a bare loop stops at the first failure and does not say which input failed; length labels must be mapped back by counting. Related to the recorded mutation=index finding, which is not repeated here.",
+        "evidence": [
+          "scripts/test_normalize.py:68, :83, :246, :251, :256 and :282 iterate cases without subTest.",
+          "scripts/test_normalize.py:327 labels message_length, scripts/test_ledger.py:261 and scripts/test_normalize_handoff.py:207 label raw_length."
+        ],
+        "invariant": "Preserve every case, input and assertion, test method names and the evaluation order; change only labels and loop wrappers."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-3b88a1be-7d79-48b2-86a9-fd976f62b8e8",
+      "category": "Code Quality",
+      "summary": "helpers/normalize_check.py and normalize_handoff.py contain a dead fallback, an obscure generator-throw lambda that duplicates a named function, redundant exception members and bare limit literals.",
+      "paths": [
+        "helpers/normalize_check.py",
+        "helpers/normalize_handoff.py",
+        "helpers/helm_lib/common.py",
+        "scripts/test_normalize.py",
+        "scripts/test_normalize_handoff.py"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "Each item is small, but readers must work out why the guard and the lambda exist, and the same limits are stated in prose, code and tests.",
+        "evidence": [
+          "helpers/normalize_check.py:121 'lines[0] if lines else \"\"' cannot reach the fallback because re.split returns at least one element.",
+          "helpers/normalize_check.py:288 uses a generator throw lambda while helpers/helm_lib/common.py:43 already has a named reject_constant.",
+          "UnicodeError is listed beside ValueError at normalize_check.py:290 and normalize_handoff.py:138, :194 and :221.",
+          "Limits 256, 1024 and 200 appear as bare literals (normalize_check.py:64, :160, :198, :239) and are repeated in test_normalize.py:282 and :343-347."
+        ],
+        "invariant": "Preserve exit codes, the fixed error text 'Invalid or unsupported normalize input', the never-echo-input behaviour and the numeric limits."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-f0155f6c-80a9-4636-97a1-115fb891413c",
+      "category": "Code Quality",
+      "summary": "helpers/helm_lib/ledger.py derives the assessment block, exit codes and interface version in several places instead of one.",
+      "paths": [
+        "helpers/helm_lib/ledger.py",
+        "helpers/helm.py",
+        "helpers/ledger-contract.json"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "Adding an owner, changing the interface version or an exit code needs edits at each site, and the contract's interface_version is declared but the literal 1 is what is compared and emitted.",
+        "evidence": [
+          "helpers/helm_lib/ledger.py:144, :170 and :228 each compute 'record[\"assessment\"] if owner == \"refactor\" else record'.",
+          "helpers/helm_lib/ledger.py:261-263 use literal exit codes 6 and 7 and build the failure envelope by hand instead of using EXIT_CODES.",
+          "helpers/ledger-contract.json:2 declares interface_version 1; ledger.py:194, :240 and :264 and helpers/helm.py:12 and :20 use the literal."
+        ],
+        "invariant": "Preserve the wire format, exit codes 2 to 7, the no-echo behaviour and the index and record projections."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-8b73a0cf-b0a4-41b3-b8ed-e0abdd097220",
+      "category": "Architecture",
+      "summary": "About half of smoke_acceptance.rb's oracles are inline in the 200-line top-level runner and are not exercised by any offline suite.",
+      "paths": [
+        "scripts/smoke_acceptance.rb",
+        "scripts/acceptance_support.rb",
+        "scripts/test_acceptance_oracles.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "A typo or changed branch in the branch-preparation, ordinary-ship, tampered-archive, readiness, legal and QM checks surfaces only in a paid live model run, while normalize, test-lifecycle and publication checks are already extracted and tested.",
+        "evidence": [
+          "scripts/smoke_acceptance.rb:86-192 holds the boundary, release rubric, canary, branch preparation, ordinary ship, tampered archive, required-answer, legal, QM and readiness checks inline.",
+          "scripts/test_acceptance_oracles.rb:1 says it guards the live runner's extracted checks; scripts/acceptance-plan.md:11 lists only normalize, test-lifecycle and publication as extracted.",
+          "The runner appends workspace to reads at :81 after the instructions interpolated reads at :72."
+        ],
+        "invariant": "Preserve check order, exact messages, warn side effects, the before and before_git snapshots taken before the model call and the final package-preservation check."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-f21875a0-cabf-428d-8fd8-4eb49921c2a3",
+      "category": "Consistency",
+      "summary": "The acceptance scenario hash is an undocumented, untyped contract between acceptance_cases.rb, smoke_acceptance.rb and acceptance_support.rb, and prepare_history is a 97-line method with three boolean variants.",
+      "paths": [
+        "scripts/acceptance_cases.rb",
+        "scripts/smoke_acceptance.rb",
+        "scripts/acceptance_support.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "A misspelt or renamed scenario key silently skips an oracle, related facts are held twice, and one variant overwrites six keys after construction, so each change needs reading all producers and consumers.",
+        "evidence": [
+          "Producers: scripts/acceptance_cases.rb:24-115 and the prepare_* returns; consumers: about 30 scenario[:key] reads in scripts/smoke_acceptance.rb and scripts/acceptance_support.rb:163-285.",
+          "scripts/acceptance_cases.rb:192-193 sets expected_new_refs to nil while allowed_preparation_tracking is {} when unapproved; :331-338 overwrite six already-set keys when missing is true.",
+          "scripts/acceptance_cases.rb:248-344 is one method taking moved, discovery and missing flags."
+        ],
+        "invariant": "Preserve key names and values and request text for every scenario, the side-effect order (hook written before registration, proof renamed only when missing is true) and raise messages."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-06b371fa-fa07-45ae-96da-482b42242f77",
+      "category": "Consistency",
+      "summary": "The managed-rule marker line and expected rule-copy bytes are built by hand in seven places across three smoke and acceptance scripts.",
+      "paths": [
+        "scripts/smoke_layout.rb",
+        "scripts/smoke_workflows.rb",
+        "scripts/acceptance_cases.rb",
+        "scripts/smoke_support.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "If adopt's marker format changes, someone must find seven sites, and these are paid-model scripts so a missed one is found late and expensively.",
+        "evidence": [
+          "scripts/smoke_layout.rb:38-42 and :79-83, scripts/smoke_workflows.rb:51-56 and :90-97, and scripts/acceptance_cases.rb:16-18 each build '<!-- helm-rule: agent-helm@v<version> -->' plus the rule body.",
+          "The plugin version lookup from .claude-plugin/plugin.json is duplicated in smoke_layout.rb and smoke_workflows.rb."
+        ],
+        "invariant": "Preserve the exact marker and body bytes, the 9.9.9 fixture version and the approved-output key order."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-f08944aa-1b81-4529-abaa-93206b20c63a",
+      "category": "Architecture",
+      "summary": "smoke_layout.rb and smoke_workflows.rb duplicate their fixture write, Claude and Codex command lines and answer parsing, and the two parsers have already diverged in wording.",
+      "paths": [
+        "scripts/smoke_layout.rb",
+        "scripts/smoke_workflows.rb",
+        "scripts/smoke_support.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "A pinned-model or tool-flag change needs two edits, and the parsing cannot be tested offline because it lives in load-time scripts.",
+        "evidence": [
+          "scripts/smoke_layout.rb:90-96 and scripts/smoke_workflows.rb:104-110 repeat the Claude flags --setting-sources, --strict-mcp-config, --model, --effort and --tools.",
+          "scripts/smoke_layout.rb:110-119 and scripts/smoke_workflows.rb:114-125 parse modelUsage, is_error and result for Claude and agent_message events for Codex with different message wording.",
+          "scripts/smoke_workflows.rb:136-155 selects post-checks with eight if name == chains, and smoke_support.rb:31-45 dispatches preconditions on the names configuration-conflict and conflicting-config."
+        ],
+        "invariant": "Preserve each script's timeout and process handling, the pinned CLAUDE_MODEL, every assertion and its message, and which cases run per client."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-b0f2aab5-4f8e-4e20-98ca-97332a5f7d3d",
+      "category": "Code Quality",
+      "summary": "Several scripts contain provably dead code: duplicate checks that the validator already fails first, an unread scenario key, unused locals and unused requires.",
+      "paths": [
+        "scripts/test_plugin.rb",
+        "scripts/smoke_workflows.rb",
+        "scripts/smoke_layout.rb",
+        "scripts/test_smoke_support.rb",
+        "scripts/check_clients.rb",
+        "scripts/acceptance_cases.rb",
+        "scripts/test_git_acceptance.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "The shadowed checks suggest a second layer of protection that cannot fire, and the unused names add noise; grep shows no reflective or string-built use.",
+        "evidence": [
+          "scripts/test_plugin.rb:18-22 and :29-31 repeat predicates that HelmValidation.validate raises for first (validate_plugin.rb:47, :49, :56, :59-61).",
+          "scripts/smoke_workflows.rb:55 sets rule_brand, which is read nowhere in scripts/.",
+          "scripts/acceptance_cases.rb:201 binds an unused left; scripts/test_git_acceptance.rb:72 binds an unused output.",
+          "Unused requires: scripts/smoke_layout.rb:2, :3 and :5, scripts/smoke_workflows.rb:3 and :4, scripts/test_smoke_support.rb:2; scripts/check_clients.rb:9 uses Pathname without requiring it."
+        ],
+        "invariant": "Delete only the shadowed checks and unused names; keep the unique checks at test_plugin.rb:23-28 and :32 and every message the validator emits."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-6fa81a43-0eb7-410b-ab6a-904c2046edc6",
+      "category": "Consistency",
+      "summary": "scripts/acceptance-plan.md states a model, a timeout and an extension target that no longer match the scripts or AGENTS.md.",
+      "paths": [
+        "scripts/acceptance-plan.md",
+        "scripts/smoke_support.rb",
+        "scripts/smoke_layout.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "needs-review",
+        "reason": "A reader following the plan would pin the wrong model for the older smoke scripts.",
+        "evidence": [
+          "scripts/acceptance-plan.md:62 says Claude uses Sonnet 5.5 at high effort and item 2 says at most 240 seconds, while scripts/smoke_support.rb:7 pins claude-opus-5-5 and scripts/smoke_layout.rb:101 uses 300.",
+          "AGENTS.md says the first two smoke scripts pin Opus 5.5 and acceptance runs Sonnet 5.5.",
+          "scripts/acceptance-plan.md:45 says to extend smoke_workflows.rb, but the work landed in smoke_acceptance.rb."
+        ],
+        "invariant": "Preserve the recorded design rationale; only scope the model and timeout statements to the scripts they describe."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-e4922de0-7dd2-4d57-9c85-4781564dedd7",
+      "category": "Consistency",
+      "summary": "The initial theme contract (storage key, modes, stylesheet naming, stylesheet id and error fallback) is written in both a Ruby heredoc in frontend.rb and in theme-switcher.js, and the fallbacks differ.",
+      "paths": [
+        "docs/_plugins/frontend.rb",
+        "docs/assets/js/theme-switcher.js",
+        "docs/tests/browser_frontend.mjs",
+        "docs/scripts/browser_acceptance.py"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "A change to the key, a mode or the stylesheet naming must be made in a render-blocking inline script and a deferred file, and only the browser suite, which is not part of the offline test job, catches a mismatch.",
+        "evidence": [
+          "docs/_plugins/frontend.rb:23-50 holds the inline bootstrap; docs/assets/js/theme-switcher.js:2-47 restates the agent-helm-theme key, system/light/dark modes, just-the-docs-{light,dark}.css names and helm-theme-stylesheet id.",
+          "The literals also appear in docs/scripts/browser_acceptance.py:12-13 and docs/tests/browser_frontend.mjs lines 44, 45, 64, 104, 105, 122, 142 and 157."
+        ],
+        "invariant": "Preserve one stylesheet request, the render-blocking initial theme, behaviour with blocked storage, an invalid saved value, a failed dark stylesheet and cross-tab changes, the noscript default link and the #theme-mode selector."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-334cc594-fa48-4a82-9c7b-f535725cd066",
+      "category": "Tests",
+      "summary": "The two guide-pair tests each discover pairs with their own glob and repeat the same assertions, and the glob walks docs/node_modules.",
+      "paths": [
+        "docs/tests/test_guide_views.rb",
+        "docs/tests/test_human_guides.rb"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "Every run reads and parses front matter of about 155 third-party Markdown files, third-party front matter that fails YAML parsing could fail the tests, and a pairing-rule change needs two edits.",
+        "evidence": [
+          "docs/tests/test_guide_views.rb:8-14 and docs/tests/test_human_guides.rb:16-20 both use root.glob('docs/**/*.md'); a find of docs/node_modules shows 155 Markdown files.",
+          "test_human_guides.rb filters only /_site/ and test_guide_views.rb filters nothing.",
+          "The overview_url computation, the overview match and the nav_exclude assertion appear in both files (test_guide_views.rb:19-21, test_human_guides.rb:28-30).",
+          "Both files also carry sibling-site branches (an agent-compass count and an unreachable elsif) whose intended parity is unconfirmed."
+        ],
+        "invariant": "Preserve the pair count of 19, error messages, the no-paired-topics guard, and the split between the built-site test and the source test."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-5e583e01-a926-4fae-a6bb-d6e9c1d53f3a",
+      "category": "Tests",
+      "summary": "browser_frontend.mjs repeats its URL, context, background and diagram checks and keeps thirteen hand-written assertion tallies that nothing verifies.",
+      "paths": [
+        "docs/tests/browser_frontend.mjs",
+        "docs/tests/check-theme-colors.mjs"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "Adding or removing an assertion needs a manual tally edit, so the printed 'Passed N browser assertions' can drift silently, and a route or base-path change touches about thirteen literals.",
+        "evidence": [
+          "docs/tests/browser_frontend.mjs lines 108-111 and 115-118 duplicate the background check, which is defined after its first inlined use, and lines 47 and 112 duplicate the diagram check.",
+          "assertions += tallies appear at lines 60, 68, 79, 89, 99, 113, 126, 137, 148, 160, 171, 181 and 222, and check-theme-colors.mjs:50 returns a constant 5.",
+          "The /agent-helm/docs/commands/... page literals repeat about thirteen times."
+        ],
+        "invariant": "Preserve every assertion and message, selectors, the viewport and scheme matrix, the delayed-response fixtures and the PASS log lines."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-777a493a-1e8f-4f23-986e-9d3f339c8f07",
+      "category": "Dependencies",
+      "summary": "Chrome discovery and the loopback static server with its origin restriction are implemented separately in render-diagrams.mjs and browser_frontend.mjs, with different platform coverage.",
+      "paths": [
+        "docs/scripts/render-diagrams.mjs",
+        "docs/tests/browser_frontend.mjs",
+        "docs/scripts/browser_acceptance.py"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "medium",
+        "risk": "needs-review",
+        "reason": "A Linux or Windows machine with only Chromium can build the site but not run the browser tests, and the traversal guard and origin isolation are maintained twice.",
+        "evidence": [
+          "docs/scripts/render-diagrams.mjs:7-19 tries HELM_DOCS_CHROME, macOS, /usr/bin/google-chrome, /usr/bin/chromium and Windows; docs/tests/browser_frontend.mjs:31 tries HELM_DOCS_CHROME, macOS and /usr/bin/google-chrome only.",
+          "The static server and the route.abort for other origins appear at render-diagrams.mjs:24-46 and browser_frontend.mjs:9-26.",
+          "AGENTS.md states only that Chrome must be installed and HELM_DOCS_CHROME overrides a nonstandard path."
+        ],
+        "invariant": "Preserve the HELM_DOCS_CHROME override and error text, the loopback-only ephemeral listener, 404 and traversal behaviour, aborted off-origin requests and byte-identical diagram output."
+      },
+      "state": "open",
+      "depends_on": []
+    },
+    {
+      "id": "r-4011d7b5-608c-42e3-a97f-a528725d4353",
+      "category": "Code Quality",
+      "summary": "docs/_config.yml has two defaults entries with the same scope that could be one.",
+      "paths": [
+        "docs/_config.yml"
+      ],
+      "found": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14"
+      },
+      "assessment": {
+        "origin": "native",
+        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "date": "2026-11-14",
+        "priority": "low",
+        "risk": "safe",
+        "reason": "A reader must merge two identical-scope blocks mentally to see which front matter defaults apply.",
+        "evidence": [
+          "docs/_config.yml:10-24 has two entries with path '' and type pages, one setting image and one setting layout."
+        ],
+        "invariant": "Jekyll merges matching defaults in order, so the merged entry must produce the same image and layout for every page and keep the later title_category entries."
+      },
+      "state": "open",
+      "depends_on": []
     }
   ]
 }
