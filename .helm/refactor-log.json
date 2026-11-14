@@ -201,7 +201,7 @@
         ],
         "invariant": "Preserve every existing mutation, fixture value, assertion, test method/selector and evaluation order. Change only table/subtest labels; add no coverage or schema behavior."
       },
-      "state": "open",
+      "state": "resolved",
       "depends_on": [],
       "decision": {
         "origin": "native",
@@ -219,6 +219,24 @@
             "This is an actual contextual deferral: R4 remains open and held, with no closure or passing-test claim."
           ]
         }
+      },
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "d289976bde77b618fe97dcaab587e76d5e48eb9a",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "Both mutation tables in scripts/test_ledger.py are keyed by descriptive labels (for example 'absolute path', 'recurrence cycle') and report subTest(mutation=label); cases, inputs and assertions are unchanged.",
+          "A temporary copy that made the absolute-path case valid failed with (mutation='absolute path'); the copy was removed. The earlier deferral lapsed because test_ledger.py changed in 624d305."
+        ],
+        "checks": [
+          {
+            "command": "python3 -I -B scripts/test_ledger.py",
+            "scope": "Offline unit tests with synthetic inputs",
+            "outcome": "OK"
+          }
+        ]
       }
     },
     {
@@ -411,8 +429,26 @@
         ],
         "invariant": "Change only the two fragment strings; the link targets and wording stay the same."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "afb33c835bf12f1a75024bd66afcffbf6bb73991",
+        "date": "2026-11-14",
+        "method": "static",
+        "evidence": [
+          "prompts/ship/release.md:5 and prompts/ship/targets.md:3 now link guides/ship.md#step-1--establish-scope-capabilities-and-core-publication, matching the em-dash slug convention that guides/ship.md:29 already uses.",
+          "Static check of the slug rule only; no renderer was run for these two links."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Package validation, link and QM routing, relocated-package, path-containment and Git-archive checks on the committed tree",
+            "outcome": "Passed"
+          }
+        ]
+      }
     },
     {
       "id": "r-71851cc4-b872-4888-bc60-12f4737e21ad",
@@ -446,7 +482,28 @@
         "invariant": "Keep the run-scoped single choice, the advisory-only manual view, the no-writer statement, invalid-state and drift blockers that fallback cannot bypass, and that preview and report-only exits never load the helper."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the ledger-fallback text sits in loaded rules and approvals, only link checks cover edits to it, and the saving is small.",
+        "context": {
+          "paths": [
+            "prompts/shared/ledger-helper.md",
+            "prompts/shared/runtime.md",
+            "prompts/shared/project-state.md",
+            "prompts/refactor-ledger.md",
+            "guides/refactor.md",
+            "guides/test.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-1f089f0a-ab11-49c4-b9fd-b46c4c614a62",
@@ -463,23 +520,35 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
         "date": "2026-11-14",
-        "priority": "medium",
+        "priority": "low",
         "risk": "needs-review",
-        "reason": "Both files are read in the same normalize run and each carries the schema JSON and checkpoint-eligibility rules, so every schema or coverage change needs two edits and one divergence already exists.",
+        "reason": "The two documents do not contradict each other: guides/normalize.md:237 covers the case where no safe anchor remains and prompts/normalize-review.md:53 covers an invalid policy or coverage entry, and both allow reviewed invalidation of non-reusable records. What remains is that the schema JSON and checkpoint rules are written in both files.",
         "evidence": [
-          "guides/normalize.md:216-249 repeats the schema-2 JSON at :221-232 that prompts/normalize-review.md:34-55 defines.",
-          "prompts/normalize-review.md:53 allows retaining an invalid policy or coverage entry only as non-reusable historical data or proposing the existing explicit invalidation.",
-          "guides/normalize.md:237 and :243 say that without a safe anchor the developer reviews removal and no null or partial coverage replaces it, and name no retain-as-historical branch."
+          "guides/normalize.md:216-249 repeats the schema-2 JSON that prompts/normalize-review.md:34-55 defines.",
+          "guides/normalize.md:243 already forbids turning non-reusable historical records into today's coverage."
         ],
-        "invariant": "Preserve coverage-advancement limits, the no-rehash rule, strict readback, the fixed commit message, and that invalid coverage is never presented as reusable."
+        "invariant": "Preserve coverage-advancement limits, the no-rehash rule, strict readback, the fixed commit message and that invalid coverage is never presented as reusable."
       },
       "state": "open",
       "depends_on": [],
-      "blocker": {
-        "kind": "clarification",
-        "reason": "Decide whether an invalid or non-reusable coverage record is retained as historical data or removed through reviewed invalidation; the two documents disagree and the choice is behaviour."
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the duplicated schema block is not in conflict and moving it is not worth the approval-text risk now.",
+        "context": {
+          "paths": [
+            "guides/normalize.md",
+            "prompts/normalize-review.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
       }
     },
     {
@@ -510,7 +579,24 @@
         "invariant": "Preserve the A/B/C commit semantics, anchor advancement rules, held-decision handling and every approval gate."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the two files agree in substance and merging approval wording has only link checks as protection.",
+        "context": {
+          "paths": [
+            "guides/refactor.md",
+            "prompts/refactor-ledger.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-744f7f67-7069-4963-9729-8a99d7068bb6",
@@ -546,7 +632,28 @@
         "invariant": "Keep every approval, fixed-lease, backup-before-replacement, proof and no-ordinary-force requirement; do not move requirement-bearing text without checking the owner still states it."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the ship protocols are consistent today and edits would move fixed-lease and approval requirements.",
+        "context": {
+          "paths": [
+            "guides/ship.md",
+            "prompts/shared/history-publication.md",
+            "prompts/ship/targets.md",
+            "prompts/ship/release.md",
+            "prompts/shared/release-providers.md",
+            "prompts/shared/ci.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-7cabc6ae-bc3a-44cf-9cf2-acf37e1af6ec",
@@ -578,9 +685,23 @@
       },
       "state": "open",
       "depends_on": [],
-      "blocker": {
-        "kind": "clarification",
-        "reason": "Confirm whether payload_committed is a reachable phase or a legacy resume-only value; that decides how the proof set can be unified."
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the payload_committed phase is clarified; unifying the four proof-set wordings would touch archive recovery rules that no offline test exercises.",
+        "context": {
+          "paths": [
+            "guides/archive.md",
+            "prompts/archive/step5-finalize.md",
+            "prompts/shared/archive-publication.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
       }
     },
     {
@@ -611,7 +732,23 @@
         "invariant": "Keep every per-step action-boundary reminder, the foreign-file overwrite approval, the external-pointer blocker, and the current-branch-only and no-checkout rules."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: adopt's restatements are consistent and the guide has no behaviour test beyond link checks.",
+        "context": {
+          "paths": [
+            "guides/adopt.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-d0c57b64-5022-4dbe-af0d-2cb3e0ffa4a7",
@@ -643,7 +780,24 @@
         "invariant": "Keep every access boundary, read-only exception scope and sequential-editing rule, and use the stricter union of the two worker lists."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the runtime paragraphs are boundary statements whose removal is not worth the risk for a small saving.",
+        "context": {
+          "paths": [
+            "prompts/shared/runtime.md",
+            "prompts/shared/investigation-evidence.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-7b9d0875-b0c3-4880-9399-d84d56355f4d",
@@ -678,7 +832,27 @@
         "invariant": "Keep a short action-boundary reminder in each guide, the no-push/PR/branch-change boundary, the workflow-specific suffixes, and the rule that a recommendation is never a selection."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: each copy is a short boundary reminder that the project instructions allow.",
+        "context": {
+          "paths": [
+            "guides/env.md",
+            "guides/log.md",
+            "guides/legal.md",
+            "guides/manifest.md",
+            "guides/test.md"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-e3a5e312-b30b-4116-961b-cbb4d830c391",
@@ -711,8 +885,26 @@
         ],
         "invariant": "Preserve every prohibition and requirement; restate each only as a timeless positive rule."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "method": "static",
+        "evidence": [
+          "guides/legal.md now reports the canonical manifest path and its state instead of a migration outcome, and points to Step 3 instead of 'below'; guides/env.md no longer mentions the removed rule; guides/manifest.md, guides/ship.md and guides/test.md lose their 'old', 'now' and 'Replaces the old boolean' phrases.",
+          "No prohibition or requirement was changed."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Package validation, link and QM routing, relocated-package, path-containment and Git-archive checks on the committed tree",
+            "outcome": "Passed"
+          }
+        ]
+      }
     },
     {
       "id": "r-a9670ebe-e80c-4477-85ce-1e78815e9dfe",
@@ -739,11 +931,24 @@
         ],
         "invariant": "Preserve that readiness and branch preparation grant no rewrite permission and that no claim of coordinated completeness is made."
       },
-      "state": "open",
+      "state": "resolved",
       "depends_on": [],
-      "blocker": {
-        "kind": "clarification",
-        "reason": "State which outcome a local-only request has (review only, or review plus an approved local rewrite); the wording can then be made unambiguous without changing behaviour."
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "3346a138a986ef84b5a258ad2f2341d84e7efec8",
+        "date": "2026-11-14",
+        "method": "static",
+        "evidence": [
+          "Developer accepted the recommendation on 2026-11-14: a local-only request is Review local history only. guides/normalize.md:40 now says so and matches :44 and :48."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Package validation, link and QM routing, relocated-package, path-containment and Git-archive checks on the committed tree",
+            "outcome": "Passed"
+          }
+        ]
       }
     },
     {
@@ -772,8 +977,25 @@
         ],
         "invariant": "Only add the leading-character requirement to the prompt text; the helper and the 80-character limit stay unchanged."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "afb33c835bf12f1a75024bd66afcffbf6bb73991",
+        "date": "2026-11-14",
+        "method": "static",
+        "evidence": [
+          "prompts/shared/normalize-handoff.md:27 now says run IDs start with a letter or digit, matching helpers/normalize_handoff.py:16 (RUN_ID = [a-z0-9][a-z0-9-]{0,79})."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Package validation, link and QM routing, relocated-package, path-containment and Git-archive checks on the committed tree",
+            "outcome": "Passed"
+          }
+        ]
+      }
     },
     {
       "id": "r-6dc9803b-6e4f-4711-953c-715406dc45f7",
@@ -802,8 +1024,36 @@
         ],
         "invariant": "Preserve every case, input and assertion, test method names and the evaluation order; change only labels and loop wrappers."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "d289976bde77b618fe97dcaab587e76d5e48eb9a",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "Seven bare loops in scripts/test_normalize.py now run each case in a subTest with a descriptive label.",
+          "The raw_length labels in test_ledger.py and test_normalize_handoff.py were left as they are because each case has a distinct length."
+        ],
+        "checks": [
+          {
+            "command": "python3 -I -B scripts/test_normalize.py",
+            "scope": "Offline unit tests with synthetic inputs",
+            "outcome": "OK"
+          },
+          {
+            "command": "python3 -I -B scripts/test_ledger.py",
+            "scope": "Offline unit tests with synthetic inputs",
+            "outcome": "OK"
+          },
+          {
+            "command": "python3 -I -B scripts/test_normalize_handoff.py",
+            "scope": "Offline unit tests with synthetic inputs",
+            "outcome": "OK"
+          }
+        ]
+      }
     },
     {
       "id": "r-3b88a1be-7d79-48b2-86a9-fd976f62b8e8",
@@ -836,8 +1086,41 @@
         ],
         "invariant": "Preserve exit codes, the fixed error text 'Invalid or unsupported normalize input', the never-echo-input behaviour and the numeric limits."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "5efa770eaa92b6a4c348462abf95d05b91d49dfa",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "normalize_check.py drops the unreachable 'lines[0] if lines else' fallback, uses a named reject_constant instead of a generator throw, removes UnicodeError from tuples that already catch ValueError (also in normalize_handoff.py and helm_lib/common.py) and names MAX_BRANCHES, MAX_PARENTS, DEFAULT_PAGE_LIMIT and MAX_PAGE_LIMIT.",
+          "Numeric limits and the fixed error text are unchanged; the test literals were left as they are."
+        ],
+        "checks": [
+          {
+            "command": "python3 -I -B scripts/test_normalize.py",
+            "scope": "Offline unit tests with synthetic inputs",
+            "outcome": "OK"
+          },
+          {
+            "command": "python3 -I -B scripts/test_normalize_handoff.py",
+            "scope": "Offline unit tests with synthetic inputs",
+            "outcome": "OK"
+          },
+          {
+            "command": "python3 -I -B scripts/test_ledger.py",
+            "scope": "Offline unit tests with synthetic inputs",
+            "outcome": "OK"
+          },
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Package validation, link and QM routing, relocated-package, path-containment and Git-archive checks on the committed tree",
+            "outcome": "Passed"
+          }
+        ]
+      }
     },
     {
       "id": "r-f0155f6c-80a9-4636-97a1-115fb891413c",
@@ -868,7 +1151,24 @@
         "invariant": "Preserve the wire format, exit codes 2 to 7, the no-echo behaviour and the index and record projections."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the benefit is small and the helper is stable and fully tested.",
+        "context": {
+          "paths": [
+            "helpers/helm_lib/ledger.py",
+            "helpers/helm.py"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-8b73a0cf-b0a4-41b3-b8ed-e0abdd097220",
@@ -899,7 +1199,24 @@
         "invariant": "Preserve check order, exact messages, warn side effects, the before and before_git snapshots taken before the model call and the final package-preservation check."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: moving the inline oracles cannot be verified without paid live model runs.",
+        "context": {
+          "paths": [
+            "scripts/smoke_acceptance.rb",
+            "scripts/acceptance_support.rb"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-f21875a0-cabf-428d-8fd8-4eb49921c2a3",
@@ -930,7 +1247,25 @@
         "invariant": "Preserve key names and values and request text for every scenario, the side-effect order (hook written before registration, proof renamed only when missing is true) and raise messages."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: changing the scenario contract cannot be verified without paid live model runs.",
+        "context": {
+          "paths": [
+            "scripts/acceptance_cases.rb",
+            "scripts/smoke_acceptance.rb",
+            "scripts/acceptance_support.rb"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-06b371fa-fa07-45ae-96da-482b42242f77",
@@ -961,7 +1296,25 @@
         "invariant": "Preserve the exact marker and body bytes, the 9.9.9 fixture version and the approved-output key order."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the helper would touch three live scripts that cannot be exercised offline.",
+        "context": {
+          "paths": [
+            "scripts/smoke_layout.rb",
+            "scripts/smoke_workflows.rb",
+            "scripts/acceptance_cases.rb"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-f08944aa-1b81-4529-abaa-93206b20c63a",
@@ -992,7 +1345,25 @@
         "invariant": "Preserve each script's timeout and process handling, the pinned CLAUDE_MODEL, every assertion and its message, and which cases run per client."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: unifying the two live runners cannot be verified without paid live model runs.",
+        "context": {
+          "paths": [
+            "scripts/smoke_layout.rb",
+            "scripts/smoke_workflows.rb",
+            "scripts/smoke_support.rb"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-b0f2aab5-4f8e-4e20-98ca-97332a5f7d3d",
@@ -1027,8 +1398,46 @@
         ],
         "invariant": "Delete only the shadowed checks and unused names; keep the unique checks at test_plugin.rb:23-28 and :32 and every message the validator emits."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "21b4eaae322fb3038a7c35da4d164b8ac79d1ab0",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "Removed the test_plugin.rb checks that HelmValidation.validate already raises first, the unread rule_brand key, two unused locals and unused requires; added the missing pathname require in check_clients.rb.",
+          "A temporary commands/ file was still rejected by the validator ('Legacy command adapters must not be packaged'); the file was removed. The live smoke scripts were checked with ruby -c only and were not run."
+        ],
+        "checks": [
+          {
+            "command": "ruby scripts/test_plugin.rb",
+            "scope": "Package validation, link and QM routing, relocated-package, path-containment and Git-archive checks on the committed tree",
+            "outcome": "Passed"
+          },
+          {
+            "command": "ruby scripts/test_smoke_support.rb",
+            "scope": "Offline checks with synthetic fixtures, no models",
+            "outcome": "Passed"
+          },
+          {
+            "command": "ruby scripts/test_acceptance_support.rb",
+            "scope": "Offline checks with synthetic fixtures, no models",
+            "outcome": "Passed"
+          },
+          {
+            "command": "ruby scripts/test_git_acceptance.rb",
+            "scope": "Offline checks with synthetic fixtures, no models",
+            "outcome": "Passed"
+          },
+          {
+            "command": "ruby scripts/test_acceptance_oracles.rb",
+            "scope": "Offline checks with synthetic fixtures, no models",
+            "outcome": "Passed"
+          }
+        ]
+      }
     },
     {
       "id": "r-6fa81a43-0eb7-410b-ab6a-904c2046edc6",
@@ -1058,8 +1467,19 @@
         ],
         "invariant": "Preserve the recorded design rationale; only scope the model and timeout statements to the scripts they describe."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "obsolete",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "no-longer-applicable",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "method": "static",
+        "evidence": [
+          "scripts/acceptance-plan.md:9 already states the decision table is retained design rationale with the implementation in acceptance_support.rb and acceptance_cases.rb.",
+          "The Sonnet 5.5 and 240-second statements describe the acceptance scenarios and match scripts/acceptance_support.rb (MODEL claude-sonnet-5-5, capture seconds 240); AGENTS.md assigns Opus 5.5 only to the older smoke scripts. The finding applied the plan to the wrong scripts."
+        ]
+      }
     },
     {
       "id": "r-e4922de0-7dd2-4d57-9c85-4781564dedd7",
@@ -1090,7 +1510,24 @@
         "invariant": "Preserve one stylesheet request, the render-blocking initial theme, behaviour with blocked storage, an invalid saved value, a failed dark stylesheet and cross-tab changes, the noscript default link and the #theme-mode selector."
       },
       "state": "open",
-      "depends_on": []
+      "depends_on": [],
+      "decision": {
+        "origin": "native",
+        "action": "defer",
+        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
+        "date": "2026-11-14",
+        "reason": "Developer accepted the recommendation on 2026-11-14 ('go ahead') to leave this open: the inline theme script is render-blocking and only the browser suite guards it.",
+        "context": {
+          "paths": [
+            "docs/_plugins/frontend.rb",
+            "docs/assets/js/theme-switcher.js"
+          ],
+          "evidence": [
+            "Recorded assessment at a0027473a987ddf98ce3ffa49a4540dc64c00949 and the pros and cons given to the developer on 2026-11-14.",
+            "The finding stays open and is held; revalidate it when the listed files next change."
+          ]
+        }
+      }
     },
     {
       "id": "r-334cc594-fa48-4a82-9c7b-f535725cd066",
@@ -1265,8 +1702,26 @@
         ],
         "invariant": "Jekyll merges matching defaults in order, so the merged entry must produce the same image and layout for every page and keep the later title_category entries."
       },
-      "state": "open",
-      "depends_on": []
+      "state": "resolved",
+      "depends_on": [],
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "c8b6af9448b3b1a12c62d7ae68ef64e508c45fca",
+        "date": "2026-11-14",
+        "method": "runtime",
+        "evidence": [
+          "docs/_config.yml now has one pages defaults entry carrying image and layout.",
+          "A rebuild of the docs site was compared with the previous build: every HTML file is byte-identical; only the three generated just-the-docs .css.map files differ."
+        ],
+        "checks": [
+          {
+            "command": "BUNDLE_GEMFILE=docs/Gemfile bundle _4.0.22_ exec rake docs_links_test docs_test",
+            "scope": "Jekyll build with the remote theme, HTML-Proofer and docs Ruby tests on macOS (Ruby 4.0.6, bundler 4.0.22)",
+            "outcome": "Passed"
+          }
+        ]
+      }
     }
   ]
 }
