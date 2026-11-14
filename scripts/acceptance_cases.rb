@@ -198,7 +198,6 @@ module HelmAcceptanceCases
     first = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
     HelmSmoke.git(workspace, "branch", "feature", first)
     HelmSmoke.fixture_git(workspace, "commit", "--quiet", "--allow-empty", "-m", "fix(core): main change")
-    left = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
     HelmSmoke.git(workspace, "checkout", "--quiet", "feature")
     HelmSmoke.fixture_git(workspace, "commit", "--quiet", "--allow-empty", "-m", "unique unaudited branch message")
     HelmSmoke.git(workspace, "checkout", "--quiet", "main")

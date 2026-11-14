@@ -1,5 +1,4 @@
 # Offline assertions of the live-smoke harness; never invokes Claude or Codex.
-require "fileutils"
 require "tmpdir"
 require_relative "smoke_support"
 require_relative "test_support"

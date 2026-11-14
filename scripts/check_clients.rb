@@ -2,6 +2,7 @@
 require "fileutils"
 require "json"
 require "open3"
+require "pathname"
 require "timeout"
 require "tmpdir"
 require_relative "validate_plugin"

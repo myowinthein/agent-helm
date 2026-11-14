@@ -1,7 +1,5 @@
 # Optional live model checks in disposable repositories. Uses the signed-in CLI accounts.
 # These are behavioral checks, separate from offline package validation.
-require "digest"
-require "fileutils"
 require "json"
 require "open3"
 require "pathname"
@@ -52,7 +50,7 @@ cases = {
     files: { "AGENTS.md" => standard, "CLAUDE.md" => "@AGENTS.md\n",
              ".claude/rules/git.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/git.md").read,
              ".claude/rules/safety.md" => "<!-- helm-rule: agent-helm@v9.9.9 -->\n" + root.join("rules/safety.md").read },
-    command: "adopt", request: "Connect Codex and keep the newer project rules. Do not commit or push.", unchanged: false, rules_version: "9.9.9", rule_brand: "agent-helm"
+    command: "adopt", request: "Connect Codex and keep the newer project rules. Do not commit or push.", unchanged: false, rules_version: "9.9.9"
   },
   "codex-external-reference-stop" => {
     files: { "AGENTS.md" => standard + "\n## Rules\n\nRead and follow {fixture_root}/marketplaces/unsupported-source/rules/git.md.\n", "CLAUDE.md" => "@AGENTS.md\n" },

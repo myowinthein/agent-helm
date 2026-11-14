@@ -69,7 +69,7 @@ Dir.mktmpdir("helm-git-acceptance-") do |temporary|
   moved = HelmGitAcceptance.remote_refs(repo, remote)
   # The oracle must reject an unexpected advance before classifying any publication.
   rejects { HelmGitAcceptance.assert_publication!(moved, frozen) }
-  output, status = Open3.capture2e(HelmSmoke.environment, "git", "push", "--quiet", "--no-follow-tags",
+  _, status = Open3.capture2e(HelmSmoke.environment, "git", "push", "--quiet", "--no-follow-tags",
     "--force-with-lease=refs/heads/main:#{first}", remote.to_s, "#{new_merge}:refs/heads/main", chdir: repo)
   raise "Stale fixture lease unexpectedly succeeded" if status.success?
   HelmGitAcceptance.assert_publication!(HelmGitAcceptance.remote_refs(repo, remote), moved)

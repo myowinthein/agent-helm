@@ -1,8 +1,5 @@
 # Optional live checks: real CLI behavior in disposable projects, never a global install.
-require "digest"
-require "fileutils"
 require "json"
-require "open3"
 require "pathname"
 require "tempfile"
 require "timeout"
