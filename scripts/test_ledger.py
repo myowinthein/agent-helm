@@ -271,28 +271,28 @@ class LedgerTests(unittest.TestCase):
             value = document()
             edit(value)
             return value
-        invalid = [changed(lambda v: v.update(schema_version=2)),
-                   changed(lambda v: v.update(schema_version=True)),
-                   changed(lambda v: v["cases"][0].pop("expected")),
-                   changed(lambda v: v["cases"][0].update(basis=[])),
-                   changed(lambda v: v["cases"][0].update(paths=[])),
-                   changed(lambda v: v["cases"].append(copy.deepcopy(v["cases"][0]))),
-                   changed(lambda v: v["cases"][0].update(paths=["../outside"])),
-                   changed(lambda v: v["cases"][0].update(paths=["/absolute"])),
-                   changed(lambda v: v["cases"][0].update(assessed_commit="HEAD~1")),
-                   changed(lambda v: v["cases"][0].update(priority=CANARY)),
-                   changed(lambda v: v["cases"][0].update(state="resolved")),
-                   changed(lambda v: v["cases"][0].update(decision={"type": "deferred", "note": "Owner choice",
-                                                                  "date": "2026-02-30", "commit": A}))]
+        invalid = {"schema version 2": changed(lambda v: v.update(schema_version=2)),
+                   "boolean schema version": changed(lambda v: v.update(schema_version=True)),
+                   "missing expected": changed(lambda v: v["cases"][0].pop("expected")),
+                   "empty basis": changed(lambda v: v["cases"][0].update(basis=[])),
+                   "empty paths": changed(lambda v: v["cases"][0].update(paths=[])),
+                   "duplicate case ID": changed(lambda v: v["cases"].append(copy.deepcopy(v["cases"][0]))),
+                   "parent-directory path": changed(lambda v: v["cases"][0].update(paths=["../outside"])),
+                   "absolute path": changed(lambda v: v["cases"][0].update(paths=["/absolute"])),
+                   "revision expression anchor": changed(lambda v: v["cases"][0].update(assessed_commit="HEAD~1")),
+                   "invalid priority": changed(lambda v: v["cases"][0].update(priority=CANARY)),
+                   "resolved without closure": changed(lambda v: v["cases"][0].update(state="resolved")),
+                   "impossible decision date": changed(lambda v: v["cases"][0].update(decision={"type": "deferred", "note": "Owner choice",
+                                                                                              "date": "2026-02-30", "commit": A}))}
         resolved = document(records=[test_case("closed", "resolved")])
-        for edit in (lambda v: v["cases"][0]["closure"].pop("scope"),
-                     lambda v: v["cases"][0].update(blocker={"kind": "verification", "note": "Pending"}),
-                     lambda v: v["cases"][0]["closure"].update(reason="obsolete")):
+        for label, edit in {"closure without scope": lambda v: v["cases"][0]["closure"].pop("scope"),
+                            "resolved with blocker": lambda v: v["cases"][0].update(blocker={"kind": "verification", "note": "Pending"}),
+                            "obsolete reason on resolved case": lambda v: v["cases"][0]["closure"].update(reason="obsolete")}.items():
             value = copy.deepcopy(resolved)
             edit(value)
-            invalid.append(value)
-        for index, value in enumerate(invalid):
-            with self.subTest(mutation=index):
+            invalid[label] = value
+        for label, value in invalid.items():
+            with self.subTest(mutation=label):
                 self.write(value)
                 run = self.cli()
                 self.assertEqual(run.returncode, 4)
@@ -301,18 +301,18 @@ class LedgerTests(unittest.TestCase):
 
     def test_refactor_provenance_references_cycles_and_closures_are_validated(self):
         original = document("refactor", [finding("one"), finding("two")])
-        edits = [lambda v: v["findings"][0]["found"].update(origin="imported"),
-                 lambda v: v["findings"][0]["found"].update(date="2026-02-30"),
-                 lambda v: v["findings"][0].update(depends_on=["missing"]),
-                 lambda v: v["findings"][0].update(depends_on=["one"]),
-                 lambda v: v["findings"][0].update(recurrence_of="missing"),
-                 lambda v: (v["findings"][0].update(recurrence_of="two"), v["findings"][1].update(recurrence_of="one")),
-                 lambda v: v["findings"][0]["assessment"].update(priority="unknown")]
-        for index, edit in enumerate(edits):
+        edits = {"imported provenance": lambda v: v["findings"][0]["found"].update(origin="imported"),
+                 "impossible found date": lambda v: v["findings"][0]["found"].update(date="2026-02-30"),
+                 "missing dependency": lambda v: v["findings"][0].update(depends_on=["missing"]),
+                 "self dependency": lambda v: v["findings"][0].update(depends_on=["one"]),
+                 "missing recurrence target": lambda v: v["findings"][0].update(recurrence_of="missing"),
+                 "recurrence cycle": lambda v: (v["findings"][0].update(recurrence_of="two"), v["findings"][1].update(recurrence_of="one")),
+                 "unknown priority without blocker": lambda v: v["findings"][0]["assessment"].update(priority="unknown")}
+        for label, edit in edits.items():
             value = copy.deepcopy(original)
             edit(value)
             self.write(value, "refactor")
-            with self.subTest(mutation=index):
+            with self.subTest(mutation=label):
                 self.assertEqual(self.cli(payload=self.request("refactor")).returncode, 4)
         unknown = copy.deepcopy(original)
         unknown["findings"][0]["assessment"]["priority"] = "unknown"

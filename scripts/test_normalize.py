@@ -57,16 +57,18 @@ class NormalizeTests(unittest.TestCase):
 
     def test_valid_syntax_never_means_semantic_acceptance(self):
         for message in ("fix(auth): update login\n", "feat(auth): fix login typo\n"):
-            result = self.check_message(message)
-            self.assertEqual(result["records"][0]["syntax"], "pass")
-            self.assertEqual(result["records"][0]["semantic"], "not_reviewed")
-            self.assertEqual(result["counts"]["semantically_reviewed"], 0)
+            with self.subTest(message=message):
+                result = self.check_message(message)
+                self.assertEqual(result["records"][0]["syntax"], "pass")
+                self.assertEqual(result["records"][0]["semantic"], "not_reviewed")
+                self.assertEqual(result["counts"]["semantically_reviewed"], 0)
 
     def test_header_scope_type_and_body_rules(self):
         cases = {"updated login": "header_grammar", "fix: login": "scope_required",
                  "chore(core): update": "type_policy", "fix(core): update\nbody": "body_separator"}
         for message, diagnostic in cases.items():
-            self.assertIn(diagnostic, self.check_message(message)["records"][0]["diagnostics"])
+            with self.subTest(diagnostic=diagnostic):
+                self.assertIn(diagnostic, self.check_message(message)["records"][0]["diagnostics"])
 
     def test_scopes_and_length_are_project_policy(self):
         effective = policy()
@@ -82,7 +84,8 @@ class NormalizeTests(unittest.TestCase):
     def test_only_formal_breaking_markers(self):
         for message in ("fix(api)!: change\n", "fix(api): change\n\nBREAKING CHANGE: removed option\n",
                         "fix(api): change\n\nBREAKING-CHANGE: removed option\n"):
-            self.assertTrue(self.check_message(message)["records"][0]["formal_breaking_marker"])
+            with self.subTest(message=message):
+                self.assertTrue(self.check_message(message)["records"][0]["formal_breaking_marker"])
         self.assertFalse(self.check_message("fix(api): avoid breaking links\n")["records"][0]["formal_breaking_marker"])
 
     def test_only_newlines_end_the_subject_line(self):
@@ -243,13 +246,15 @@ class NormalizeTests(unittest.TestCase):
         self.assertEqual(mod.policy_info(old)[0], mod.policy_info(copy.deepcopy(old))[0])
 
     def test_graph_requires_complete_acyclic_unambiguous_input(self):
-        for commits in (graph((1, [9])), graph((1, [2]), (2, [1])), graph((1, []), (1, []))):
-            with self.assertRaises(mod.Invalid):
+        for label, commits in (("missing parent", graph((1, [9]))), ("cycle", graph((1, [2]), (2, [1]))),
+                               ("duplicate commit", graph((1, []), (1, [])))):
+            with self.subTest(graph=label), self.assertRaises(mod.Invalid):
                 self.plan(commits)
 
     def test_schema_one_and_incomplete_schema_two_are_rejected(self):
-        for record in ({"schema_version": 1, "branches": {}}, ledger({"main": {"last_checked_commit": oid(1)}})):
-            with self.assertRaises(mod.Invalid):
+        for label, record in (("schema one", {"schema_version": 1, "branches": {}}),
+                              ("incomplete schema two", ledger({"main": {"last_checked_commit": oid(1)}}))):
+            with self.subTest(record=label), self.assertRaises(mod.Invalid):
                 mod.validate_ledger(record)
 
     def test_invalid_dates_kinds_and_boolean_contract_are_rejected(self):
@@ -257,7 +262,7 @@ class NormalizeTests(unittest.TestCase):
                            ("review_contract", True), ("policy_fingerprint", "invalid")):
             record = baseline(1)
             record[key] = value
-            with self.assertRaises(mod.Invalid):
+            with self.subTest(field=key), self.assertRaises(mod.Invalid):
                 mod.validate_ledger(ledger({"main": record}))
 
     def test_unknown_state_fields_are_preserved(self):
@@ -280,7 +285,7 @@ class NormalizeTests(unittest.TestCase):
     def test_invalid_page_bounds_and_conflicting_message_ids_stop(self):
         payload = {"policy": policy(), "commits": [{"id": oid(1), "message": "fix(api): update"}]}
         for bounds in ({"limit": 0}, {"limit": 201}, {"offset": -1}, {"offset": 9}):
-            with self.assertRaises(mod.Invalid):
+            with self.subTest(bounds=bounds), self.assertRaises(mod.Invalid):
                 mod.execute(payload, "check", **bounds)
         payload["commits"] *= 2
         with self.assertRaises(mod.Invalid):
