@@ -47,7 +47,7 @@ def loads(raw, limits, kind):
         # UTF-8 BOMs are rejected rather than silently normalised.
         value = json.loads(raw.decode("utf-8"), object_pairs_hook=unique,
                            parse_float=Decimal, parse_constant=reject_constant)
-    except (UnicodeError, ValueError, ArithmeticError, RecursionError):
+    except (ValueError, ArithmeticError, RecursionError):
         raise Problem(kind, "Expected complete UTF-8 JSON within parser limits", "json") from None
     pending = [(value, 0)]
     nodes = 0

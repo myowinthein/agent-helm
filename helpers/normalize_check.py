@@ -18,6 +18,10 @@ REVIEW_CONTRACT = 1
 MAX_BYTES = 32 * 1024 * 1024
 MAX_COMMITS = 100_000
 MAX_MESSAGE_BYTES = 1024 * 1024
+MAX_BRANCHES = 256
+MAX_PARENTS = 1024
+DEFAULT_PAGE_LIMIT = 100
+MAX_PAGE_LIMIT = 200
 OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 HEADER = re.compile(r"([^\s():!]+)(?:\(([^()\r\n]+)\))?(!)?: (\S.*)\Z")
 RULES = {"types", "scope_required", "scopes", "type_case_sensitive", "header_max_length"}
@@ -30,6 +34,10 @@ class Invalid(ValueError):
 def require(condition, message):
     if not condition:
         raise Invalid(message)
+
+
+def reject_constant(_):
+    raise Invalid("Non-finite JSON")
 
 
 def canonical(value):
@@ -61,7 +69,7 @@ def validate_ledger(ledger):
     require(isinstance(ledger, dict) and type(ledger.get("schema_version")) is int
             and ledger["schema_version"] == 2, "Normalize requires schema 2")
     branches = ledger.get("branches")
-    require(isinstance(branches, dict) and len(branches) <= 256, "Invalid branch records")
+    require(isinstance(branches, dict) and len(branches) <= MAX_BRANCHES, "Invalid branch records")
     for name, record in branches.items():
         require(branch_name(name) and isinstance(record, dict), "Invalid branch record")
         require(isinstance(record.get("last_checked_commit"), str)
@@ -118,7 +126,7 @@ def precheck(message, rules, unsupported, resolved):
         raise Invalid("Unsupported message encoding") from None
     require(size <= MAX_MESSAGE_BYTES and "\0" not in message, "Invalid message size/content")
     lines = re.split(r"\r\n|\n", message)
-    header = lines[0] if lines else ""
+    header = lines[0]
     match = HEADER.fullmatch(header)
     findings = []
     breaking = False
@@ -157,7 +165,7 @@ def graph_order(commits):
         oid, parents = commit.get("id"), commit.get("parents")
         require(isinstance(oid, str) and OID.fullmatch(oid) and oid not in graph,
                 "Invalid or duplicate commit ID")
-        require(isinstance(parents, list) and len(parents) <= 1024
+        require(isinstance(parents, list) and len(parents) <= MAX_PARENTS
                 and all(isinstance(p, str) and OID.fullmatch(p) for p in parents)
                 and len(set(parents)) == len(parents), "Invalid parents")
         graph[oid] = parents
@@ -195,7 +203,7 @@ def reachable(graph, tip):
 def plan_review(payload, fingerprint):
     graph, order = graph_order(payload.get("commits"))
     tips = payload.get("tips")
-    require(isinstance(tips, dict) and 0 < len(tips) <= 256
+    require(isinstance(tips, dict) and 0 < len(tips) <= MAX_BRANCHES
             and all(branch_name(name) and isinstance(tip, str) and OID.fullmatch(tip)
                     for name, tip in tips.items()), "Invalid requested tips")
     ledger = payload.get("ledger")
@@ -234,9 +242,9 @@ def plan_review(payload, fingerprint):
                        "needs_semantic": len(ids)}, "branches": branches}, ids
 
 
-def execute(payload, operation, offset=0, limit=100, expected_digest=None):
+def execute(payload, operation, offset=0, limit=DEFAULT_PAGE_LIMIT, expected_digest=None):
     require(isinstance(payload, dict), "Expected JSON object")
-    require(type(offset) is int and offset >= 0 and type(limit) is int and 1 <= limit <= 200,
+    require(type(offset) is int and offset >= 0 and type(limit) is int and 1 <= limit <= MAX_PAGE_LIMIT,
             "Invalid page bounds")
     require(offset == 0 or expected_digest is not None, "Continuation requires the first page digest")
     fingerprint, unsupported = policy_info(payload.get("policy"))
@@ -278,16 +286,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=("check", "plan"))
     parser.add_argument("--offset", type=int, default=0)
-    parser.add_argument("--limit", type=int, default=100)
+    parser.add_argument("--limit", type=int, default=DEFAULT_PAGE_LIMIT)
     parser.add_argument("--expect-digest", help="First page input_digest; required when --offset is greater than zero")
     args = parser.parse_args()
     try:
         raw = sys.stdin.buffer.read(MAX_BYTES + 1)
         require(len(raw) <= MAX_BYTES, "Input exceeds resource limit")
         payload = json.loads(raw, object_pairs_hook=object_pairs,
-                             parse_constant=lambda _: (_ for _ in ()).throw(Invalid("Non-finite JSON")))
+                             parse_constant=reject_constant)
         result = execute(payload, args.operation, args.offset, args.limit, args.expect_digest)
-    except (ValueError, TypeError, UnicodeError, RecursionError):
+    except (ValueError, TypeError, RecursionError):
         # Do not echo malformed JSON, messages, policy values or parser excerpts.
         print(json.dumps({"interface_version": 1, "error": "Invalid or unsupported normalize input"}))
         return 2

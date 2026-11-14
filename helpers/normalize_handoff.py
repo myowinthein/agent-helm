@@ -191,7 +191,7 @@ def discover(common_dir):
             try:
                 data, _ = load(fd, name)
                 candidates.append(dict(data, availability=availability(data)))
-            except (OSError, ValueError, UnicodeError):
+            except (OSError, ValueError):
                 issues.append({"run_id": name[:-5], "reason": "Invalid or unreadable locator"})
     return {"candidates": candidates, "issues": issues}
 
@@ -218,7 +218,7 @@ def main():
             result = discover(args.git_common_dir)
         print(json.dumps(result, ensure_ascii=True))
         return 0
-    except (OSError, ValueError, UnicodeError) as error:
+    except (OSError, ValueError) as error:
         print(json.dumps({"error": str(error)}, ensure_ascii=True))
         return 2
 
