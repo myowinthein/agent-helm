@@ -108,13 +108,13 @@ Prepare only the approved setting diff. No project scan, README write or marker 
 
 ### Standard and custom structure contract
 
-For `standard`, follow the [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md), interpreting its applicability rather than enforcing the old reduced template:
+For `standard`, follow the [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md), interpreting its applicability rather than enforcing a reduced template:
 
 - Order: Title, optional Banner/Badges, Short Description, optional Long Description, Table of Contents, optional Security/Background, Install, Usage, relevant extra sections, optional API/Maintainers/Thanks, Contributing, License.
 - Use the real project display title and disclose any repo/package naming mismatch; do not rename the project or its metadata. Keep the short description under 120 characters and consistent with the applicable package-manager description when one exists, not just `package.json`. Report unresolved mismatches rather than changing metadata or claiming compliance.
 - The spec makes a table of contents optional below 100 lines; include it at 100 or more. Preserve generator-owned contents and account for the renderer's own navigation when explaining a proposed change or an explicit deviation.
 - Install and Usage normally apply, but are optional for documentation-only repositories. Include CLI/import examples when applicable, not placeholder sections for nonexistent interfaces.
-- Additional named sections are allowed after Usage and before API. Use them for reader needs such as configuration, development, limitations or documentation pointers; do not create a literal "Extra Sections" heading or forbid useful sections outside the old checklist.
+- Additional named sections are allowed after Usage and before API. Use them for reader needs such as configuration, development, limitations or documentation pointers; do not create a literal "Extra Sections" heading or forbid useful sections outside a fixed checklist.
 - End with separate Contributing and License sections. Contributing identifies the questions channel, PR acceptance and applicable requirements; License names the license or identifier and verified copyright holder, following the contribution and licensing guidance below. Missing facts prevent strict compliance claims.
 
 Preserve locale, frontmatter and rendering requirements. If existing protected content or intentional structure conflicts with strict spec conformance, disclose it and propose an explicit choice. Do not silently convert to custom or claim strict compliance because equivalent information exists.

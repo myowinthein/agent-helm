@@ -73,7 +73,7 @@ Use one current-state ledger, not a per-run journal or an inventory of every exi
 |---|---|
 | `schema_version` | Exactly `3` for this structure. |
 | `assessed_commit` | Complete Full scan / Gap scan source baseline, or null/absent when none exists. Never test success. |
-| `full_scan_commit` | Latest complete whole-project source assessment, or null/absent. Replaces the old boolean. |
+| `full_scan_commit` | Latest complete whole-project source assessment, or null/absent. |
 | `cases` | All recorded findings, including resolved and obsolete ones. Derive summaries from these records. |
 
 Do not store per-file priorities, scan counters, branch identity, tool inventory, repeated run summaries or root test results. Recommend Full scan from actual impact/uncertainty rather than a fixed number of Gap scans or Git commit distance.
