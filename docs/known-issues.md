@@ -7,32 +7,21 @@ permalink: /docs/known-issues.html
 
 # Known issues
 
-Observations from maintainer testing and use on macOS, alongside documented platform limitations. Platform documentation for the original entries was checked on **28–29 October 2026**; later entries give their own check date.
+Observations from maintainer testing and use on macOS, alongside documented platform limitations. References were checked on **28–29 October 2026**, and **16 November 2026** for the instruction-following entry.
 
-## Agent behaviour
+<div id="agent-behaviour"></div>
+<div id="agent-choice"></div>
+
+## Across agents
 
 <details id="instructions-and-workflow-steps-may-not-be-followed-consistently" markdown="block">
 <summary>Instructions and workflow steps may not be followed consistently</summary>
 
-**Observed:** In some Claude and Codex sessions, the agent has skipped rules or command steps, stopped before completing a workflow, or changed a required output format.
+**Observed:** Claude and Codex have sometimes [skipped rules or command steps](https://github.com/anthropics/claude-code/issues/18454), [stopped before completion](https://github.com/openai/codex/issues/36596), or [changed a required output format](https://github.com/openai/codex/issues/25673).
 
-Similar behaviour is reported outside Helm:
-
-- [Claude Code: project and skill instructions skipped during multi-step tasks](https://github.com/anthropics/claude-code/issues/18454).
-- [Codex: unfinished work stopped despite instructions to continue](https://github.com/openai/codex/issues/36596).
-- [Codex: file paths or summaries substituted for required tables and source rows](https://github.com/openai/codex/issues/25673).
-
-Anthropic distinguishes [instructions the model reads from rules the client enforces](https://code.claude.com/docs/en/best-practices#deterministic-and-non-deterministic-instructions): prompts and skills do not guarantee that every step will be followed. OpenAI also explains that [model output can vary](https://developers.openai.com/api/docs/guides/prompt-engineering).
-
-These reports do not establish how often this happens or whether a particular failure comes from the agent, its client or Helm's instructions.
-
-Point out the missed requirement and ask the agent to resume from the last verified step. Check the actual files, test results and required output before accepting a completion claim. Required approvals still apply.
-
-**References checked:** 16 November 2026.
+[Written instructions do not guarantee consistent execution](https://code.claude.com/docs/en/best-practices#deterministic-and-non-deterministic-instructions). Point out the missed requirement and ask the agent to resume from the last verified step. Check the actual result before accepting a completion claim.
 
 </details>
-
-## Agent choice
 
 <details id="noticeably-longer-command-runtimes-in-codex" markdown="block">
 <summary>Noticeably longer command runtimes in Codex</summary>
