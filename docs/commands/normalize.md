@@ -63,7 +63,7 @@ Tags and excluded refs remain fixed. Tags can lose ancestry from rewritten branc
 
 Approve the exact messages, affected branches, ID/tag effects and recovery plan together. You can revise or cancel. The same unchanged rewrite plan is not asked twice.
 
-Applying needs **git-filter-repo and Python**. Recovery bundles are verified before rewriting and stored outside the checkout under your OS user's home at `Agent Helm/normalize/<run-id>/`. Continuing a run reuses its folder; earlier backups remain. After rewriting, normalize checks messages, file contents and history structure before reporting success.
+Applying needs **git-filter-repo and Python**. Fixed code shipped with Helm applies the approved corrections; no helper program is generated during the run. Recovery bundles are verified before rewriting and stored outside the checkout under your OS user's home at `Agent Helm/normalize/<run-id>/`. Continuing a run reuses its folder; earlier backups remain. After rewriting, normalize checks messages, file contents and history structure before reporting success.
 
 ## Your result and later publication
 

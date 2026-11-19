@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import types
 import unittest
 from unittest import mock
@@ -45,6 +46,44 @@ def graph(*records):
 
 
 class NormalizeTests(unittest.TestCase):
+    def test_packaged_callback_applies_only_exact_ids_and_caches_the_approved_map(self):
+        callback = HELPER.with_name("normalize_callback.py")
+        code = compile(callback.read_bytes(), str(callback), "exec")
+        with tempfile.TemporaryDirectory(prefix="helm-normalize-callback-") as temporary:
+            mapping = Path(temporary) / "messages.json"
+            replacement = "fix(core): preserve 日本語\n\nExact body.\r\n"
+            mapping.write_text(json.dumps({oid(1): replacement}), encoding="utf-8")
+            commit = types.SimpleNamespace(original_id=oid(1).encode("ascii"), message=b"original", tree=b"unchanged")
+            scope = {"commit": commit}
+            with mock.patch.dict("os.environ", {"HELM_NORMALIZE_MAP": str(mapping)}):
+                exec(code, scope)
+                self.assertEqual(commit.message, replacement.encode("utf-8"))
+                self.assertEqual(commit.tree, b"unchanged")
+                mapping.unlink()  # Later commits reuse the validated map, without another read.
+                scope["commit"] = types.SimpleNamespace(original_id=oid(2).encode("ascii"), message=b"keep exact\n")
+                exec(code, scope)
+                self.assertEqual(scope["commit"].message, b"keep exact\n")
+
+    def test_packaged_callback_rejects_bad_data_before_changing_a_message(self):
+        callback = HELPER.with_name("normalize_callback.py")
+        code = compile(callback.read_bytes(), str(callback), "exec")
+        canary = "SYNTHETIC_PRIVATE_CALLBACK_VALUE"
+        bad = ["not JSON " + canary, "[]", json.dumps({oid(1): None}),
+               json.dumps({"not-an-id": canary}),
+               '{"' + oid(1) + '":"one","' + oid(1) + '":"' + canary + '"}',
+               json.dumps({oid(1): "bad\0message"}), json.dumps({oid(1): "\ud800"})]
+        with tempfile.TemporaryDirectory(prefix="helm-normalize-callback-") as temporary:
+            mapping = Path(temporary) / "messages.json"
+            for raw in bad:
+                with self.subTest(raw_kind=bad.index(raw)):
+                    mapping.write_text(raw, encoding="utf-8")
+                    commit = types.SimpleNamespace(original_id=oid(1).encode("ascii"), message=b"original")
+                    with mock.patch.dict("os.environ", {"HELM_NORMALIZE_MAP": str(mapping)}):
+                        with self.assertRaises(ValueError) as caught:
+                            exec(code, {"commit": commit})
+                    self.assertNotIn(canary, str(caught.exception))
+                    self.assertEqual(commit.message, b"original")
+
     def check_message(self, text, effective=None):
         return mod.execute({"policy": effective or policy(),
                             "commits": [{"id": oid(1), "message": text}]}, "check")

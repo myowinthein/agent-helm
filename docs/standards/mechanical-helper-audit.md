@@ -4,9 +4,9 @@ Baseline: `2d485f2`. This is a maintainer review record, outside the installed p
 
 ## Scope and boundary
 
-The inventory covers all 46 tracked Python, Ruby, JavaScript/MJS and Rake sources, their command/build/test callers, the CI shell blocks and setup redirect/head integration. Runtime implementations, workflow consumers and execution wrappers were reviewed; test contracts and existing protection were assessed separately. Dependencies, generated site/cache content and operational records are outside the source inventory. The EduQuest incident supplied the already observed failure example; this work makes no changes to that project/session.
+The initial inventory covers all 46 then-tracked Python, Ruby, JavaScript/MJS and Rake sources, their command/build/test callers, the CI shell blocks and setup redirect/head integration. Runtime implementations, workflow consumers and execution wrappers were reviewed; test contracts and existing protection were assessed separately. Dependencies, generated site/cache content and operational records are outside the source inventory. The EduQuest incident supplied the already observed failure example; this work makes no changes to that project/session.
 
-The single agent-facing boundary is [Mechanical helpers and temporary scripts](../../prompts/shared/runtime.md#mechanical-helpers-and-temporary-scripts). Helpers do named mechanical work; agents retain interpretation, decisions and authority. Native tools serve straightforward tasks. Short scoped projections are permitted, while replacement validators, tracking frameworks and extra gates are not. Data transport is lossless and an evidenced defective read-only probe has one bounded correction. Real blockers, protected state, approvals, source coverage and recovery proof retain their protections.
+The single agent-facing boundary is [Mechanical helpers and temporary scripts](../../prompts/shared/runtime.md#mechanical-helpers-and-temporary-scripts). Helpers do named mechanical work; agents retain interpretation, decisions and authority. Native tools serve straightforward tasks. The stricter follow-up prohibits generated helper/probe/orchestration code, including inline programs and executable heredocs. Native queries and reviewed packaged helpers remain available; structured requests and message maps are data. Approved project code/tests remain outputs. Replacement validators, tracking frameworks and extra gates are not permitted. Data transport is lossless and an evidenced invocation/argument or data-delivery mistake in an existing read-only tool call has one bounded correction without code creation/editing. Real blockers, protected state, approvals, source coverage and recovery proof retain their protections.
 
 ## Decisions
 
@@ -16,15 +16,15 @@ The single agent-facing boundary is [Mechanical helpers and temporary scripts](.
 | Remove | The long equivalent-validator recipe and repeated fallback explanations that encouraged agents to build a second implementation during consumer work. Existing verified equivalent tools remain eligible under the same contract. |
 | Remove | Mandatory check-then-view sequencing and parser/setup work for proven absent records. Record writes still require complete validation. |
 | Update | Initial `ledger-view` now validates and returns a bound page in one call. Subsequent pages and snapshot-bound work still require the returned digest; invalid input/state and drift remain errors. Existing callers remain compatible. |
-| Update | Shared instructions now constrain temporary scripts, preserve exact transported data and distinguish a faulty read-only probe from an established blocker. Env uses Git readiness and relevant content checks rather than an invented metadata-snapshot framework. |
+| Update | Shared instructions prohibit dynamic helper creation, preserve exact transported data and distinguish a malformed existing tool call from an established blocker. Env uses Git readiness and relevant content checks rather than an invented metadata-snapshot framework. |
 | Remove | Duplicate process wrappers/temp output plumbing in the two older model smoke runners. They now reuse the existing bounded runner, including its tested process-group timeout cleanup. |
 | Keep | Packaging/native-discovery tools, offline tests, opt-in model fixtures and website code serve distinct maintainer/product jobs. They are not run as extra consumer helper phases. No broad rewrite or new framework is justified by their language or size. |
 | Update | Disable incidental automatic Git maintenance/GC in disposable fixture commands after a background lock disappeared during fixture cleanup. This changes no user/global Git configuration. |
-| Add | Focused first-view/continuation/missing-state regression coverage. No new runtime module, environment probe, writer, schema, cache, dependency or model service. |
+| Add | The initial cleanup added first-view/continuation/missing-state regressions without a new runtime module. The stricter follow-up moves normalize's existing inline callback into a fixed packaged file and adds a bounded dotenv key extractor, so neither job needs generated programs. The extractor is lexical only, not a project scanner or environment auditor. Native UUID/path operations replace inline setup instructions. No writer, state schema, cache, dependency or model service is introduced. |
 
 ## Code inventory
 
-All rows are retained for their stated purpose; the changed ledger implementation and smoke runners are identified above. Test fixtures may generate controlled scripts to exercise existing protocols in disposable repositories. That is reviewed test code, not a consumer permission to improvise another protocol.
+All rows are retained for their stated purpose; the changed ledger implementation and smoke runners are identified above. The table now also records two fixed helpers added by the stricter follow-up (48 sources total). Maintainer test fixtures may generate controlled scripts to exercise existing protocols in disposable repositories. That is reviewed test code, not a consumer permission to improvise another protocol.
 
 | Source | Purpose |
 |---|---|
@@ -50,10 +50,12 @@ All rows are retained for their stated purpose; the changed ledger implementatio
 | `docs/tests/test_guide_views.rb` | Built guide depth selectors and navigation/anchor relationships. |
 | `docs/tests/test_human_guides.rb` | Authored pair inventory, source references and no raw-prompt embedding. |
 | `docs/tests/test_repository_content.rb` | Shared homepage/icon/version output and canonical public URLs. |
+| `helpers/env_keys.py` | Bounded stdin-only dotenv key/classification projection; skips multiline value text and refuses unsupported syntax without echoing values. |
 | `helpers/helm.py` | Dispatch the fixed ledger operations and report runtime/package errors. |
 | `helpers/helm_lib/__init__.py` | Package marker. |
 | `helpers/helm_lib/common.py` | Strict, exact JSON and bounded no-follow reads of permitted records. |
 | `helpers/helm_lib/ledger.py` | Validate one owning ledger and return a compact, digest-bound selection. |
+| `helpers/normalize_callback.py` | Fixed filter-repo callback applying only the approved UTF-8 original-ID/message map; added by the stricter follow-up. |
 | `helpers/normalize_check.py` | Check message structure and calculate graph/baseline review membership. |
 | `helpers/normalize_handoff.py` | Register immutable private recovery locators and discover bounded metadata. |
 | `scripts/acceptance_cases.rb` | Predeclared synthetic inputs, exact approvals and expected outcomes. |
@@ -88,7 +90,7 @@ The ledger comparison used the same synthetic schema-3 shape with 1,000 records,
 
 This establishes a smaller mechanical call path, not end-to-end command speed, model token counts or a client latency guarantee. The existing shared runner has offline timeout/preservation controls; live model scenarios remain opt-in and were not used for this change.
 
-Whitespace word counts below describe authored context, not tokenizer output or quality. The runtime now carries one shared boundary while the owning helper path loses duplicated instructions; actual loaded context depends on the selected route.
+Whitespace word counts below record the initial cleanup, before the stricter follow-up. They describe authored context, not tokenizer output or quality. Actual loaded context depends on the selected route.
 
 | Instruction source | Before words | After words |
 |---|---:|---:|
@@ -103,4 +105,8 @@ Whitespace word counts below describe authored context, not tokenizer output or 
 | `prompts/shared/content-sync.md` | 872 | 889 |
 | `guides/normalize.md` | 7642 | 7655 |
 
-Validation passed: package/relocation/export checks; 39 normalize, 18 handoff and 28 ledger tests; smoke and acceptance-support/oracle groups; docs/source/link/build checks and 220 Chrome assertions. The first combined run found the fixture maintenance race described above; the affected suite and all remaining checks passed after the scoped fix. The package, helper, smoke/acceptance-support and docs suites validate implementation and preserved contracts. They do not prove that every future model session follows the new instructions. The demonstrated dynamic-script failure is addressed through the instruction boundary, rather than adding another runtime enforcement system.
+Initial validation passed: package/relocation/export checks; 39 normalize, 18 handoff and 28 ledger tests; smoke and acceptance-support/oracle groups; docs/source/link/build checks and 220 Chrome assertions. The first combined run found the fixture maintenance race described above; the affected suite and all remaining checks passed after the scoped fix.
+
+The stricter follow-up passed the full offline suite: package checks; 41 normalize, 18 handoff and 28 ledger tests; 20 smoke-support, 16 acceptance-support and four direct acceptance-oracle groups; docs/source/link/build checks and 220 Chrome assertions. New controls cover dotenv value confidentiality, multiline/unsupported input, common inline-program trace forms and callback exact-ID/cache/invalid-data behavior. Disposable backend fixtures also use the fixed callback. No models were called.
+
+These checks validate implementation and preserved contracts. They do not prove that every future model session follows the instructions. The dynamic-script failure is addressed through the shared instruction boundary and fixed mechanical helpers, without a runtime enforcement system. The earlier measurements describe only the initial cleanup; no end-to-end speed claim is made for this follow-up.

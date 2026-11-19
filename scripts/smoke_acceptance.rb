@@ -107,6 +107,7 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     raise "Audit did not inspect the actual env input" unless result.fetch(:calls).any? { |c| HelmAcceptance.strings(c["input"]).any? { |s| s.match?(/(?<![\w.])\.env(?![\w.])/) } } && HelmAcceptance.strings(result.fetch(:tool_outputs)).any? { |s| s.include?("API_TOKEN") }
   end
   HelmAcceptance.assert_no_state_access!(result) if scenario[:no_state]
+  HelmAcceptance.assert_no_inline_programs!(result) if scenario[:no_inline_programs]
   HelmAcceptance.assert_entry_blocked!(result, canary: scenario.fetch(:entry_blocked_canary)) if scenario[:entry_blocked_canary]
   if name == "normalize-rewrite"
     HelmAcceptance.verify_normalize!(workspace: workspace, container: container, scenario: scenario, before: before, approved: approved)

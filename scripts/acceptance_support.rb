@@ -81,6 +81,14 @@ module HelmAcceptance
     raise "Source-only preview accessed state" if result.fetch(:calls).any? { |c| strings(c.fetch("input")).any? { |s| state.match?(s) } }
   end
 
+  # Bounded trace check for common inline-program forms, not a shell analyzer.
+  def assert_no_inline_programs!(result)
+    interpreter = /\b(?:python[0-9.]*|ruby|node|perl|php|bash|sh|zsh)\b/
+    inline = /#{interpreter}[^\n;]*\s(?:-[cep]\b|--(?:eval|execute)(?:\s|=))|#{interpreter}(?:\s+--?[A-Za-z-]+)*\s+(?:-\s*)?<</
+    raise "Command generated an inline helper program" if
+      result.fetch(:calls).any? { |call| strings(call.fetch("input")).any? { |input| inline.match?(input) } }
+  end
+
   def assert_normalize_waiting!(result, history_canary:)
     assert_no_canary!(result, history_canary)
     assert_no_state_access!(result)

@@ -26,9 +26,9 @@ Guides to using Agent Helm at different points during project development. Each 
 
 ## How scripts help
 
-Supporting scripts handle repeatable work such as parsing records, comparing data and checking commit-message structure. The agent interprets the results and keeps your decisions and approvals separate. Scripts are used where needed; website builds and maintainer tests are not extra steps in your project workflow.
+Commands use existing native tools and fixed, reviewed helpers for repeatable work such as parsing records, comparing data and checking commit-message structure. Agents do not create helper scripts during a run, including inline code and temporary programs. They interpret results and keep your decisions and approvals separate. Approved project source/tests remain workflow outputs; website builds and maintainer tests are not extra consumer steps.
 
-An error in a read-only inspection can receive one bounded correction using the same inputs. A real blocker, changed evidence or an unresolved verification failure still stops the command.
+An incorrect invocation or data argument in an existing read-only tool call can be corrected once using the same inputs, without creating or editing code. A real blocker, changed evidence, unavailable capability or unresolved verification failure still stops the command.
 
 ## Where files are saved
 

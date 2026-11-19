@@ -51,7 +51,7 @@ Failures return no success on stdout. Stderr has `{interface_version, error: {ki
 
 | Exit/kind | Action |
 |---|---|
-| 2 `invalid_input` | Correct a malformed request or oversized page at the same gate, under the runtime's bounded correction rule; do not edit the record to satisfy it. |
+| 2 `invalid_input` | Correct request data, invocation arguments or oversized paging once at the same gate; create no parsing/validation code and do not edit the record to satisfy it. |
 | 3 `runtime_unavailable` | Use the once-per-run choice above only when this operation is needed. |
 | 4 `invalid_state` / `unsupported_state` | Preserve input and stop. No conversion, reset, old-path bypass or replacement method. |
 | 5 `conflict` | Stop on changed/missing evidence; never discard the old digest and continue with a fresh baseline. |

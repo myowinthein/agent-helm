@@ -42,7 +42,7 @@ The audit reads configuration roles, key names and source references. It does no
 
 A required prerequisite or safe-inspection failure stops the run. Findings already collected remain reportable, but further checks and fix planning wait for a new eligible run. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
-The agent may use a small filter to inspect key names and classifications safely. It does not need a custom timestamp-tracking system. If that read-only filter or check has an identifiable programming error, it can correct it once and repeat the same check before continuing. Actual file changes, unsafe access or verification that remains unavailable still stop the run. The final report leads with the env outcome, even when an earlier task such as a commit succeeded.
+The audit uses existing native tools for discovery and a fixed packaged dotenv extractor for key names, locations and classifications. The extractor keeps multiline value text out of its key list and reports unsupported syntax without printing it. It does not validate the loader or test credentials. It creates no filtering/parser script or timestamp-tracking system. If the required safe inspection is unavailable, it reports the gap and stops. One incorrect tool invocation or data argument may be corrected and retried; that permits no code creation or repair. Actual file changes and unsafe access still stop the run. The final report leads with the env outcome, even when an earlier commit succeeded.
 
 ## What gets checked
 

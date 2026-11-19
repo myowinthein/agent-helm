@@ -21,6 +21,47 @@ def wire(events)
 end
 
 checks = {}
+checks["fixed dotenv projection exposes names and classifications without values or execution"] = lambda do
+  helper = Pathname(__dir__).parent.join("helpers/env_keys.py")
+  canary = "SYNTHETIC_DOTENV_PRIVATE_VALUE"
+  Dir.mktmpdir("helm-dotenv-projection-") do |directory|
+    target = File.join(directory, "must-not-exist")
+    input = "TOKEN=#{canary}\nEMPTY=\nexport EXAMPLE = replace_me\nQUOTED=\"\"\nCOMMENT= # isn't a value\nDUP=one\nDUP=two\nEXEC=$(touch #{target})\n"
+    stdout, stderr, status = Open3.capture3("python3", "-I", "-B", helper.to_s, stdin_data: input)
+    expect(status.success? && stderr.empty? && !stdout.include?(canary) && !File.exist?(target))
+    result = JSON.parse(stdout)
+    expect(result["loader_validation"] == false)
+    expect(result.fetch("keys").map { |row| row.fetch("key") } == %w[TOKEN EMPTY EXAMPLE QUOTED COMMENT DUP DUP EXEC])
+    expect(result.fetch("keys")[1..4].map { |row| row.fetch("classification") } == %w[empty placeholder_like empty empty])
+  end
+end
+checks["fixed dotenv projection skips multiline secret text and refuses incomplete unsafe input"] = lambda do
+  helper = Pathname(__dir__).parent.join("helpers/env_keys.py")
+  canary = "SYNTHETIC_MULTILINE_PRIVATE_VALUE"
+  input = "PRIVATE=\"first line\n#{canary}=\nlast line\" # comment\nAFTER=ok\n"
+  stdout, stderr, status = Open3.capture3("python3", "-I", "-B", helper.to_s, stdin_data: input)
+  expect(status.success? && stderr.empty? && !stdout.include?(canary))
+  expect(JSON.parse(stdout).fetch("keys").map { |row| row.fetch("key") } == %w[PRIVATE AFTER])
+  ["PRIVATE=\"#{canary}\n", "#{canary}\n", "VALUE=one\\\n#{canary}=\n", "\xff".b,
+   "#" * (1024 * 1024 + 1), (1..2000).map { |i| "KEY_#{i}=#{canary}\n" }.join].each do |raw|
+    out, error, state = Open3.capture3("python3", "-I", "-B", helper.to_s, stdin_data: raw)
+    expect(state.exitstatus == 2 && out.empty? && !error.include?(canary))
+    expect(JSON.parse(error).key?("error"))
+  end
+end
+checks["inline-program trace controls allow fixed tools and reject generated interpreter bodies"] = lambda do
+  safe = HelmAcceptance.trace("claude", wire(claude_events))
+  ["git status --short", "rg --only-matching KEY -- config.php", "python3 -I -B /package/helpers/env_keys.py < .env",
+   "python3 -m uuid", "python3 -I -B /package/helpers/helm.py ledger-view <<'JSON'\n{}\nJSON"].each do |command|
+    safe[:calls][0]["input"] = { "command" => command }
+    HelmAcceptance.assert_no_inline_programs!(safe)
+  end
+  ["python3 - <<'PY'\nprint(1)\nPY", "python3 -I -B <<'PY'\nprint(1)\nPY",
+   "python3 -c 'print(1)'", "node --eval 'process.exit()'", "ruby -e 'puts 1'", "bash -c 'while true; do :; done'"].each do |command|
+    safe[:calls][0]["input"] = { "command" => command }
+    rejects { HelmAcceptance.assert_no_inline_programs!(safe) }
+  end
+end
 checks["complete exposed Claude tool stream is required"] = lambda do
   events = claude_events
   parsed = HelmAcceptance.trace("claude", wire(events))

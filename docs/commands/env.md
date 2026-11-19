@@ -32,7 +32,7 @@ Codex → $env    Claude → /env
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Normal env starts on a clean, eligible **main/master, feature or confirmed environment branch**, checked before the audit. An explicitly requested read-only audit can inspect pending edits.
 
-A required prerequisite or safe-inspection failure stops the run. An evidenced bug in a read-only check can be corrected once using the same inputs; it does not establish that your files changed. Findings already collected remain reportable, but further checks and fix planning wait for a new eligible run.
+A required prerequisite or safe-inspection failure stops the run. An incorrect invocation or argument in an existing read-only tool call can be corrected once using the same inputs. The agent cannot create or repair a filtering script during the audit, and a tool error alone does not establish file drift. Findings already collected remain reportable, but further checks and fix planning wait for a new eligible run.
 
 ## What gets checked
 

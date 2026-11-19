@@ -100,7 +100,7 @@ Dir.mktmpdir("helm-package-") do |temp|
   end
 
   %w[rules/design.md prompts/archive/step1-explore.md prompts/shared/question-mechanism.md
-     prompts/normalize-review.md helpers/normalize_check.py
+     prompts/normalize-review.md helpers/normalize_check.py helpers/normalize_callback.py helpers/env_keys.py
      prompts/shared/normalize-handoff.md prompts/shared/review-anchor.md helpers/normalize_handoff.py].each do |path|
     missing = installation.join(path)
     original = missing.read

@@ -163,7 +163,7 @@ After the separate branch-preparation stage, do not contact a remote or require 
 
 Recheck the entire frozen local branch inventory, exact affected/excluded refs, policy, configuration, canonical state when loaded, every affected worktree, clean state, and reviewed original messages. Reprove the affected-set/descendant-graph match before execution. Changed inputs invalidate dependent approval; do not broaden or silently shrink refs, skip a blocked branch or overwrite user changes. Capture every exported original commit's raw message/metadata/tree/ordered parents, full graph membership, tag ancestry, exact ref/symref snapshots, and remote configuration. Recovery covers every affected old local tip, including consistency-only branches.
 
-For each new rewrite, generate `run_id = str(uuid.uuid4())` and resolve `Path.home().resolve() / "Agent Helm" / "normalize" / run_id` using Python's `uuid` and `pathlib.Path`; resolving a symlinked home keeps the path canonical for locator registration. Use the actual OS user's home, with no custom base or clone-ID folder. Keep this path and ID throughout the approved run; a continuation reuses its verified existing recovery directory, including older locations. Never relocate or delete earlier backups or locators.
+For each new rewrite, obtain a lowercase UUID using an existing native UUID command or installed standard-library CLI, then resolve the actual OS user's home with native path/filesystem tools. The fixed destination is `{resolved_home}/Agent Helm/normalize/{run_id}/`; resolving a symlinked home keeps it canonical for locator registration. Use no inline Python, generated setup script, custom base or clone-ID folder. Unavailable required native capabilities stop this preparation rather than triggering code creation. Keep this path and ID throughout the approved run; a continuation reuses its verified existing recovery directory, including older locations. Never relocate or delete earlier backups or locators.
 
 Only after Apply, create missing parents and the new run directory, restricting access to the user (directories 0700, files 0600, or verified host equivalent). Validate existing parents' ownership/access and refuse symlink traversal or an already-existing new run directory; do not repair permissions or overwrite another run. The location must be outside the checkout and every affected working tree. If the fixed location is unsafe or inaccessible, stop the dependent rewrite without selecting another base. Review-only, cancellation and no-rewrite runs create no recovery folders.
 
@@ -177,25 +177,20 @@ Retain private evidence throughout verification, local ledger handling, later sh
 
 ## Step 5: Rewrite and verify the complete approved graph
 
-Write a private SHA-to-complete-replacement JSON map bound to the original message snapshots. The shown UTF-8 callback applies only when approved replacement bytes are UTF-8; other supported encodings require an explicitly reviewed byte-preserving representation/callback or the affected rewrite stops. No message interpolation into shell code, newline trimming, or message-text keys. Load the map once per callback process, not once per commit:
+Write a private SHA-to-complete-replacement JSON **data** map bound to the original message snapshots. Use the fixed packaged [message callback](../helpers/normalize_callback.py) without copying, editing or generating callback code. It loads the approved map once per callback process and changes only exact original IDs. Replacement strings must be UTF-8, with complete bodies/trailers/newlines preserved; other encodings stop this rewrite until a reviewed packaged implementation supports them. Invalid maps stop with recovery retained.
+
+Set `HELM_NORMALIZE_MAP` to that approved absolute private data-map path. Pass the packaged callback **filename** as one argument; filter-repo reads that fixed file as its callback body:
 
 ```sh
 git filter-repo --force --preserve-commit-hashes --preserve-commit-encoding \
-  --prune-empty never --prune-degenerate never --commit-callback '
-import json, os
-global _helm_normalize_map
-if "_helm_normalize_map" not in globals():
-    with open(os.environ["HELM_NORMALIZE_MAP"], encoding="utf-8") as stream:
-        _helm_normalize_map = json.load(stream)
-replacement = _helm_normalize_map.get(commit.original_id.decode("ascii"))
-if replacement is not None:
-    commit.message = replacement.encode("utf-8")
-' --refs {frozen_revision_arguments}
+  --prune-empty never --prune-degenerate never \
+  --commit-callback "{package_root}/helpers/normalize_callback.py" \
+  --refs {frozen_revision_arguments}
 ```
 
-Set `HELM_NORMALIZE_MAP` to this run's absolute private map path. In one filter operation, pass revision arguments individually with safe quoting, using the complete approved affected branch refs and frozen object-ID boundary exclusions/ranges. Filter-repo supports range-limited refs; verify that their complete union matches the reviewed affected descendant graph and every intended branch update before execution. Never expand a tail message-edit plan into extra message corrections or whole-history filtering. Consistency-only unique messages stay unchanged while their affected parent IDs remap. No tags, ref-renaming callbacks, broad selection, pruning, message-hash substitution, automatic cleanup, or additional ref updates.
+In one filter operation, pass revision arguments individually with safe quoting, using the complete approved affected branch refs and frozen object-ID boundary exclusions/ranges. Verify that their complete union matches the reviewed affected descendant graph and every intended branch update before execution. Never expand a tail message-edit plan into extra corrections or whole-history filtering. Consistency-only unique messages stay unchanged while affected parent IDs remap. No tags, ref-renaming callbacks, broad selection, pruning, message-hash substitution, automatic cleanup or additional ref updates.
 
-`--refs` implies partial mode, preserving origin, excluded refs, and recovery history; `--force` bypasses only the fresh-clone check after approval and verified backup, not any project/provider restriction. No importable filter-repo SDK is required merely to cache the map.
+`--refs` implies partial mode, preserving origin, excluded refs, and recovery history; `--force` bypasses only the fresh-clone check after approval and verified backup, not any project/provider restriction. No importable filter-repo SDK or agent-authored callback is required.
 
 Backend failure stops checkpointing/publication. Preserve actual local results and all private evidence. Do not retry with broader flags, delete metadata, reset refs, reconstruct remotes, or claim rollback occurred.
 
