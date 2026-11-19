@@ -88,7 +88,9 @@ Existing entries are assessed for accuracy and their value to future agents. An 
 
 A Full scan assesses all existing knowledge alongside the project investigation. A Gap scan applies this review to affected passages and concerns selected for the run, while preserving unrelated content. The initial document check can identify a concrete problem even without new source commits; it does not establish source coverage or turn wording preferences into mandatory work.
 
-The proposal explains what to add, update, condense or remove and why it matters to future work. You can accept all, choose specific changes, revise or cancel. Project-specific safety restrictions need your explicit agreement. Editorial cleanup by itself does not advance the source-review marker.
+The proposal explains what to add, update, condense or remove and why it matters to future work. Before you decide, a diff grouped by file and section shows the exact removed lines with `-` and added lines with `+`, including settings and any review-marker change. A clean **Proposed result after approval** preview then shows the affected passages as they would read, with complete content for new files or proposed whole-file replacements. Removed sections are identified explicitly. Unrelated unchanged sections do not need to be repeated.
+
+The preview appears in the conversation before files are changed. Colors and word-level highlighting depend on the client; the text and symbols still identify the changes. Layout reconciliation receives the same preview treatment. You can accept all, choose specific changes, revise or cancel, with revised proposals reflected in the preview before any missing approval is requested. Project-specific safety restrictions need your explicit agreement. Editorial cleanup by itself does not advance the source-review marker.
 
 When auto-commit is off and the exact diff, paths and commit subject are ready, the same review can offer Apply and commit or Apply without committing. Unwritten later knowledge changes need their own review; an uncommitted layout checkpoint leaves dependent scanning pending.
 
