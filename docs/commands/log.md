@@ -17,8 +17,8 @@ Use log when a new agent session needs better project context, or when the proje
 ```mermaid
 flowchart TD
   Review["Review project and instructions"] --> Choose{"Apply proposed updates?"}
-  Choose -->|All or selected| Save["Update and check instructions"]
-  Choose -->|Not now| Keep["Keep current files"]
+  Choose -->|Write proposed changes| Save["Update and check instructions"]
+  Choose -->|Cancel| Keep["Keep current files"]
 ```
 
 ## Start the command
@@ -44,7 +44,7 @@ You can also supply lessons from the current conversation. Log checks them along
 
 Log checks whether existing content helps future agent decisions, as well as whether its facts are correct. It can propose shortening excessive detail, consolidating repetition or removing temporary task records, while preserving useful rationale and custom structure. Full scans cover all existing knowledge; Gap scans address affected passages and selected concerns.
 
-Before approval, existing-file changes show exact additions and removals using `+` and `-`, followed by a clean preview of the affected content. A new file is shown in full once, with new safety rules identified for approval rather than printed again. Color highlighting depends on your client. You can apply all, select changes, revise or cancel; previews change no files. Editorial changes alone do not establish a new source review.
+Before approval, existing-file changes show exact additions and removals using `+` and `-`, followed by a clean preview of the affected content. A new file is shown in full once, with new safety rules identified for approval rather than printed again. Color highlighting depends on your client. The standard actions are **Write proposed changes** and **Cancel**. You can type an exact selection, correction or replacement wording instead; previews change no files. Editorial changes alone do not establish a new source review.
 
 ## Your result
 
@@ -52,4 +52,4 @@ You get updated instructions, unresolved findings and a size report. A complete 
 
 Outside log, ordinary coding presents needed instruction changes as a [concrete proposal for your approval](../rules/safety.html#maintaining-command-outputs). Approved targeted edits follow log’s authoring standards and preserve the review marker.
 
-With auto-commit off, a fully shown diff can be approved with or without its local commit. Changes follow your local commit policy and finish on the same branch. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish.
+Changes follow your local commit policy and finish on the same branch. With auto-commit off, writing approval does not approve a commit; a missing commit decision is requested separately unless your specific request already covers it. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish.

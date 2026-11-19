@@ -42,9 +42,8 @@ flowchart TD
   Scope -->|Yes| Scan["Investigate the pinned Full or Gap scope"]
   Scan --> Audit["Check accuracy, preservation and useful context"]
   Audit --> Review{"Review the knowledge proposal"}
-  Review -->|Revise| Audit
   Review -->|Cancel| Keep["Keep earlier approved work; retain prior marker"]
-  Review -->|All or selected| Apply["Apply and read back accepted instructions"]
+  Review -->|Write proposed changes| Apply["Apply and read back accepted instructions"]
   Apply --> Complete{"Complete review and all substantive changes accepted?"}
   Complete -->|Yes| Marker["Advance to the reviewed source snapshot"]
   Complete -->|No| Prior["Keep prior review provenance and report gaps"]
@@ -92,9 +91,11 @@ The proposal explains what to add, update, condense or remove and why it matters
 
 A new file is shown in full once under its path. It does not also need an all-additions diff or a repeated safety section. When new safety rules need explicit approval, the question identifies the relevant file, heading and entries in that displayed content. A proposal that edits AGENTS.md and creates CLAUDE.md therefore uses a diff for the former and one complete preview for the latter. This changes presentation, not the approvals required for creating or editing instructions.
 
-The preview appears in the conversation before files are changed. Colors and word-level highlighting depend on the client; the text and symbols still identify the changes. Layout reconciliation receives the same preview treatment. You can accept all, choose specific changes, revise or cancel, with revised proposals reflected in the preview before any missing approval is requested. Project-specific safety restrictions need your explicit agreement. Editorial cleanup by itself does not advance the source-review marker.
+The preview appears in the conversation before files are changed. Colors and word-level highlighting depend on the client; the text and symbols still identify the changes. Layout reconciliation receives the same preview treatment. Both layout and content reviews offer **Write proposed changes** and **Cancel**. Project-specific safety restrictions need your explicit agreement. Editorial cleanup by itself does not advance the source-review marker.
 
-When auto-commit is off and the exact diff, paths and commit subject are ready, the same review can offer Apply and commit or Apply without committing. Unwritten later knowledge changes need their own review; an uncommitted layout checkpoint leaves dependent scanning pending.
+There is no separate Apply some or Revise button. You can type the exact changes you accept, a specific correction or replacement wording. The agent handles that bounded request while preserving the remaining proposal. It does not automatically repeat the scan or rewrite unrelated content. If new wording still needs approval, you see the affected preview again with the same two actions; an already-approved exact selection is not asked again.
+
+With auto-commit off, writing approval alone does not authorize committing. A specific request covering the exact changes, paths and commit subject can already authorize both; otherwise the missing commit decision follows verification. Unknown later knowledge changes need their own approval, and an uncommitted layout checkpoint leaves dependent scanning pending.
 
 Approved layout work is verified separately from knowledge changes. Cancelling a later source update preserves an earlier layout change you already approved. Log does not install or refresh adopted rules; use [adopt](../adopt.html#available-rules) for that.
 
