@@ -48,4 +48,6 @@ Review the proposal, then apply all, select changes, revise or cancel. New safet
 
 You get updated instructions, unresolved findings and a size report. A complete accepted source review advances the review marker; layout-only work and partial acceptance retain the earlier one.
 
+Outside log, ordinary coding presents needed instruction changes as a [concrete proposal for your approval](../rules/safety.html#maintaining-command-outputs). Approved targeted edits follow log’s authoring standards and preserve the review marker.
+
 With auto-commit off, a fully shown diff can be approved with or without its local commit. Changes follow your local commit policy and finish on the same branch. Use [adopt](adopt.html) to maintain copied rules and [ship](ship.html) to publish.

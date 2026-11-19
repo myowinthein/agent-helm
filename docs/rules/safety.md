@@ -30,16 +30,19 @@ Verify results before continuing or retrying. A timeout does not prove nothing h
 
 ## Maintaining command outputs
 
-Agent-written guides, instructions and tests can be edited as source during authorized work. Rerunning their creating command is unnecessary. The file’s role determines the safeguards:
+Ordinary code, tests and general guides remain editable during development. Documents and configuration maintained by a command normally stay with that command. For an edit outside it, the agent first reads its authoring standards and presents the proposed content, affected files and reason before writing. You can approve the bounded change or use the owning command. A specific request already covering the edit needs no repeated approval.
 
 | File role | Maintenance approach |
 |---|---|
-| Source and guides | Make focused edits, preserving custom content and behavior. |
+| Ordinary source and guides | Make focused edits, preserving custom content and behavior. |
+| Command-maintained documents and configuration | Review the concrete proposal before changes; preserve the owning command’s standards and selected format. |
 | Legal commitments or test protection | Obtain required legal approval; justify and verify reduced protection. |
 | Actual generated output | Update authoritative inputs and use the approved generator. |
 | Assessment or recovery evidence | Preserve records; use their owning workflow. |
 
-Ordinary edits do not establish a fresh assessment, passing test or archive seal.
+This includes AGENTS.md, standard and custom READMEs, adopted rules and legal documents. A general coding request does not authorize their update. Generated versions follow the same approval boundary through their actual producer.
+
+Approval for a document edit does not grant access to ledgers or recovery evidence. Ordinary edits preserve review markers and do not establish a fresh assessment, passing test or archive seal.
 
 ## Host capabilities
 

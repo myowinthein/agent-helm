@@ -52,16 +52,23 @@ Credentials and private records stay out of chat, logs, commits and unapproved u
 
 ## Maintaining command outputs
 
-A file created by a command can still be ordinary maintainable source. What matters is its actual role:
+A command may change ordinary application source as well as maintain its own documents and records. Those roles determine how later work proceeds:
 
 | Role | What maintenance preserves |
 |---|---|
-| Editable source, guides or instructions | Useful custom content, behavior, ownership and unaffected work. |
+| Ordinary implementation, tests and general guides | Useful custom content, behavior and unaffected work; these remain editable during development. |
+| Command-maintained documents and configuration | The owning command’s authoring standards, the selected format and developer approval of the bounded change. |
 | Legal commitments or test protection | Required content approval and the guarantees people rely on. |
 | Actual generated output | Its authoritative input and the approved generator. |
 | Assessment or recovery evidence | Its owning workflow and historical provenance. |
 
-Editing an agent-written guide does not require rerunning the command that first created it. Conversely, hand-editing a generated file or marking a saved finding fixed does not establish a verified result.
+Project instructions, READMEs, adopted rules, legal documents, reviewed environment templates and release documents normally stay with their owning commands. During ordinary coding, an agent can identify a needed correction, read the applicable authoring instructions and prepare the exact proposed passage or diff for your review. It explains the affected files and reason before changing them. You can approve that edit or choose the owning command instead. Unavailable authoring instructions leave the edit pending, while independent source work can continue.
+
+For example, renaming a startup script may make an AGENTS.md command inaccurate. The agent proposes that correction before editing. Adding a configuration generator does not automatically justify a new maintenance section in a custom README. Standard READMEs receive the same protection for their selected format. A specific direct request already authorizing the edit can supply approval; a general coding request or automatic commit preference cannot.
+
+Approval does not start another command or establish its completed review. The agent follows the relevant authoring standards, preserves imports, settings and review markers, and verifies the approved result. Legal-document commits retain their separate content approval. Existing command invocations keep their own review process, including legal’s procedure for preparing complete uncommitted drafts.
+
+Actual generated material is updated through its authoritative input and producer, with approval covering any affected command-maintained documents. A build or generator does not bypass that boundary. Ordinary implementation and tests remain editable even if a command originally wrote them; a demonstration fix in an archived application does not authorize changing its captured recovery evidence. Ledgers, checkpoints and recovery proofs still require their owning procedures, regardless of approval for a document edit.
 
 ## Host capabilities
 

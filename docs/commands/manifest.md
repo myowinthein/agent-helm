@@ -62,4 +62,6 @@ When a complete review finds only optional improvements, you can **keep the READ
 
 You get the README, approved preferences and unresolved facts. A complete Full or Gap review can advance its review marker even when optional suggestions are declined. Unresolved factual gaps, partial repairs and style-only work do not establish a complete new review.
 
+Ordinary coding does not automatically rewrite or expand the README. It presents a [concrete proposal for your approval](../rules/safety.html#maintaining-command-outputs), or you can use manifest. Approved direct edits follow manifest’s authoring standards, preserve the selected standard or custom format and retain the review marker.
+
 With auto-commit off, a fully shown diff can be approved with or without its local commit. Changes follow your local commit policy and stay on the same branch. Use [ship](ship.html) to publish.

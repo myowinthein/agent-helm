@@ -84,6 +84,8 @@ A completed source review can advance the marker to the snapshot actually checke
 
 The final result identifies the chosen README, actual changes, retained uncertainties and local commit status. Use [ship](../ship.html) for publication.
 
+If ordinary coding discovers that the README needs updating, the agent first reads manifest’s applicable authoring instructions and shows the [exact proposed content before writing](../../rules/safety/detailed.html#maintaining-command-outputs). You can approve the bounded change or run manifest. This applies to standard and custom formats, including generated READMEs through their actual producer. A direct edit preserves the outline, unrelated writing and review marker; it does not establish a completed manifest assessment.
+
 ## Explore the source
 
 For implementation details, read [guides/manifest.md](https://github.com/myowinthein/agent-helm/blob/main/guides/manifest.md).

@@ -96,6 +96,8 @@ The final report separates updated instructions, completed review coverage and u
 
 A review marker identifies the source snapshot actually assessed. Layout repairs and incomplete acceptance do not advance it as if a full review finished. Eligible changes follow your local commit policy and stay on the current branch; [ship](../ship.html) handles later publication.
 
+During ordinary development, a needed AGENTS.md correction comes as a [proposed change before any edit](../../rules/safety/detailed.html#maintaining-command-outputs). You can approve a bounded correction under log’s authoring standards or run log for its source review. Reading those standards does not invoke log, and an approved direct edit preserves the existing review marker.
+
 ## Explore the source
 
 For implementation details, read [guides/log.md](https://github.com/myowinthein/agent-helm/blob/main/guides/log.md).
