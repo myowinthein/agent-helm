@@ -84,7 +84,11 @@ Lessons from your conversation also count. The agent checks what is confirmed, d
 
 ## Review and apply the proposal
 
-The proposal explains what to add, update or remove and why it matters to future work. You can accept all, choose specific changes, revise or cancel. Project-specific safety restrictions need your explicit agreement.
+Existing entries are assessed for accuracy and their value to future agents. An accurate implementation walkthrough may be too detailed for always-loaded instructions; a temporary task report may no longer belong there. Log can propose condensing or consolidating these passages, linking existing documentation or removing material with no durable value. It explains the reason and what useful knowledge remains. Missing source evidence for an old warning is not grounds to discard it, and custom sections are not converted to a standard outline automatically.
+
+A Full scan assesses all existing knowledge alongside the project investigation. A Gap scan applies this review to affected passages and concerns selected for the run, while preserving unrelated content. The initial document check can identify a concrete problem even without new source commits; it does not establish source coverage or turn wording preferences into mandatory work.
+
+The proposal explains what to add, update, condense or remove and why it matters to future work. You can accept all, choose specific changes, revise or cancel. Project-specific safety restrictions need your explicit agreement. Editorial cleanup by itself does not advance the source-review marker.
 
 When auto-commit is off and the exact diff, paths and commit subject are ready, the same review can offer Apply and commit or Apply without committing. Unwritten later knowledge changes need their own review; an uncommitted layout checkpoint leaves dependent scanning pending.
 

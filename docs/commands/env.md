@@ -38,11 +38,13 @@ Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-com
 | Values and syntax | Are there credible exposures, hardcoded settings or loader-specific problems? |
 | Git protection | Are private files protected, or are ignore rules hiding files the project needs? |
 
-The audit follows actual services and configuration layers. An override need not repeat every baseline key, and externally supplied settings need not appear in an `.env` file. Findings show paths, key names and uncertainty without exposing values.
+The audit follows actual services and configuration layers. An override need not repeat every baseline key, and externally supplied settings need not appear in an `.env` file. Existing safe templates are also checked for stale, duplicated or misleading guidance. Findings show paths, key names and uncertainty without exposing values.
 
 ## Choose the fixes
 
 Review one plan covering environment files, `.gitignore` or both, then approve the changes you want. A separate scope question is needed only when the plan depends on your answer. Source/templates, local-only work and external setup stay distinct; templates use placeholders and edits preserve configuration meaning.
+
+Template cleanup is proposed before editing and preserves useful comments and safe defaults. A missing source reference alone does not prove a key can be removed; optional wording improvements stay separate from runtime and secret findings.
 
 **Untracking needs separate approval.** It keeps the local file, but other clean copies may disappear when collaborators update. Moving or untracking a secret does not revoke it or erase its history.
 

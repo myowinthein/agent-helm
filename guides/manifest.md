@@ -47,9 +47,9 @@ Build a cheap index of the commit range, changed paths, project/package entry po
 
 For standard style, recognize equivalent content before proposing missing-section repairs. A title and short description are not required to be H2 headings. Distinguish useful content coverage from strict spec conformance; synonyms or custom order do not automatically satisfy the spec. Missing headings alone do not force a full scan.
 
-A narrow no-op can exit before writes only when on the clean selected base, the target is safe/unambiguous, style is known with no pending change, applicable structure needs no repair and the anchor is valid. There must be either no commits since the anchor or only inspected maintenance changes already represented in the README. Inspect every intervening patch before dismissing manifest's own output/config changes; a filename or commit subject is insufficient.
+A narrow no-op can exit before writes only when on the clean selected base, the target is safe/unambiguous, style is known with no pending change, applicable structure and reader fit need no identified repair and the anchor is valid. Read the current target for evident duplication, excessive detail or sections that do not serve its audience and chosen format; accurate facts alone do not establish reader fit. There must be either no commits since the anchor or only inspected maintenance changes already represented in the README. Inspect every intervening patch before dismissing manifest's own output/config changes; a filename or commit subject is insufficient. Identified editorial concerns use the existing review/repair choices, not an automatic no-op or new mode; this document check establishes no source coverage.
 
-Do not bypass an explicit scan request. Report the exact local SHA and that no remote fetch was performed; never claim remote currency or assess a dirty/feature checkout as the stable base. No-op/Skip saves no pending style and creates no branch.
+Do not bypass an explicit scan request. Respect confirmed intentional content and custom structure; stylistic preferences alone do not defeat the no-op exit. Report the exact local SHA and that no remote fetch was performed; never claim remote currency or assess a dirty/feature checkout as the stable base. No-op/Skip saves no pending style and creates no branch.
 
 ### Choose the work
 
@@ -86,7 +86,7 @@ Build a transient map of substantive README claims/sections to source/docs/manif
 
 Large independent packages or claim groups may use permitted read-only workers; the parent reconciles source consistency, shared setup, complete claims/surfaces and unread evidence before any marker claim.
 
-Inventory first-party packages/services, entry points, existing docs, build/task manifests and contribution/license evidence. Investigate the purpose/audience, prerequisites, install/start path, representative usage, relevant public behavior and help/policy facts for every reader workflow the README claims to cover. Follow each existing custom section's actual subject, including human context that code cannot rediscover. Retain supported existing text; do not regenerate every paragraph simply because this is a full scan. Flag unknown/stale claims for review instead of silently dropping them or inventing replacements.
+Inventory first-party packages/services, entry points, existing docs, build/task manifests and contribution/license evidence. Investigate the purpose/audience, prerequisites, install/start path, representative usage, relevant public behavior and help/policy facts for every reader workflow the README claims to cover. Follow each existing custom section's actual subject, including human context that code cannot rediscover. Assess all existing sections for reader fit under Step 4, retaining supported useful text at appropriate depth and proposing specific changes where needed; do not regenerate every paragraph simply because this is a full scan. Flag unknown/stale claims for review instead of silently dropping them or inventing replacements.
 
 For a new custom README, draft within the approved outline using this project's evidence. Do not copy a reference project's branding, license, commands, support promises or facts. For a new standard README, use the applicable contract below.
 
@@ -94,13 +94,13 @@ For a new custom README, draft within the approved outline using this project's 
 
 Freeze the relevant comparison and map changes to all affected README claims and reader workflows, including unchanged consumers/examples/configuration. Read README-facing patches completely and trace their surrounding contracts; inspect other changes sufficiently to justify dismissal. A file list, matching count or commit label alone proves no reader impact. Missing required evidence remains incomplete. Use the same worker/parent coverage contract only when independent scope warrants delegation; keep small reviews with the parent.
 
-Use the index to map changes to reader workflows and sections. Read relevant patches and current source/docs, including fixes, dependency constraints, examples and README edits. Inspect history when needed to resolve migrations, releases, reverts or ambiguous net results. Explain dismissals and report any relevant uninspected/blocked surface; a net path list alone cannot establish completeness.
+Use the index to map changes to reader workflows and sections, including identified content-fit concerns selected for this review. Assess reader fit in those passages under Step 4 without expanding a Gap scan into unrelated whole-document cleanup. Read relevant patches and current source/docs, including fixes, dependency constraints, examples and README edits. Inspect history when needed to resolve migrations, releases, reverts or ambiguous net results. Explain dismissals and report any relevant uninspected/blocked surface; a net path list alone cannot establish completeness.
 
 This is a current README-facing snapshot review, not log's audit of every historical development lesson. Do not require a whole-repository lesson/history scan. If the baseline or evidence cannot support a bounded gap review, offer full scan or stop with the old marker intact.
 
 ### Repair structure
 
-Map the missing/inaccurate reader information to the smallest useful edit. Reuse equivalent content before adding duplicates. Investigate prerequisites/examples/policy only as needed for the proposed repairs; do not scan the whole project merely because a header is missing. Preserve other content. A bounded repair without a complete snapshot assessment does not establish a new review baseline.
+Map missing/inaccurate reader information or identified content-fit problems to the smallest useful edit. Reuse equivalent content before adding duplicates; propose condensing, consolidating, linking or removing material when Step 4's reader-fit assessment supports it. Investigate prerequisites/examples/policy only as needed for the proposed repairs; do not scan the whole project merely because a header is missing. Preserve other content. A bounded repair without a complete snapshot assessment does not establish a new review baseline.
 
 ### Style only
 
@@ -119,7 +119,7 @@ For `standard`, follow the [Standard Readme specification](https://github.com/Ri
 
 Preserve locale, frontmatter and rendering requirements. If existing protected content or intentional structure conflicts with strict spec conformance, disclose it and propose an explicit choice. Do not silently convert to custom or claim strict compliance because equivalent information exists.
 
-For `custom`, preserve existing or approved-outline section names/order. Adding, removing, renaming or reordering sections requires explicit approval of the exact change and placement. Investigate each section's subject; never erase it because the generic checklist did not cover it.
+For `custom`, preserve existing or approved-outline section names/order until an exact structural change is approved. Existing presence or factual support does not exempt a section from a reader-fit proposal. Adding, removing, renaming or reordering sections requires explicit approval of the exact change and placement. Investigate each section's subject; never erase it because the generic checklist did not cover it.
 
 ### Contribution and licensing
 
@@ -156,8 +156,9 @@ Handle unknown decisions in the existing content/outline review, without another
 
 ### Review the proposed content
 
-Before writing, check the changed content and its dependencies:
+Within the selected review scope, assess existing content as well as proposed changes and their dependencies:
 
+- **Reader fit:** judge current purpose, audience, selected standard/custom structure, necessary depth and duplication, regardless of author or age. A correct fact may belong in detailed documentation rather than this entry point. Propose exact condensation, consolidation, links to existing documentation or removal with a reason and the information preserved. Do not automatically relocate content, create documents, trim to a size quota or infer that every current section was deliberately chosen. Preserve unique human context, necessary qualifications, warnings and legal meaning; uncertain value or intent remains visible for review, not silently deleted.
 - Purpose and first useful action are easy to find. Prerequisites and the smallest copyable example reflect actual scripts/interfaces, correct working directory and required setup. Use fenced examples with a language and without copied shell prompts; show expected results only when supported.
 - Installation, versions, package/release availability and functionality have evidence. Flag uncertainty instead of inventing published artifacts or promises. Environment examples use key names/placeholders, never real secrets.
 - Links, anchors, assets and commands fit the real GitHub/site/package contexts. Preserve intentional absolute/relative conventions, frontmatter, banners, badges, HTML and generated blocks. Link detailed docs instead of expanding inventories.

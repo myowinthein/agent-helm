@@ -72,7 +72,11 @@ Different terms for code, images or other assets remain distinct. Missing terms 
 
 ## Review the update
 
-The proposal shows section-level changes and any structure or preference change. You can apply all, select changes, request revision or cancel. Existing legal wording, custom content, anchors and generated material remain protected.
+Factual accuracy is one part of the review. Manifest also asks whether each assessed passage serves the intended reader, fits the selected format and provides the right depth without repetition. For example, a developer maintenance manual can be accurate while overwhelming a compact portfolio introduction. The proposal can shorten it, link existing detailed documentation or remove an unsuitable section, explaining the reason and preserving necessary information.
+
+A Full scan assesses every existing section; a Gap scan covers affected passages and concerns selected for review. Repair structure can address a bounded content problem without a full project investigation. A concrete document problem can be identified even without new source commits, but wording preferences alone do not force changes or prevent an already-current result.
+
+The proposal shows exact section-level changes and any structure or preference change. You can apply all, select changes, request revision or cancel. A section’s presence does not prove it was deliberately chosen, but it remains intact until its removal or restructuring is approved. Existing legal meaning, useful human context, anchors and generated material remain protected; no automatic relocation or size-based pruning occurs.
 
 With auto-commit off, the review can include Apply and commit or Apply without committing when the exact diff, paths and subject are known. The approved result still needs readback and required checks; materially changed content needs a refreshed review.
 

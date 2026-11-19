@@ -42,7 +42,7 @@ Cover every relevant first-party area in the declared scope, using focused searc
 | 1.4 Cross-reference | Distinguish genuinely missing required inputs from visible defaults, optional/conditional features, external provision and keys with no reference found in the scanned scope. |
 | 1.5 Secrets/placeholders | Identify credible secret exposure in committable material and unfilled required local inputs, with confidence and role-specific evidence. |
 | 1.6 Hardcoded values | Find credible environment-dependent settings or credentials and propose a coherent access/destination mapping. |
-| 1.7 Env formatting | Find syntax/duplicate/readability problems under the actual loader dialect, preserving parsed meaning. |
+| 1.7 Env formatting | Find syntax/duplicate/readability problems and misleading, stale or irrelevant guidance in scoped safe templates, preserving parsed meaning. |
 | 1.8 Gitignore missing protection | Check actual Git protection for local files and evidence-backed project artifacts, including shared versus personal exclusion rules. |
 | 1.9 Tracked ignore matches | Identify tracked paths and their effective matching rules for a policy decision, never an automatic removal recommendation. |
 | 1.10 Harmful ignore rules | Demonstrate a conflict with intended versioned files/policy before proposing minimal rule changes. |
@@ -109,7 +109,9 @@ A selected subset can be a valid outcome. Apply no dependency unit halfway: if a
 
 ### Optional template maintenance and creation
 
-For an existing recognized template, propose adding only approved, relevant key names in its existing structure/placeholder style. Keep supported safe defaults and comments; never copy real values. Do not add every local experiment or unrelated service key. Do not generate instructions about obtaining credentials without existing authoritative project guidance.
+For an existing recognized safe template, assess its keys, comments and examples against the actual service/loader and intended setup use. Propose relevant additions or evidence-backed corrections, condensation or consolidation of stale, duplicated or misleading guidance in the existing structure/placeholder style. Preserve useful comments, supported safe defaults and loader semantics; never copy real values or add every local experiment or unrelated service key. Do not generate instructions about obtaining credentials without existing authoritative project guidance.
+
+Removal needs a concrete reason and exact proposed change in the existing plan. A key with no reference found is not proved obsolete: retain external, dynamic or uncertain consumers under **Keys, roles and confidence**. Factual accuracy alone does not require keeping irrelevant explanatory detail, but unknown purpose is not deletion evidence. Keep optional wording/consolidation suggestions separate from confirmed runtime or secret findings; they create no extra approval stage or authority to read operational values.
 
 If the relevant service has no template, offer explicit **Create template** / **Skip** with the proposed path and content structure. Default to that service's `.env.example` only when appropriate; ask about ambiguity. Approval of the concrete creation in the consolidated plan also satisfies this choice, without another identical question.
 

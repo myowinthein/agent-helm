@@ -42,7 +42,9 @@ It can set this up for a new project or reconcile existing files. Ready setup ch
 
 You can also supply lessons from the current conversation. Log checks them alongside source evidence and proposes lasting guidance. If rewritten history changed the saved review point, it tries to recover a verified equivalent before requiring a Full scan.
 
-Review the proposal, then apply all, select changes, revise or cancel. New safety instructions need explicit approval.
+Log checks whether existing content helps future agent decisions, as well as whether its facts are correct. It can propose shortening excessive detail, consolidating repetition or removing temporary task records, while preserving useful rationale and custom structure. Full scans cover all existing knowledge; Gap scans address affected passages and selected concerns.
+
+Review the concrete proposal, then apply all, select changes, revise or cancel. New safety instructions need explicit approval. Editorial changes alone do not establish a new source review.
 
 ## Your result
 

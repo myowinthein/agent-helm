@@ -57,7 +57,9 @@ Findings identify paths and key names, explain the evidence and distinguish conf
 | Tracked operational env file | Report its issues without treating its contents as a committable template. |
 | Managed or external configuration | Leave entry to the appropriate owner or provider workflow. |
 
-Templates are optional. Env proposes one only when it serves the selected work, rather than treating every missing `.env.example` as an error.
+Templates are optional. Env proposes one only when it serves the selected work, rather than treating every missing `.env.example` as an error. Existing safe templates are assessed for their actual setup purpose, not just missing keys. Stale instructions, repeated explanations or examples from an unrelated service can receive a specific correction, consolidation or removal proposal in the same plan. Useful comments, safe defaults and established placeholder conventions remain in place.
+
+A key with no reference found is not automatically obsolete: deployment, external providers or dynamic configuration may still consume it. Unknown purpose remains an explicit uncertainty. Optional wording improvements are reported separately from confirmed configuration or secret problems, and template review does not expose operational values.
 
 ## Preserve configuration meaning
 

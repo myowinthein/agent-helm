@@ -54,7 +54,9 @@ When issue forms are configured, general reporting links use their chooser and l
 
 ## Review the update
 
-Review all proposed changes or a subset, ask for revision, or cancel. Commands, examples and links are checked against source without running example commands just to write documentation. Custom content and generated blocks are preserved.
+Manifest checks reader value as well as factual accuracy. Correct but excessive detail, repeated explanations or an unsuitable section can receive a concrete shortening, consolidation or removal proposal. Custom section changes still need your exact approval; useful human context and generated blocks remain protected.
+
+Review all proposed changes or a subset, ask for revision, or cancel. Commands, examples and links are checked against source without running example commands just to write documentation. Full scans assess all sections; Gap scans address affected passages and selected concerns. A bounded content repair alone does not establish a complete source review.
 
 When a complete review finds only optional improvements, you can **keep the README unchanged and record the review**.
 
