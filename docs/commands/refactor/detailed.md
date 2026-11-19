@@ -21,9 +21,11 @@ Refactor looks for changes that make this project's code easier to maintain with
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start refactor"]) --> Preview["Inspect project scope<br/>and branch eligibility"]
   Preview --> Route{"Choose review work"}
-  Route -->|Source-only report| Advisory(["Report advice without saving state"])
+  Route -->|Report findings only| Advisory(["Report advice without writes"])
   Route -->|Full scan or Gap scan| Scan["Assess source and reconcile<br/>new and existing findings"]
   Route -->|Fix Backlog| Backlog["Revalidate selected<br/>existing findings"]
   Scan --> Assess["Record the completed assessment<br/>under local commit policy"]
@@ -38,7 +40,9 @@ flowchart TD
 
 ## Start the command
 
-Source-only advice can be given without code or record writes. Saved assessments and fixes require a clean eligible branch: main/master, an established feature branch or an existing refactor branch. Confirmed environment branches remain report-only even if their names happen to start with `refactor/`.
+Normal refactor checks branch eligibility and cleanliness before previewing project source: main/master, an established feature branch or an existing refactor branch. Source-only advice must be requested explicitly for an ineligible checkout and makes no code or record writes. Confirmed environment branches remain report-only even if their names start with `refactor/`.
+
+Existing assessment records are validated before the normal source inventory. Unsupported or malformed records end the run without a source-only fallback. A failed prerequisite stops the run before further reading or planning. It does not switch automatically to source-only advice; earlier verified work remains preserved. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Choose the review scope
 

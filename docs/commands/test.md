@@ -16,6 +16,8 @@ Use test to find missing protection and improve useful existing tests. You choos
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Review
   Review["Review behavior and test protection"] --> Choose{"What should proceed?"}
   Choose -->|Findings only| Report["Report or save the assessment"]
   Choose -->|Approved changes| Work["Write or maintain selected tests"]
@@ -28,7 +30,9 @@ flowchart TD
 Codex → $test    Claude → /test
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Static review works on the current checkout. Edits and saved assessments need a clean, eligible **main/master, feature, maintenance or confirmed environment branch**.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Normal test checks for a clean, eligible **main/master, feature, maintenance or confirmed environment branch** before inventorying source or tests. Request read-only static assessment explicitly to review pending edits without records or fixes.
+
+A failed prerequisite stops the run, including further assessment or planning. A later setup, verification or checkpoint failure preserves completed assessments and actual drafts without continuing other work.
 
 ## Choose the review scope
 

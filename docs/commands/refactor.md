@@ -16,6 +16,8 @@ Use refactor when code has become harder to understand or maintain. It finds wor
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Review
   Review["Review source or saved findings"] --> Plan["Choose and approve a prepared plan"]
   Plan --> Work["Apply and verify changes"]
   Work --> Result["Report fixes and remaining work"]
@@ -27,7 +29,9 @@ flowchart TD
 Codex → $refactor    Claude → /refactor
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Source-only advice works on any checkout. Saved scans and edits need a clean, eligible **main/master, feature or existing refactor branch**. Confirmed environment branches remain report-only, even when named `refactor/*`.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Normal refactor checks for a clean, eligible **main/master, feature or existing refactor branch** before previewing source. Request source-only advice explicitly for another checkout, including a confirmed environment branch named `refactor/*`.
+
+A failed prerequisite stops the run before further reading or planning. It does not switch automatically to source-only advice; earlier verified work remains preserved.
 
 ## Choose the review scope
 

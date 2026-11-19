@@ -113,7 +113,25 @@ module HelmAcceptanceCases
         approved: { "TERMS.md" => terms.sub("The application stores submitted personal data.", "The application stores no submitted personal data.") },
         request: "Use this existing fictional owner-approved document as the trusted baseline. The self-contained app.py has no input, storage or network. Correct only the Data sentence to the exact supplied text, preserve the custom clause and write the complete TERMS.md draft for editor review. Choose Leave uncommitted: no legal-manifest write, Git commit or integration is approved, even if a default suggests it. Report file links and important changes without dumping the full document.", required: ["TERMS.md"]
       }
-    }
+    }.merge(entry_blocked_cases(shared))
+  end
+
+  def entry_blocked_cases(shared)
+    %w[log adopt manifest env test refactor legal normalize ship archive].to_h do |command|
+      canary = "SYNTHETIC_BLOCKED_#{SecureRandom.hex(20)}"
+      files = shared.merge("consumer-surface.py" => "# #{canary}\n")
+      if command == "ship"
+        files = files.merge("AGENTS.md" => shared.fetch("AGENTS.md") + "\n## Branches\n\nmain is the base; feature is an established feature branch.\n")
+      end
+      ["#{command}-entry-blocked", {
+        files: files, command: command, entry_blocked_canary: canary,
+        prepare: lambda do |workspace, _container|
+          HelmSmoke.git(workspace, "checkout", "--quiet", "-b", "feature") if command == "ship"
+          workspace.join("pending-work.txt").write("Developer work, uncommitted.\n")
+          { request: "Run #{command} for this project.", required: ["pending-work.txt"] }
+        end
+      }]
+    end
   end
 
   def prepare_ordinary_ship(workspace, container)

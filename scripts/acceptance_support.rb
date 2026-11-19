@@ -89,6 +89,20 @@ module HelmAcceptance
       result.fetch(:calls).any? { |call| strings(call.fetch("input")).any? { |input| forbidden.match?(input) } }
   end
 
+  # Scoped exposed-trace oracle, not a shell sandbox or arbitrary-code analyzer.
+  # Metadata/instruction preflight is allowed; these fixtures need no source,
+  # history, provider or state investigation once dirty status is established.
+  def assert_entry_blocked!(result, canary:)
+    assert_no_canary!(result, canary)
+    assert_no_state_access!(result)
+    forbidden = /\b(?:rev-list|cat-file|diff-tree|ls-remote|ls-files)\b|\bgit\b[^\n;]*\s(?:log|show|fetch|checkout|switch|add|commit|push)(?:\s|$)|\brg\s+--files\b|\bfind\s+\.|\b(?:gh|glab)\s|(?:app\.py|README\.md|consumer-surface\.py)/i
+    raise "Blocked workflow continued source/history/provider work" if
+      result.fetch(:calls).any? { |call| strings(call.fetch("input")).any? { |input| forbidden.match?(input) } }
+    answer = result.fetch(:answer)
+    raise "Blocked workflow offered an action or findings table" if
+      answer.match?(/\|[^\n]*(?:Suggested action|Local\s*→\s*Source|Finding|Priority)[^\n]*\||Apply (?:the |proposed |selected )?changes\s*\/|Full scan\s*\/\s*Gap scan/i)
+  end
+
   def map_pairs(value)
     pairs = if value.is_a?(Hash)
       value.to_a

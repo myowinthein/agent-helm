@@ -77,7 +77,7 @@ The frozen assessment source A, accepted code/evidence commit B and later ledger
 - Completed whole-project **Full scan** sets both roots to its actual pre-output inspected source.
 - Completed defined **Gap scan** sets `assessed_commit` only; retain `full_scan_commit`.
 - **Fix Backlog** changes only supported finding/decision/closure data, preserving both roots.
-- Incomplete/failed source coverage writes no incomplete scan checkpoint and advances neither root. This is refactor's existing policy, not test's partial-checkpoint contract. A separately selected independently eligible Fix Backlog action remains possible without relabelling the incomplete scan as complete.
+- Incomplete/failed source coverage writes no incomplete scan checkpoint and advances neither root. This is refactor's existing policy, not test's partial-checkpoint contract. Stop an incomplete/failed scan without switching to Fix Backlog. A later explicitly requested eligible backlog run does not relabel that scan as complete.
 
 Unknown priority, held decisions, pending remedies, nonselection and deferred verification of future fixes do not make a genuinely complete source assessment incomplete. A complete Full scan/Gap scan may record these findings and advance the appropriate roots. Failed reads, uninspected required consumers or other real coverage gaps still block that scan checkpoint. Test-only follow-ups remain conversational, outside refactor's ledger. No assessment anchor certifies current guidance was historically covered or runtime checks passed. Metadata-only/schema-only cleanup, unchanged data, report-only, None and cancellation authorize no new checkpoint or migration.
 

@@ -21,6 +21,8 @@ Adopt installs selected Helm rules into another project and connects them to the
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start adopt"]) --> Guard{"Helm source or<br/>installation target?"}
   Guard -->|Yes| Stop(["Explain and stop<br/>without changes"])
   Guard -->|No| Inspect["Check the project, instruction<br/>connections and existing rules"]
@@ -37,9 +39,11 @@ flowchart TD
 
 ## Start the command
 
-Use a consumer project, not the Helm source checkout, one of its subdirectories or an installed Helm package. Those locations already contain maintained rule sources. For Git-backed writes, start on clean main or master; without Git history, approved files can remain uncommitted.
+Use a consumer project, not the Helm source checkout, one of its subdirectories or an installed Helm package. Those locations already contain maintained rule sources. Normal adoption checks for clean main or master and supported instruction connections before rule-body comparison. Without Git history, approved files can remain uncommitted. A read-only comparison must be requested explicitly; it still respects protected-source and instruction-layout guards.
 
 Adopt examines how the current clients reach project instructions before choosing a destination. A `CLAUDE.md`-only setup or conflicting independent entries may need [log's shared setup](../log.html#shared-project-instructions) first.
+
+A blocker ends the run with its reason and known checkout facts. It does not continue into rule comparisons, a suggested-action table or an apply question. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Available rules
 

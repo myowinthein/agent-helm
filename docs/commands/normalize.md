@@ -18,6 +18,8 @@ For a rewrite, the main phases are:
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Ready
   Ready["Coordinate the team and scope"] --> Review["Review messages and their impact"]
   Review --> Rewrite["Approve, back up and rewrite"]
   Rewrite --> Verify["Verify the local result"]
@@ -29,7 +31,9 @@ flowchart TD
 Codex → $normalize    Claude → /normalize
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Read-only review can use a dirty or detached checkout. Rewriting needs a clean attached branch, no ongoing Git operation and safe access to every affected local branch.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Normal normalize checks for a clean attached branch and no ongoing Git operation before the coordination question or history review. An explicitly requested read-only review can use a dirty or detached checkout. Rewriting also needs safe access to every affected local branch.
+
+A failed prerequisite stops the run without further history reading, planning or writes. Later failures preserve successful preparation and recovery evidence; they do not trigger an automatic read-only continuation.
 
 ## Before history review
 

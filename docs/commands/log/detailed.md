@@ -21,11 +21,13 @@ Log helps agents pick up a project with useful context. It combines source evide
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Inspect
   Inspect["Check the project, instruction owner and saved review"] --> Current{"Already current with no requested work?"}
   Current -->|Yes| Noop["Report without writes"]
   Current -->|No| Scope["Choose scope and resolve<br/>independent missing settings together"]
   Scope --> Policy["Freeze local commit policy"]
-  Policy --> Eligible{"Write prerequisites met?"}
+  Policy --> Eligible{"Prerequisites still hold?"}
   Eligible -->|No| Block["Report the blocker and preserve work"]
   Eligible -->|Yes| Layout{"Shared setup needs changes?"}
   Layout -->|Yes| Review["Review the exact layout diff"]
@@ -55,9 +57,11 @@ flowchart TD
 
 ## Start the command
 
-Run log on clean main or master when you want instruction updates. In a project without Git history, it can prepare instructions and leave them uncommitted. A source review and a shared-file setup are separate choices: you can connect the clients without requesting a new investigation.
+Log validates clean main or master before reading review history, offering scan choices or investigating source. In a project without Git history, it can prepare instructions and leave them uncommitted. A source review and a shared-file setup are separate choices: you can connect the clients without requesting a new investigation.
 
 An already-current result names the local commit it checked. It does not claim to have fetched the remote or tested the running application.
+
+An established blocker ends the run before further investigation or proposals. Later failures preserve earlier verified setup work and actual drafts, with the prior review marker retained. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Shared project instructions
 

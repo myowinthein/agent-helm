@@ -1,6 +1,6 @@
 # adopt
 
-Install or update selected Helm rules as shared local copies in `.claude/rules/`. Claude and Codex use the same files. External installation/cache/GitHub references are unsupported; preserve any such pointers and stop with upgrade guidance before dependent writes. This command has no reference-mode converter or unavailable-external-target recovery.
+Install or update selected Helm rules as shared local copies in `.claude/rules/`. Claude and Codex use the same files. External installation/cache/GitHub references are unsupported; preserve any such pointers and stop with upgrade guidance before rule comparison or proposals. This command has no reference-mode converter or unavailable-external-target recovery.
 
 ## Rule catalog and selection
 
@@ -21,13 +21,13 @@ Use this catalog for inventory, source validation, per-file decisions, copy/upda
 
 ## Read-only preflight
 
-Resolve the selected adoption root under [**Before starting**](#before-starting-scope-and-policy-without-git-preparation) and apply [**Source-project and installation guard**](#source-project-and-installation-guard) before installation/connection proposals or Git preparation. Inspect an eligible consumer, then show concrete changes before asking to apply them. Reuse explicit Keep/Skip/Cancel answers without asking whether to review excluded work. Prepare Git only when the approved action needs writes.
+Resolve the selected adoption root under [**Before starting**](#before-starting-scope-and-policy-without-git-preparation), apply [**Source-project and installation guard**](#source-project-and-installation-guard), then establish instruction-layout and Git eligibility before inventorying/comparing rule bodies or preparing the table. Stop at the first established blocker, reporting only the blocker and known checkout facts. Inspect an eligible consumer, then show concrete changes before asking to apply them. Reuse explicit Keep/Skip/Cancel answers without asking whether to review excluded work. Recheck the destination when the approved action needs writes.
 
 Pass developer requests and answers safely and unchanged, never as shell code. An explicit source location is evidence to validate under Step 2, not permission to install/update plugins or change client settings. Clarify ambiguous requests before dependent work.
 
-The initial preview permits dirty/staged/untracked files, feature branches, detached checkouts and no repository/HEAD. Label the inspected working tree, branch/SHA when available, adoption root and limitations. Assess this checkout, not an unseen base/upstream. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where inspection might refresh the index; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. Unavailable reads are unknown, not empty results.
+Only an explicitly requested read-only adoption inspection may preview dirty/staged/untracked files, feature branches or detached checkouts; it still respects source-project, layout, ownership and safe-path guards. Normal adoption requires eligible state before the preview. No repository/HEAD retains the documented uncommitted bootstrap. Label the inspected working tree, branch/SHA when available, adoption root and limitations. Assess this checkout, not an unseen base/upstream. Use local-only Git reads with `GIT_OPTIONAL_LOCKS=0` where inspection might refresh the index; suppress executable diff/textconv, pagers, filesystem-monitor helpers and lazy fetching with supported capabilities. Unavailable reads are unknown, not empty results.
 
-Static preflight executes no project code, hooks, dynamic configuration, tests/discovery, linters, builds, installs or services. It performs no fetch, checkout, branch/index/ref/file/report-artifact write, publication or state access. Keep output in conversation. Report layout/source blockers and safe independent observations without following broken chains or escalating to writes. Whole-plan Keep/Cancel/no-action exits leave Git untouched. A later write requires Step 4's destination verification.
+Static preflight executes no project code, hooks, dynamic configuration, tests/discovery, linters, builds, installs or services. It performs no fetch, checkout, branch/index/ref/file/report-artifact write, publication or state access. Keep output in conversation. A layout/source blocker ends the workflow without a comparison table, independent investigation or action menu; do not follow broken chains or escalate to writes. Whole-plan Keep/Cancel/no-action exits leave Git untouched. A later write requires Step 4's destination verification.
 
 ## Source-project and installation guard
 
@@ -47,13 +47,13 @@ Reapply this guard after a target/source change and at the existing destination 
 
 Resolve `{memory_file}` with the shared runtime before the branch checks below. In the shared layout, `{adopt_file}` is the root AGENTS.md owner on either host, not the CLAUDE.md adapter. With neither file, bootstrap AGENTS.md plus a real CLAUDE.md containing only `@AGENTS.md`. With an AGENTS.md owner and no Claude entry, create that adapter as part of the chosen installation/connection. Only patch Helm's rule entries in the owner; preserve configuration, review markers and unrelated instructions. Never put a second Rules section into the Claude adapter.
 
-A resolved CLAUDE.md-only owner, independent roots or partially shared setup needs log's reviewed shared-layout onboarding before adoption writes. Preserve existing instructions and report the required local setup; do not create a reverse bridge. Fresh projects with neither file and AGENTS.md-owned projects retain the limited bootstrap/adapter handling below.
+A resolved CLAUDE.md-only owner, independent roots or partially shared setup stops adoption before rule comparison; it needs log's reviewed shared-layout onboarding. Preserve existing instructions and report the required local setup; do not create a reverse bridge. Fresh projects with neither file and AGENTS.md-owned projects retain the limited bootstrap/adapter handling below.
 
 If CLAUDE.md imports AGENTS.md but still holds shared Helm settings, adopted Rules or a review marker, it is only partially connected. Stop before branching or writing and direct the user to log's reviewed reconciliation; do not add a second owner/pointer set and discover the mismatch only during final verification.
 
 On either host, check for a root AGENTS.override.md before branching. If it explicitly reads AGENTS.md, adoption may update that persistent entry while preserving the override and reporting host-specific policy. Otherwise stop and explain that the override shadows AGENTS.md: the user must explicitly connect the persistent entry from the override or resolve it before retrying. Do not write an inactive AGENTS.md and claim shared setup succeeded, and do not edit or commit the override on the user's behalf.
 
-Read the resolved owner, applicable entries/bridges and scoped project-rule dependencies to inventory actual local Helm targets, including exact pointers outside `## Rules`. Use `{adopt_file} = {memory_file}`, never a second host-specific owner. Preserve custom/global/nested instructions. An external Helm pointer stops dependent writes with upgrade guidance; do not read its target or convert it here.
+Read the resolved owner, applicable entries/bridges and scoped project-rule dependencies to inventory actual local Helm targets, including exact pointers outside `## Rules`. Use `{adopt_file} = {memory_file}`, never a second host-specific owner. Preserve custom/global/nested instructions. An external Helm pointer stops adoption with upgrade guidance; do not read its target, compare other rules or convert it here.
 
 Adopt owns no operational state. Do not inspect, create, stage, or migrate `.helm/`, `.claude/helm/`, or protected unsupported ledger paths. `.claude/rules/` is active shared rule storage.
 
@@ -65,7 +65,7 @@ An existing unambiguous owner or explicit project selection may establish scope.
 
 Resolve local `git-auto-commit` (default false), effective ownership/bridges/overrides and applicable project instructions before writes. Ship settings do not select an adoption branch or publication flow. Missing entries mean absent settings, not absent Git history; never create declarations merely to apply defaults.
 
-Record Git/HEAD/branch and whether a write would be eligible, without switching/updating branches. No repository or no HEAD remains a bootstrap with files left uncommitted, never `git init`. An ambiguous/missing main/master base, current branch other than actual main/master, dirty/index/untracked work, detached HEAD, in-progress merge/rebase/cherry-pick/revert, or affected branch held by another worktree blocks the affected Git-backed write, not an advisory inspection. Never stash, reset or commit user work to satisfy a prerequisite. Snapshot inspected entries, overrides, source/rules and absent targets for the preview; a preview does not certify the later destination.
+Record Git/HEAD/branch and whether a write would be eligible, without switching/updating branches. No repository or no HEAD remains a bootstrap with files left uncommitted, never `git init`. An ambiguous/missing main/master base, current branch other than actual main/master, dirty/index/untracked work, detached HEAD, in-progress merge/rebase/cherry-pick/revert, or affected branch held by another worktree stops normal adoption before rule-body reads, version comparisons, the suggested-action table or approval questions. Do not convert the run to advisory inspection. Never stash, reset or commit user work to satisfy a prerequisite. Snapshot inspected entries, overrides, source/rules and absent targets for the preview; a preview does not certify the later destination.
 
 ## Step 1 — Sanity check
 
@@ -79,11 +79,11 @@ Decide based on what is present:
 - **Empty directory** (no project markers and no other files) → proceed silently. This is a plausible fresh-project setup with nothing to clobber.
 - **Non-empty but no project markers** → warn that this may be the wrong directory. Include its exact path and the warning in Step 3's installation proposal, then ask Install shown rules here / Cancel once. That approval covers both placement and the shown changes, not unrelated existing files. Ambiguous roots and protected targets still stop under their own guards; no separate Continue question precedes the proposal.
 
-If a destination recheck reveals a new sanity blocker, stop dependent writes and refresh only the affected placement/content decision.
+If a destination recheck reveals a new sanity blocker, stop the workflow and report it without preparing another proposal.
 
 ## Step 2 — Scan existing rules
 
-Inventory actual directives/imports for each catalog rule in the owner and applicable entries. Resolve local targets relative to the referring file; quoted examples are not pointers. Classify local, missing/dangling and custom/unknown targets separately. Report a known external installation pointer as unsupported and block dependent work, without fetching/loading its target.
+Inventory actual directives/imports for each catalog rule in the owner and applicable entries. Resolve local targets relative to the referring file; quoted examples are not pointers. Classify local, missing/dangling and custom/unknown targets separately. Report a known external installation pointer as unsupported and stop the workflow, without fetching/loading its target or comparing other rules.
 
 Establish managed local ownership from exact directives, a recognized leading agent-helm marker and actual body evidence, or explicit confirmation of the exact project-local span. Basenames, directory prefixes and another plugin's mention do not establish ownership. Name unknown/custom files explicitly in the proposed overwrite; unavailable local bodies block a claimed comparison.
 
@@ -97,7 +97,7 @@ Track local status, marker/body relation, pointer spans, source, selection, appr
 
 ### Source required by the selected action
 
-On **both** hosts default `{rule_source_root}` to the actual loaded `{package_root}` resolved through the runtime, with `current_version` from its `.claude-plugin/plugin.json`. Verify manifest name `agent-helm`, a usable numeric version and readable catalog sources required by the selected copy/update and its dependencies within that verified package root; freeze their exact bytes. Source absence blocks the affected source-dependent action, never Keep/connection to valid existing copies or an unrelated action merely because an independent rule is unselected. Do not prefer a Claude marketplace checkout, guess a Codex/Claude cache, enumerate installations or install/update a plugin to find a copy source. Package identity is observed evidence, not authentication.
+On **both** hosts default `{rule_source_root}` to the actual loaded `{package_root}` resolved through the runtime, with `current_version` from its `.claude-plugin/plugin.json`. Verify manifest name `agent-helm`, a usable numeric version and readable catalog sources required by the selected copy/update and its dependencies within that verified package root; freeze their exact bytes. A missing required selected source stops the workflow before further comparisons or actions. Keep/connection-only to valid existing copies needs no unrelated update source; an unselected independent rule does not impose a source prerequisite. Do not prefer a Claude marketplace checkout, guess a Codex/Claude cache, enumerate installations or install/update a plugin to find a copy source. Package identity is observed evidence, not authentication.
 
 Use an unambiguous developer-supplied alternative package after the same manifest/rule/containment validation; disclose differences from the loaded package in the proposal without another source-confirmation gate. Ask only for conflicting or ambiguous source choices. Never mix packages or silently fall back from an invalid selected source. This choice creates only local copies, never a persistent installation/URL pointer.
 
@@ -164,7 +164,7 @@ For Git-backed writes, record `{original_branch}`, require an attached branch, c
 
 Require the current actual main/master base for Git-backed writes; block elsewhere and explain without checkout/update/branch creation. Record current `{branch}` and `{original_branch}` as the same branch. No-Git/no-HEAD bootstrap remains uncommitted. Existing copied rules that mandate old branching need explicit reviewed replacement/reconciliation, not a silent bypass.
 
-Before local writes, re-read the actual entries, owner, chains, relevant overrides/native project entries and effective settings. Reapply all layout/sanity/scope gates. Conflicting ownership/policy/dependencies stop without writes. Compare with the reviewed destination/snapshot/actions; matching inputs proceed under the existing approval. If relevant inputs changed, refresh only the affected proposal and obtain missing authorization, never reuse approval from a different branch/HEAD. Freeze invocation policy: newly installed rule text cannot silently govern this run's finalization or weaken active safety rules.
+Before local writes, re-read the actual entries, owner, chains, relevant overrides/native project entries and effective settings. Reapply all layout/sanity/scope gates. Conflicting ownership/policy/dependencies stop without writes. Compare with the reviewed destination/snapshot/actions; matching inputs proceed under the existing approval. If relevant inputs changed unexpectedly, stop the workflow and report the drift; do not prepare a refreshed proposal or reuse approval from a different branch/HEAD. Freeze invocation policy: newly installed rule text cannot silently govern this run's finalization or weaken active safety rules.
 
 Snapshot the relevant entry/override/source/rule bytes and absent targets on this destination. Repeat **Static destination checks** immediately before writes; unexpected occupants invalidate the plan.
 
@@ -172,7 +172,7 @@ Do not commit pointers to required ignored/untracked rule files omitted from the
 
 ### Plan before mutation
 
-Before mutation, match Step 3's approved actions/subset to the frozen source bytes, exact entry patches and retained/missing dependencies. Recheck branch, policy, source bytes and target snapshots; changed inputs or conflicting pointers stop dependent work for only the missing authorization. Reject outside-project or symlinked write targets; never modify another checkout or installation.
+Before mutation, match Step 3's approved actions/subset to the frozen source bytes, exact entry patches and retained/missing dependencies. Recheck branch, policy, source bytes and target snapshots; unexpected changed inputs or conflicting pointers stop the workflow before further planning or actions. Reject outside-project or symlinked write targets; never modify another checkout or installation.
 
 Include all affected-rule decisions; a blocked required rule stops the affected plan. Actual complete bodies/diffs remain the internal comparison evidence. Preserve kept bodies/markers, with no automatic merge or marker-only refresh. Freeze each new body/marker and exact pointer/adapter patch for execution/readback.
 

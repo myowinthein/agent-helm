@@ -24,6 +24,8 @@ Ship takes reviewed local work to its publication destination. It separates publ
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start ship"]) --> Inspect["Review current work, remote state,<br/>existing PRs and release candidates"]
   Inspect --> Special{"History replacement<br/>or archive backup?"}
   Special -->|Archive| Backup["Approve and verify<br/>private archive backup"]
@@ -44,6 +46,8 @@ flowchart TD
 Start on main/master, an established feature branch or a confirmed environment branch. Pending edits normally need a separate commit first; on main/master, the publication review can cover a bounded safe commit and its push or PR together. A fresh chat can help with context, but the command still discovers unfinished work rather than assuming the project is ready.
 
 History replacement and prepared archive backups use specialist publication reviews. A changed branch alone does not establish its cause or authorize either route; ship checks the actual source and destination.
+
+A failed prerequisite or selected action stops the run, including further target or release planning. Ship preserves earlier successes and reports the actual checkout without an automatic return or cleanup. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Publish the current branch
 

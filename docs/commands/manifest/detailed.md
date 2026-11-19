@@ -21,6 +21,8 @@ Manifest keeps a README useful to someone evaluating or using the project. It ch
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start manifest"]) --> Target["Resolve the README;<br/>group independent style and scope choices"]
   Target --> Scope{"What review is needed?"}
   Scope -->|Already current or skip| Finish(["Report the local result"])
@@ -39,7 +41,9 @@ flowchart TD
 
 ## Start the command
 
-Updates require clean main or master and an established shared instruction owner. If that setup is missing, start with [log](../log.html#shared-project-instructions). Manifest does not create agent instructions as a side effect of README work.
+Manifest validates clean main or master and an established shared instruction owner before README discovery, provenance checks or style/scan choices. If that setup is missing, start with [log](../log.html#shared-project-instructions). Manifest does not create agent instructions as a side effect of README work.
+
+An established blocker ends the run before further reading, proposals or approval questions. Missing review history can still lead to Full scan when the other prerequisites hold. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Choose the README and style
 

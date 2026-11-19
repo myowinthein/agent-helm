@@ -16,6 +16,8 @@ Use log when a new agent session needs better project context, or when the proje
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Review
   Review["Review project and instructions"] --> Choose{"Apply proposed updates?"}
   Choose -->|Write proposed changes| Save["Update and check instructions"]
   Choose -->|Cancel| Keep["Keep current files"]
@@ -27,7 +29,9 @@ flowchart TD
 Codex → $log    Claude → /log
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Updates require clean **main or master**. Without Git history, log can create instructions and leave them uncommitted.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Log checks for clean **main or master** before reading review history or asking for scan choices. Without Git history, log can create instructions and leave them uncommitted.
+
+An established blocker ends the run before further investigation or proposals. Later failures preserve earlier verified setup work and actual drafts, with the prior review marker retained.
 
 ## Shared project instructions
 

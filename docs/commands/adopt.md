@@ -16,6 +16,8 @@ Use adopt to give Claude and Codex shared working rules in a consumer project. R
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Compare
   Compare["Compare project and bundled rules"] --> Choose{"Choose the proposed scope"}
   Choose -->|Minimum or expanded set| Apply["Install, update or connect rules"]
   Choose -->|Keep or cancel| Keep["Preserve current files"]
@@ -27,7 +29,9 @@ flowchart TD
 Codex → $adopt    Claude → /adopt
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Git-backed writes require clean **main or master**; a project without Git history can receive uncommitted files.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Normal adoption checks for clean **main or master** before comparing rules or showing the action table. A project without Git history can receive uncommitted files. Request a read-only inspection explicitly if that is your goal.
+
+A blocker ends the run with its reason and known checkout facts. It does not continue into rule comparisons, a suggested-action table or an apply question.
 
 **Adopt cannot run on Helm's own source checkout or a plugin installation.** Those use maintained source rules directly. Try adoption in a separate consumer project.
 

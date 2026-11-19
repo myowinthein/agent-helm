@@ -21,6 +21,8 @@ Test turns gaps in protection into cases you can review and choose. It can impro
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start test"]) --> Inspect["Identify project behavior,<br/>existing tests and tooling"]
   Inspect --> Scope["Choose Full scan or Gap scan<br/>using valid review history"]
   Scope --> Assess["Review behavior and tests;<br/>report prioritized cases"]
@@ -37,7 +39,9 @@ flowchart TD
 
 ## Start the command
 
-Static review works on the current checkout without running project code or test discovery. Saved assessments and edits need clean main/master, an established feature or maintenance branch, or a confirmed environment branch. The workflow preserves unrelated work instead of stashing it to make room.
+Normal test checks for clean main/master, an established feature or maintenance branch, or a confirmed environment branch before source/test inventory. An explicitly requested read-only source assessment can inspect pending edits without project execution, ledger access or fixes. The workflow preserves unrelated work instead of stashing it to make room.
+
+Existing assessment records are validated before the normal source inventory. Unsupported or malformed records end the run without a source-only fallback. A failed prerequisite stops the run, including further assessment or planning. A later setup, verification or checkpoint failure preserves completed assessments and actual drafts without continuing other work. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Choose the review scope
 

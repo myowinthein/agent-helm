@@ -23,7 +23,7 @@ Keep each decision and its effects explicit. Batch independent inputs against on
 2. Use a faithful, permitted native tool: Claude's `AskUserQuestion`; Codex's `request_user_input`, otherwise `request_user_input_async`; a future host's documented equivalent. Blocking input may be Plan-only, and optional-preference tools cannot carry required input or authorization when prohibited.
 3. Keep the preferred form when supported; otherwise use the first eligible **Ordered native alternative**, then the baseline. This is capability substitution, separate from rendering recovery. Never change modes, permissions or client settings, or install MCP, to obtain a picker.
 4. Batch independent questions only within the supported limit and one prerequisite snapshot. Split oversized batches; ask dependent follow-ups after answers. Preserve per-file decisions, separate confirmations, short unique labels and exact file/finding/branch IDs where labels could collide.
-5. Wait for an actual answer before dependent work. Blocking tools wait in-call; accepted async requests are only queued. Continue independent authorized work, leaving dependents pending. Do not duplicate a pending native question in chat. Revalidate late replies against the current question/snapshot.
+5. Wait for an actual answer at the workflow gate. Blocking tools wait in-call; accepted async requests are only queued. Pause the selected workflow, including independent investigation or planning within it, until the answer arrives. Do not duplicate a pending native question in chat. Revalidate late replies against the current question/snapshot.
 
 ### Ordered native alternatives
 

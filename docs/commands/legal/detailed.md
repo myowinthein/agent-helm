@@ -21,6 +21,8 @@ Legal prepares complete document drafts from project evidence and confirmed busi
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start legal"]) --> Inspect["Inspect source, context<br/>and existing documents"]
   Inspect --> Reconcile["Confirm moved document locations;<br/>keep review history consistent"]
   Reconcile --> Table["Show the six document types,<br/>file status, decisions and reasons"]
@@ -41,9 +43,11 @@ flowchart TD
 
 ## Start the command
 
-Start on clean main or master. Legal reviews the source and existing documents before proposing work; a command invocation is not a declaration that every legal document is required.
+Start on clean main or master. Git and ownership eligibility are checked before discovery, and existing assessment records are validated before substantive source/document review. Legal reviews the source and existing documents before proposing work; a command invocation is not a declaration that every legal document is required.
 
 Legal commits need your exact content and commit approval, even when local [auto-commit](../../rules/git.html#auto-commit) is enabled. Drafting, owner approval and publication remain separate results.
+
+A Git, ownership, path or state-validation blocker ends the run before further investigation or a decision table. Missing facts for an individual document remain distinct from those workflow prerequisites. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Prepare the useful documents
 

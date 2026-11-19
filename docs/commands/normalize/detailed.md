@@ -21,6 +21,8 @@ Normalize reviews commit messages and can apply the corrections you approve. Bec
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start{"Identified interrupted run?"} -->|Yes| Resume["Validate existing evidence and finish only missing local work"]
   Start -->|No| Readonly{"Explicit read-only request?"}
   Readonly -->|Yes| ReviewOnly["Review local messages without writes"]
@@ -57,7 +59,9 @@ flowchart TD
 
 ## Start the command
 
-Ask for Review only if you want findings without writes; that can inspect a dirty or detached checkout. Applying corrections requires a clean attached branch, no ongoing Git operation and safe access to every affected local branch.
+Request Review only from the outset for findings without writes; it can inspect a dirty or detached checkout without loading the review record. A normal run first requires a clean attached branch and no ongoing Git operation, before coordination or history reading. Applying corrections also needs safe access to every affected local branch.
+
+A failed prerequisite stops the run without further history reading, planning or writes. Later failures preserve successful preparation and recovery evidence; they do not trigger an automatic read-only continuation. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Before history review
 

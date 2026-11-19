@@ -4,7 +4,7 @@ For log, manifest, test and refactor only, when the caller already reaches a Ful
 
 ## Caller boundaries and supplied facts
 
-Apply only within otherwise valid caller inputs. The caller resolves instruction ownership, parses any permitted own-state inputs and reports blockers first. Malformed/unsupported state or conflicting histories/ownership remain blockers to dependent work, not missing baselines to reset. Independent advisory source review remains available only under the caller's own rules.
+Apply only within otherwise valid caller inputs. The caller resolves instruction ownership, parses any permitted own-state inputs and reports blockers first. Malformed/unsupported state or conflicting histories/ownership remain blockers to dependent work, not missing baselines to reset. Stop a blocked normal workflow; advisory source review requires an explicitly requested supported route from the outset, under the caller's own rules.
 
 Use facts the caller was already permitted to obtain in the current mode:
 

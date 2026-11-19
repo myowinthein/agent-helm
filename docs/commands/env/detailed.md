@@ -21,6 +21,8 @@ Env reviews configuration and Git protection without exposing secret values. It 
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start env"]) --> Audit["Inspect configuration usage,<br/>env files and Git ignore rules"]
   Audit --> Findings{"Actionable findings or<br/>a requested template?"}
   Findings -->|No| Report(["Report the scoped audit"])
@@ -34,9 +36,11 @@ flowchart TD
 
 ## Start the command
 
-The audit can inspect pending edits on the current checkout. Applying fixes needs a clean, eligible main/master, established feature or confirmed environment branch. The agent does not stash or commit unrelated work to create that starting point.
+Normal env checks for a clean, eligible main/master, established feature or confirmed environment branch before configuration discovery. Request a read-only audit explicitly to inspect pending edits; that route offers no fixes. The agent does not stash or commit unrelated work to create an eligible starting point.
 
 The audit reads configuration roles, key names and source references. It does not start the app, test credentials, contact services or install tools just to discover a gap.
+
+A required prerequisite or safe-inspection failure stops the run. Findings already collected remain reportable, but further checks and fix planning wait for a new eligible run. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## What gets checked
 

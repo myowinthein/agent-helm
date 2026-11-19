@@ -16,6 +16,8 @@ Use manifest to create a README or keep an existing one accurate. It checks the 
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Review
   Review["Review the README against the project"] --> Choose{"Accept proposed updates?"}
   Choose -->|All or selected| Update["Update and check the README"]
   Choose -->|Keep or cancel| Keep["Preserve existing content"]
@@ -27,7 +29,9 @@ flowchart TD
 Codex → $manifest    Claude → /manifest
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Updates require clean **main or master**. Run [log's shared setup](log.html#shared-project-instructions) first if there is no shared instruction owner.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Manifest checks for clean **main or master** before README discovery or style and scan choices. Run [log's shared setup](log.html#shared-project-instructions) first if there is no shared instruction owner.
+
+An established blocker ends the run before further reading, proposals or approval questions. Missing review history can still lead to Full scan when the other prerequisites hold.
 
 ## Choose the README and style
 

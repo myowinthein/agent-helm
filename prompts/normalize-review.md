@@ -1,6 +1,6 @@
 # Normalize review mechanics and schema 2
 
-Load only from normalize's owning review entry. This is a supporting contract, not a skill or a state migration. Source maintenance never reads live normalize records. Only schema 2 is supported; there is no schema-1 reader, compatibility conversion or automatic reset. An unsupported record blocks reuse and dependent mutation, while independent committed-message review can continue without it.
+Load only from normalize's owning review entry. This is a supporting contract, not a skill or a state migration. Source maintenance never reads live normalize records. Only schema 2 is supported; there is no schema-1 reader, compatibility conversion or automatic reset. An unsupported record stops the normal workflow before further message review or mutation. A separately requested read-only review does not open the record.
 
 ## Mechanical checks and semantic coverage
 

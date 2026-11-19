@@ -18,6 +18,8 @@ Use archive when an older project needs a recovery kit: source, setup, useful ru
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Explore
   Explore["Understand the recovery goal"] --> Restore["Restore and freeze the setup"]
   Restore --> API["Preserve useful API materials"]
   API --> Docs["Write recovery instructions"]
@@ -30,7 +32,9 @@ flowchart TD
 Codex → $archive    Claude → /archive
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on the branch you want to preserve and confirm its commit and exclusions. Archive does not switch branches or merge missing work.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on the clean attached branch you want to preserve. Archive checks checkout eligibility and existing progress before source exploration, then asks you to confirm its commit and exclusions. It does not switch branches or merge missing work.
+
+A failed prerequisite stops the run before the gated phase, including additional planning. Completed reports and actual artifacts remain preserved; a limited preservation outcome must be chosen explicitly.
 
 Choose what recovery should achieve: source preservation, a runnable demonstration, offline runtime recovery or rebuild inputs. Those goals need different evidence; a saved image alone cannot prove them all.
 

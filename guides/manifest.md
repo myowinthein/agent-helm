@@ -4,7 +4,7 @@
 
 Resolve `{memory_file}` through the shared runtime before any Git mutation or file write. If the resolved owner does not exist, stop: "Run the log workflow first to establish shared project instructions, then re-run manifest." Do not create instruction files, migrate an owner, or automatically invoke log. Existing bridges, overrides, conflicts, and missing import targets follow the runtime's resolution rules.
 
-Read [`{package_root}/prompts/shared/content-sync.md`](../prompts/shared/content-sync.md) and record the normal invocation Git policy. Manifest reviews the merged, stable project state. Its read-only preflight precedes **Prepare the current branch**; selected real work still requires that helper's clean-tree, actual main/master base, ownership, local commit and verification rules; publication belongs to ship. Do not borrow log's first-run policy overlay or initialize Git in an unversioned project.
+Read [`{package_root}/prompts/shared/content-sync.md`](../prompts/shared/content-sync.md) and record the normal invocation Git policy. Manifest reviews the merged, stable project state. Run that helper's read-only eligibility checks before target inventory, style/scan choices or provenance investigation; a known blocker stops the workflow. Refresh **Prepare the current branch** before selected writes, retaining its clean-tree, actual main/master base, ownership, local commit and verification rules; publication belongs to ship. Do not borrow log's first-run policy overlay or initialize Git in an unversioned project.
 
 ## Scope
 
@@ -68,11 +68,11 @@ For new custom content, first complete the approved-outline prerequisite. If onl
 
 ## Step 2: Prepare and pin the actual inputs
 
-Only after real work is selected, apply **Prepare the current branch** from the shared local-edit helper. Require clean state on the actual main/master base and record its current `{branch}`/HEAD; block writes elsewhere with a reason. Never create/switch/update a branch.
+After real work is selected, refresh **Prepare the current branch** from the shared local-edit helper; entry eligibility has already been checked before investigation. Require clean state on the actual main/master base and record its current `{branch}`/HEAD; stop the workflow elsewhere with a reason. Never create/switch/update a branch.
 
-After base preparation, re-resolve ownership/configuration, target candidates, instruction dependencies and README content. If inputs changed the preflight assumptions, refresh assessment/choices as needed; never transplant a proposal built from a different snapshot. Stop on conflicting effective policy or ownership.
+After base preparation, re-resolve ownership/configuration, target candidates, instruction dependencies and README content. If inputs unexpectedly changed the preflight assumptions, stop the workflow and report the mismatch without refreshing assessment/choices; never transplant a proposal built from a different snapshot. Stop on conflicting effective policy or ownership.
 
-Pin `{review_head}` to the actual source HEAD now, before any README/style write. Validate the anchor against this commit again. Record exact target/owner inputs and relevant source state so unexpected drift can be detected before applying and committing. If HEAD or relevant inputs change unexpectedly, stop and refresh the investigation/proposal; do not reset, stash or include someone else's work. Expected approved workflow outputs are not source drift.
+Pin `{review_head}` to the actual source HEAD now, before any README/style write. Validate the anchor against this commit again. Record exact target/owner inputs and relevant source state so unexpected drift can be detected before applying and committing. If HEAD or relevant inputs change unexpectedly, stop the workflow without further investigation or a replacement proposal; do not reset, stash or include someone else's work. Expected approved workflow outputs are not source drift.
 
 ## Step 3: Investigate the selected scope
 
@@ -190,7 +190,7 @@ Recheck HEAD and recorded inputs immediately before mutation. Apply the accepted
 
 Save an approved `readme-style` declaration only in `{memory_file}`'s existing recognized configuration block, preserving its plain, bullet-list or fenced format. If none exists, add a `## Project Config` section containing only `- readme-style: {approved_value}` to the same owner without moving an end-of-file review marker. Never create a second owner or save settings in a wrapper. Normally this updates AGENTS.md; leave CLAUDE.md's import/additions intact. Preserve a legacy owner until log performs a reviewed migration.
 
-Read back the full actual changed content in the target and any changed owner before committing; filenames/diffstat alone are insufficient. Verify approved content, preserved sections/protected spans, setting and marker; confirm the adapter/dependency chain remains intact. Report per-section failures and stop dependent Git actions. Do not touch other READMEs, metadata, operational state or generators.
+Read back the full actual changed content in the target and any changed owner before committing; filenames/diffstat alone are insufficient. Verify approved content, preserved sections/protected spans, setting and marker; confirm the adapter/dependency chain remains intact. Report per-section failures and stop the workflow. Do not touch other READMEs, metadata, operational state or generators.
 
 ## Step 5: Commit, finalize and report
 

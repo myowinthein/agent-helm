@@ -77,6 +77,22 @@ checks["source-only preview guard rejects explicit canonical and old state paths
     rejects { HelmAcceptance.assert_no_state_access!(HelmAcceptance.trace("claude", wire(events))) }
   end
 end
+checks["blocked entry permits metadata but rejects continued investigation and action tables"] = lambda do
+  canary = "SYNTHETIC_BLOCKED_#{'b7' * 20}"
+  safe = HelmAcceptance.trace("claude", wire(claude_events("Blocked: untracked pending-work.txt. Resolve the pending work and rerun.")))
+  safe[:calls][0]["input"] = { "command" => "git status --porcelain=v1; git symbolic-ref --short HEAD" }
+  HelmAcceptance.assert_entry_blocked!(safe, canary: canary)
+  ["cat app.py", "sed -n '1,40p' README.md", "rg --files", "git ls-files", "git log -1",
+   "git ls-remote origin", "gh api repos/fixture/fixture", "cat .helm/test-log.json", "git checkout main"].each do |command|
+    changed = safe.merge(calls: [{ "input" => { "command" => command } }])
+    rejects { HelmAcceptance.assert_entry_blocked!(changed, canary: canary) }
+  end
+  ["| File | Suggested action | Reason |", "Full scan / Gap scan", canary].each do |answer|
+    changed = HelmAcceptance.trace("claude", wire(claude_events(answer)))
+    changed[:calls][0]["input"] = { "command" => "git status --porcelain=v1" }
+    rejects { HelmAcceptance.assert_entry_blocked!(changed, canary: canary) }
+  end
+end
 checks["Codex requires completed commands and a completed turn"] = lambda do
   item = { "id" => "cmd1", "type" => "command_execution", "command" => "extract keys", "status" => "completed", "aggregated_output" => "API_TOKEN", "exit_code" => 0 }
   events = [{ "type" => "thread.started" }, { "type" => "item.started", "item" => item },

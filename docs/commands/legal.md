@@ -16,6 +16,8 @@ Use legal to prepare the legal documents a project needs, based on its source an
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Assess
   Assess["Assess existing documents and needs"] --> Draft["Prepare selected drafts"]
   Draft --> Review{"Your decision"}
   Review -->|Revise| Draft
@@ -29,7 +31,9 @@ flowchart TD
 Codex → $legal    Claude → /legal
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on clean **main or master**. Legal document commits need explicit content and commit approval, even with [auto-commit](../rules/git.html#auto-commit) enabled.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Legal checks for clean **main or master** before source and document discovery. Legal document commits need explicit content and commit approval, even with [auto-commit](../rules/git.html#auto-commit) enabled.
+
+A Git, ownership, path or state-validation blocker ends the run before further investigation or a decision table. Missing facts for an individual document remain distinct from those workflow prerequisites.
 
 <span id="understand-the-service-first"></span>
 

@@ -21,6 +21,8 @@ Archive prepares a project for a specific future recovery goal. It brings the re
 
 ```mermaid
 flowchart TD
+  Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
+  Entry -->|Yes| Start
   Start(["Start archive"]) --> Progress["Validate existing progress<br/>and the current source"]
   Progress --> Done{"Already prepared<br/>or completed?"}
   Done -->|Verified| Existing(["Report the existing result"])
@@ -47,6 +49,8 @@ Choose the recovery goal before attempting restoration:
 | Rebuild inputs | Toolchains, dependencies and other inputs support the promised rebuild scope. |
 
 A saved container image may support one goal without proving the others. Missing licensed tools, hardware, services or datasets remain explicit limits.
+
+A failed prerequisite stops the run before the gated phase, including additional planning. Completed reports and actual artifacts remain preserved; a limited preservation outcome must be chosen explicitly. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## The five steps
 

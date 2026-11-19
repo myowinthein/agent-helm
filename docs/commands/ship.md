@@ -18,6 +18,8 @@ Ordinary source publication follows this outline. History rewrites and private a
 
 ```mermaid
 flowchart TD
+  Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
+  Gate -->|Yes| Review
   Review["Review changes and destination"] --> Approve{"Approve publication?"}
   Approve -->|Yes| Publish["Publish source or open a PR"]
   Approve -->|Not now| Keep["Keep work local"]
@@ -30,7 +32,9 @@ flowchart TD
 Codex → $ship    Claude → /ship
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on **main/master, an established feature or a confirmed environment branch**. Commit pending edits first; on main/master, ship can include a reviewed safe commit in the publication decision.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Start on **main/master, an established feature or a confirmed environment branch**. Ship checks local eligibility before provider or publication investigation. Commit pending edits first; on main/master, ship can include a reviewed safe commit in the publication decision.
+
+A failed prerequisite or selected action stops the run, including further target or release planning. Ship preserves earlier successes and reports the actual checkout without an automatic return or cleanup.
 
 A fresh session is useful for a long-running chat, but ship still discovers pending work and verifies the source.
 
