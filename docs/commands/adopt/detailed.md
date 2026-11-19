@@ -25,12 +25,12 @@ flowchart TD
   Guard -->|Yes| Stop(["Explain and stop<br/>without changes"])
   Guard -->|No| Inspect["Check the project, instruction<br/>connections and existing rules"]
   Inspect --> Compare["Compare each rule with<br/>the loaded Helm package"]
-  Compare --> Needed{"Changes needed?"}
+  Compare --> Needed{"Ready maintenance or<br/>optional installations?"}
   Needed -->|No| Current(["Report existing rules<br/>and connectivity"])
-  Needed -->|Yes| Review["Summarize file actions, versions<br/>and meaningful policy changes"]
-  Review --> Decision{"Apply the proposed changes?"}
+  Needed -->|Yes| Review["Show file actions, reasons, versions<br/>and meaningful policy changes"]
+  Review --> Decision{"Choose the ready scope"}
   Decision -->|Cancel or keep| Finish(["Finish without replacing rules"])
-  Decision -->|Yes| Apply["Copy approved rules and<br/>connect project instructions"]
+  Decision -->|Minimum or expanded set| Apply["Copy approved rules and<br/>connect project instructions"]
   Apply --> Verify["Verify content and<br/>both instruction paths"]
   Verify --> Done(["Finish locally"])
 ```
@@ -43,7 +43,7 @@ Adopt examines how the current clients reach project instructions before choosin
 
 ## Available rules
 
-[Git and Safety](../../rules/git.html) are a pair: commit and publication choices depend on the preservation and authorization rules. Writing is proposed for new adoption but can be omitted. Design needs explicit selection. Writing and Design can each be used independently.
+[Git and Safety](../../rules/git.html) are a pair: commit and publication choices depend on the preservation and authorization rules. The recommended fresh set adds Writing, which can be omitted. For an unscoped fresh installation, choosing the explicitly listed all-four set also selects Design. Writing and Design can each be used independently; a request for one does not silently install the others.
 
 The installed copies normally live under `.claude/rules/`. Their role is deliberate: a plugin update changes the available upstream rules, while the consumer keeps its reviewed local copies until you adopt again.
 
@@ -61,7 +61,21 @@ Adopt distinguishes content from version labels. Identical text does not need re
 
 ## Review the proposed set
 
-You see the files that would be copied, updated, connected or kept, including meaningful policy changes and any downgrade. Accept the whole set, choose a subset or cancel. Full rule bodies and diffs are available when you want to inspect the exact wording.
+The proposal uses a plain table: **File / Suggested action / Reason / Local → Source version**. Bold action labels carry the meaning without relying on color, emoji or badges. A differing file receives an explanation of the material policy changes; a customized-content replacement or downgrade is named explicitly. Full rule bodies and diffs are available when you want to inspect the exact wording.
+
+The action choices depend on what is ready:
+
+| Situation | Choices |
+|---|---|
+| Existing maintenance and optional additions | Update existing only / Update existing plus the listed missing rules / Keep existing / Cancel. |
+| Existing maintenance only | Update existing, apply repairs or apply connections, as appropriate / Keep existing / Cancel. |
+| Optional additions only | Install the listed missing rules / Keep existing / Cancel. |
+| Unscoped fresh installation | Install the recommended Git, Safety and Writing set / Install all four / Cancel. |
+| Everything matches and is connected, with no applicable optional offer | Report no changes without a question. |
+
+The minimum maintenance choice includes required file/dependency repairs and instruction connections. It does not include a new optional rule merely because that rule is absent. The broader choice names every additional installation and pointer effect before approval; a missing Git/Safety pair is offered together when neither was previously adopted. An explicit subset can be supplied in the same response. Limited requests report other available rules without offering unrelated installation actions.
+
+Action labels adapt to the actual effects: a connection-only plan does not pretend to update rule contents, and an overwrite or downgrade is not hidden behind a generic Update label. Unavailable source comparisons leave affected actions pending rather than offered for speculative approval. There is no extra question merely to view the proposal or consider each optional file.
 
 Keeping a rule also preserves its existing pointers. Adopt does not blend custom clauses into a new rule automatically. Required companions are handled as part of the reviewed selection rather than left silently missing.
 
