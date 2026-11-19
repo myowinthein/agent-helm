@@ -1,5 +1,5 @@
 ---
-title: archive
+title: Archive
 description: Restore an agreed project scope and prepare source, setup, data and recovery instructions locally for a separately approved private backup.
 parent: Commands
 detailed: /docs/commands/archive/detailed.html
@@ -8,7 +8,7 @@ has_children: true
 has_toc: false
 ---
 
-# archive
+# Archive
 
 {% include guide-depth.html %}
 

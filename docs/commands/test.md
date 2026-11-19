@@ -1,12 +1,12 @@
 ---
-title: test
+title: Test
 description: Find missing test protection and maintain useful existing tests. Review findings, choose changes and verify results before recording outcomes.
 parent: Commands
 detailed: /docs/commands/test/detailed.html
 nav_order: 4
 ---
 
-# test
+# Test
 
 {% include guide-depth.html %}
 

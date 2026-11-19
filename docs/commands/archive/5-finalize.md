@@ -1,7 +1,7 @@
 ---
-title: "step 5: prepare locally"
+title: "Step 5: Prepare locally"
 description: Review artifact storage, recovery materials and exclusions, then commit an approved local recovery kit before separate private backup publication.
-parent: archive
+parent: Archive
 grand_parent: Commands
 detailed: /docs/commands/archive/5-finalize/detailed.html
 nav_order: 5

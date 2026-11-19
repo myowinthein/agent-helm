@@ -1,12 +1,12 @@
 ---
-title: refactor
+title: Refactor
 description: Find worthwhile code improvements, review the proposed changes and apply selected fixes while preserving behavior and existing test guarantees.
 parent: Commands
 detailed: /docs/commands/refactor/detailed.html
 nav_order: 5
 ---
 
-# refactor
+# Refactor
 
 {% include guide-depth.html %}
 

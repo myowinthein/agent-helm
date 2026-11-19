@@ -1,12 +1,12 @@
 ---
-title: manifest
+title: Manifest
 description: Create or update a README using source evidence while preserving the project voice, useful content and chosen document structure.
 parent: Commands
 detailed: /docs/commands/manifest/detailed.html
 nav_order: 6
 ---
 
-# manifest
+# Manifest
 
 {% include guide-depth.html %}
 

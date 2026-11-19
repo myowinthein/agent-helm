@@ -1,5 +1,5 @@
 ---
-title: manifest
+title: Manifest
 description: "Manifest keeps a README useful to someone evaluating or using the project. It checks claims against source, preserves the project's voice and proposes changes at the depth readers need."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/manifest.md
 ---
 
-# manifest
+# Manifest
 
 {% include guide-depth.html %}
 

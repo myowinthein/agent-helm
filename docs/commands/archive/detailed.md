@@ -1,5 +1,5 @@
 ---
-title: archive
+title: Archive
 description: "Archive prepares a project for a specific future recovery goal. It brings the relevant source, runtime or build materials, data choices and instructions into a reviewed local kit; private remote backup happens later through ship."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/archive.md
 ---
 
-# archive
+# Archive
 
 {% include guide-depth.html %}
 

@@ -1,12 +1,12 @@
 ---
-title: adopt
+title: Adopt
 description: Install reviewed working rules for Claude and Codex in a consumer project, then approve updates when the bundled rules change.
 parent: Commands
 detailed: /docs/commands/adopt/detailed.html
 nav_order: 2
 ---
 
-# adopt
+# Adopt
 
 {% include guide-depth.html %}
 

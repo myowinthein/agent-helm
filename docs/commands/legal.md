@@ -1,12 +1,12 @@
 ---
-title: legal
+title: Legal
 description: Prepare source-based legal document drafts for editor review. Choose document types, review gaps and decide whether to commit the exact content.
 parent: Commands
 detailed: /docs/commands/legal/detailed.html
 nav_order: 7
 ---
 
-# legal
+# Legal
 
 {% include guide-depth.html %}
 

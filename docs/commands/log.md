@@ -1,12 +1,12 @@
 ---
-title: log
+title: Log
 description: Keep project instructions useful across Claude and Codex sessions. Review source, choose context updates and preserve existing project decisions.
 parent: Commands
 detailed: /docs/commands/log/detailed.html
 nav_order: 1
 ---
 
-# log
+# Log
 
 {% include guide-depth.html %}
 

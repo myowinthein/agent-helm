@@ -1,7 +1,7 @@
 ---
-title: "step 3: Postman collection"
+title: "Step 3: Postman collection"
 description: "This phase preserves the API knowledge someone will need during recovery. It favors useful existing contracts and requests, with explicit limits on anything that has not been executed against an approved isolated runtime."
-parent: archive
+parent: Archive
 grand_parent: Commands
 nav_exclude: true
 has_toc: false

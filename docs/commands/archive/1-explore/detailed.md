@@ -1,7 +1,7 @@
 ---
-title: "step 1: explore"
+title: "Step 1: Explore"
 description: "Exploration defines what a successful recovery would mean for this project. The agent inspects local evidence before recommending restoration, so missing services, assets or build inputs are visible before execution starts."
-parent: archive
+parent: Archive
 grand_parent: Commands
 nav_exclude: true
 has_toc: false

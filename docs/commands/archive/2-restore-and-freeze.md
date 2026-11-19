@@ -1,7 +1,7 @@
 ---
-title: "step 2: restore and freeze"
+title: "Step 2: Restore and freeze"
 description: Restore an approved project scope in an identified setup, verify what works and capture the runtime, data and configuration needed for later recovery.
-parent: archive
+parent: Archive
 grand_parent: Commands
 detailed: /docs/commands/archive/2-restore-and-freeze/detailed.html
 nav_order: 2

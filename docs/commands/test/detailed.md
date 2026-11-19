@@ -1,5 +1,5 @@
 ---
-title: test
+title: Test
 description: "Test turns gaps in protection into cases you can review and choose. It can improve existing tests as well as add new ones, while keeping assessment, implementation and verified results distinct."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/test.md
 ---
 
-# test
+# Test
 
 {% include guide-depth.html %}
 

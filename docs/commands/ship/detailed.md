@@ -1,5 +1,5 @@
 ---
-title: ship
+title: Ship
 description: "Ship takes reviewed local work to its publication destination. It separates publishing source, updating other branches and making a release, so you can approve each result with its actual effects in view."
 parent: Commands
 nav_exclude: true
@@ -14,7 +14,7 @@ source_files:
   - prompts/shared/history-publication.md
 ---
 
-# ship
+# Ship
 
 {% include guide-depth.html %}
 

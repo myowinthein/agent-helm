@@ -1,7 +1,7 @@
 ---
-title: "step 2: restore and freeze"
+title: "Step 2: Restore and freeze"
 description: "Restoration establishes what can actually run; freezing preserves the materials needed to repeat that result. The final capture choice follows the evidence from restoration and your opportunity to inspect it."
-parent: archive
+parent: Archive
 grand_parent: Commands
 nav_exclude: true
 has_toc: false

@@ -1,12 +1,12 @@
 ---
-title: env
+title: Env
 description: Review environment configuration, credible secret exposure and Git ignore rules, then choose scoped fixes or a safe environment template.
 parent: Commands
 detailed: /docs/commands/env/detailed.html
 nav_order: 3
 ---
 
-# env
+# Env
 
 {% include guide-depth.html %}
 

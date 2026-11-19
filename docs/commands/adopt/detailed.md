@@ -1,5 +1,5 @@
 ---
-title: adopt
+title: Adopt
 description: "Adopt installs selected Helm rules into another project and connects them to the instructions Claude and Codex read. You review the actual policy changes before a bundled update reaches your project."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/adopt.md
 ---
 
-# adopt
+# Adopt
 
 {% include guide-depth.html %}
 

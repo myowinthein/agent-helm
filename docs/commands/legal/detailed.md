@@ -1,5 +1,5 @@
 ---
-title: legal
+title: Legal
 description: "Legal prepares complete document drafts from project evidence and confirmed business facts. You read the files, resolve material gaps and decide whether their exact content should be committed."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/legal.md
 ---
 
-# legal
+# Legal
 
 {% include guide-depth.html %}
 

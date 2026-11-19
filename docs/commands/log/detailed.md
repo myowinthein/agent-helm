@@ -1,5 +1,5 @@
 ---
-title: log
+title: Log
 description: "Log helps agents pick up a project with useful context. It combines source evidence with lessons you confirm, then proposes focused changes to the instructions future sessions read."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/log.md
 ---
 
-# log
+# Log
 
 {% include guide-depth.html %}
 

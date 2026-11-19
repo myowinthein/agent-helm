@@ -1,5 +1,5 @@
 ---
-title: refactor
+title: Refactor
 description: "Refactor looks for changes that make this project's code easier to maintain without changing its behavior. You choose the worthwhile work after seeing its benefit, transformation risk and verification plan."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/refactor.md
 ---
 
-# refactor
+# Refactor
 
 {% include guide-depth.html %}
 

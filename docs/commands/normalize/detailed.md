@@ -1,5 +1,5 @@
 ---
-title: normalize
+title: Normalize
 description: "Normalize reviews commit messages and can apply the corrections you approve. Because a message change creates new commit identities, the workflow coordinates affected branches and preserves verified recovery evidence before rewriting."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/normalize.md
 ---
 
-# normalize
+# Normalize
 
 {% include guide-depth.html %}
 

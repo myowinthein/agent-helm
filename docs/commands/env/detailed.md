@@ -1,5 +1,5 @@
 ---
-title: env
+title: Env
 description: "Env reviews configuration and Git protection without exposing secret values. It helps you separate real problems from intentional differences between services and environments, then plan only the fixes you want."
 parent: Commands
 nav_exclude: true
@@ -11,7 +11,7 @@ source_files:
   - guides/env.md
 ---
 
-# env
+# Env
 
 {% include guide-depth.html %}
 

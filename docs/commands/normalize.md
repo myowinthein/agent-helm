@@ -1,12 +1,12 @@
 ---
-title: normalize
+title: Normalize
 description: Review Git commit messages, coordinate affected branches and approve local history corrections with private recovery evidence before publication.
 parent: Commands
 detailed: /docs/commands/normalize/detailed.html
 nav_order: 8
 ---
 
-# normalize
+# Normalize
 
 {% include guide-depth.html %}
 
