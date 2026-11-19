@@ -44,7 +44,7 @@ You can also supply lessons from the current conversation. Log checks them along
 
 Log checks whether existing content helps future agent decisions, as well as whether its facts are correct. It can propose shortening excessive detail, consolidating repetition or removing temporary task records, while preserving useful rationale and custom structure. Full scans cover all existing knowledge; Gap scans address affected passages and selected concerns.
 
-Before approval, the proposal shows exact additions and removals using `+` and `-`, followed by a clean preview of what the affected content would become. Color highlighting depends on your client. You can apply all, select changes, revise or cancel; the preview itself changes no files. New safety instructions need explicit approval. Editorial changes alone do not establish a new source review.
+Before approval, existing-file changes show exact additions and removals using `+` and `-`, followed by a clean preview of the affected content. A new file is shown in full once, with new safety rules identified for approval rather than printed again. Color highlighting depends on your client. You can apply all, select changes, revise or cancel; previews change no files. Editorial changes alone do not establish a new source review.
 
 ## Your result
 
