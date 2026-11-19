@@ -24,6 +24,12 @@ Guides to using Agent Helm at different points during project development. Each 
 | Publish reviewed work or prepare a release | [ship]({{ '/docs/commands/ship.html' | relative_url }}) |
 | Preserve a project for later recovery | [archive]({{ '/docs/commands/archive.html' | relative_url }}) |
 
+## How scripts help
+
+Supporting scripts handle repeatable work such as parsing records, comparing data and checking commit-message structure. The agent interprets the results and keeps your decisions and approvals separate. Scripts are used where needed; website builds and maintainer tests are not extra steps in your project workflow.
+
+An error in a read-only inspection can receive one bounded correction using the same inputs. A real blocker, changed evidence or an unresolved verification failure still stops the command.
+
 ## Where files are saved
 
 Helm saves workflow records in your project and recovery backups in your home directory. Claude and Codex share these locations in the same project folder and OS account.

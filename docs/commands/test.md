@@ -34,6 +34,8 @@ Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-com
 
 A failed prerequisite stops the run, including further assessment or planning. A later setup, verification or checkpoint failure preserves completed assessments and actual drafts without continuing other work.
 
+A project without a saved assessment record needs no Python setup merely to begin source assessment; saving results still requires valid records.
+
 ## Choose the review scope
 
 - **Full scan:** assess scoped behavior and the protection provided by existing tests.

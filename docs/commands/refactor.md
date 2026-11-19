@@ -33,6 +33,8 @@ Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-com
 
 A failed prerequisite stops the run before further reading or planning. It does not switch automatically to source-only advice; earlier verified work remains preserved.
 
+A project without a saved assessment record needs no Python setup merely to begin source assessment; saving results still requires valid records.
+
 ## Choose the review scope
 
 | Choice | Use it to |

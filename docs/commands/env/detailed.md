@@ -42,6 +42,8 @@ The audit reads configuration roles, key names and source references. It does no
 
 A required prerequisite or safe-inspection failure stops the run. Findings already collected remain reportable, but further checks and fix planning wait for a new eligible run. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
+The agent may use a small filter to inspect key names and classifications safely. It does not need a custom timestamp-tracking system. If that read-only filter or check has an identifiable programming error, it can correct it once and repeat the same check before continuing. Actual file changes, unsafe access or verification that remains unavailable still stop the run. The final report leads with the env outcome, even when an earlier task such as a commit succeeded.
+
 ## What gets checked
 
 A useful review follows the actual configuration layers: application code, templates, service overrides and externally provisioned settings. Required, optional and unknown keys are distinguished. An override file need not repeat everything in a baseline, and a key supplied by hosting is not necessarily missing from the system.

@@ -1,10 +1,8 @@
 # Optional live checks: real CLI behavior in disposable projects, never a global install.
 require "json"
 require "pathname"
-require "tempfile"
-require "timeout"
 require "tmpdir"
-require_relative "smoke_support"
+require_relative "acceptance_support"
 
 client = ARGV.fetch(0, "codex")
 abort "Usage: ruby scripts/smoke_layout.rb [codex|claude] [case ...]" unless %w[codex claude].include?(client)
@@ -91,51 +89,37 @@ cases.each do |name, scenario|
     else
       ["codex", "exec", "--ephemeral", "--skip-git-repo-check", "--sandbox", "workspace-write", "--json", "--cd", workspace.to_s, prompt]
     end
-    Tempfile.create("helm-layout-output") do |stdout|
-      Tempfile.create("helm-layout-errors") do |stderr|
-        pid = Process.spawn(HelmSmoke.environment, *args, chdir: workspace, in: File::NULL, out: stdout, err: stderr, pgroup: true)
-        begin
-          _, status = Timeout.timeout(300) { Process.wait2(pid) }
-        rescue Timeout::Error
-          Process.kill("KILL", -pid) rescue nil
-          Process.wait(pid) rescue nil
-          raise "#{name}: #{client} timed out"
-        end
-        stdout.rewind; raw = stdout.read
-        stderr.rewind
-        raise "#{name}: CLI failed: #{stderr.read[-1000..]} #{raw[-2000..]}" unless status.success?
-        if client == "claude"
-          result = JSON.parse(raw)
-          raise "#{name}: wrong model or error" unless result.fetch("modelUsage").key?(HelmSmoke::CLAUDE_MODEL) && !result["is_error"]
-          answer = result.fetch("result")
-        else
-          events = raw.lines.filter_map { |line| JSON.parse(line) rescue nil }
-          raise "#{name}: Codex failed" if events.any? { |e| %w[error turn.failed].include?(e["type"]) }
-          answer = events.filter_map { |e| e.dig("item", "text") if e.dig("item", "type") == "agent_message" }.join("\n")
-        end
-        raise "#{name}: no final response" if answer.to_s.strip.empty?
-        expected.each do |path, contents|
-          raise "#{name}: wrong #{path}" unless HelmSmoke.read_regular(workspace, path) == contents.b
-        end
-        if scenario[:fresh]
-          owner = HelmSmoke.read_regular(workspace, "AGENTS.md")
-          entry = HelmSmoke.read_regular(workspace, "CLAUDE.md")
-          raise "#{name}: missing shared layout" unless entry.lines.map(&:strip).include?("@AGENTS.md")
-          raise "#{name}: missing project identity" unless owner.include?("## Project Identity")
-          raise "#{name}: invented review marker" if owner.include?("last-reviewed:")
-          raise "#{name}: wrong config" unless owner.include?("ship-method: direct")
-          expected = { "AGENTS.md" => owner, "CLAUDE.md" => entry }
-        end
-        HelmSmoke.assert_files_unchanged!(workspace, before, expected)
-        Array(scenario[:pending]).each { |value| raise "#{name}: pending issue not reported: #{answer}" unless answer.include?(value) }
-        if scenario[:no_git]
-          raise "#{name}: initialized Git" if workspace.join(".git").exist?
-        else
-          raise "#{name}: changed HEAD or branches" unless git(workspace, "rev-parse", "HEAD") == before_head && git(workspace, "branch", "--format=%(refname:short)") == "main"
-        end
-        HelmSmoke.assert_git_unchanged!(workspace, before_git)
-        puts "PASS #{client}: #{name} (exact files, preserved inputs and Git state)"
-      end
+    raw, stderr = HelmAcceptance.capture(HelmSmoke.environment, args, workspace, seconds: 300)
+    if client == "claude"
+      result = JSON.parse(raw)
+      raise "#{name}: wrong model or error" unless result.fetch("modelUsage").key?(HelmSmoke::CLAUDE_MODEL) && !result["is_error"]
+      answer = result.fetch("result")
+    else
+      events = raw.lines.filter_map { |line| JSON.parse(line) rescue nil }
+      raise "#{name}: Codex failed" if events.any? { |e| %w[error turn.failed].include?(e["type"]) }
+      answer = events.filter_map { |e| e.dig("item", "text") if e.dig("item", "type") == "agent_message" }.join("\n")
     end
+    raise "#{name}: no final response" if answer.to_s.strip.empty?
+    expected.each do |path, contents|
+      raise "#{name}: wrong #{path}" unless HelmSmoke.read_regular(workspace, path) == contents.b
+    end
+    if scenario[:fresh]
+      owner = HelmSmoke.read_regular(workspace, "AGENTS.md")
+      entry = HelmSmoke.read_regular(workspace, "CLAUDE.md")
+      raise "#{name}: missing shared layout" unless entry.lines.map(&:strip).include?("@AGENTS.md")
+      raise "#{name}: missing project identity" unless owner.include?("## Project Identity")
+      raise "#{name}: invented review marker" if owner.include?("last-reviewed:")
+      raise "#{name}: wrong config" unless owner.include?("ship-method: direct")
+      expected = { "AGENTS.md" => owner, "CLAUDE.md" => entry }
+    end
+    HelmSmoke.assert_files_unchanged!(workspace, before, expected)
+    Array(scenario[:pending]).each { |value| raise "#{name}: pending issue not reported: #{answer}" unless answer.include?(value) }
+    if scenario[:no_git]
+      raise "#{name}: initialized Git" if workspace.join(".git").exist?
+    else
+      raise "#{name}: changed HEAD or branches" unless git(workspace, "rev-parse", "HEAD") == before_head && git(workspace, "branch", "--format=%(refname:short)") == "main"
+    end
+    HelmSmoke.assert_git_unchanged!(workspace, before_git)
+    puts "PASS #{client}: #{name} (exact files, preserved inputs and Git state)"
   end
 end

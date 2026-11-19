@@ -1,11 +1,9 @@
 # Optional live model checks in disposable repositories. Uses the signed-in CLI accounts.
 # These are behavioral checks, separate from offline package validation.
 require "json"
-require "open3"
 require "pathname"
-require "timeout"
 require "tmpdir"
-require_relative "smoke_support"
+require_relative "acceptance_support"
 
 client = ARGV.fetch(0, "codex")
 abort "Usage: ruby scripts/smoke_workflows.rb [codex|claude] [case]" unless %w[codex claude].include?(client)
@@ -106,9 +104,7 @@ cases.each do |name, scenario|
     else
       ["codex", "exec", "--ephemeral", "--sandbox", "workspace-write", "--json", "--cd", workspace.to_s, "#{instructions}\n\n#{prompt}"]
     end
-    stdout = stderr = status = nil
-    Timeout.timeout(240) { stdout, stderr, status = Open3.capture3(HelmSmoke.environment, *command, chdir: workspace, stdin_data: "") }
-    raise "#{name}: #{client} failed: #{stderr.to_s[-2000..]}" unless status.success?
+    stdout, stderr = HelmAcceptance.capture(HelmSmoke.environment, command, workspace)
     if client == "claude"
       result = JSON.parse(stdout)
       raise "#{name}: requested Claude model missing" unless result.fetch("modelUsage").key?(HelmSmoke::CLAUDE_MODEL)

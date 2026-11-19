@@ -52,7 +52,8 @@ module HelmSmoke
   end
 
   def git(workspace, *arguments)
-    output, status = Open3.capture2e(environment, "git", "-c", "core.fsmonitor=false", *arguments, chdir: workspace)
+    output, status = Open3.capture2e(environment, "git", "-c", "core.fsmonitor=false",
+      "-c", "maintenance.auto=false", "-c", "gc.auto=0", *arguments, chdir: workspace)
     raise "Fixture Git #{arguments.first} failed" unless status.success?
     output
   end

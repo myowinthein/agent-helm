@@ -198,15 +198,17 @@ def execute(command, request, settings):
     spec = settings["owners"][owner]
     limits = settings["limits"]
     expected = request.get("expected_digest")
-    require((expected is None and command == "ledger-check" and "expected_digest" not in request)
+    require((expected is None and "expected_digest" not in request)
             or isinstance(expected, str) and re.fullmatch(r"[0-9a-f]{64}", expected) is not None,
-            "View/revalidation requires the previous check's SHA-256", "expected_digest")
+            "Expected a previous result's SHA-256", "expected_digest")
     if command == "ledger-view":
         selected = filters(request, owner, settings["definitions"], limits)
         offset, limit = request.get("offset", 0), request.get("limit", limits["page_default"])
         require(type(offset) is int and 0 <= offset <= limits["records"]
                 and type(limit) is int and 1 <= limit <= limits["page_max"],
                 "Invalid page bounds", "page")
+        require(offset == 0 or expected is not None,
+                "Continuation requires the first result's SHA-256", "expected_digest")
         require(request.get("projection", "index") in ("index", "records"), "Invalid projection", "projection")
     root = workspace(request["workspace"], PACKAGE_ROOT)
     tripwire(root, spec["filename"])

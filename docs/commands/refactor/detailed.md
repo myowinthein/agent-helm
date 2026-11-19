@@ -42,7 +42,7 @@ flowchart TD
 
 Normal refactor checks branch eligibility and cleanliness before previewing project source: main/master, an established feature branch or an existing refactor branch. Source-only advice must be requested explicitly for an ineligible checkout and makes no code or record writes. Confirmed environment branches remain report-only even if their names start with `refactor/`.
 
-Existing assessment records are validated before the normal source inventory. Unsupported or malformed records end the run without a source-only fallback. A failed prerequisite stops the run before further reading or planning. It does not switch automatically to source-only advice; earlier verified work remains preserved. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
+Existing assessment records are validated before the normal source inventory. Where needed, one helper read can validate a record and return a useful index together. An absent record needs no parser setup until an approved first write requires validation; the agent does not build a replacement validator during the review. Unsupported or malformed records end the run without a source-only fallback. A failed prerequisite stops the run before further reading or planning. It does not switch automatically to source-only advice; earlier verified work remains preserved. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Choose the review scope
 

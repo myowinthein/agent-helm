@@ -432,10 +432,32 @@ class LedgerTests(unittest.TestCase):
         self.assertEqual(row["summary"], first["summary"])
         self.assertEqual(row["assessed_commit"], A)
 
-    def test_digest_is_required_and_changes_or_disappearance_conflict(self):
+    def test_initial_view_validates_and_returns_the_same_bound_index_in_one_call(self):
+        for owner in ("test", "refactor"):
+            with self.subTest(owner=owner):
+                self.write(document(owner), owner)
+                run = self.cli("ledger-view", self.request(owner))
+                self.assertEqual(run.returncode, 0, run.stderr)
+                result = json.loads(run.stdout)["result"]
+                self.assertTrue(result["structurally_validated"])
+                self.assertEqual(result, self.view(owner))
+                self.problem("invalid_input", lambda: self.execute("ledger-view", owner, offset=1))
+                self.problem("invalid_input", lambda: self.execute("ledger-view", owner, expected_digest=None))
+        self.write(document(), raw=b'{"schema_version":3,"schema_version":3,"cases":[]}')
+        self.assertEqual(self.cli("ledger-view").returncode, 4)
+
+    def test_initial_view_reports_missing_without_a_fictitious_empty_page(self):
+        result = self.execute("ledger-view")
+        self.assertEqual(result["status"], "missing")
+        self.assertIsNone(result["sha256"])
+        self.assertFalse(result["structurally_validated"])
+        self.assertNotIn("records", result)
+        self.assertFalse((self.consumer / ".helm").exists())
+
+    def test_bound_pages_changes_or_disappearance_conflict(self):
         path = self.write(document())
         checked = self.execute()
-        self.problem("invalid_input", lambda: self.execute("ledger-view"))
+        self.problem("invalid_input", lambda: self.execute("ledger-view", offset=1))
         self.problem("invalid_input", lambda: self.execute("ledger-view", expected_digest="not-a-digest"))
         path.write_text(common.encode(document(records=[test_case("changed")])))
         self.problem("conflict", lambda: self.execute("ledger-view", expected_digest=checked["sha256"]))
