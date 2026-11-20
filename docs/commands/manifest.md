@@ -18,9 +18,9 @@ Use manifest to create a README or keep an existing one accurate. It checks the 
 flowchart TD
   Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
   Gate -->|Yes| Review
-  Review["Review the README against the project"] --> Choose{"Accept proposed updates?"}
-  Choose -->|All or selected| Update["Update and check the README"]
-  Choose -->|Keep or cancel| Keep["Preserve existing content"]
+  Review["Review changes and the proposed result"] --> Choose{"Write proposed changes<br/>or Cancel?"}
+  Choose -->|Write| Update["Update and check the README"]
+  Choose -->|Cancel| Keep["Preserve existing content"]
 ```
 
 ## Start the command
@@ -60,9 +60,9 @@ When issue forms are configured, general reporting links use their chooser and l
 
 Manifest checks reader value as well as factual accuracy. Correct but excessive detail, repeated explanations or an unsuitable section can receive a concrete shortening, consolidation or removal proposal. Custom section changes still need your exact approval; useful human context and generated blocks remain protected.
 
-Review all proposed changes or a subset, ask for revision, or cancel. Commands, examples and links are checked against source without running example commands just to write documentation. Full scans assess all sections; Gap scans address affected passages and selected concerns. A bounded content repair alone does not establish a complete source review.
+For an existing README, you see additions and removals followed by the clean proposed result for affected passages. A new README appears once in full. Choose **Write proposed changes** or **Cancel**; you can type an exact selection or correction directly. A new draft also waits for content approval after its style or outline has been agreed.
 
-When a complete review finds only optional improvements, you can **keep the README unchanged and record the review**.
+Commands, examples and links are checked against source without running example commands just to write documentation. Full scans assess all sections; Gap scans address affected passages and selected concerns. A bounded content repair alone does not establish a complete source review. When a complete review finds only optional improvements, you can type **Keep README unchanged and record review**; this approves only the disclosed marker.
 
 ## Your result
 
@@ -70,4 +70,4 @@ You get the README, approved preferences and unresolved facts. A complete Full o
 
 Ordinary coding does not automatically rewrite or expand the README. It presents a [concrete proposal for your approval](../rules/safety.html#maintaining-command-outputs), or you can use manifest. Approved direct edits follow manifest’s authoring standards, preserve the selected standard or custom format and retain the review marker.
 
-With auto-commit off, a fully shown diff can be approved with or without its local commit. Changes follow your local commit policy and stay on the same branch. Use [ship](ship.html) to publish.
+With auto-commit off, approving the content permits writing it; a local commit needs its own approval unless your exact request already covered it. Changes stay on the same branch. Use [ship](ship.html) to publish.

@@ -30,12 +30,11 @@ flowchart TD
   Scope -->|Structure repair| Repair["Investigate the specific<br/>content or layout gaps"]
   Scan --> Review["Review proposed section changes"]
   Repair --> Review
-  Review --> Choice{"Apply the proposal?"}
-  Choice -->|Revise| Review
-  Choice -->|Skip| Finish
-  Choice -->|Keep prose and record review, when eligible| Marker["Update only the review marker"]
+  Review --> Choice{"Write proposed changes<br/>or Cancel?"}
+  Choice -->|Cancel| Finish
+  Review -.->|Explicit eligible marker-only request| Marker["Update only the disclosed marker"]
   Marker --> Finish
-  Choice -->|All or selected changes| Write["Update and read back<br/>the approved content"]
+  Choice -->|Write| Write["Update and read back<br/>the approved content"]
   Write --> Finish
 ```
 
@@ -80,11 +79,15 @@ Factual accuracy is one part of the review. Manifest also asks whether each asse
 
 A Full scan assesses every existing section; a Gap scan covers affected passages and concerns selected for review. Repair structure can address a bounded content problem without a full project investigation. A concrete document problem can be identified even without new source commits, but wording preferences alone do not force changes or prevent an already-current result.
 
-The proposal shows exact section-level changes and any structure or preference change. You can apply all, select changes, request revision or cancel. A section’s presence does not prove it was deliberately chosen, but it remains intact until its removal or restructuring is approved. Existing legal meaning, useful human context, anchors and generated material remain protected; no automatic relocation or size-based pruning occurs.
+For an existing README, the proposal shows a diff with literal additions and removals, then a **Proposed result after approval** preview of the affected passages. Structure, preference and review-marker changes are included where they belong, so you can see both what changes and what the result will read like. A new README appears once in full, without a duplicate additions-only diff or repeated sections. Choosing its style or outline does not approve the unseen draft.
 
-With auto-commit off, the review can include Apply and commit or Apply without committing when the exact diff, paths and subject are known. The approved result still needs readback and required checks; materially changed content needs a refreshed review.
+The standard actions are **Write proposed changes** and **Cancel**. Exact selections, corrections or replacement wording can be typed directly. Only affected passages need a refreshed preview and any missing approval; a wording correction does not automatically restart the scan or rewrite the rest of your README.
 
-Examples and commands are checked against source; they are not executed merely to write instructions. If a complete review finds only optional improvements, you can keep the prose and record that review instead.
+A section’s presence does not prove it was deliberately chosen, but it remains intact until its removal or restructuring is approved. Your custom outline and voice, existing legal meaning, useful human context, anchors and generated material stay protected. There is no automatic relocation or size-based pruning.
+
+With auto-commit off, approving the content authorizes its write. A commit needs a separate decision after verification unless your exact request already approved the content, paths and subject. The approved result still needs readback and required checks; choosing to leave it uncommitted preserves the actual draft.
+
+Examples and commands are checked against source; they are not executed merely to write instructions. If a complete review finds only optional improvements, you can type **Keep README unchanged and record review**. That authorizes the disclosed marker alone, with prose and preferences untouched; it is not an extra standard menu action. Cancel authorizes no pending content, preference or marker write.
 
 ## Your result
 
