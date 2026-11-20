@@ -59,10 +59,12 @@ def directory(value, private=False):
 
 
 @contextmanager
-def registry(common_dir, create=False):
+def registry(common_dir, create=False, *, name="normalize-handoffs"):
+    if name not in ("normalize-handoffs", "ship-backups"):
+        raise Invalid("Unsupported recovery registry")
     with directory(common_dir) as root, ExitStack() as stack:
         fd = root
-        for name in ("agent-helm", "normalize-handoffs"):
+        for name in ("agent-helm", name):
             if create:
                 try:
                     os.mkdir(name, 0o700, dir_fd=fd)
@@ -152,7 +154,7 @@ def availability(data):
         return "invalid"
 
 
-def register(common_dir, data):
+def register(common_dir, data, *, registry_name="normalize-handoffs"):
     name = data["run_id"] + ".json"
     validate(data, name)
     if availability(data) != "present":
@@ -160,7 +162,16 @@ def register(common_dir, data):
     raw = (json.dumps(data, sort_keys=True, ensure_ascii=True) + "\n").encode("ascii")
     if len(raw) > MAX_BYTES:
         raise Invalid("Locator exceeds the size limit")
-    with registry(common_dir, create=True) as fd, writer_lock(common_dir):
+    with registry(common_dir, create=True, name=registry_name) as fd, writer_lock(common_dir):
+        other = "ship-backups" if registry_name == "normalize-handoffs" else "normalize-handoffs"
+        with registry(common_dir, name=other) as other_fd:
+            if other_fd is not None:
+                try:
+                    os.stat(name, dir_fd=other_fd, follow_symlinks=False)
+                except FileNotFoundError:
+                    pass
+                else:
+                    raise Invalid("Run identity already belongs to another backup type")
         try:
             existing, saved = load(fd, name)
         except FileNotFoundError:

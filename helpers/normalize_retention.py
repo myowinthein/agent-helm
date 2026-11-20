@@ -33,22 +33,51 @@ UUID = re.compile(r"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\Z")
 SHA = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 REQUEST_FIELDS = {"schema_version", "run_id", "git_common_dir", "completed_at",
                   "published_refs", "release_outcome", "required_runs"}
+REGISTRIES = {"normalize": "normalize-handoffs", "ship": "ship-backups"}
 
 
 def home_directory():
     return Path(pwd.getpwuid(os.getuid()).pw_dir)
 
 
-def root_directory():
-    return home_directory() / "Agent Helm" / "normalize"
+def root_directory(kind="normalize"):
+    if kind not in REGISTRIES:
+        raise Invalid("Unsupported backup type")
+    return home_directory() / "Agent Helm" / kind
 
 
-def safe_run(data):
+def safe_run(data, kind="normalize"):
     run_id = data["run_id"]
-    expected = root_directory() / run_id
+    expected = root_directory(kind) / run_id
     if not UUID.fullmatch(run_id) or data["recovery_directory"] != str(expected):
         raise Invalid("Run is outside fixed same-user retention storage")
     return expected
+
+
+def register_ship(common_dir, data):
+    safe_run(data, "ship")
+    return locator.register(common_dir, data, registry_name=REGISTRIES["ship"])
+
+
+def registrations(common_dir):
+    result = []
+    ids = set()
+    for kind, name in REGISTRIES.items():
+        with locator.registry(common_dir, name=name) as fd:
+            if fd is None:
+                continue
+            for entry in locator.entries(fd):
+                if len(result) >= locator.MAX_ENTRIES:
+                    raise Invalid("Too many combined recovery registrations")
+                if locator.PENDING.fullmatch(entry):
+                    result.append((kind, None, entry.encode()))
+                    continue
+                data, raw = locator.load(fd, entry)
+                if data["run_id"] in ids:
+                    raise Invalid("Run identity occurs in both backup types")
+                ids.add(data["run_id"])
+                result.append((kind, data, raw))
+    return result
 
 
 def request_valid(data, common_dir):
@@ -196,37 +225,33 @@ def inventory(fd, prefix="", result=None, depth=0):
 def inspect(common_dir):
     records, public, opaque = {}, [], False
     digest = hashlib.sha256()
-    with locator.registry(common_dir) as fd:
-        if fd is None:
-            return {}, [], digest.hexdigest(), False
-        for name in locator.entries(fd):
-            if locator.PENDING.fullmatch(name):
-                opaque = True
-                public.append({"state": "unfinished_locator"})
-                digest.update(name.encode())
-                continue
-            data, raw = locator.load(fd, name)
-            digest.update(raw)
-            run_id = data["run_id"]
-            try:
-                path = safe_run(data)
-                with locator.directory(str(path), private=True) as run_fd:
-                    record, saved = read_receipt(run_fd)
-                request_valid(record["request"], common_dir)
-                if record["request"]["run_id"] != run_id:
-                    raise Invalid("Completion identity differs from its locator")
-                if receipt_seal(common_dir, run_id) != hashlib.sha256(saved).hexdigest():
-                    raise Invalid("Completion receipt changed after recording")
-                digest.update(saved)
-                records[run_id] = (data, record, saved)
-                public.append({"run_id": run_id, "state": "completed",
-                               "completed_at": record["request"]["completed_at"],
-                               "required_runs": record["request"]["required_runs"]})
-            except (OSError, ValueError):
-                # No receipt, legacy/out-of-root runs and unsafe inputs cannot
-                # establish completion or absence of cross-run dependencies.
-                opaque = True
-                public.append({"run_id": run_id, "state": "protected_unclassified"})
+    for kind, data, raw in registrations(common_dir):
+        digest.update(kind.encode() + b"\0" + raw)
+        if data is None:
+            opaque = True
+            public.append({"backup_kind": kind, "state": "unfinished_locator"})
+            continue
+        run_id = data["run_id"]
+        hint = {"run_id": run_id, "backup_kind": kind}
+        try:
+            path = safe_run(data, kind)
+            hint.update(recovery_directory=str(path), entrypoint=data["entrypoint"])
+            with locator.directory(str(path), private=True) as run_fd:
+                record, saved = read_receipt(run_fd)
+            request_valid(record["request"], common_dir)
+            if record["request"]["run_id"] != run_id:
+                raise Invalid("Completion identity differs from its locator")
+            if receipt_seal(common_dir, run_id) != hashlib.sha256(saved).hexdigest():
+                raise Invalid("Completion receipt changed after recording")
+            digest.update(saved)
+            records[run_id] = (kind, data, record, saved)
+            public.append(dict(hint, state="completed", completed_at=record["request"]["completed_at"],
+                               required_runs=record["request"]["required_runs"]))
+        except (OSError, ValueError):
+            # No receipt, legacy/out-of-root runs and unsafe inputs cannot
+            # establish completion or absence of cross-run dependencies.
+            opaque = True
+            public.append(dict(hint, state="protected_unclassified"))
     return records, public, digest.hexdigest(), opaque
 
 
@@ -237,9 +262,12 @@ def complete(common_dir, request, expected_digest):
         _, _, digest, _ = inspect(common_dir)
         if digest != expected_digest:
             raise Invalid("Recovery registry changed; preserve all backups")
-        with locator.registry(common_dir) as registry_fd:
-            data, _ = locator.load(registry_fd, run_id + ".json")
-        path = safe_run(data)
+        matches = [(kind, data) for kind, data, _ in registrations(common_dir)
+                   if data is not None and data["run_id"] == run_id]
+        if len(matches) != 1:
+            raise Invalid("Completion needs one exact registered backup")
+        kind, data = matches[0]
+        path = safe_run(data, kind)
         with locator.directory(str(path), private=True) as fd:
             try:
                 existing, _ = read_receipt(fd)
@@ -285,11 +313,11 @@ def cleanup(common_dir):
         return dict(result, cleanup="skipped", reason="Unclassified or unfinished runs have unknown dependencies")
     if not getattr(shutil.rmtree, "avoids_symlink_attacks", False):
         return dict(result, cleanup="skipped", reason="Safe directory removal is unavailable")
-    ordered = sorted(records, key=lambda run: (records[run][1]["request"]["completed_at"], run), reverse=True)
+    ordered = sorted(records, key=lambda run: (records[run][2]["request"]["completed_at"], run), reverse=True)
     keep = set(ordered[:KEEP])
     pending = list(keep)
     while pending:
-        for required in records[pending.pop()][1]["request"]["required_runs"]:
+        for required in records[pending.pop()][2]["request"]["required_runs"]:
             if required not in records:
                 return dict(result, cleanup="skipped", reason="Required historical evidence is missing or unclassified")
             if required not in keep:
@@ -302,18 +330,18 @@ def cleanup(common_dir):
     active_removal = None
     try:
         for run in selected:
-            data, record, saved = records[run]
-            with locator.directory(str(safe_run(data)), private=True) as fd:
+            kind, data, record, saved = records[run]
+            with locator.directory(str(safe_run(data, kind)), private=True) as fd:
                 info = os.fstat(fd)
                 if [info.st_dev, info.st_ino] != record["root_identity"] or read_receipt(fd)[1] != saved or inventory(fd) != record["inventory"]:
                     raise Invalid("Recovery contents changed after completion")
-        with locator.directory(str(root_directory()), private=True) as parent_fd, locator.registry(common_dir) as registry_fd:
-            for run in selected:
-                data, record, saved = records[run]
+        for run in selected:
+            kind, data, record, saved = records[run]
+            with locator.directory(str(root_directory(kind)), private=True) as parent_fd, locator.registry(common_dir, name=REGISTRIES[kind]) as registry_fd:
                 current, _ = locator.load(registry_fd, run + ".json")
                 if current != data:
                     raise Invalid("Recovery pointer changed before cleanup")
-                with locator.directory(str(safe_run(data)), private=True) as fd:
+                with locator.directory(str(safe_run(data, kind)), private=True) as fd:
                     info = os.fstat(fd)
                     if [info.st_dev, info.st_ino] != record["root_identity"] or read_receipt(fd)[1] != saved or inventory(fd) != record["inventory"]:
                         raise Invalid("Recovery changed before cleanup")
@@ -322,13 +350,13 @@ def cleanup(common_dir):
                 # never recursively removed on the strength of an earlier fd.
                 staging = ".retiring-" + run
                 os.mkdir(staging, 0o700, dir_fd=parent_fd)
-                result["pending_retirement_directory"] = str(root_directory() / staging)
+                result["pending_retirement_directory"] = str(root_directory(kind) / staging)
                 active_removal = run
                 staging_fd = os.open(staging, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent_fd)
                 try:
                     locator.owned(os.fstat(staging_fd), private=True)
                     os.rename(run, "backup", src_dir_fd=parent_fd, dst_dir_fd=staging_fd)
-                    with locator.directory(str(root_directory() / staging / "backup"), private=True) as fd:
+                    with locator.directory(str(root_directory(kind) / staging / "backup"), private=True) as fd:
                         info = os.fstat(fd)
                         if [info.st_dev, info.st_ino] != record["root_identity"] or read_receipt(fd)[1] != saved or inventory(fd) != record["inventory"]:
                             raise Invalid("Claimed recovery root differs from the completed run")
@@ -361,12 +389,23 @@ def cleanup(common_dir):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("inspect", "complete"))
+    parser.add_argument("action", choices=("inspect", "complete", "register-ship"))
     parser.add_argument("--git-common-dir", required=True)
     parser.add_argument("--expect-digest")
+    parser.add_argument("--run-id")
+    parser.add_argument("--recovery-directory")
+    parser.add_argument("--entrypoint")
     args = parser.parse_args()
     try:
-        if args.action == "inspect":
+        registration = (args.run_id, args.recovery_directory, args.entrypoint)
+        if args.action != "register-ship" and any(registration):
+            raise Invalid("Registration arguments require register-ship")
+        if args.action == "register-ship":
+            if not all(registration) or args.expect_digest is not None:
+                raise Invalid("Ship registration requires exact identity and paths")
+            result = register_ship(args.git_common_dir, {"run_id": args.run_id,
+                "recovery_directory": args.recovery_directory, "entrypoint": args.entrypoint})
+        elif args.action == "inspect":
             if args.expect_digest is not None:
                 raise Invalid("Inspect accepts only the Git common directory")
             _, runs, digest, _ = inspect(args.git_common_dir)

@@ -76,7 +76,7 @@ Ship finds and verifies [normalize's recovery evidence](normalize.html#your-resu
 
 Publication uses fixed `--force-with-lease` expectations and separate approval. A PR cannot replace published commit IDs. Other clone owners receive sync guidance; existing tags stay fixed, and rewording released history alone creates no release. A replacement backup preserves what is overwritten without proving the original rewrite or a missing release boundary. If you already pushed independently, ship verifies the remote and skips satisfied publication without retrospective approval.
 
-At the end of a fully successful Normalize publication cycle, including any selected release, Ship automatically retains the latest three completed recovery backups for this clone. It also keeps unfinished runs and older evidence still needed for history or release correspondence. Cleanup adds no approval pause; uncertain or changed backups are preserved and reported. A later independent cycle verifies its own backup against the current remote rather than replaying every completed cycle.
+At the end of a fully successful publication cycle, including any selected release, Ship automatically keeps the latest three completed backups total across Normalize and fallback remote-history backups for this clone. It also keeps unfinished runs and older evidence still needed for history or release correspondence. Cleanup adds no approval pause; uncertain or changed backups are preserved and reported. Fallback backups have their own local pointers for continuation and cleanup, without claiming the original rewrite was verified. A later independent cycle verifies its own backup against the current remote rather than replaying every completed cycle.
 
 ## Publish an archive backup
 

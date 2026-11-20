@@ -1,6 +1,7 @@
 """Locator mechanics in disposable clones; no models, live records or remote writes."""
 
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ import tempfile
 import types
 import unittest
 from unittest.mock import patch
+from contextlib import redirect_stdout
 
 sys.dont_write_bytecode = True
 HELPER = Path(__file__).resolve().parents[1] / "helpers/normalize_handoff.py"
@@ -288,14 +290,21 @@ class RetentionTests(unittest.TestCase):
     def run_id(self, number):
         return f"00000000-0000-4000-8000-{number:012d}"
 
-    def add_run(self, number):
+    def add_run(self, number, kind="normalize"):
         run = self.run_id(number)
-        path = self.base / run
+        base = self.home / "Agent Helm" / kind
+        base.mkdir(mode=0o700, parents=True, exist_ok=True)
+        path = base / run
         path.mkdir(mode=0o700)
-        for name, raw in (("handoff.json", b'{"verified":true}\n'), ("recovery.bundle", b"Synthetic recovery bytes\n")):
+        bundle = "recovery.bundle" if kind == "normalize" else "remote-before.bundle"
+        for name, raw in (("handoff.json", b'{"verified":true}\n'), (bundle, b"Synthetic recovery bytes\n")):
             (path / name).write_bytes(raw)
             (path / name).chmod(0o600)
-        mod.register(str(self.common), {"run_id": run, "recovery_directory": str(path), "entrypoint": "handoff.json"})
+        data = {"run_id": run, "recovery_directory": str(path), "entrypoint": "handoff.json"}
+        if kind == "normalize":
+            mod.register(str(self.common), data)
+        else:
+            retention.register_ship(str(self.common), data)
         return path
 
     def request(self, number, required=()):
@@ -328,6 +337,92 @@ class RetentionTests(unittest.TestCase):
         os.utime(self.base / self.run_id(1), (2100000000, 2100000000))
         self.add_run(4)
         self.assertEqual(self.finish(4)["deleted_runs"], [self.run_id(1)])
+
+    def test_mixed_backup_types_share_three_total_slots_and_keep_registries_distinct(self):
+        paths = {}
+        for number, kind in ((1, "normalize"), (2, "ship"), (3, "normalize"), (4, "ship")):
+            paths[number] = self.add_run(number, kind)
+            result = self.finish(number)
+        self.assertEqual(result["deleted_runs"], [self.run_id(1)])
+        self.assertEqual(result["kept_completed"], 3)
+        self.assertFalse(paths[1].exists())
+        self.assertTrue(all(paths[n].exists() for n in (2, 3, 4)))
+        self.assertEqual({x["run_id"] for x in mod.discover(str(self.common))["candidates"]}, {self.run_id(3)})
+        self.assertEqual({x["backup_kind"] for x in retention.inspect(str(self.common))[1]}, {"normalize", "ship"})
+        self.add_run(5)
+        result = self.finish(5)
+        self.assertEqual(result["deleted_runs"], [self.run_id(2)])
+        self.assertFalse(paths[2].exists())
+        self.assertFalse((self.common / "agent-helm/ship-backups" / (self.run_id(2) + ".json")).exists())
+        self.assertTrue(paths[3].exists())
+
+    def test_dependencies_cross_backup_types_and_unknown_ship_work_protects_both(self):
+        self.add_run(1, "ship")
+        self.finish(1)
+        self.add_run(2)
+        self.finish(2, [self.run_id(1)])
+        self.add_run(3, "ship")
+        self.finish(3, [self.run_id(2)])
+        for number, kind in ((4, "normalize"), (5, "ship")):
+            self.add_run(number, kind)
+            result = self.finish(number)
+        self.assertEqual(result["kept_completed"], 5)
+        self.assertEqual(result["protected_runs"], [self.run_id(1), self.run_id(2)])
+        self.add_run(9, "ship")
+        self.add_run(6)
+        self.assertEqual(self.finish(6)["cleanup"], "skipped")
+        self.assertTrue((self.home / "Agent Helm/ship" / self.run_id(1)).exists())
+
+    def test_ship_registration_requires_fixed_storage_and_unique_cross_type_identity(self):
+        normal = self.add_run(1)
+        wrong = {"run_id": self.run_id(1), "recovery_directory": str(normal), "entrypoint": "handoff.json"}
+        with self.assertRaises(ValueError):
+            retention.register_ship(str(self.common), wrong)
+        ship = self.home / "Agent Helm/ship" / self.run_id(1)
+        ship.mkdir(parents=True, mode=0o700)
+        entry = ship / "handoff.json"
+        entry.write_text('{}\n')
+        entry.chmod(0o600)
+        with self.assertRaises(ValueError):
+            retention.register_ship(str(self.common), dict(wrong, recovery_directory=str(ship)))
+        self.assertFalse((self.common / "agent-helm/ship-backups" / (self.run_id(1) + ".json")).exists())
+        self.add_run(2, "ship")
+        with self.assertRaises(ValueError):
+            self.add_run(2)
+        self.assertEqual(len(mod.discover(str(self.common))["candidates"]), 1)
+
+    def test_ship_cli_registration_is_pending_discoverable_and_not_normalize_proof(self):
+        run = self.run_id(1)
+        path = self.home / "Agent Helm/ship" / run
+        path.mkdir(parents=True, mode=0o700)
+        index = path / "backup-index.json"
+        index.write_text('{"pending":true}\n')
+        index.chmod(0o600)
+        arguments = [str(HELPER.with_name("normalize_retention.py")), "register-ship",
+                     "--git-common-dir", str(self.common), "--run-id", run,
+                     "--recovery-directory", str(path), "--entrypoint", index.name]
+        output = io.StringIO()
+        with patch.object(retention.sys, "argv", arguments), redirect_stdout(output):
+            self.assertEqual(retention.main(), 0)
+        self.assertEqual(json.loads(output.getvalue())["run_id"], run)
+        self.assertEqual(mod.discover(str(self.common)), {"candidates": [], "issues": []})
+        found = retention.inspect(str(self.common))[1][0]
+        self.assertEqual((found["backup_kind"], found["state"]), ("ship", "protected_unclassified"))
+        self.assertEqual((found["recovery_directory"], found["entrypoint"]), (str(path), index.name))
+        self.assertFalse((path / retention.RECEIPT).exists())
+
+    def test_changed_fallback_backup_blocks_combined_retirement(self):
+        first = self.add_run(1, "ship")
+        self.finish(1)
+        for number in (2, 3):
+            self.add_run(number)
+            self.finish(number)
+        (first / "remote-before.bundle").write_bytes(b"Preserve changed remote backup")
+        self.add_run(4)
+        result = self.finish(4)
+        self.assertEqual(result["cleanup"], "incomplete")
+        self.assertEqual(result["deleted_runs"], [])
+        self.assertEqual((first / "remote-before.bundle").read_bytes(), b"Preserve changed remote backup")
 
     def test_pending_or_unclassified_run_preserves_all_potential_dependencies(self):
         self.add_run(9)

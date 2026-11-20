@@ -16,7 +16,7 @@ The Git rules' **Local work and ship method** section owns common local/publicat
 
 **Narrow review-anchor exception:** only log/manifest validating an invalid marker may load [review-anchor recovery](review-anchor.md). It permits bounded read-only locator/map/object evidence for that marker, never live normalize state or publication. This is lazy caller-owned recovery, not runtime discovery; other workflows and source maintenance gain no access.
 
-**Narrow completed-backup exception:** only Ship's successful final stage may load [Normalize backup retention](normalize-retention.md), record verified private cycle completion and automatically retire eligible old recovery folders with their matching locators. Keep three completed cycles per clone plus unfinished/dependency-required proof. Discovery remains read-only; no new approval pause, live-ledger access, broad home search, source-maintenance cleanup or cleanup after failure follows.
+**Narrow backup-retention exception:** Ship may use [backup registration and retention](normalize-retention.md) for bounded read-only discovery and registration of an approved verified fallback remote backup before replacement. Its separate `ship-backups` pointer is never Normalize proof. Only Ship's successful final stage records verified completion and automatically retires eligible recovery folders and matching pointers/checksums, keeping three completed backups total across Normalize and fallback types per clone plus unfinished/dependency-required proof. No new approval pause, live-ledger access, broad home search, source-maintenance cleanup or cleanup after failure follows.
 
 ## Project instructions and configuration
 

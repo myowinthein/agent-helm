@@ -100,7 +100,7 @@ Saved ledgers, archive bundles and private recovery evidence are not ordinary so
 
 Source maintenance leaves those records opaque. Unsupported historical state is not automatically migrated or deleted. A source fix, a completed assessment and a verified closure are separate results, with their own evidence.
 
-Ship has one narrow automatic retirement path for completed Normalize backups. After every affected branch and selected publication/release action is verified complete, it keeps the newest three completed cycles for that clone and any older proof still required. It deletes only eligible verified recovery folders and their matching local pointers, with no new approval pause. Unfinished, unknown, modified or dependency-required evidence stays protected. Cleanup failure is reported separately and does not undo publication; ordinary coding and rule installation gain no cleanup authority.
+Ship has one narrow automatic retirement path for completed Normalize and fallback remote-history backups. After every affected branch and selected publication/release action is verified complete, it keeps three completed backups total across both types for that clone, plus older proof still required. It deletes only eligible verified recovery folders and their matching local pointers/checksums, with no new approval pause. Fallback pointers never establish that the original rewrite was verified. Unfinished, unknown, modified or dependency-required evidence stays protected. Cleanup failure is reported separately and does not undo publication; ordinary coding and rule installation gain no cleanup authority.
 
 ## Explore the source
 
