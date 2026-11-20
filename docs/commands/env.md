@@ -42,11 +42,15 @@ A required prerequisite or safe-inspection failure stops the run. An incorrect i
 | Values and syntax | Are there credible exposures, hardcoded settings or loader-specific problems? |
 | Git protection | Are private files protected, or are ignore rules hiding files the project needs? |
 
-The audit follows actual services and configuration layers. An override need not repeat every baseline key, and externally supplied settings need not appear in an `.env` file. Existing safe templates are also checked for stale, duplicated or misleading guidance. Findings show paths, key names and uncertainty without exposing values.
+The audit follows actual services and configuration layers. An override need not repeat every baseline key, and externally supplied settings need not appear in an `.env` file. Existing safe templates are also checked for stale, duplicated or misleading guidance. The report shows numbered issues with short explanations and readable diffs, rather than a checklist of passed checks. Paths, key names and uncertainty remain visible without exposing values.
 
 ## Choose the fixes
 
-Review one plan covering environment files, `.gitignore` or both, then approve the changes you want. A separate scope question is needed only when the plan depends on your answer. Source/templates, local-only work and external setup stay distinct; templates use placeholders and edits preserve configuration meaning.
+Review the proposed environment and `.gitignore` fixes, then choose **Apply recommended**, **Apply all proposed fixes** or **Skip**. Each apply choice lists its issue numbers; when recommended includes every ready fix, only Apply all proposed fixes is shown. You can type a subset such as `1–3, 6` or request a revision without a separate menu option.
+
+Recommendations weigh the issue's current or conditional impact, expected benefit and tradeoffs in this project. Short- and long-term effects matter when they differ; an important issue can still need a decision before its fix is ready. Large reports use a compact index and detailed batches, with approval covering only the fixes shown for that review.
+
+A separate scope question is needed only when the plan depends on your answer. Source/templates, local-only work and external setup stay distinct; templates use placeholders and edits preserve configuration meaning. Skip makes no changes for the current review and preserves any earlier verified work.
 
 Template cleanup is proposed before editing and preserves useful comments and safe defaults. A missing source reference alone does not prove a key can be removed; optional wording improvements stay separate from runtime and secret findings.
 

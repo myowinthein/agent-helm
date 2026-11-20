@@ -27,10 +27,10 @@ flowchart TD
   Audit --> Findings{"Actionable findings or<br/>a requested template?"}
   Findings -->|No| Report(["Report the scoped audit"])
   Findings -->|Yes| Plan["Review ready fixes or resolve<br/>missing scope before planning"]
-  Plan --> Choice{"Apply the plan?"}
-  Choice -->|Revise| Plan
+  Plan --> Choice{"Which ready fixes?"}
+  Choice -->|Typed revision| Plan
   Choice -->|Skip| Finish(["Finish locally"])
-  Choice -->|All or selected changes| Apply["Apply approved changes<br/>and verify their effects"]
+  Choice -->|Recommended, all or typed subset| Apply["Apply approved changes<br/>and verify their effects"]
   Apply --> Finish
 ```
 
@@ -54,7 +54,15 @@ For example, an ignored local file can still lack shared protection if only your
 
 ## Choose the fixes
 
-Findings identify paths and key names, explain the evidence and distinguish confirmed problems from uncertainty. When the fixes are clear, one review shows the exact environment and `.gitignore` changes and lets you approve all or a coherent subset. The agent asks about scope first only when your answer would change the plan. A changed selection is checked for dependencies before editing.
+The report leads with the issue count and a short note about scope or unverified areas. It shows problems directly rather than the audit's internal check/status grid. Each finding has a stable number, a short title, usually one or two sentences about what is wrong and its impact, and a diff showing the proposed change. Literal additions and removals remain readable without color, and existing values stay redacted. Manual configuration work instead identifies the exact keys, paths and actions.
+
+A recommendation weighs whether this is a current problem, a risk under certain conditions or an improvement without a demonstrated failure. Expected benefits are balanced against implementation effort, compatibility risk, added complexity and future maintenance. Short- and long-term effects are explained when they differ meaningfully. Evidence and project context guide the judgment, without a scoring system or a long assessment form. Authoritative guidance may help settle a meaningful uncertainty; routine fixes do not require research for its own sake.
+
+Recommended fixes have enough expected benefit to justify their tradeoffs and a concrete implementation ready without unresolved decisions or dependencies. An urgent finding may still need a choice before it is ready. Optional wording or optimization changes may be useful, but are not automatically recommended. The report gives the deciding reason and any material tradeoff briefly, keeping the diff prominent.
+
+When the fixes are ready, **Apply recommended — 1–3** selects the named recommended set, **Apply all proposed fixes — 1–5** includes the additional ready optional fixes, and **Skip** makes no changes for that review. These numbers are illustrative; the choices always identify the actual set. If recommended and all are identical, only Apply all proposed fixes appears; empty apply choices are omitted. You can type `2, 4–5`, exclusions or a revision instead of using separate Choose changes or Revise options. Subsets are checked for dependencies without silently adding changes you did not select. The agent asks about scope first only when your answer would change the plan.
+
+Large reports start with a compact numbered index and show full explanations and diffs in manageable batches. The review identifies its current numbers and what remains undisplayed. Each approval covers only the displayed ready fixes, never unseen later work. Dependencies are reviewed together or left pending. Skipping a later batch preserves changes already verified; it does not undo them.
 
 | Output | How it is handled |
 |---|---|

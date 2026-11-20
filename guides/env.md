@@ -6,7 +6,7 @@ Audit environment files, `.gitignore` and relevant project code/configuration, t
 
 Apply the shared runtime's instruction/configuration resolution first. Read effective Helm settings from `{memory_file}` when present, including bridges, overrides and recognized fenced configuration; genuinely absent settings use the Git rules' defaults. Env never creates/migrates an instruction owner, writes settings to AGENTS.md/CLAUDE.md, invokes log, or reads/writes/migrates operational Helm state. It owns no ledger or review marker.
 
-Read [`{package_root}/prompts/shared/content-sync.md`](../prompts/shared/content-sync.md) and perform its read-only eligibility checks before the normal audit. Record branch/HEAD, index/worktree status and relevant input identities without printing contents; an ineligible or unknown result stops the workflow before source/env reads, the eleven-check report or fix proposals. Only an explicitly requested read-only audit may inspect a dirty/detached/no-HEAD checkout under its static value-free boundary; it offers no writes. Neither route changes checkout, fetches or alters branches/index/files during inspection. Never commit, unstage, stash, reset or absorb pre-existing work to proceed.
+Read [`{package_root}/prompts/shared/content-sync.md`](../prompts/shared/content-sync.md) and perform its read-only eligibility checks before the normal audit. Record branch/HEAD, index/worktree status and relevant input identities without printing contents; an ineligible or unknown result stops the workflow before source/env reads, the issue report or fix proposals. Only an explicitly requested read-only audit may inspect a dirty/detached/no-HEAD checkout under its static value-free boundary; it offers no writes. Neither route changes checkout, fetches or alters branches/index/files during inspection. Never commit, unstage, stash, reset or absorb pre-existing work to proceed.
 
 Writes are eligible on the actual current main/master base, an established existing current feature branch or a confirmed current environment branch, under project policy and the helper's role checks. Unresolved or unsupported branch roles stop the normal workflow before the audit, never an automatic checkout. Recommend feature/main for shared configuration fixes and an environment branch for its intentional configuration differences or integrated-source problems; the same approved workflow actions remain available on every eligible role. Branch eligibility does not establish a safe runtime target or authorize publication, live provisioning or synchronization to another branch.
 
@@ -32,7 +32,9 @@ Group actual consumers and files by service, loader, mode and role. Record a lig
 
 Cover every relevant first-party area in the declared scope, using focused searches and supporting context instead of indiscriminately reading every file. Label checks complete, partial, blocked, not applicable or out of scope. A restricted/partial scan cannot support a project-wide clean-audit claim.
 
-### Keep the eleven checks
+### Internal audit coverage
+
+Assess all eleven checks and retain their outcomes in the invocation's working context. They define coverage, not the normal user-facing report: do not print a check/status grid or a row for every successful check.
 
 | Check | Assessment contract |
 |---|---|
@@ -76,12 +78,25 @@ Do not suggest blanket exclusions of canonical `.helm/`, shared AGENTS.md/CLAUDE
 
 ## Step 2: Report and select work before Git mutation
 
-Present an `ENV AUDIT REPORT` grouped by the eleven checks, with:
+Lead the `ENV AUDIT REPORT` with the number of confirmed issues and a brief scope/limitation note identifying the actual checkout/HEAD and relevant services/layers. Make no remote-freshness or runtime claim without evidence. Keep informational observations, uncertain findings and optional improvements distinct from the confirmed-issue count; mention them only when they affect a decision or follow-up.
 
-- Exact checkout/HEAD and dirty state; no remote-freshness claim or implied merged-base assessment.
-- Declared services/targets, files and roles, effective-layer assumptions and coverage limitations.
-- Invocation-stable finding IDs, locations/key names, confidence, impact, evidence and recommended action. Count unique confirmed problems separately from informational, uncertain, stylistic, partial and blocked checks.
-- Proposed committable template/source/gitignore changes, local-only work, report-only tracked/managed files and any external provisioning or exposure follow-up.
+Present findings directly with stable numbers that also serve as selection IDs:
+
+- A short title, such as **1. Mail settings can disappear when configuration is cached**.
+- Usually one or two short sentences explaining what is wrong, when it matters and its impact. Include the deciding recommendation reason and any material tradeoff; add context only when needed for an informed decision, not a fixed set of fields.
+- Name the affected paths/keys and show the proposed change in fenced `diff` blocks with literal `-` removals, `+` additions and enough context to locate the edit. Color may help when supported, but never carries meaning alone. Preserve the value-free boundary: redact existing values before display, including apparent placeholders. For manual entry, provisioning or other non-code work, show the exact key/path/action instead of inventing a patch.
+
+Do not repeat the same explanation in a long plan below the diff. The issue and its ready fix can form one review unit; a finding still needing a decision remains visibly pending.
+
+### Recommendation judgment
+
+Consider whether each finding is a current problem, a conditional/future risk or an improvement without a demonstrated failure. Weigh the expected benefit against implementation effort, regression/compatibility risk, added complexity and future maintenance in this project. Distinguish short- and long-term effects when they meaningfully differ. Use evidence, confidence, intentional configuration and practical judgment; no scores, fixed matrix or mandatory per-factor commentary.
+
+Recommend fixes whose expected benefit justifies their tradeoffs and whose concrete implementation is ready without unresolved intent or dependencies. Importance alone does not make a fix ready; optional wording/optimization work is not automatically recommended or automatically excluded. Explain the deciding reason briefly. Consult authoritative primary guidance only when uncertainty or the decision warrants it, and identify relevant supporting sources without a research requirement for every issue.
+
+### Large reports
+
+For a report too large to review comfortably, show a compact numbered index and present full issue explanations/diffs in manageable batches. State the current batch's numbers and which findings remain undisplayed; retain stable IDs and the complete internal coverage. Never silently truncate, drop findings or apply unseen changes. Each review authorizes only its displayed ready fixes, not future batches; later reviews cover only remaining work. Keep dependency units together, or leave them pending until they can be reviewed together.
 
 If no actionable findings exist and no template creation was requested, report the scoped audit result and finish without questions, writes or branch creation. Unknown/blocked coverage stays visible; do not claim the whole project is clean. Skip/none also exits without mutation.
 
@@ -99,11 +114,17 @@ On the same validated current branch, compare fresh source/instruction/configura
 
 Use current HEAD/status and focused safe checks of inputs relevant to the proposed fixes; recheck affected content before editing. Reuse the audit evidence without generating inode/timestamp snapshots or a separate fingerprint framework. Real unexpected source/HEAD/ownership/input changes stop the workflow. A malformed invocation of an existing read-only tool follows the shared runtime's bounded correction rule; creating or repairing a script is not permitted and no tool error alone proves drift. Expected approved edits are tracked separately. Ignored local env files are worktree-local inputs, not branch-versioned outputs; switching branches later does not merge or synchronize them.
 
-Present one consolidated redacted plan, grouped into coherent dependency units. Each unit lists finding IDs, exact paths/keys and action, minimal source/template/ignore patches, local or external requirements, dependency order and verification. Generated placeholders are safe to show; removed/replaced real values are never printed. Show new files as **Create** with exact path/key list and placeholder structure.
+Complete the displayed issue/diff review with only the execution details needed for approval: coherent dependency units, exact paths/keys and actions, local or external requirements, dependency order and verification. Reuse the shown patches rather than presenting a second long plan. Generated placeholders are safe to show; removed/replaced real values are never printed. Show new files as **Create** with exact path/key list and placeholder structure.
 
 On an environment branch, identify shared versus intentionally environment-specific fixes, or unresolved scope, in that same plan. Preserve intentional differences. Note when a shared fix may need deliberate application upstream or may be overwritten by later integration; never copy, merge or back-propagate it automatically. Resolve only material missing decisions through the existing approval, without a new per-run branch confirmation. Ignored local env inputs remain worktree-local, not branch-synchronized artifacts.
 
-Use **Apply plan**, **Choose changes**, **Revise**, or **Skip** (maximum four). Choose changes accepts IDs/groups/free text and produces an explicit bounded selection. Resolve differing duplicate assignments and existing-key conflicts with exact key/line/location choices. Ask only for missing decisions; reuse approval of the same concrete unit. Never treat silence or a selected target as approval. Untracking retains its separate confirmation below.
+Use the following compact Review actions, naming each ready selection with exact issue numbers; ranges such as `1–4, 7` are sufficient:
+
+- **Apply recommended — {numbers}** selects the displayed, ready recommended fixes and their disclosed dependencies.
+- **Apply all proposed fixes — {numbers}** selects every displayed, ready fix, including optional fixes. Show both apply actions only when their sets differ; when they are identical, show only Apply all proposed fixes. Omit an empty apply action. Informational observations, unresolved findings and undisplayed fixes are never included in either set.
+- **Skip — make no changes** exits this review without applying its fixes; preserve any earlier verified work, never undo it automatically.
+
+Accept explicit numbers, ranges, exclusions or a requested revision through free text; do not add separate Choose changes or Revise menu options. Check subsets for coherent dependencies without silently expanding approval. A changed proposal needs review only for the affected content; reuse unchanged concrete approval. Resolve differing duplicate assignments and existing-key conflicts with exact key/line/location choices before offering their fix. Ask only for missing decisions; silence or target selection is not approval. Existing separate confirmations, including untracking and any required commit approval, remain separate and cannot be supplied by an apply action over unknown effects.
 
 A selected subset can be a valid outcome. Apply no dependency unit halfway: if a required destination, template decision, ignore protection or key conflict is unresolved, leave that unit pending and proceed only with independent approved units. No fixed finding-count threshold or per-file commit requirement.
 
@@ -170,7 +191,7 @@ Report audit scope and fixes separately:
 
 - Outcome: scoped audit complete/partial/blocked, no actionable findings, fixes complete/partial/skipped or pending. Never label skipped/manual/incomplete work simply ENV COMPLETE.
 - Actual snapshot/coverage, services and file roles; no fetched-remote or runtime claims without evidence.
-- Finding IDs grouped by the eleven checks: verified resolved, retained/intentional, skipped, still missing, uncertain, developer-attested or blocked. Count actual verified file/key edits, not Done answers.
+- Finding numbers and their actual outcomes: verified resolved, retained/intentional, skipped, still missing, uncertain, developer-attested or blocked. Summarize changed and outstanding issues without repeating the eleven-check grid or full proposals. Count actual verified file/key edits, not Done answers.
 - Templates updated/created and exact paths; report-only tracked/managed files, preserved local-only edits, exposure/provisioning/manual follow-up and dependency units still pending, with values omitted.
 - Static checks actually performed versus unrun runtime checks; commit eligibility and any blocked safe inspection.
 - Actual local drafts/verified commits, current branch, preserved local-only edits and remaining checks/dependencies. Publication, PR, integration, promotion and checkout were not performed; invoke ship separately when ready.
@@ -183,7 +204,7 @@ Use [question mechanism (QM)](../prompts/shared/question-mechanism.md) at the ex
 |---|---|
 | Unresolved loader/file role, environment branch or intended key behavior | Input using paths/key names only; Single for evidenced alternatives. Never request secret values. |
 | Env files and .gitignore work | One Review of the concrete selectable plan when ready; Multi/Single scope input only when needed before planning. |
-| Coherent redacted fix/template plan | Review; Choose changes → Multi by finding IDs, Revise → Input. |
+| Coherent redacted fix/template plan | Review with the ready numbered recommended/all sets and Skip; accept subset or revision intent through free text, using Multi/Input only when clarification is needed. |
 | Duplicate assignments or existing-key conflicts | Single for exact safe location/action alternatives; Input for missing nonsecret intent. Resolve before the unit's Review. |
 | Exact untracking operation | Separate Review preserving local files and explaining history limits. |
 | Local commit when invocation policy requires approval | Review of committable paths only; local env inputs remain unstaged. |
