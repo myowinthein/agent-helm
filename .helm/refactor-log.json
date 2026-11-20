@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "assessed_commit": "3a6e0eeb8b1222965517be7027677dde45a182d4",
-  "full_scan_commit": "3a6e0eeb8b1222965517be7027677dde45a182d4",
+  "assessed_commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+  "full_scan_commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
   "findings": [
     {
       "id": "r-7d02b3b4-6359-416d-a0d0-29b8f96fc8bb",
@@ -1722,36 +1722,6 @@
           }
         ]
       }
-    },
-    {
-      "id": "r-4d6be95f-4352-43da-9c6e-34cd6ebc690a",
-      "category": "Performance",
-      "summary": "Normalize traverses and allocates the same ancestry set twice when a compatible saved baseline equals the requested tip.",
-      "paths": [
-        "helpers/normalize_check.py",
-        "scripts/test_normalize.py"
-      ],
-      "found": {
-        "origin": "native",
-        "commit": "3a6e0eeb8b1222965517be7027677dde45a182d4",
-        "date": "2026-11-20"
-      },
-      "assessment": {
-        "origin": "native",
-        "commit": "3a6e0eeb8b1222965517be7027677dde45a182d4",
-        "date": "2026-11-20",
-        "priority": "low",
-        "risk": "needs-review",
-        "reason": "The supported unchanged-baseline path repeats one complete graph traversal and set allocation per branch. Reusing the existing history set avoids that work with one equality condition; no latency improvement has been measured.",
-        "evidence": [
-          "helpers/normalize_check.py:218 computes reachable(graph, tip); line 231 computes reachable(graph, last_checked_commit) again after compatibility and ancestry checks, including when the two commits are identical.",
-          "covered is subsequently intersected with recheck and subtracted from history, never mutated in place; invalidation rebinds covered to an empty set.",
-          "scripts/test_normalize.py:test_reused_noop_returns_no_semantic_work protects the equal-tip path; test_new_concern_invalidates_reused_prefix protects invalidation on an older baseline. An additive equal-tip recheck guard belongs to the proposed refactor's verification."
-        ],
-        "invariant": "Preserve selected commit IDs and ordering, counts, branch statuses, policy and contract checks, cross-branch coverage precedence, recheck invalidation and input immutability; keep ordinary ancestor traversal for unequal baselines."
-      },
-      "state": "open",
-      "depends_on": []
     }
   ]
 }
