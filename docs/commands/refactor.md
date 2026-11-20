@@ -54,13 +54,13 @@ The review considers architecture, contracts/state, code clarity, performance, e
 
 Bugs, new features, behavior-changing security fixes, upgrades and migrations remain separate work.
 
-<a id="priority-risk-and-your-selection"></a>
+<span id="priority-risk-and-your-selection"></span>
 
 ## Review findings and choose changes
 
 Numbered findings explain the current burden, the proposed improvement and what behavior must stay unchanged, usually in one or two sentences. New and reassessed findings appear together by behavior, without priority tiers or a status grid. A small before/after example can clarify a structural change when needed.
 
-Recommendations weigh concrete benefit against effort, regression risk, complexity and future upkeep. Choose **Apply recommended**, **Apply all ready changes**, or **Cancel**, with exact finding numbers shown. Hide Recommended when it matches All and omit empty Apply choices. Type subsets, exclusions or revisions directly; their resulting changed plan needs review before work.
+Recommendations weigh concrete benefit against effort, regression risk, complexity and future upkeep. Choose **Apply recommended**, **Apply all ready changes**, or **Cancel**, with exact finding numbers shown. When both Apply choices cover the same work, you see only All; choices with no ready work are omitted. You can type a subset, exclusion or revision and review its resulting plan before work begins.
 
 Paths, dependencies, preserved behavior, checks and record effects are shown before approval. The approved assessment is saved before code or guard work begins. Cancel before recording makes no changes; later cancellation preserves earlier accepted work. Saving only findings remains available through an explicit request, without another routine menu option.
 
@@ -76,6 +76,6 @@ Refactor can maintain existing tests and add guards needed for a chosen change. 
 
 You get verified local changes, actual check results and remaining findings. Saved history supports later runs; skipped, deferred or accepted-risk findings are not treated as fixed.
 
-Relevant findings are reconsidered across open, resolved and obsolete states. The same continuing problem keeps its identity despite new wording or moved files. A genuine later recurrence gets a new linked finding while preserving the earlier verified closure; repeated descriptions alone do not establish recurrence. Records stay concise and are retrieved in bounded pages, without deleting useful history or reassessing the whole ledger on every Gap scan.
+Later reviews reconsider relevant findings, including previously closed ones. A continuing problem keeps its identity; a verified problem that returns later gets a linked finding while preserving its earlier closure. Useful history stays intact, and a Gap scan does not reassess unrelated findings.
 
 Work finishes on the same branch under your local commit policy. Use [ship](ship.html) separately to publish.

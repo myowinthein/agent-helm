@@ -43,7 +43,7 @@ flowchart TD
 
 Normal test checks for clean main/master, an established feature or maintenance branch, or a confirmed environment branch before source/test inventory. An explicitly requested read-only source assessment can inspect pending edits without project execution, ledger access or fixes. The workflow preserves unrelated work instead of stashing it to make room.
 
-Existing assessment records are validated before the normal source inventory. Where needed, one helper read can validate a record and return a useful index together. An absent record needs no parser setup until an approved first write requires validation; the agent does not build a replacement validator during the review. Unsupported or malformed records end the run without a source-only fallback. A failed prerequisite stops the run, including further assessment or planning. A later setup, verification or checkpoint failure preserves completed assessments and actual drafts without continuing other work. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
+Saved assessments are checked before source review. With no existing record, source assessment needs no Python setup until an approved save requires validation. Invalid or unsupported records stop the run with an explanation. Later setup or verification failures preserve completed assessments and drafts, while questions wait for your answer.
 
 ## Choose the review scope
 
@@ -71,7 +71,7 @@ Existing tests can be clarified or consolidated. Removing one needs evidence tha
 
 For example, a payment retry case should verify the externally important outcome, such as avoiding a duplicate charge. Repeating each internal helper call in an assertion can make the test brittle without protecting that outcome.
 
-<a id="priorities-and-your-selection"></a>
+<span id="priorities-and-your-selection"></span>
 
 ## Review findings and choose changes
 
@@ -103,11 +103,9 @@ Work proceeds in coherent groups of cases. Failed, unavailable or deferred requi
 
 The report separates the assessment, test changes, measured results and remaining work. Saved findings preserve decisions and useful closed history; deferred, skipped and accepted-risk cases do not count as verified protection.
 
-Status records what was established in its context. An open case is reassessed when relevant: it may still need work, now have adequate protection, or no longer apply. A resolved case is checked when related changes or a matching observation put its guarantee in question; proven loss of protection reopens that same case. An obsolete case can return when its original requirement returns. A file edit or unavailable runner alone cannot determine any of these outcomes, and an old passing result never becomes a current pass automatically. Earlier deferral decisions are reused only while their context still holds.
+Later reviews reconsider relevant cases against current behavior and tests. An open case may still need work, already be protected or no longer apply. If a resolved case loses its protection, or an obsolete requirement returns, test reopens the same case. A file edit or unavailable runner alone proves none of these outcomes, and an old pass does not become a current pass automatically.
 
-Records keep concise guarantees, evidence references, actual decisions and supported closures. The helper returns bounded index pages and relevant full records across all states, avoiding a full ledger dump into each review. Path and wording changes can require different focused lookups; an empty narrow search is not proof that the issue is new. Unrelated closed history is not reassessed on every Gap scan. Paging reduces review context, while complete structural validation still has a cost and preserves its resource limits.
-
-The ledger holds current judgments; Git retains prior versions. It does not accumulate full logs, repeated run summaries or every existing test. Useful closed records and unknown fields remain preserved, and size alone never authorizes deleting them or rewriting their evidence. Later runs can continue from this history without pretending the whole project was reassessed.
+Saved findings retain your decisions, evidence and useful closed history. Changed wording or paths do not turn the same missing guarantee into a new finding. Earlier deferrals apply only while their context still holds. A Gap scan leaves unrelated history intact and makes clear which findings were not freshly reviewed.
 
 Changes finish locally on the same branch. [Refactor](../refactor.html#refactor-vs-test) owns behavior-preserving source improvements; neither workflow invokes the other automatically.
 

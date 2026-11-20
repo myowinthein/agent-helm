@@ -42,7 +42,7 @@ flowchart TD
 
 Normal refactor checks branch eligibility and cleanliness before previewing project source: main/master, an established feature branch or an existing refactor branch. Source-only advice must be requested explicitly for an ineligible checkout and makes no code or record writes. Confirmed environment branches remain report-only even if their names start with `refactor/`.
 
-Existing assessment records are validated before the normal source inventory. Where needed, one helper read can validate a record and return a useful index together. An absent record needs no parser setup until an approved first write requires validation; the agent does not build a replacement validator during the review. Unsupported or malformed records end the run without a source-only fallback. A failed prerequisite stops the run before further reading or planning. It does not switch automatically to source-only advice; earlier verified work remains preserved. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
+Saved assessments are checked before source review. With no existing record, source assessment needs no Python setup until an approved save requires validation. Invalid or unsupported records stop the run with an explanation; the command does not automatically switch to source-only advice. Earlier verified work remains preserved, and questions wait for your answer.
 
 ## Choose the review scope
 
@@ -57,7 +57,7 @@ Full scan combines discovery with reassessment of all open findings in scope, in
 
 Gap scan starts at the last valid saved assessment, which may be several commits back. It follows changed behavior and affected unchanged consumers, tests, configuration and dependencies, revisiting related findings in any status. Older open findings outside that surface remain visible as not freshly reviewed and need reassessment before current work is proposed. A changed filename alone cannot determine status.
 
-Revisit open findings replaces the Fix Backlog name, matching test's revisit terminology. It starts from selected records and follows complete relevant logical units through current patterns, contracts, consumers, tests and dependencies. An old path or fixed file/hop count cannot establish enough evidence. Once the selected judgment is supported, there is no need to inspect unrelated areas or search indefinitely. If context is unavailable or effects cannot be bounded, the report explains the limit and may recommend broader review, waiting for your choice before starting discovery. Incidental new observations stay separate follow-ups.
+Revisit open findings starts from the selected needs and traces the current implementation, contracts and tests until a judgment is supported. For example, moving a file does not establish that its old problem is fixed. Missing context is explained, and any broader discovery waits for your scope choice. Unrelated observations remain separate follow-ups.
 
 A revisit can retain a need, revise its remedy or propose a supported resolution/obsolescence update. It preserves both saved scan baselines, even when all open findings were selected. Explicit source-only advice remains available on request without code or record writes, ledger access or helper execution, rather than as a normal menu choice.
 
@@ -69,7 +69,7 @@ The review considers architecture, contracts and state, code clarity, performanc
 
 A proposal needs a concrete benefit. Extracting a small function may clarify duplicated business behavior; adding a new abstraction around a single straightforward call may increase the maintenance burden instead. Bugs, features, behavior-changing security fixes, upgrades and migrations remain separate work.
 
-<a id="priority-risk-and-your-selection"></a>
+<span id="priority-risk-and-your-selection"></span>
 
 ## Review findings and choose changes
 
@@ -103,11 +103,11 @@ Refactor may maintain existing tests and add guards needed for a selected transf
 
 The report identifies actual local changes, verification and remaining findings. Stable finding identities preserve your selections and useful history. Skipping, deferring or accepting risk does not mean an issue was resolved.
 
-Before calling a problem new, refactor compares its underlying burden, preserved behavior and evidence with relevant records across all states. A different explanation, category, proposed remedy or set of files does not automatically justify a new finding. Several symptoms can be one problem; a genuine split into independent needs is explained with its old-to-new mapping. Ambiguous matches remain a reconciliation question rather than silently becoming more records.
+Later reviews compare problems with earlier findings, including closed ones. Different wording, moved files or several symptoms do not automatically make a new problem. The same continuing need keeps its identity; an ambiguous match is clarified before it becomes another finding.
 
-An open finding is checked for continuing need, a verified fix or proved loss of applicability. A successful past fix keeps its resolved record. If that problem demonstrably returns later, a new finding links to the earlier one through `recurrence_of`; this differs from test's same-case reopening. A formerly inapplicable problem can likewise return as a linked finding. A record closed as a duplicate leads back to its retained finding instead of generating another duplicate. A same-run attempt disproved by verification can reopen its original entry without pretending it was a successful historical fix. Missing old evidence alone does not prove recurrence.
+A problem that returns after a verified fix, or after becoming inapplicable, gets a linked finding that preserves its earlier history. Test instead reopens the same case when its protection is lost. A failed attempt in the current run remains unresolved rather than being presented as a successful fix followed by a recurrence.
 
-Summaries and judgments stay concise, with concrete evidence and check references instead of transcripts, raw logs or repeated run narratives. Bounded index pages and relevant full-record lookups keep unrelated history out of review context; moved files can require more than a narrow path lookup. Paging does not remove the cost of full structural validation. Unknown data, first-seen facts, decisions, dependency links and useful closed history remain preserved; age or size alone never authorizes deleting them. Git retains earlier judgments, and unrelated records are not rewritten merely to make the ledger look fresh or smaller.
+Your decisions, supporting evidence and useful closed history stay intact. A review does not delete older findings or rewrite unrelated records to make them look fresh. New judgments need current evidence; missing old evidence alone proves neither resolution nor recurrence.
 
 A source edit, complete assessment and verified fix are separate achievements. Only supported results advance their respective records. Work stays on the current branch; [ship](../ship.html) handles publication.
 

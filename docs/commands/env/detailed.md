@@ -42,7 +42,7 @@ The audit reads configuration roles, key names and source references. It does no
 
 A required prerequisite or safe-inspection failure stops the run. Findings already collected remain reportable, but further checks and fix planning wait for a new eligible run. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
-The audit uses existing native tools for discovery and a fixed packaged dotenv extractor for key names, locations and classifications. The extractor keeps multiline value text out of its key list and reports unsupported syntax without printing it. It does not validate the loader or test credentials. It creates no filtering/parser script or timestamp-tracking system. If the required safe inspection is unavailable, it reports the gap and stops. One incorrect tool invocation or data argument may be corrected and retried; that permits no code creation or repair. Actual file changes and unsafe access still stop the run. The final report leads with the env outcome, even when an earlier commit succeeded.
+To keep values private, the audit uses existing tools to extract key names, locations and safe classifications. It does not test credentials or generate a parser during the run. Unsupported input or unavailable safe inspection is reported as a blocker; it does not become a raw-value dump or an assumed successful check.
 
 ## What gets checked
 

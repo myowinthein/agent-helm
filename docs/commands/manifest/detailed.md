@@ -79,19 +79,17 @@ Factual accuracy is one part of the review. Manifest also asks whether each asse
 
 A Full scan assesses every existing section; a Gap scan covers affected passages and concerns selected for review. Repair structure can address a bounded content problem without a full project investigation. A concrete document problem can be identified even without new source commits, but wording preferences alone do not force changes or prevent an already-current result.
 
-For an existing README, the proposal shows a diff with literal additions and removals, then a **Proposed result after approval** preview of the affected passages. Structure, preference and review-marker changes are included where they belong, so you can see both what changes and what the result will read like. A new README appears once in full, without a duplicate additions-only diff or repeated sections. Choosing its style or outline does not approve the unseen draft.
+For an existing README, you see a diff with literal additions and removals, followed by a **Proposed result after approval** preview. Structure, preference and review-marker changes are included. A new README appears once in full; agreeing its style or outline does not approve the unseen draft.
 
-The standard actions are **Write proposed changes** and **Cancel**. Exact selections, corrections or replacement wording can be typed directly. Only affected passages need a refreshed preview and any missing approval; a wording correction does not automatically restart the scan or rewrite the rest of your README.
+Choose **Write proposed changes** or **Cancel**, or type an exact selection or correction. A revised proposal refreshes only affected previews and missing approval, without restarting the scan or rewriting unrelated content.
 
-A section’s presence does not prove it was deliberately chosen, but it remains intact until its removal or restructuring is approved. Your custom outline and voice, existing legal meaning, useful human context, anchors and generated material stay protected. There is no automatic relocation or size-based pruning.
+A section may merit removal even if its facts are accurate, but it stays intact until that change is approved. Your custom outline, voice, legal meaning, useful human context, anchors and generated material remain protected.
 
-With auto-commit off, approving the content authorizes its write. A commit needs a separate decision after verification unless your exact request already approved the content, paths and subject. The approved result still needs readback and required checks; choosing to leave it uncommitted preserves the actual draft.
-
-Examples and commands are checked against source; they are not executed merely to write instructions. If a complete review finds only optional improvements, you can type **Keep README unchanged and record review**. That authorizes the disclosed marker alone, with prose and preferences untouched; it is not an extra standard menu action. Cancel authorizes no pending content, preference or marker write.
+Examples and commands are checked against source without executing them merely to write documentation. Approved edits need readback and required checks. With auto-commit off, a commit needs its own decision unless your exact request already covers the content, paths and subject; you can leave the draft uncommitted.
 
 ## Your result
 
-A completed source review can advance the marker to the snapshot actually checked. Partial repairs, unresolved factual gaps and a saved style preference do not establish complete coverage. Declining optional wording alone need not invalidate a completed factual review.
+A completed source review can advance the marker to the snapshot actually checked. If only optional suggestions remain, you can type **Keep README unchanged and record review** to approve the disclosed marker alone. This leaves prose and preferences untouched. Cancel authorizes no pending writes; partial repairs, unresolved factual gaps and style-only changes do not establish a complete new review.
 
 The final result identifies the chosen README, actual changes, retained uncertainties and local commit status. Use [ship](../ship.html) for publication.
 

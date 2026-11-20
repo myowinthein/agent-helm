@@ -59,13 +59,9 @@ Wrap an existing clear phrase. Make only the smallest wording correction needed 
 
 Use verified canonical domains and actual routes. HTTPS is preferred where supported. Preserve working hostnames; non-www is only a default for a new project when hosting supports it. Display an origin as `https://example.com`, but keep path slashes, queries and fragments according to the destination's router. External websites retain their own canonical form.
 
-### Choose opening behavior and indicators
-
-These interface standards now belong to [Interaction's link guidance](../interaction/detailed.html#links). They apply when that rule is separately selected, within the same reference pass. Writing remains independently usable for editorial selection and meaningful labels.
-
 ### Verify the finished reference
 
-Read the linked phrase back in its sentence, check the destination and fragment, and preserve established anchors when headings change. Report inaccessible sources and unperformed verification. Interaction owns its relevant interface-state and opening checks; source inspection alone does not establish working interaction.
+<span id="choose-opening-behavior-and-indicators"></span>Read the linked phrase back in its sentence, check the destination and fragment, and preserve established anchors when headings change. Report inaccessible sources and unperformed verification. When separately selected, [Interaction](../interaction/detailed.html#links) adds opening behavior, indicators and control-state checks within this same pass. Writing remains independently usable, and source inspection alone does not establish working interaction.
 
 ## Examples
 

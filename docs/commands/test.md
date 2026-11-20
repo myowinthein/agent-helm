@@ -52,7 +52,7 @@ The approach follows the project. Suggestions might be unit or integration cases
 
 Existing tests can be improved, consolidated or replaced. Removal requires proved obsolescence or equivalent remaining protection; a failure is not a reason to weaken assertions.
 
-<a id="priorities-and-your-selection"></a>
+<span id="priorities-and-your-selection"></span>
 
 ## Review findings and choose changes
 
@@ -72,6 +72,6 @@ Existing tools come first; installation, upgrades and service/database effects s
 
 You get test changes, actual check results and remaining work. An approved assessment saves findings before implementation; each case closes only when its protection is verified. Skipped or blocked work stays visible for later runs. Coverage is reported only when measured.
 
-The ledger helps recognise the same missing guarantee across scans, even when its explanation or files change. Relevant open, resolved and obsolete cases are reconsidered against current evidence; a closed case is neither ignored forever nor automatically reopened after an edit. The same need keeps its identity. Records stay concise, with bounded retrieval and useful closed history preserved; a Gap scan does not reassess the whole ledger every time.
+Saved findings carry your decisions between runs. The same testing need keeps its identity despite new wording or moved files, and related closed cases are reconsidered when their protection may have changed. Useful history stays intact; a Gap scan does not reassess unrelated findings.
 
 Work finishes on the same branch under your local commit policy. Use [refactor](refactor.html#refactor-vs-test) for behavior-preserving code maintenance and [ship](ship.html) for publication.

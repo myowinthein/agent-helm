@@ -43,25 +43,8 @@ Comparable elements should reuse established patterns. Similar dialog errors can
 
 Layouts should preserve access to content and actions as the viewport narrows, text grows or navigation changes. Consider keyboard operation, focus, reading order, contrast and reduced motion as part of normal interface work. WCAG 2.2 Level AA is the default accessibility reference, including its stated exceptions.
 
-### Theme preferences
-
-The extracted [Interaction guidance](../interaction/detailed.html#theme-preferences) explains automatic and saved choices, cross-tab updates and unavailable storage. Design retains readable colors and visual accessibility across supported themes.
-
-### Input limits
-
-[Interaction](../interaction/detailed.html#input-limits) now explains counters, pasted text, counting consistency and accessible validation feedback. Layout work preserves accepted data and existing controls.
-
-### Cursors
-
-[Interaction](../interaction/detailed.html#cursors) now covers pointer cues, unavailable states and recovery. Visual changes preserve working keyboard and touch operation.
-
-### Links
-
-[Interaction](../interaction/detailed.html#links) now owns opening behavior, destination indicators and native download/protocol handling. Meaningful editorial references remain with Writing.
-
-### Link appearance
-
-[Interaction](../interaction/detailed.html#link-appearance) now owns recognizable link states, underlines and focus feedback, using the project's palette and visual accessibility requirements. Its detailed policies require separate selection; Design alone preserves existing working interactions.
+<span id="theme-preferences"></span><span id="input-limits"></span><span id="cursors"></span><span id="links"></span><span id="link-appearance"></span>
+Visual work keeps labels, hints, errors and links readable across the supported layouts and themes. The separately selected [Interaction rule](../interaction/detailed.html#controls-and-feedback) explains control behavior: saved preferences, input feedback, cursors and navigation. Design preserves existing working controls even when Interaction is not selected; meaningful editorial references remain with Writing.
 
 ## Preserve project choices
 

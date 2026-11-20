@@ -26,25 +26,8 @@ Reuse established styling for comparable messages, loading states, separators an
 
 Layouts should work across narrow and wide viewports, preserving access to content and actions as navigation changes. [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) is the default accessibility reference, including its stated exceptions.
 
-### Theme preferences
-
-System preferences, saved choices and switching behavior are covered by [Interaction](interaction.html#theme-preferences).
-
-### Input limits
-
-Counters, preserved input and validation feedback are covered by [Interaction](interaction.html#input-limits).
-
-### Cursors
-
-Pointer cues and control states are covered by [Interaction](interaction.html#cursors).
-
-### Links
-
-Opening behavior, external indicators and downloads are covered by [Interaction](interaction.html#links).
-
-### Link appearance
-
-Recognizable link states, underlines and focus feedback are covered by [Interaction](interaction.html#link-appearance), within the project's palette and visual accessibility requirements. It is selected separately; Design preserves existing working interactions without requiring it.
+<span id="theme-preferences"></span><span id="input-limits"></span><span id="cursors"></span><span id="links"></span><span id="link-appearance"></span>
+The separately selected [Interaction rule](interaction.html#controls-and-feedback) covers themes, input feedback, cursors and link behavior. Design keeps layouts and visual states readable while preserving existing working controls.
 
 ## Preserve project choices
 

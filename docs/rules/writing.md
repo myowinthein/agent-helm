@@ -42,7 +42,7 @@ Specific topics point to the relevant section; broad introductions point to the 
 
 Use the project's verified canonical URLs, preferring HTTPS where supported. Preserve working hostnames; non-www is a default for new projects only when hosting and HTTPS support it. Display origins like `https://example.com` without a trailing slash, while page paths follow the site's routing; a serialized root `/` remains valid. Preserve queries, fragments and external sites' canonical addresses.
 
-Check the resulting sentence, destination and fragment. Preserve existing anchors when headings change and report verification gaps. Link opening, external indicators and interaction states now belong to the independently selected [Interaction](interaction.html#links) rule. [Design](design.html) covers visual composition and responsive layout; neither is a Writing dependency.
+Check the resulting sentence, destination and fragment. Preserve existing anchors when headings change and report verification gaps. The independently selected [Interaction](interaction.html#links) rule covers link opening, external indicators and interaction states. [Design](design.html) covers visual composition and responsive layout; neither is a Writing dependency.
 
 ## Examples
 

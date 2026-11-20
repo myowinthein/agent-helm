@@ -29,9 +29,7 @@ flowchart TD
 Codex → $adopt    Claude → /adopt
 ```
 
-Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Normal adoption checks for clean **main or master** before comparing rules or showing the action table. A project without Git history can receive uncommitted files. Request a read-only inspection explicitly if that is your goal.
-
-A blocker ends the run with its reason and known checkout facts. It does not continue into rule comparisons, a suggested-action table or an apply question.
+Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Normal adoption checks for clean **main or master** before comparing rules; a blocker is reported and ends the run before proposals. A project without Git history can receive uncommitted files. Request a read-only inspection explicitly if that is your goal.
 
 **Adopt cannot run on Helm's own source checkout or a plugin installation.** Those use maintained source rules directly. Try adoption in a separate consumer project.
 
