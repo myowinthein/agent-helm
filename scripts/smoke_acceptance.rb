@@ -178,13 +178,12 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
     if scenario[:waiting_history_canary]
       HelmAcceptance.assert_normalize_waiting!(result, history_canary: scenario.fetch(:waiting_history_canary))
       unless scenario[:readiness] == :stop
-        required_notice = ["Normalize may change commit IDs across multiple branches.",
-          "Inform your team about the upcoming normalize process.",
-          "Push any unpublished branches you want included before continuing.",
-          "Pause pushes, merges and creating new branches until normalize and ship finish.",
-          "Run normalize, then ship straight away in the same terminal and project folder.",
-          "Make sure affected branches allow rewritten history to be pushed.",
-          "After ship, sync local branches with the rewritten history before resuming. Do not merge the old history back."]
+        required_notice = ["Normalize can change commit IDs across affected branches.",
+          "Tell collaborators that history will be rewritten.",
+          "Push unpublished work on branches intended for this coordinated rewrite.",
+          "Pause pushes, merges and branch creation until normalize and ship finish, then sync before resuming.",
+          "Confirm that affected remote branches permit history replacement.",
+          "After publication, everyone must sync with the rewritten history before resuming. Do not merge the old history back."]
         raise "First gate omitted its full actionable notice" unless required_notice.all? { |line| answer.include?(line) }
         raise "First gate replaced plain warning bullets with bold labels" unless required_notice.drop(1).all? { |line| answer.lines.any? { |actual| actual.strip.match?(/\A(?:>\s*)?[-*] /) && actual.include?(line) && !actual.include?("**") } }
       end

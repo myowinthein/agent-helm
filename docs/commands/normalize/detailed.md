@@ -36,9 +36,8 @@ flowchart TD
   Changes -->|No| Checkpoint["Save review coverage only when proven"]
   Changes -->|Yes| Impact["Prove the full affected graph, constraints and recovery plan"]
   Impact --> Approval{"One final message and impact decision"}
-  Approval -->|Edit or change selection| Messages
   Approval -->|Cancel| Report["Report without rewriting or saving new review coverage"]
-  Approval -->|Apply| Rewrite["Continue to approved rewrite and verification"]
+  Approval -->|Rewrite all proposed changes| Rewrite["Continue to approved rewrite and verification"]
   ReviewOnly --> Report
 ```
 
@@ -66,7 +65,9 @@ A failed prerequisite stops the run without further history reading, planning or
 
 An ordinary run first shows the full coordination notice, then waits for **Team ready** or **Stop**. An explicitly read-only request skips that coordination question and creates no records or recovery artifacts.
 
-Readiness means you have coordinated included branches, conflicting work and later synchronization with other clones. It is not enforcement on teammates or devices, and approves neither rewriting nor pushing.
+Before answering, tell collaborators that history will change and have them push unpublished work on branches intended for this coordinated rewrite. Private branches need not be published. Pause pushes, merges and branch creation during normalize and ship, and keep the pause until affected clones have synced with the published history. Confirm that the affected remote branches permit history replacement. Do not merge old history back afterward.
+
+Readiness acknowledges that coordination. It is not enforcement on teammates or devices, and approves neither rewriting nor pushing. Continue with ship in the same clone with retained recovery evidence; using another terminal or session in that clone is supported.
 
 After readiness, the agent checks for newly pushed agreed branches. Any fetch or local branch preparation needs its concrete **Prepare listed branches / Stop** approval before the inventory is frozen. Preparation continues in the same run so a newly discovered branch is not quietly omitted. A separately explicit local-only review remains read-only and cannot advance to Apply.
 
@@ -76,17 +77,21 @@ The current local branch is the default, with named branches, ranges or broader 
 
 Python can check message syntax, while the agent reads changes to assess meaning. A correctly formatted subject can still misdescribe a commit. Bodies, trailers and breaking-change information remain unless their proposed changes are shown explicitly.
 
-Review exact old and new messages together with the impact. You can change the selection, revise wording or cancel. Earlier semantic review is reused only while its evidence still matches; an unchanged formatting result alone establishes no such coverage.
+The report starts with the reviewed scope and proposed change count, followed by compact before/after messages identified by commit. A short reason helps when the original title misdescribes the patch; routine prefix corrections need no repeated explanation. Small plans show every edit once. Larger plans can show representative examples with the complete exact plan available before approval, without cutting off undisplayed corrections. Earlier semantic review is reused only while its evidence still matches; an unchanged formatting result alone establishes no such coverage.
+
+For example, a title such as `update README.md` could become `fix(navigation): update active-link highlighting` when the patch also corrects navigation behavior. The explanation should identify that mismatch, without describing every changed line or showing a table of successful checks.
 
 ## Which branches change?
 
-Every affected existing or approved prepared local branch must be handled together. Changing an older commit also changes its descendants' IDs, even when their messages and file contents stay the same. A blocked affected branch stops the coordinated rewrite.
+The impact block always lists every affected local branch and its current tip. A branch included because it shares a corrected ancestor is identified briefly; its unique messages are not automatically audited or edited. Every affected existing or approved prepared local branch must be handled together. Changing an older commit also changes its descendants' IDs, even when their messages and file contents stay the same. A blocked affected branch stops the coordinated rewrite.
 
 Tags and excluded refs remain fixed. Consequently, an old release tag can point to history that is no longer an ancestor of the rewritten branch. Commit signatures may also be lost. Other clones require deliberate synchronization afterward.
 
 ## Approve and verify the rewrite
 
-One final decision covers exact messages, affected branches, commit and tag effects, and the recovery plan. The unchanged plan is not asked twice, but changed scope or messages need the corresponding review again.
+The final actions are **Rewrite all proposed changes / Cancel**. “All” covers the exact proposed messages and complete affected local branch graph in the displayed plan; it does not expand the review to every commit in the repository. The impact block distinguishes message changes from all changed commit IDs, identifies published corrections and explains actual tag/signature effects, review-record changes and recovery. Remote refs stay unchanged until separately approved publication.
+
+You can type a wording correction or narrower message selection without a separate menu action. The revised messages and branch impact are shown before approval. Uncertain findings remain outside the proposed rewrite. The unchanged plan is not asked twice, but changed scope or messages need the corresponding review again. Cancel or skip creates no new checkpoint or recovery artifacts and preserves any earlier approved branch preparation.
 
 Applying requires Python and git-filter-repo. The approved message map is data; fixed code shipped with Helm applies replacements to exact commit IDs. The agent does not generate or edit a rewrite callback during the run. Unsupported replacement encodings require a separately reviewed implementation before rewriting. Before rewriting, the agent verifies recovery material under `Agent Helm/normalize/<run-id>/` in your OS user's home, outside every checkout. An interrupted continuation reuses its existing folder.
 
