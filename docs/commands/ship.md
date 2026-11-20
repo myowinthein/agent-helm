@@ -71,7 +71,7 @@ Choose targets or finish without them. Fully prepared choices can appear in the 
 
 A release requires ship to start on **main/master with ready integrated work**. An open code PR must be merged independently before rerunning.
 
-Review the version, tag, metadata, notes and checks in one release decision, choosing a tag alone or a tag plus its hosted release page when supported. Proposals follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and actual compatibility changes; 0.x, initial and prerelease versions need an explicit suitable choice.
+Review the version, tag, metadata, notes and checks, then choose **Release vX.Y.Z with hosted page** or **Skip release**. Ship puts its recommendation first. You can type a different version or request a tag alone; Ship reviews that revised plan before publishing. Proposals follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and actual compatibility changes; 0.x, initial and prerelease versions need an explicit suitable choice.
 
 New tag annotations and hosted release titles normally match the exact tag. Notes explain the main benefit, necessary upgrade steps and relevant changes, with empty sections omitted. Prerelease and Latest settings are explicit choices, subject to hosting support.
 

@@ -41,7 +41,7 @@ flowchart TD
   Method -->|PR handoff| Targets
   Targets --> Ready{"Started on main/master<br/>with a ready release?"}
   Ready -->|No or skip| End
-  Ready -->|Yes| Release["Review version, notes and<br/>tag-only or hosted-page choice"]
+  Ready -->|Yes| Release["Review version and notes;<br/>release tag with hosted page or skip"]
   Release --> Result["Verify checks; publish the selected outputs<br/>or hand off a metadata PR"]
   Result --> End
 ```
@@ -80,7 +80,11 @@ Direct mode integrates, checks and publishes each chosen target. PR mode creates
 
 A release needs ready, integrated work on main/master and its own decision. An open source PR must be merged independently first. If release metadata itself needs a PR, tagging waits for that integration too.
 
-Review the semantic version, exact tag, metadata, release notes and checks together. Where supported, choose a tag alone or a tag plus its hosted release page in that same review. Ship creates a selected page only after verifying Git publication and required checks; tag-only selection does not lead to another page offer. Initial, 0.x and prerelease versions need choices suited to their actual compatibility. New tag annotations and hosted titles normally match the tag exactly; notes explain the benefit, necessary upgrade steps and relevant changes without empty boilerplate sections.
+Review the semantic version, exact tag, metadata, release notes and checks together. The usual decision has two choices: **Release vX.Y.Z with hosted page** and **Skip release**, with the recommended action first and a short reason. Release covers both the tag and its GitHub/GitLab release page. Ship creates or verifies that page only after verifying Git publication and required checks, reusing CI-owned release creation where applicable.
+
+Type a different version or request a tag alone when needed; those are ordinary requests rather than extra menu options. Ship checks the revised version and effects, then presents the updated plan for approval. If hosted publication is unavailable, it reports that gap instead of silently releasing only a tag. A required metadata PR offers **Prepare release PR / Skip release** and stops at the verified PR handoff; tagging and the page wait for integration and a later release review.
+
+Initial, 0.x and prerelease versions need choices suited to their actual compatibility. New tag annotations and hosted titles normally match the tag exactly; notes explain the benefit, necessary upgrade steps and relevant changes without empty boilerplate sections.
 
 Prerelease and Latest settings are explicit. Published tags and versions remain immutable. Package publication, asset uploads and deployment are separate operations; a release page alone proves none of them.
 
