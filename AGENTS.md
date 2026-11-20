@@ -55,6 +55,7 @@ Before editing the following content, read and follow its standard alongside the
 - Documentation or instruction changes that affect the guides: [docs/standards/documentation.md](docs/standards/documentation.md).
 - README content: [docs/standards/readme.md](docs/standards/readme.md).
 - Project descriptions in GitHub About, plugin manifests, README/site metadata or related variants: [docs/standards/project-description.md](docs/standards/project-description.md).
+- Mechanical helper development or review, including callers: [docs/standards/mechanical-helper-audit.md](docs/standards/mechanical-helper-audit.md).
 
 ## Domain Rules
 
