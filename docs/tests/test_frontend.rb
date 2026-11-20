@@ -14,6 +14,7 @@ source = <<~JS
     var request = new XMLHttpRequest();
     request.onload = function(){
       if (request.status >= 200 && request.status < 400) {
+        var docs = JSON.parse(request.responseText);
         searchLoaded(index, docs);
       } else {
         console.log('Error loading ajax request. Request status:' + request.status);

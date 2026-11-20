@@ -5,6 +5,21 @@
   let stylesheet = document.getElementById('helm-theme-stylesheet') || document.querySelector('link[rel="stylesheet"]');
   let pendingStylesheet;
   let mode = 'system';
+  let feedback = '';
+
+  const showFeedback = message => {
+    feedback = message;
+    const status = document.getElementById('theme-status');
+    if (status) status.textContent = message;
+  };
+  const reportFailure = () => {
+    const current = stylesheet.href.endsWith('just-the-docs-dark.css') ? 'Dark' : 'Light';
+    document.documentElement.style.colorScheme = current.toLowerCase();
+    showFeedback(`Could not load the selected theme. Still using ${current}. Choose another theme to try again.`);
+  };
+  stylesheet.addEventListener('error', () => {
+    if (stylesheet.dataset.themeLoadFailed) reportFailure();
+  });
 
   try {
     const saved = localStorage.getItem(storageKey);
@@ -14,12 +29,15 @@
   }
 
   const applyTheme = () => {
+    delete stylesheet.dataset.themeLoadFailed;
+    showFeedback('');
     const theme = mode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : mode;
     const href = new URL(`just-the-docs-${theme}.css`, stylesheet.href).href;
     pendingStylesheet?.remove();
     pendingStylesheet = null;
 
     if (stylesheet.href !== href) {
+      showFeedback('Loading theme…');
       // Keep the current styles active while the selected theme loads.
       const next = stylesheet.cloneNode();
       next.removeAttribute('id');
@@ -30,23 +48,26 @@
         stylesheet = next;
         stylesheet.id = 'helm-theme-stylesheet';
         pendingStylesheet = null;
+        document.documentElement.style.colorScheme = theme;
+        showFeedback('');
       });
       next.addEventListener('error', () => {
         if (pendingStylesheet !== next) return;
         next.remove();
         pendingStylesheet = null;
-        document.documentElement.style.colorScheme = stylesheet.href.endsWith('just-the-docs-dark.css') ? 'dark' : 'light';
+        reportFailure();
       });
       pendingStylesheet = next;
       stylesheet.after(next);
     }
 
-    document.documentElement.style.colorScheme = theme;
+    if (!pendingStylesheet) document.documentElement.style.colorScheme = theme;
     const selector = document.getElementById('theme-mode');
     if (selector) selector.value = mode;
   };
 
-  applyTheme();
+  if (stylesheet.dataset.themeLoadFailed) reportFailure();
+  else applyTheme();
   systemTheme.addEventListener('change', () => {
     if (mode === 'system') applyTheme();
   });
@@ -61,6 +82,7 @@
     const selector = document.getElementById('theme-mode');
     if (!selector) return;
     selector.value = mode;
+    showFeedback(feedback);
     selector.closest('.theme-switcher').hidden = false;
     selector.addEventListener('change', () => {
       mode = selector.value;

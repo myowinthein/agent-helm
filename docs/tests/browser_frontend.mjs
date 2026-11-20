@@ -84,19 +84,34 @@ try {
   await page.route('**/search-data.json',async route=>{count++;await new Promise(resolve=>setTimeout(resolve,500));await route.continue();});
   await page.goto(pageUrl('docs/commands/log.html'));
   await page.locator('#search-input').fill('archive');
+  assert.equal(await page.locator('#search-status').textContent(),'Loading search…');
+  assert(await page.locator('#search-status').isVisible());
+  assert.equal(await page.locator('#search-input').getAttribute('aria-busy'),'true');
   await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
   assert.equal(await page.locator('#search-input').inputValue(),'archive');assert.equal(count,1);
+  assert.equal(await page.locator('#search-status').textContent(),'');
+  assert.equal(await page.locator('#search-input').getAttribute('aria-busy'),null);
   console.log('PASS slow search: first query preserved, one request');await context.close();
  }
  // Failed requests may be retried on the next search interaction.
- {
+ for (const failure of ['http', 'network', 'invalid-json']) {
   const context=await createContext();const page=await context.newPage();let count=0;
-  await page.route('**/search-data.json',async route=>{count++;if(count===1)await route.fulfill({status:503,body:'Unavailable'});else await route.continue();});
+  await page.route('**/search-data.json',async route=>{
+   count++;
+   if(count!==1)return route.continue();
+   if(failure==='network')return route.abort();
+   await route.fulfill({status:failure==='http'?503:200,body:failure==='http'?'Unavailable':'{invalid'});
+  });
   await page.goto(pageUrl('docs/commands/log.html'));
-  await page.locator('#search-input').focus();await page.waitForTimeout(100);
+  await page.locator('#search-input').focus();
+  await page.waitForFunction(()=>document.getElementById('search-status').textContent.includes('Could not load search'));
+  assert.equal(await page.locator('#search-status').getAttribute('role'),'status');
+  assert(await page.locator('#search-status').isVisible());
+  assert.equal(await page.locator('#search-input').getAttribute('aria-busy'),null);
   await page.locator('#search-input').fill('archive');
   await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
-  assert.equal(count,2);console.log('PASS failed search: retry succeeds');await context.close();
+  assert.equal(await page.locator('#search-status').textContent(),'');
+  assert.equal(count,2);console.log(`PASS failed search (${failure}): visible feedback and retry`);await context.close();
  }
  for(const fault of ['no-js','storage-blocked','saved-light','saved-dark','dark-css-failed']) {
   const context=await createContext({javaScriptEnabled:fault!=='no-js',colorScheme:'dark'});const page=await context.newPage();
@@ -106,6 +121,11 @@ try {
   await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   const expected=['no-js','saved-light','dark-css-failed'].includes(fault)?'light':'dark';
   await background(expected)(page);
+  if(fault==='dark-css-failed') {
+   await page.waitForFunction(()=>document.getElementById('theme-status').textContent.includes('Still using Light'));
+   assert.equal(await page.locator('#theme-mode').inputValue(),'system');
+   assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),null);
+  }
   assert(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)));
   console.log(`PASS ${fault}: readable ${expected} theme and diagrams`);await context.close();
  }
@@ -151,6 +171,63 @@ try {
   await background('dark')(second);
   assert.equal(await second.locator('#theme-mode').inputValue(),'system');
   console.log('PASS cross-tab theme: choice applied, reset returns to system');await context.close();
+ }
+ // Failed theme loads explain the retained appearance without discarding the choice.
+ {
+  const context=await createContext({colorScheme:'light'});const page=await context.newPage();
+  await page.goto(pageUrl('docs/commands/log.html'));
+  await page.route('**/just-the-docs-dark.css',route=>route.abort());
+  await page.locator('#theme-mode').selectOption('dark');
+  await page.waitForFunction(()=>document.getElementById('theme-status').textContent.includes('Still using Light'));
+  assert(await page.locator('#theme-status').isVisible());
+  await background('light')(page);
+  assert.equal(await page.locator('#theme-mode').inputValue(),'dark');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),'dark');
+  await page.unroute('**/just-the-docs-dark.css');
+  await page.locator('#theme-mode').selectOption('system');
+  assert.equal(await page.locator('#theme-status').textContent(),'');
+  await page.locator('#theme-mode').selectOption('dark');
+  await background('dark')(page);
+  assert.equal(await page.locator('#theme-status').textContent(),'');
+  console.log('PASS failed theme: visible explanation, preserved choice and recovery');await context.close();
+ }
+ // Clipboard feedback follows the actual result and prevents duplicate pending writes.
+ {
+  const context=await createContext();const page=await context.newPage();
+  await page.addInitScript(()=>{
+   window.copyRequests=0;
+   Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>{
+    window.copyRequests++;
+    return new Promise((resolve,reject)=>{window.finishCopy=resolve;window.failCopy=()=>reject(new Error('Denied fixture'));});
+   }}});
+  });
+  await page.goto(pageUrl('docs/commands/log.html'));
+  const block=page.locator('div.highlighter-rouge').first();
+  const button=block.locator('button');const status=block.locator('.copy-status');
+  await button.focus();await page.keyboard.press('Enter');
+  assert.equal(await status.textContent(),'Copying…');
+  assert(await status.isVisible());
+  assert.equal(await button.getAttribute('aria-busy'),'true');
+  assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copy');
+  await page.keyboard.press('Enter');
+  assert.equal(await page.evaluate(()=>window.copyRequests),1);
+  await page.evaluate(()=>window.failCopy());
+  await page.waitForFunction(()=>document.querySelector('.copy-status').textContent.includes('Could not copy'));
+  assert(await status.isVisible());
+  assert.equal(await button.getAttribute('aria-busy'),null);
+  assert.equal(await button.getAttribute('aria-disabled'),null);
+  assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copy');
+  await page.keyboard.press('Enter');
+  await page.evaluate(()=>window.finishCopy());
+  await page.waitForFunction(()=>document.querySelector('.copy-status').textContent==='Copied');
+  assert.equal(await page.evaluate(()=>window.copyRequests),2);
+  assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copied');
+  assert.equal(await button.evaluate(el=>el===document.activeElement),true);
+  await page.keyboard.press('Enter');
+  assert.equal(await status.textContent(),'Copying…');
+  assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copy');
+  await page.evaluate(()=>window.finishCopy());
+  console.log('PASS clipboard: pending, rejected, retry, confirmed success and keyboard focus');await context.close();
  }
  // A detailed guide keeps its overview entry active in the menu.
  {

@@ -35,6 +35,54 @@ a:not([class]) {
   opacity: 1;
 }
 
+.interaction-feedback {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: $body-text-color;
+  z-index: 10;
+
+  &:not(:empty) {
+    padding: $sp-2 $sp-3;
+    background: $body-background-color;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+  }
+}
+
+.search-status {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.theme-switcher {
+  position: relative;
+}
+
+.theme-status {
+  position: absolute;
+  top: 100%;
+  right: $sp-4;
+  width: 18rem;
+  max-width: calc(100vw - 2rem);
+}
+
+.copy-status {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  max-width: 100%;
+}
+
+div.highlighter-rouge > button[aria-busy="true"],
+div.listingblock > div.content > button[aria-busy="true"],
+figure.highlight > button[aria-busy="true"] {
+  cursor: progress;
+  opacity: 1;
+}
+
 .footer-links {
   display: flex;
   flex-wrap: wrap;

@@ -37,6 +37,7 @@ module HelmFrontend
           stylesheet.setAttribute('blocking', 'render');
           stylesheet.href = theme === 'dark' ? dark : light;
           stylesheet.addEventListener('error', () => {
+            stylesheet.dataset.themeLoadFailed = 'true';
             if (stylesheet.href !== new URL(light, document.baseURI).href) {
               stylesheet.href = light;
               document.documentElement.style.colorScheme = 'light';
@@ -56,25 +57,35 @@ module HelmFrontend
       function initSearch() {
         if (helmSearchStarted) return;
         helmSearchStarted = true;
+        document.getElementById('search-status').textContent = 'Loading search…';
+        document.getElementById('search-input').setAttribute('aria-busy', 'true');
     JS
+    source = replace_once(source, '      var docs = JSON.parse(request.responseText);',
+      "      try {\n      var docs = JSON.parse(request.responseText);")
     source = replace_once(source, '      searchLoaded(index, docs);', <<~JS.chomp)
             searchLoaded(index, docs);
+            document.getElementById('search-status').textContent = '';
+            document.getElementById('search-input').removeAttribute('aria-busy');
             const input = document.getElementById('search-input');
             if (document.activeElement === input) input.dispatchEvent(new Event("focus"));
+            } catch {
+              helmSearchStarted = false;
+              helmSearchFailed();
+            }
     JS
     source = replace_once(source,
       "      console.log('Error loading ajax request. Request status:' + request.status);",
-      "      helmSearchStarted = false;\n      console.log('Error loading ajax request. Request status:' + request.status);")
+      "      helmSearchStarted = false;\n      helmSearchFailed();\n      console.log('Error loading ajax request. Request status:' + request.status);")
     source = replace_once(source,
       "    console.log('There was a connection error');",
-      "    helmSearchStarted = false;\n    console.log('There was a connection error');")
+      "    helmSearchStarted = false;\n    helmSearchFailed();\n    console.log('There was a connection error');")
     source = replace_once(source, "  jtd.addEvent(searchInput, 'focus', function(){",
       "  searchInput.addEventListener('input', update);\n\n  jtd.addEvent(searchInput, 'focus', function(){")
     source = replace_once(source, '    const nextFocusedElement = evt.relatedTarget;',
       "    const nextFocusedElement = evt.relatedTarget;\n    if (!nextFocusedElement) { hideSearch(); return; }")
     shortcut = source.match(%r{  // add event listener on ctrl[^\n]*\n  jtd\.addEvent\(document, 'keydown',[\s\S]*?\n  \}\);})
     source = source.sub(shortcut[0], '') if shortcut
-    replace_once(source, '  initSearch();', <<~JS.chomp)
+    source = replace_once(source, '  initSearch();', <<~JS.chomp)
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
           searchInput.addEventListener("focus", initSearch);
@@ -83,6 +94,50 @@ module HelmFrontend
           #{shortcut && shortcut[0]}
           if (document.activeElement === searchInput || searchInput.value) initSearch();
         }
+    JS
+    <<~JS + source
+      function helmSearchFailed() {
+        document.getElementById('search-input').removeAttribute('aria-busy');
+        document.getElementById('search-status').textContent = 'Could not load search. Type again or refocus the search box to retry.';
+      }
+    JS
+  end
+
+  def self.clipboard_feedback(source)
+    source = replace_once(source, "    copyButton.addEventListener('click', function () {", <<~JS.chomp)
+          const feedback = document.createElement('span');
+          feedback.className = 'interaction-feedback copy-status';
+          feedback.setAttribute('role', 'status');
+          codeBlock.append(feedback);
+          let copying = false;
+          copyButton.addEventListener('click', async function () {
+    JS
+    source = replace_once(source, '      if(timeout === null) {', <<~JS.chomp)
+            if (!copying) {
+              clearTimeout(timeout);
+              copying = true;
+              copyButton.setAttribute('aria-busy', 'true');
+              copyButton.setAttribute('aria-disabled', 'true');
+              copyButton.innerHTML = svgCopy;
+              feedback.textContent = 'Copying…';
+              try {
+    JS
+    source = replace_once(source, '        window.navigator.clipboard.writeText(code);',
+      '        await window.navigator.clipboard.writeText(code);')
+    source = replace_once(source, '        copyButton.innerHTML = svgCopied;',
+      "        copyButton.innerHTML = svgCopied;\n        feedback.textContent = 'Copied';")
+    replace_once(source, "          timeout = null;\n        }, timeoutSetting);", <<~JS.chomp)
+                timeout = null;
+                feedback.textContent = '';
+              }, timeoutSetting);
+              } catch {
+                copyButton.innerHTML = svgCopy;
+                feedback.textContent = 'Could not copy. Try again or select the code to copy it manually.';
+              } finally {
+                copying = false;
+                copyButton.removeAttribute('aria-busy');
+                copyButton.removeAttribute('aria-disabled');
+              }
     JS
   end
 
@@ -124,6 +179,11 @@ module HelmFrontend
     end
     pages.each do |page|
       html = initial_theme(page.output, site.baseurl.to_s)
+      if html.include?('id="search-input"')
+        html = replace_once(html, '<div id="search-results" class="search-results"></div>',
+          '<p id="search-status" class="interaction-feedback search-status" role="status"></p><div id="search-results" class="search-results"></div>')
+        html = replace_once(html, 'id="search-input"', 'id="search-input" aria-describedby="search-status"')
+      end
       page.output = html.gsub(DIAGRAM) do
         source = CGI.unescapeHTML(Regexp.last_match(1))
         id = Digest::SHA256.hexdigest(renderer + source)
@@ -134,6 +194,7 @@ module HelmFrontend
     end
     site.pages.select { |page| page.url == '/assets/js/just-the-docs.js' }.each do |page|
       page.output = lazy_search(page.output) unless site.config['search_enabled'] == false
+      page.output = clipboard_feedback(page.output) unless site.config['enable_copy_code_button'] == false
     end
   end
 end
