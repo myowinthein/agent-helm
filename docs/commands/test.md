@@ -18,10 +18,11 @@ Use test to find missing protection and improve useful existing tests. You choos
 flowchart TD
   Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
   Gate -->|Yes| Review
-  Review["Review behavior and test protection"] --> Choose{"What should proceed?"}
-  Choose -->|Findings only| Report["Report or save the assessment"]
+  Review["Explain numbered testing gaps"] --> Choose{"Apply recommended, all ready,<br/>or Skip?"}
+  Choose -->|Skip| Report["Report findings and pending work"]
   Choose -->|Approved changes| Work["Write or maintain selected tests"]
   Work --> Check["Run checks and report results"]
+  Review -.->|Explicit record-only request| Save["Review and save the assessment"]
 ```
 
 ## Start the command
@@ -49,11 +50,17 @@ The approach follows the project. Suggestions might be unit or integration cases
 
 Existing tests can be improved, consolidated or replaced. Removal requires proved obsolescence or equivalent remaining protection; a failure is not a reason to weaken assertions.
 
-## Priorities and your selection
+<a id="priorities-and-your-selection"></a>
 
-Findings explain the risk left unprotected, separately from implementation cost. Choose recommended cases, all ready proposals, a subset or none. Review the actual cases, paths and setup before changes. Unknown behavior needs clarification or an explicit decision; production fixes remain separate work.
+## Review findings and choose changes
 
-A fully prepared recommended plan or plan for all ready cases can be selected and approved together. Custom selections need their resulting plan reviewed before edits.
+Findings appear as numbered explanations of what the current tests could miss, why it matters and what a proposed test or maintenance change would establish. Related cases can be grouped by behavior; you do not need to read test code or interpret priority tiers to understand the proposal.
+
+Recommendations weigh useful protection and maintenance benefits against effort, setup, fragility and future upkeep. The report gives the deciding reason and any material tradeoff. Unknown behavior, blocked execution and production repairs stay visibly separate from ready changes.
+
+Choose **Apply recommended**, **Apply all ready changes**, or **Skip**, with exact finding numbers shown beside each Apply action. When recommended and all are identical, only All is offered; empty Apply choices are omitted. You can type a subset, exclusion or revision directly.
+
+Paths, setup, checks and record effects appear before approval. A complete Apply plan needs one approval; a changed custom selection needs its resulting plan reviewed. Large reports use numbered batches, and Apply covers only the ready changes shown. Skip makes no new changes or record writes; saving findings alone requires an explicit request and approval.
 
 ## Tools and verification
 
