@@ -1,6 +1,6 @@
 ---
 title: Interaction
-description: "Interaction explains predictable themes, input feedback, cursors and links, with clear states and respect for user choices."
+description: "Interaction explains saved preferences, themes, input feedback, cursors and links, with clear states and respect for user choices."
 parent: Rules
 nav_exclude: true
 has_toc: false
@@ -22,13 +22,30 @@ Interaction covers the behavior and feedback people expect from controls. It kee
 ```mermaid
 flowchart TD
   Scope["Identify the requested control changes"] --> Conventions["Keep project conventions and existing contracts"]
-  Conventions --> Relevant["Choose relevant theme, field, cursor and link guidance"]
+  Conventions --> Relevant["Choose relevant preference, field, cursor and link guidance"]
   Relevant --> States["Check ordinary, unavailable and recovery states"]
   States --> Methods["Verify keyboard, touch and pointer operation"]
   Methods --> Result["Report observed results and unchecked behavior"]
 ```
 
 ## Controls and feedback
+
+### Preferences and persistence
+
+A reusable preference and a temporary selection have different lifetimes. Someone may expect quality or display density to survive a later visit, while a resolution chosen for one item can remain specific to that item. Preserve the product's intended scope rather than saving every control automatically.
+
+| Intended lifetime or use | Suitable existing mechanism |
+|---|---|
+| Current page only | In-memory state. |
+| Reloads within one tab session | `sessionStorage`. |
+| Small non-sensitive choice across visits | `localStorage`. |
+| Setting needed by the server or account | Established cookie/account mechanism, as appropriate. |
+
+[Local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) belongs to an origin within a browser profile. It does not automatically follow someone to another browser or device, and clearing site data removes it. Give each project and setting its own key where projects share an origin. Reuse existing account synchronization when required; remembering a browser preference does not call for building a new backend.
+
+Save intentional changes rather than turning a calculated default into a saved choice on page load. Validate restored values and use the documented default for missing, cleared or invalid values without automatically rewriting storage. Keep the current choice usable in memory if reading or writing fails. Present restored choices consistently without misleading initial selections or broken server/client rendering.
+
+Shared choices can update other open views without resetting unrelated inputs or writing the same value back repeatedly. For example, an ongoing download can retain the quality it started with while the new preference applies to the next download. A product with intentional live controls can define another behavior. Per-item or per-view choices remain separate.
 
 ### Theme preferences
 
@@ -47,7 +64,7 @@ The important distinction is between the visitor's choice and the appearance cur
 
 For example, an initial dark system theme should not create a saved Dark override. If the visitor then chooses Light, the site stays light through later system changes until that override is changed or cleared.
 
-The default scope is one project within one browser profile, including later visits. Different browsers, profiles and devices remain independent unless the project already provides account synchronization or explicitly requires another scope. Since browser storage is [shared by origin](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), projects on the same host need separate preference keys to avoid changing each other's themes. Choices last until changed or browser data is removed; private browsing can shorten that lifetime.
+Themes use the shared persistence guidance above. Their additional system-following behavior does not create a System mode for quality or other unrelated settings; each keeps its own product default.
 
 Set the initial theme before the page appears so the wrong scheme does not flash first, and keep browser-drawn controls aligned with it. Verify the automatic and manual paths, updates in another tab and unavailable storage. These defaults guide theme work; they do not introduce a new control, account service or redesign into unrelated tasks.
 
@@ -139,7 +156,7 @@ Visited styling is useful when people need to know which references they have re
 
 The rule uses the project's existing components, palette, preference storage and accepted-data contracts. It does not introduce a backend, a new theme selector or a redesign merely to enforce its defaults. Writing owns editorial references and prose; Design owns visual composition and responsive layout. When selected together, their relevant guidance applies within the same task.
 
-Verification follows the affected area: theme changes need checks of initial appearance, manual overrides, system changes and storage fallback; input changes need boundary, counting and preserved-answer checks. Cursor and link changes need the relevant hit areas, states, destinations and feedback. Verify recovery after completion, cancellation or failure, with keyboard and touch access even when the visible change concerns a cursor.
+Verification follows the affected area: preference changes need checks of restored/default values, storage failures, view synchronization and unaffected active work. Theme changes also need initial-appearance and system-change checks; input changes need boundary, counting and preserved-answer checks. Cursor and link changes need the relevant hit areas, states, destinations and feedback. Verify recovery after completion, cancellation or failure, with keyboard and touch access even when the visible change concerns a cursor.
 
 Source inspection, screenshots and observed interaction provide different evidence. Report important gaps and unavailable checks in the normal task handoff without claiming complete accessibility or creating a separate report merely to follow this rule.
 

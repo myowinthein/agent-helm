@@ -17,6 +17,6 @@ Guides to Agent Helm’s rules for Git, safety, clear writing, visual design and
 | [Safety]({{ '/docs/rules/safety.html' | relative_url }}) | Authorization, preserving user work and consequential effects. |
 | [Writing]({{ '/docs/rules/writing.html' | relative_url }}) | Clear prose, useful detail and reference links. |
 | [Design]({{ '/docs/rules/design.html' | relative_url }}) | Visual composition and responsive, accessible layouts. |
-| [Interaction]({{ '/docs/rules/interaction.html' | relative_url }}) | Themes, input feedback, cursors and link/control behavior. |
+| [Interaction]({{ '/docs/rules/interaction.html' | relative_url }}) | Preference persistence, themes, input feedback, cursors and link/control behavior. |
 
 [Adopt]({{ '/docs/commands/adopt.html' | relative_url }}#available-rules) installs Git and Safety together. Writing, Design and Interaction are independent options.

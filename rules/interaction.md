@@ -1,18 +1,24 @@
 # Interaction Rules
 
-Keep themes, input feedback, cursors and link behavior predictable during requested interface work, including documentation sites. Preserve explicit user choices, project conventions, existing controls and the output medium's capabilities. Apply only relevant sections; loading this rule starts no redesign, scan, installation, workflow or extra execution authority.
+Keep preferences, input feedback, cursors and link behavior predictable during requested interface work, including documentation sites. Preserve explicit user choices, project conventions, existing controls and the output medium's capabilities. Apply only relevant sections; loading this rule starts no redesign, scan, installation, workflow or extra execution authority.
 
-Writing owns prose and editorial references; Design owns visual composition, responsive layout and visual accessibility. Neither is a dependency. Use their relevant guidance when separately selected, within the same task. Helm's hand cursor, external icon, underline and theme-persistence defaults are preferences, not universal accessibility requirements.
+Writing owns prose and editorial references; Design owns visual composition, responsive layout and visual accessibility. Neither is a dependency. Use their relevant guidance when separately selected, within the same task. Helm's hand cursor, external icon, underline and persistence defaults are preferences, not universal accessibility requirements.
 
-## Theme preferences
+## Preferences and persistence
 
-Reuse the existing control and preference mechanism, respecting explicit project requirements.
+Reuse the project's controls, storage mechanism, defaults and intended setting scope. Persist choices meant for reuse, such as quality or theme; do not automatically persist transient inputs or per-item selections.
 
-- With no valid explicit choice, follow the browser-reported system preference; if unavailable, use the project default or light. Apply the initial theme before paint and align browser controls' `color-scheme`.
-- Store the user's chosen mode, not the detected appearance. Manual Light/Dark wins even when it matches the system; follow live system changes only in automatic mode, without overwriting a manual choice.
-- Remember explicit choices per project and browser profile across tabs, windows and later visits until changed or browser data is removed; synchronize that project's open views. Projects sharing an origin need separate keys. Existing account synchronization or explicit requirements may define another scope.
-- Preserve the toggle or selector style; a visible System option is optional. Selecting System when available, or clearing the override, restores automatic behavior. Do not invent hidden modes or reinterpret a matching manual choice.
-- Keep switching usable in page memory if storage is blocked. Invalid or cleared preferences and later visits without usable storage return to the default. Respect private-browsing limits; add no backend or synchronization across browsers or devices merely to remember a theme.
+- Match storage to lifetime: page-only state can stay in memory, tab-session state can use `sessionStorage`, and small non-sensitive preferences across visits can use `localStorage`. Use established cookie/account mechanisms when the server or account needs the setting; add no backend or cross-device synchronization merely to remember a choice.
+- Save deliberate preference changes, not calculated defaults on page load. Validate stored values; missing, cleared or invalid values use the setting's documented default without automatically saving that fallback. Restore valid choices before presenting a misleading selection, preserving server/client rendering consistency where applicable.
+- Persistent local preferences belong to the site's origin and browser profile, not the browser globally. Use keys scoped to the project and setting, especially for projects sharing an origin. They last until changed or site data is removed, subject to browser/private-mode limits; existing account synchronization or explicit requirements may define another scope.
+- Synchronize shared preferences across the appropriate open views without write-back loops or unrelated input resets. Keep per-view/per-item choices separate. Do not silently change an active operation's starting configuration when that would alter its result; apply the new preference to subsequent work unless the product explicitly supports live changes.
+- Handle unavailable storage and read/write failures with usable in-memory controls. A failed save must not undo the current choice; later visits without usable storage return to the documented default. Respect intentional reset/clear behavior and make no cross-browser/device persistence promise.
+
+### Theme preferences
+
+- With no valid manual override, follow the browser-reported system preference; if unavailable, use the project default or light. Apply the initial theme before paint and align browser controls' `color-scheme`.
+- Manual Light/Dark wins even when it matches the system. Follow live system changes only in automatic mode, without creating or overwriting a manual choice.
+- Preserve the toggle or selector style; a visible System option is optional. Selecting System when available, or clearing the override, restores automatic behavior. Do not invent hidden modes or reinterpret a matching manual choice. Other settings use their own defaults; theme-following behavior supplies no automatic quality or device-based mode.
 
 ## Input limits and feedback
 
@@ -98,7 +104,8 @@ Use available authorized tools on affected controls and states, preserving requi
 
 | Changed area | Relevant checks |
 |---|---|
-| Themes | Initial paint, saved/manual overrides, automatic system changes, same-project tab updates and unavailable storage. |
+| Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
+| Themes | Initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
 | Cursors | Actual hit area, hover, press, disabled/read-only, processing and drag states, and selection. |
 | Links | Destinations, fragments, opening behavior, indicators, contrast at rest/focus/hover/visited states in supported themes, and stable layout. |
@@ -107,7 +114,7 @@ Source inspection, screenshots and observed behavior provide different evidence;
 
 ## References
 
-- **Themes:** [Google's theme switch](https://web.dev/articles/building/a-theme-switch-component) and [MDN storage guidance](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) inform preference handling and browser limits; Helm defines its persistence scope and optional System control.
+- **Preferences and themes:** MDN explains [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), [tab-session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage), [cross-view events](https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event) and [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies). [Google's theme switch](https://web.dev/articles/building/a-theme-switch-component) informs theme handling; Helm defines its persistence defaults and optional System control.
 - **Input:** [GOV.UK guidance](https://design-system.service.gov.uk/components/character-count/) supports selective counters and preserved paste; [HTML length constraints](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#limiting-user-input-length:-the-maxlength-attribute) define counting limits. [W3C guidance on status messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html) informs accessible feedback.
 - **Cursors:** [CSS definitions](https://www.w3.org/TR/css-ui-3/#cursor), [pointer cancellation](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html) and [dragging alternatives](https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html) ground operation cues and input access.
 - **Links:** [Link purpose](https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html), [text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), [G183](https://www.w3.org/WAI/WCAG22/Techniques/general/G183) and [HTML opener protection](https://html.spec.whatwg.org/multipage/links.html#link-type-noopener) ground the technical distinctions. [GOV.UK](https://design-system.service.gov.uk/styles/links/) and [USWDS](https://designsystem.digital.gov/components/link/) differ on external icons; Helm's chosen conventions remain preferences.

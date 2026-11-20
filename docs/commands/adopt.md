@@ -43,7 +43,7 @@ A blocker ends the run with its reason and known checkout facts. It does not con
 | [Safety](../rules/safety.html) | Decisions about consequential actions and preserving work. |
 | [Writing](../rules/writing.html) | Clear prose and useful reference links. |
 | [Design](../rules/design.html) | Visual composition and responsive, accessible layouts. |
-| [Interaction](../rules/interaction.html) | Themes, input feedback, cursors and link/control behavior. |
+| [Interaction](../rules/interaction.html) | Preference persistence, themes, input feedback, cursors and link/control behavior. |
 
 Git and Safety stay paired. The recommended fresh set adds optional Writing. An unscoped fresh installation can also offer all five rules; that choice explicitly includes Design and Interaction. Writing, Design and Interaction can each be adopted independently.
 

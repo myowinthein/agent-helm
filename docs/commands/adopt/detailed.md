@@ -49,7 +49,7 @@ A blocker ends the run with its reason and known checkout facts. It does not con
 
 [Git and Safety](../../rules/git.html) are a pair: commit and publication choices depend on the preservation and authorization rules. The recommended fresh set adds Writing, which can be omitted. For an unscoped fresh installation, choosing the explicitly listed all-five set also selects Design and Interaction. Writing, Design and Interaction can each be used independently; a request for one does not silently install the others.
 
-Interaction owns theme preferences, input feedback, cursors and link behavior extracted from Writing and Design. An update proposal discloses the defaults moving out of an existing copy. You can keep that copy or approve its update with or without separately selecting Interaction. The new rule is not treated as a missing dependency; an updated Writing or Design copy alone no longer supplies those extracted policies.
+Interaction owns preference persistence, theme behavior, input feedback, cursors and link behavior. It includes the interface policies extracted from Writing and Design. An update proposal discloses the defaults moving out of an existing copy. You can keep that copy or approve its update with or without separately selecting Interaction. The new rule is not treated as a missing dependency; an updated Writing or Design copy alone no longer supplies those extracted policies.
 
 The installed copies normally live under `.claude/rules/`. Their role is deliberate: a plugin update changes the available upstream rules, while the consumer keeps its reviewed local copies until you adopt again.
 

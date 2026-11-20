@@ -1,6 +1,6 @@
 ---
 title: Interaction
-description: Keep themes, input feedback, cursors and link behavior predictable while preserving project conventions.
+description: Keep saved preferences, themes, input feedback, cursors and link behavior predictable while preserving project conventions.
 parent: Rules
 detailed: /docs/rules/interaction/detailed.html
 nav_order: 5
@@ -19,16 +19,22 @@ Writing guides the explanation, Design guides visual composition, and Interactio
 ```mermaid
 flowchart TD
   Task["Identify the controls affected by the task"] --> Existing["Preserve project conventions and user choices"]
-  Existing --> Behavior["Apply the relevant theme, input, cursor or link behavior"]
+  Existing --> Behavior["Apply the relevant preference, input, cursor or link behavior"]
   Behavior --> Check["Check supported states and input methods"]
   Check --> Result["Report the result and remaining verification gaps"]
 ```
 
 ## Controls and feedback
 
+### Preferences and persistence
+
+Reusable choices such as quality and theme can be remembered across visits. Temporary inputs and per-item choices keep their intended lifetime. Reuse existing storage: page memory suits current-page state, `sessionStorage` suits a tab session, and `localStorage` suits small non-sensitive preferences across visits. Existing cookies or account settings can serve choices needed by the server or account.
+
+Save deliberate changes, validate stored values and fall back to the product's default when a value is missing, cleared or invalid. Browser preferences are scoped to the site and browser profile; projects sharing an origin need separate keys. Keep controls usable when saving fails. Shared choices can update other open views without clearing unrelated inputs or silently changing active work.
+
 ### Theme preferences
 
-When a theme control is part of the task, use the system preference initially unless a valid saved choice or project requirement takes priority. Manual Light/Dark choices win; system changes apply only in automatic mode. Remember choices per project and browser profile across open tabs and later visits. Preserve the existing toggle or selector; a visible System option is optional. Keep the control usable when storage is blocked.
+When a theme control is part of the task, use the system preference initially unless a valid saved choice or project requirement takes priority. Manual Light/Dark choices win; system changes apply only in automatic mode. Preserve the existing toggle or selector; a visible System option is optional. Other preferences use their own product defaults rather than inheriting a System mode.
 
 ### Input limits
 
