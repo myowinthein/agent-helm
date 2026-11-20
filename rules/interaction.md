@@ -1,119 +1,115 @@
 # Interaction Rules
 
-Define predictable interface behavior and feedback for requested website/interface work, including documentation sites. Preserve explicit user choices, project conventions and existing controls. Loading this rule starts no redesign, scan, installation or new workflow and grants no extra execution authority.
+Keep themes, input feedback, cursors and link behavior predictable during requested interface work, including documentation sites. Preserve explicit user choices, project conventions, existing controls and the output medium's capabilities. Apply only relevant sections; loading this rule starts no redesign, scan, installation, workflow or extra execution authority.
 
-Writing owns prose, document structure and editorial references. Design owns visual composition, responsive layout and visual accessibility. This rule owns theme preferences, input feedback, cursors and link/control behavior, including their recognizable states. Each rule is independently selectable; these boundaries do not require loading a sibling or installing a companion. Apply only the relevant sections within the requested scope and the output medium's capabilities.
+Writing owns prose and editorial references; Design owns visual composition, responsive layout and visual accessibility. Neither is a dependency. Use their relevant guidance when separately selected, within the same task. Helm's hand cursor, external icon, underline and theme-persistence defaults are preferences, not universal accessibility requirements.
 
 ## Theme preferences
 
-When building or changing a theme control, reuse the project's existing preference mechanism and respect explicit project requirements.
+Reuse the existing control and preference mechanism, respecting explicit project requirements.
 
-- With no valid explicit choice, start from the browser-reported system preference; use the project default or light when that preference is unavailable. Apply the initial theme before paint and keep browser controls' `color-scheme` aligned.
-- Store the user's chosen mode, not an automatically detected appearance. A manual Light or Dark choice remains authoritative even when it matches the system; automatic updates never create or overwrite an explicit choice.
-- Follow system changes while the page is open only in automatic mode.
-- By default, remember explicit choices for that project across tabs, windows and later visits in the same browser profile, until changed or browser data is removed. Synchronize its open views. Use project-specific storage keys where projects share an origin; unrelated projects remain independent. Existing account synchronization or explicit project requirements may define another scope.
-- Preserve the control style: a Light/Dark toggle needs no visible System option. Selecting System when available, or clearing the override, restores automatic behavior; do not invent hidden modes or reinterpret a matching manual choice.
-- If storage is unavailable, keep the control working in page memory. Invalid or cleared preferences and later visits without usable storage return to the default. Respect private-browsing limits; do not add a backend or promise synchronization across browsers or devices merely to remember a theme.
+- With no valid explicit choice, follow the browser-reported system preference; if unavailable, use the project default or light. Apply the initial theme before paint and align browser controls' `color-scheme`.
+- Store the user's chosen mode, not the detected appearance. Manual Light/Dark wins even when it matches the system; follow live system changes only in automatic mode, without overwriting a manual choice.
+- Remember explicit choices per project and browser profile across tabs, windows and later visits until changed or browser data is removed; synchronize that project's open views. Projects sharing an origin need separate keys. Existing account synchronization or explicit requirements may define another scope.
+- Preserve the toggle or selector style; a visible System option is optional. Selecting System when available, or clearing the override, restores automatic behavior. Do not invent hidden modes or reinterpret a matching manual choice.
+- Keep switching usable in page memory if storage is blocked. Invalid or cleared preferences and later visits without usable storage return to the default. Respect private-browsing limits; add no backend or synchronization across browsers or devices merely to remember a theme.
 
 ## Input limits and feedback
 
-Use length limits for actual product, format or resource requirements. Reuse the field's existing constraints; do not invent tighter limits or change accepted data contracts as visual cleanup. If legitimate answers frequently exceed a limit, review that constraint rather than merely adding a counter.
+Keep existing accepted-data contracts. Limits need a product, format or resource reason; do not tighten them as visual cleanup. Reassess a frequently exceeded limit rather than automatically adding a counter.
 
 | Situation | Default feedback |
 |---|---|
 | Ordinary field with a generous technical limit | No counter; explain material or unexpected restrictions. |
 | Fixed-format value, such as a six-digit code | Clear format instruction; usually no counter. |
-| Composed text where length affects writing, such as a title or short biography | Show the maximum and a live count. |
-| Longer text whose limit is rarely approached | Consider a counter near the limit, choosing the threshold for the task rather than imposing a universal percentage. |
+| Composed text whose length matters, such as a title or biography | Show the maximum and a live count. |
+| Longer text rarely approaching its limit | Consider a near-limit counter with a task-appropriate threshold. |
 
-- Input width, borders, icons and progress indicators can reinforce expectations, but do not replace necessary instructions or text errors. Do not rely on color alone or put essential instructions only in placeholders. Explain how to correct an exceeded limit; an unexplained disabled submit button is insufficient.
-- For composed answers, prefer allowing temporary excess so users can paste the full answer and edit it down before final acceptance. Preserve their text after errors; never silently truncate, discard overflow or block paste. Use a hard stop only where the field's requirements justify it, with clear feedback. Distinguish a user-facing writing limit from a larger resource-safety bound; editing flexibility does not require accepting unbounded input.
-- Associate hints, counters and errors with their field. Update visible counts during editing, but keep assistive announcements paced, such as after a pause or a meaningful limit transition. Do not disrupt an active text-composition session with character deletion or premature errors.
-- Keep the counter, normalization and final validator consistent about the limit and counting unit. HTML `maxlength` counts UTF-16 units, not necessarily user-perceived characters. Account for emoji, combining characters, whitespace and newlines; prefer user-perceived character counting for writing limits when compatible with the actual data contract. Do not apply destructive normalization merely to fit a limit.
-- Browser validation helps users but cannot enforce a backend's trust boundary. Validate accepted values independently on the server where one exists. Local-only apps and extensions validate at their existing save, import and outgoing-data boundaries without adding a backend for this purpose. Native `maxlength` alone does not cover programmatic values or imports. Report enforcement gaps outside an interface-only task rather than claiming frontend checks make them safe.
+- Explain restrictions and how to correct errors; color, width, borders, icons, placeholders or an unexplained disabled submit button cannot replace needed text. Associate hints, counters and errors with the field. Visible counts may update while typing; pace assistive announcements and do not interrupt text composition.
+- Preserve the answer after errors. For composed text, normally allow temporary excess and full paste so people can edit down; do not silently truncate, discard overflow or block paste. A justified hard stop needs clear feedback. Editing flexibility does not remove a larger resource-safety bound.
+- Keep counters, normalization and final validation consistent about limits and counting units, including emoji, combining characters, whitespace and newlines. HTML `maxlength` counts UTF-16 units; prefer user-perceived characters for writing limits when the data contract permits. Never strip meaningful text merely to fit.
+- Browser feedback does not enforce a receiving service's trust boundary. Validate independently there; local-only apps use existing save, import and outgoing-data boundaries without adding a backend. Include programmatic and imported values, which native `maxlength` alone does not cover. Report outside-scope enforcement gaps rather than expanding an interface task or claiming frontend checks secure the whole path.
 
 ## Cursors and pointer feedback
 
-Use cursors to describe the available operation at the pointer's location. Prefer system-provided cursors, preserving explicit project or design-system conventions. A hand on enabled custom actions is Helm's usability default, not a universal browser or accessibility requirement.
+Match the cue to the available operation, using system cursors and established project conventions.
 
 | Element or operation | Default treatment |
 |---|---|
-| Ordinary content and decoration | `auto`; preserve normal text selection. |
-| Navigation links and enabled custom actions, including buttons, tabs, toggles and disclosures | `pointer` across the actual clickable area. |
-| Editable or selectable text, including read-only fields | Native text behavior or `text`; read-only does not mean disabled. |
-| Native selects, checkboxes, radios and sliders | Preserve browser or established component behavior. |
-| Disabled custom actions | `not-allowed`, or the established design system's default arrow; no enabled-action hand or hover treatment. |
-| Drag handle / engaged drag | `grab` / `grabbing`, only where dragging actually works. |
-| Resize or zoom operation | Matching directional resize cursor or `zoom-in` / `zoom-out`, only when available. |
-| Processing | `progress` where interaction remains available; reserve `wait` for a genuinely blocked interaction and scope it to the affected area. |
+| Ordinary content and decoration | `auto`; preserve text selection. |
+| Links and enabled custom buttons, tabs, toggles or disclosures | `pointer` over the actual clickable area. |
+| Editable or selectable text, including read-only fields | Native behavior or `text`; read-only is not disabled. |
+| Native selects, checkboxes, radios and sliders | Preserve browser or component behavior. |
+| Disabled custom action | `not-allowed` or the design system's arrow; no enabled-action hand or hover cue. |
+| Working drag handle / engaged drag | `grab` / `grabbing`. |
+| Available resize or zoom operation | Matching directional resize or `zoom-in` / `zoom-out`. |
+| Processing | `progress` while interaction remains available; `wait` only over the blocked area. |
 
-- Ordinary hover and pressing keep the operation's cursor. Show pressed feedback on the control; change cursors only when the operation or availability changes. Restore the appropriate cursor after completion, cancellation or failure. Copy buttons use the action cursor; `copy`, `move` and `no-drop` describe actual transfer operations, not button labels. Use `help` only for an available help interaction.
-- Scope cursor styling to the actual control or handle. Do not apply a hand to an entire card, row or label unless that area activates its action. Avoid wildcard cursor overrides that mask text selection, native controls or specialized operations. A validation error does not make an editable field disabled.
-- Use native links and buttons with correct behavior. Cursor styling, `aria-disabled` and `pointer-events: none` alone do not disable all activation paths. Preserve selectable read-only content and prevent unavailable actions through their actual semantics and handlers.
-- Cursors supplement recognizable controls, visible keyboard focus and touch operation. Prefer native click activation over executing ordinary actions on pointer-down, so users can cancel before releasing. Dragging needs keyboard access and a single-pointer alternative without dragging unless a relevant exception applies.
-- Avoid decorative cursor replacements or trails by default. Preserve deliberate existing cursor designs when they keep operation cues, readable selection and native controls usable; respect reduced-motion preferences and platform limitations. Do not require identical cursor artwork across browsers or operating systems.
+Ordinary hover and press keep the operation's cursor; pressing needs visible feedback. Change cues when the operation or availability changes and restore them after completion, cancellation or failure. Copy buttons use the action cursor; `copy`, `move` and `no-drop` describe transfer operations. Use `help` only for an available help interaction.
+
+Scope styling to the actual control or handle, not an unrelated card, row or label. Avoid wildcard overrides hiding text selection, native controls or specialized cues; validation errors do not disable editable fields. Cursor styling, `aria-disabled` or `pointer-events: none` alone cannot prevent every activation path: implement correct native semantics and handlers and preserve selectable read-only content.
+
+Keep recognizable controls, visible focus, keyboard and touch use independently of cursors. Prefer native click activation so users can cancel before release. Dragging needs keyboard access and a non-drag single-pointer alternative unless an applicable exception applies. Avoid decorative cursor replacements or trails by default; preserve deliberate designs that retain operation cues and native usability. Respect reduced motion and platform differences, without demanding identical cursor artwork.
 
 ## Links and navigation
 
-For prose references, opening behavior and indicators are decisions within the same reference pass. When Writing is separately selected, use its editorial reference sequence, applying these interface requirements within it without a second selection or review pass. Otherwise select relevant, meaningful destinations within the current task; no sibling file is required.
+Use real links for navigation and downloads and buttons for in-page actions. Verify relevant destinations, fragments and meaningful labels; no invented URLs or placeholders presented as working links. When Writing is selected, apply these behaviors within its editorial reference pass without repeating selection.
 
-Use real links with working destinations for navigation and resource downloads, and buttons for in-page actions. Link directly to the relevant page or existing section ID. Do not present invented URLs or placeholder destinations as working links. Keep each link's purpose clear from its label or associated context.
-
-Open navigation links in the current tab by default. Apply the following behavior unless an explicit project requirement specifies otherwise; do not infer a requirement merely from an existing `target="_blank"`.
+Current tab is the default. Existing `target="_blank"` alone establishes no requirement for a new context.
 
 | Destination or task | Opening behavior | Indication |
 |---|---|---|
-| Internal navigation, including same-page anchors, menus, breadcrumbs and pagination | Current tab | No external-link icon. |
-| External articles, references, repositories, social profiles and other websites | Current tab | External-link icon on text links. |
-| Help/reference material needed alongside an unfinished form, editor or active task | New tab only when replacing the page would lose state or disrupt required work alongside it | External-link icon only if external; no opening notice. |
-| An explicit user-selected opening action | User-selected tab/window behavior | Use the action's normal label without an added opening notice. |
-| Viewable documents, including PDFs | Current tab/browser document handling; file type alone does not justify a new tab | File format; external-link icon if external. |
-| Actual downloads | Native download handling; do not force an extra tab | "Download", file format and known size. Use download treatment rather than an external-navigation arrow. |
-| Email, telephone and application links | Native protocol handling; do not force a new browser tab | Clear action/destination wording rather than an external-web arrow. |
+| Internal page, section, menu, breadcrumb or pagination | Current tab. | No external icon. |
+| External website, reference, repository or social text link | Current tab. | External icon. |
+| Reference needed alongside an active form, editor or task | New context only to preserve state or required work alongside it. | External icon only if external. |
+| Explicit user-selected opening or project requirement | Requested behavior within renderer and browser limits. | Ordinary meaningful label; no opening notice. |
+| Viewable document, including PDF | Current tab or browser handling; file type alone warrants no new tab. | Actual format; external icon if external. |
+| Actual download | Native handling, no forced extra tab. | Download wording, format and known size; no external-navigation arrow. |
+| Email, telephone or app link | Native protocol handling, no forced extra tab. | Clear action/destination. |
 
-- Define internal destinations from the configured site/service boundary, including explicit canonical/deployment aliases and any relevant path boundary. An absolute URL can be internal; sharing an organization or parent domain does not make another site/service internal. Parse URLs against that boundary rather than matching a hostname substring. An external destination, long reference, login requirement or desire to retain visitors alone never justifies a new tab.
-- Preserve native browser choices: modified clicks, middle-click and context-menu opening. Do not intercept ordinary links to defeat those choices. A requested new browsing context may appear as a tab or window according to browser/user settings; do not promise a particular presentation that the application cannot control.
-- Do not add notices solely to announce a new tab/window, whether visible or hidden: no label suffixes, tooltips, accessible-only text, live announcements, dialogs or group notices. Keep link labels and accessible names meaningful for their destinations. The external-link icon remains a destination indicator, not an opening announcement.
-- Use one default external-link symbol: a northeast arrow leaving an open square, rendered through the existing icon set or a matching SVG. Its meaning is "outside this site/service", independent of tab behavior. Apply it consistently to external HTTP(S) text navigation links in body content, lists, tables, navigation and footers. Do not vary the arrow by tab behavior or add it to internal new-tab links. Preserve an explicit established design-system convention instead of silently replacing it; apply that convention consistently without conflating destination and opening behavior.
-- Keep the icon inside the same clickable link, after its text. Describe external destinations through meaningful labels/context; the arrow alone does not explain the link's purpose. Hide redundant icons from assistive technology and supply equivalent text for information not otherwise conveyed. Logo-only and icon-only links need meaningful accessible names rather than another appended external icon.
-- Identify known login requirements and application launches in wording. File labels describe the actual format/outcome; do not invent sizes or promise a download when the destination may instead open a viewer. Do not add an interrupting confirmation solely because a link is external.
-- For ordinary HTML new-tab links, use `target="_blank"` with `rel="noopener"`. Treat `noreferrer` as a separate project privacy/referrer-policy choice: it also suppresses referrer information. Preserve separately specified authentication/window protocols rather than applying a blanket link rewrite to them.
-- Apply tab/icon implementation only where the output medium supports it. Plain Markdown, email and chat renderers may control opening behavior and available markup. Use clear wording without injecting unsupported HTML or promising renderer behavior; this rule requires no renderer customization.
+- Classify against the actual site or service boundary, configured aliases and relevant paths. Absolute URLs can be internal; sharing an organization or parent domain does not establish this. Parse boundaries instead of matching hostname substrings. Externality, long references, login or visitor retention alone warrant no new tab.
+- Preserve modified clicks, middle-click and context menus. Do not promise a tab or window presentation controlled by the browser. Apply supported behavior without unsupported HTML or renderer customization.
+- Add no visible or hidden opening announcement: no label suffix, tooltip, accessible-only text, live announcement, dialog or group notice solely for opening a new tab or window. Keep labels and accessible names meaningful. External links need no interrupting confirmation.
+- Use one external HTTP(S) text-navigation symbol: a northeast arrow leaving an open square, from the existing icon set or matching SVG. Apply consistently across content, lists, tables, navigation and footers. It identifies the destination, independently of opening behavior; internal new-tab links get none. Preserve explicit design-system alternatives consistently.
+- Place the icon after text inside the same link. Hide redundant icons from assistive technology; convey otherwise missing information in text. An arrow alone explains no purpose; logo-only or icon-only links need meaningful accessible names rather than appended arrows. Identify known login requirements, app launches and actual file outcomes without inventing sizes or promising downloads that may be viewers.
+- Ordinary HTML new-tab links use `target="_blank"` with `rel="noopener"`; `noreferrer` separately changes referrer disclosure. Preserve specified authentication and window protocols rather than blanket-rewriting them.
 
 ### Link appearance and interaction
 
-Make links recognizable before interaction, using the project's existing palette and components. Apply these defaults within the same reference pass; appearance does not change the opening or external-indicator rules above.
+Make links recognizable before interaction, using the existing palette and components. Appearance does not change opening or indicator policy.
 
 | Context | At rest | On hover |
 |---|---|---|
-| Prose, reference lists and table text | Underlined, with readable link text. | Keep the underline; strengthen its thickness, color or another established cue. |
-| Standalone text link | Underlined by default; an established clearly recognizable component may use another cue. | Strengthen the existing cue or add an underline. |
-| Header, sidebar, breadcrumb and footer navigation | Underline optional when grouping and placement clearly identify navigation. | Use the component's underline, background or color feedback consistently. |
-| Button-styled link | Existing button appearance. | Existing button hover treatment. |
-| Linked card | Recognizable linked title or navigation affordance. | Emphasize the title, border or background; preserve suitable existing motion. |
-| Icon or logo link | Recognizable placement and a meaningful accessible name; no underline needed. | Suitable feedback for the component. |
+| Prose, reference lists and table text | Visible underline and readable text. | Retain underline; strengthen thickness, color or another established cue. |
+| Standalone text link | Underlined unless an established recognizable component supplies another cue. | Strengthen that cue or add underline. |
+| Header, sidebar, breadcrumb or footer navigation | Underline optional when grouping and placement clearly identify navigation. | Consistent component feedback. |
+| Button-styled link | Existing button treatment. | Existing button hover. |
+| Linked card | Recognizable linked title or navigation affordance. | Emphasize title, border or background; retain purposeful motion. |
+| Icon or logo link | Recognizable placement and accessible name; no underline needed. | Suitable component feedback. |
 
-- Do not rely on hue alone to distinguish links from surrounding prose. Keep underlines clearly visible against the actual background at rest, choosing colors and thickness suited to the project; hover and keyboard focus may strengthen them. Underlining is Helm's baseline, not a WCAG requirement for every link. If an explicit project convention omits it, verify another persistent distinction; a contrast ratio of at least 3:1 against surrounding text is one W3C technique. Hover-only styling cannot establish discoverability on touch devices. Reserve underlines for links rather than ordinary non-link emphasis.
-- Link text must meet WCAG AA text contrast against its actual background in rest, hover and any visited styling: at least 4.5:1 for ordinary text, or 3:1 for qualifying large text. The surrounding-text comparison is separate. Muted colors may support secondary navigation when readable and recognizable; do not make usable links resemble disabled text. Underlined links may use readable body colors; blue is not required.
-- Provide a clearly visible keyboard focus indicator independently of hover, reusing the established focus treatment and meaningful hover emphasis where appropriate. Keep essential labels and destination indicators available without hover. Avoid hover font-size or font-weight changes that shift layout. Preserve purposeful motion and respect reduced-motion preferences.
-- Use visited styling when knowing previous visits helps the task, such as reference reading; it is optional for menus, buttons and other components where history adds little. Keep visited links recognizable and readable. Current-page indication represents location, not browsing history.
+- Do not rely on hue or hover alone. Keep underlines visible at rest; reserve them for links rather than ordinary emphasis. If an explicit convention omits them, verify a persistent distinction; 3:1 contrast against surrounding text is one W3C technique, separate from background contrast.
+- Text contrast against its background in rest, hover and visited states meets WCAG AA: 4.5:1 for ordinary text or 3:1 for qualifying large text. Muted links must remain readable and usable-looking; blue is not required.
+- Provide visible keyboard focus independently of hover. Essential labels and indicators remain available on touch. Avoid emphasis that shifts layout; preserve purposeful motion and reduced-motion preferences.
+- Use visited styling when reading history helps; it is optional for menus or buttons where it adds little. Keep it readable and distinct from the current-page marker, which indicates location.
 
 ## Review and verification
 
-Check the affected controls with available authorized tools, preserving required project checks. For changed links, verify destinations, fragments, keyboard activation, opening behavior and indicators. Follow the project's palette, layout and accessibility requirements; this rule does not authorize unrelated visual changes.
+Use available authorized tools on affected controls and states, preserving required project checks, palette, layout and accessibility. Check keyboard, touch and pointer use without relying solely on hover or cursors, and verify recovery after completion, cancellation or failure.
 
-For changed link styling, check rest, hover, keyboard focus and any visited state against the actual backgrounds in supported themes. Check touch use without hover and confirm that emphasis does not shift the layout. For theme changes, check initial appearance, manual overrides, live system changes in automatic mode, same-project tab updates and unavailable storage.
+| Changed area | Relevant checks |
+|---|---|
+| Themes | Initial paint, saved/manual overrides, automatic system changes, same-project tab updates and unavailable storage. |
+| Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
+| Cursors | Actual hit area, hover, press, disabled/read-only, processing and drag states, and selection. |
+| Links | Destinations, fragments, opening behavior, indicators, contrast at rest/focus/hover/visited states in supported themes, and stable layout. |
 
-For changed cursor behavior, check the actual hit area, hover, press, disabled/read-only and any processing or drag states. Verify recovery after completion or cancellation, selection, keyboard operation and touch use without relying on a cursor.
-
-For input-limit changes, check boundary values, paste, autofill or imported values, relevant languages and composed text, counter/validator agreement, accessible feedback and recovery without losing the answer. Distinguish browser checks from verification of the receiving validation boundary.
-
-Source inspection, screenshots and observed behavior provide different evidence; none alone establishes overall accessibility or usability. Required project checks remain required, and unavailable checks stay unverified. Do not install a detector, start a scan or create a report artifact merely because this rule was loaded. Report important limitations, unchecked behavior and unfinished placeholder content through the task's normal handoff.
+Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Report unavailable checks, important limitations and unfinished placeholders in the normal handoff. This rule requires no detector, tool installation, report artifact or added approval process.
 
 ## References
 
-- **Input limits:** [GOV.UK character counts](https://design-system.service.gov.uk/components/character-count/) and [USWDS guidance](https://designsystem.digital.gov/components/character-count/) support selective counters. [GOV.UK text-input guidance](https://design-system.service.gov.uk/components/text-input/#avoid-restricting-the-length-of-a-users-input) explains truncation risks. W3C's [error identification](https://www.w3.org/WAI/WCAG22/Understanding/error-identification.html) and [status messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html) inform accessible feedback; [HTML length constraints](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#limiting-user-input-length:-the-maxlength-attribute), [Unicode segmentation](https://www.unicode.org/reports/tr29/) and [OWASP validation guidance](https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html) inform counting and enforcement. A counter is not required on every limited field.
-- **Cursors:** [W3C cursor definitions](https://www.w3.org/TR/css-ui-3/#cursor) describe operation cues; [Apple's pointing-device guidance](https://developer.apple.com/design/human-interface-guidelines/pointing-devices) favors familiar, useful effects. [Tailwind's native button default](https://tailwindcss.com/docs/upgrade-guide#buttons-use-the-default-cursor) and [GOV.UK's menu-button convention](https://design-system.service.gov.uk/components/header/history/) illustrate different valid choices. W3C's [pointer cancellation](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html) and [dragging alternatives](https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html) inform interaction requirements; no cursor shape alone establishes accessibility.
-- **Theme preferences:** Google's [theme-switch component guidance](https://web.dev/articles/building/a-theme-switch-component) informs system defaults, saved choices and initial rendering. MDN documents [local storage's scope and lifetime](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) and [cross-tab storage events](https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event). Helm's default persistence scope and optional System control are project policy, not universal accessibility requirements.
-- **Links:** [W3C Link Purpose](https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html) explains the accessibility requirement; [G200](https://www.w3.org/WAI/WCAG22/Techniques/general/G200) discusses limiting new browsing contexts. [GOV.UK](https://design-system.service.gov.uk/styles/links/) and [USWDS](https://designsystem.digital.gov/components/link/) inform the usability guidance but differ on external-link icons; USWDS research also found inconsistent understanding of icons. Helm's default symbol is local policy, not a universal accessibility requirement. The [HTML standard](https://html.spec.whatwg.org/multipage/links.html#link-type-noopener) defines opener protection and referrer suppression.
-- **Link appearance:** [Fluent](https://fluent2.microsoft.design/components/web/react/core/link/usage) and [Carbon](https://www.carbondesignsystem.com/building-blocks/core/components/link/guidelines) distinguish inline links from standalone or navigation components. W3C's [G183 technique](https://www.w3.org/WAI/WCAG22/Techniques/general/G183), [text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) and [visible focus](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html) guidance inform the accessibility checks. Helm's default underlines and contextual hover treatments are usability choices; these sources do not mandate one appearance for every link.
+- **Themes:** [Google's theme switch](https://web.dev/articles/building/a-theme-switch-component) and [MDN storage guidance](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) inform preference handling and browser limits; Helm defines its persistence scope and optional System control.
+- **Input:** [GOV.UK guidance](https://design-system.service.gov.uk/components/character-count/) supports selective counters and preserved paste; [HTML length constraints](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#limiting-user-input-length:-the-maxlength-attribute) define counting limits. [W3C guidance on status messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html) informs accessible feedback.
+- **Cursors:** [CSS definitions](https://www.w3.org/TR/css-ui-3/#cursor), [pointer cancellation](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html) and [dragging alternatives](https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html) ground operation cues and input access.
+- **Links:** [Link purpose](https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html), [text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), [G183](https://www.w3.org/WAI/WCAG22/Techniques/general/G183) and [HTML opener protection](https://html.spec.whatwg.org/multipage/links.html#link-type-noopener) ground the technical distinctions. [GOV.UK](https://design-system.service.gov.uk/styles/links/) and [USWDS](https://designsystem.digital.gov/components/link/) differ on external icons; Helm's chosen conventions remain preferences.
+
+These sources support maintenance, not routine external reading or additional workflows.

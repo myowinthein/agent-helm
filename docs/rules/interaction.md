@@ -66,6 +66,6 @@ Links need readable contrast in light and dark themes, visible keyboard focus an
 
 ## Scope and verification
 
-Use existing components, storage and validation boundaries. Preserve user input and explicit preferences; a new rule does not authorize unrelated changes. Check the affected behavior with keyboard, touch and pointing devices, including unavailable storage or failed actions when relevant.
+Use existing components, storage and validation boundaries. Preserve user input and explicit preferences; a new rule does not authorize unrelated changes. Verify affected states and recovery after completion, cancellation or failure with keyboard, touch and pointing devices. A cursor or hover effect alone does not establish usable interaction.
 
 The hand cursor, external icon and link underline defaults are Helm conventions. Follow explicit project requirements and distinguish these preferences from accessibility requirements. Report checks that could not be performed.

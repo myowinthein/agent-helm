@@ -139,7 +139,9 @@ Visited styling is useful when people need to know which references they have re
 
 The rule uses the project's existing components, palette, preference storage and accepted-data contracts. It does not introduce a backend, a new theme selector or a redesign merely to enforce its defaults. Writing owns editorial references and prose; Design owns visual composition and responsive layout. When selected together, their relevant guidance applies within the same task.
 
-Check the states actually changed: saved and automatic themes, pasted and excessive input, enabled and unavailable controls, link destinations and focus, and recovery after completion or failure. Keyboard and touch behavior matter even when the visible change concerns a cursor. Source inspection, screenshots and observed interaction provide different evidence; report important gaps without claiming complete accessibility.
+Verification follows the affected area: theme changes need checks of initial appearance, manual overrides, system changes and storage fallback; input changes need boundary, counting and preserved-answer checks. Cursor and link changes need the relevant hit areas, states, destinations and feedback. Verify recovery after completion, cancellation or failure, with keyboard and touch access even when the visible change concerns a cursor.
+
+Source inspection, screenshots and observed interaction provide different evidence. Report important gaps and unavailable checks in the normal task handoff without claiming complete accessibility or creating a separate report merely to follow this rule.
 
 ## Explore the source
 
