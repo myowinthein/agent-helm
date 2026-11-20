@@ -31,8 +31,7 @@ Treat references as one workflow, from finding useful phrases to checking the fi
 ```mermaid
 flowchart TD
   Find["Find and select useful references"] --> Match["Verify the destination and embed it in a clear phrase"]
-  Match --> Behavior["Apply opening behavior and indicators"]
-  Behavior --> Check["Check the finished reference"]
+  Match --> Check["Check the finished reference"]
 ```
 
 Link when it helps readers act, understand context or verify a claim. Default to one useful contextual link per destination per page; distant sections, independent tasks and required citations can justify repetition. Every mention need not become a link.
@@ -41,11 +40,7 @@ Specific topics point to the relevant section; broad introductions point to the 
 
 Use the project's verified canonical URLs, preferring HTTPS where supported. Preserve working hostnames; non-www is a default for new projects only when hosting and HTTPS support it. Display origins like `https://example.com` without a trailing slash, while page paths follow the site's routing; a serialized root `/` remains valid. Preserve queries, fragments and external sites' canonical addresses.
 
-**Current tab is the default for internal and external links.** New tabs are limited to preserving an active task, explicit user choice or a project requirement. Do not add visible or hidden opening announcements, including label suffixes, tooltips or screen-reader-only notices. Native browser choices remain available.
-
-A northeast arrow leaving an open square marks external text links, independently of tab behavior. Internal new-tab links get no external arrow. Downloads and email, phone or app links use native handling and clear outcome wording. Respect established project conventions and renderer limits.
-
-Check the resulting sentence, destination and fragment. Where styling is controllable, prose/reference links default to underlines that stay clearly visible at rest, with clear hover and keyboard focus; recognizable navigation and other components can keep their established treatment. Essential labels and indicators stay available without hover. Preserve existing anchors when headings change and report verification gaps. [Design](design.html#link-appearance) adds visual criteria within this same reference pass when selected.
+Check the resulting sentence, destination and fragment. Preserve existing anchors when headings change and report verification gaps. Link opening, external indicators and interaction states now belong to the independently selected [Interaction](interaction.html#links) rule. [Design](design.html) covers visual composition and responsive layout; neither is a Writing dependency.
 
 ## Examples
 

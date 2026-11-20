@@ -99,7 +99,7 @@ Dir.mktmpdir("helm-package-") do |temp|
     HelmValidation.check(!expected || failure == expected, "Validator rejected #{label} for the wrong reason")
   end
 
-  %w[rules/design.md prompts/archive/step1-explore.md prompts/shared/question-mechanism.md
+  %w[rules/design.md rules/interaction.md prompts/archive/step1-explore.md prompts/shared/question-mechanism.md
      prompts/normalize-review.md helpers/normalize_check.py helpers/normalize_callback.py helpers/env_keys.py
      prompts/shared/normalize-handoff.md prompts/shared/review-anchor.md helpers/normalize_handoff.py].each do |path|
     missing = installation.join(path)

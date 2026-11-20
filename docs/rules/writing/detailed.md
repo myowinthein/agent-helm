@@ -40,9 +40,7 @@ flowchart TD
   Find["Find possible references in the requested scope"] --> Select["Select useful links and avoid reading noise"]
   Select --> Match["Verify the relevant destination and section"]
   Match --> Phrase["Embed the URL in a meaningful phrase"]
-  Phrase --> Open["Choose current-tab behavior or a justified exception"]
-  Open --> Icon["Apply the external destination indicator"]
-  Icon --> Verify["Check wording, targets, access and interaction"]
+  Phrase --> Verify["Check wording, destinations and fragments"]
 ```
 
 ### Find useful references without linking everything
@@ -61,19 +59,11 @@ Use verified canonical domains and actual routes. HTTPS is preferred where suppo
 
 ### Choose opening behavior and indicators
 
-Internal pages, same-page sections and external references open in the current tab by default. A new tab is justified for preserving an active task, an explicit user choice or a project requirement. Do not add an announcement solely for that behavior: no visible label suffix, tooltip, hidden text, accessible-name suffix, live announcement, dialog or shared group notice. Keep destination labels and accessible names useful. Native modified clicks and browser menus remain available.
-
-The external-link indicator describes the destination independently of tab behavior: one northeast arrow leaving an open square follows external text links. An internal link that opens a new tab does not acquire an external icon. An arrow does not replace a meaningful label.
-
-Downloads and email, phone or app links use native handling and clear outcome wording. Renderer limits matter: ordinary Markdown cannot promise behavior controlled by GitHub or the browser.
+These interface standards now belong to [Interaction's link guidance](../interaction/detailed.html#links). They apply when that rule is separately selected, within the same reference pass. Writing remains independently usable for editorial selection and meaningful labels.
 
 ### Verify the finished reference
 
-Read the linked phrase back in its sentence, check the destination and fragment, and preserve established anchors when headings change.
-
-Where styling is controllable, prose and reference links default to clearly visible underlines at rest. Clearly grouped navigation, button links, cards and icons can use their established component treatment. Keep hover emphasis, visible keyboard focus and any visited styling readable. Essential labels and indicators must work without hover, including on touch devices. A renderer such as GitHub may control those styles itself.
-
-Interface changes also need the relevant visual-state, keyboard, focus and opening checks. When Design is selected, its [link appearance criteria](../design/detailed.html#link-appearance) apply within this verification step. A second linking pass is unnecessary. Report unavailable verification rather than describing inspection as a tested interaction.
+Read the linked phrase back in its sentence, check the destination and fragment, and preserve established anchors when headings change. Report inaccessible sources and unperformed verification. Interaction owns its relevant interface-state and opening checks; source inspection alone does not establish working interaction.
 
 ## Examples
 

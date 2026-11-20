@@ -146,12 +146,12 @@ checks["Codex requires completed commands and a completed turn"] = lambda do
   item.delete("aggregated_output")
   rejects { HelmAcceptance.trace("codex", wire(events)) }
 end
-%w[writing design].each do |selected|
+%w[writing design interaction].each do |selected|
   checks["#{selected}-only exact output excludes unselected rules"] = lambda do
     owner = "# Fixture\n"
     connected = HelmSmoke.connected_owner(owner, rules: [selected])
     expect(connected.include?("#{selected}.md"))
-    expect((%w[git safety writing design] - [selected]).none? { |name| connected.include?("#{name}.md") })
+    expect((%w[git safety writing design interaction] - [selected]).none? { |name| connected.include?("#{name}.md") })
     Dir.mktmpdir("helm-selected-rules-") do |temporary|
       root = Pathname(temporary)
       root.join("AGENTS.md").write(owner)

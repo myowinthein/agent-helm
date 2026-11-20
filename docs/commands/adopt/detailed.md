@@ -47,7 +47,9 @@ A blocker ends the run with its reason and known checkout facts. It does not con
 
 ## Available rules
 
-[Git and Safety](../../rules/git.html) are a pair: commit and publication choices depend on the preservation and authorization rules. The recommended fresh set adds Writing, which can be omitted. For an unscoped fresh installation, choosing the explicitly listed all-four set also selects Design. Writing and Design can each be used independently; a request for one does not silently install the others.
+[Git and Safety](../../rules/git.html) are a pair: commit and publication choices depend on the preservation and authorization rules. The recommended fresh set adds Writing, which can be omitted. For an unscoped fresh installation, choosing the explicitly listed all-five set also selects Design and Interaction. Writing, Design and Interaction can each be used independently; a request for one does not silently install the others.
+
+Interaction owns theme preferences, input feedback, cursors and link behavior extracted from Writing and Design. An update proposal discloses the defaults moving out of an existing copy. You can keep that copy or approve its update with or without separately selecting Interaction. The new rule is not treated as a missing dependency; an updated Writing or Design copy alone no longer supplies those extracted policies.
 
 The installed copies normally live under `.claude/rules/`. Their role is deliberate: a plugin update changes the available upstream rules, while the consumer keeps its reviewed local copies until you adopt again.
 
@@ -74,7 +76,7 @@ The action choices depend on what is ready:
 | Existing maintenance and optional additions | Update existing only / Update existing plus the listed missing rules / Keep existing / Cancel. |
 | Existing maintenance only | Update existing, apply repairs or apply connections, as appropriate / Keep existing / Cancel. |
 | Optional additions only | Install the listed missing rules / Keep existing / Cancel. |
-| Unscoped fresh installation | Install the recommended Git, Safety and Writing set / Install all four / Cancel. |
+| Unscoped fresh installation | Install the recommended Git, Safety and Writing set / Install all five / Cancel. |
 | Everything matches and is connected, with no applicable optional offer | Report no changes without a question. |
 
 The minimum maintenance choice includes required file/dependency repairs and instruction connections. It does not include a new optional rule merely because that rule is absent. The broader choice names every additional installation and pointer effect before approval; a missing Git/Safety pair is offered together when neither was previously adopted. An explicit subset can be supplied in the same response. Limited requests report other available rules without offering unrelated installation actions.

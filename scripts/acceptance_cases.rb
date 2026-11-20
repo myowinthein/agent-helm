@@ -14,7 +14,7 @@ module HelmAcceptanceCases
     terms = "# Fictional fixture terms\n\n## Custom clause\n\nKeep this exact owner-approved clause.\n\n## Data\n\nThe application stores submitted personal data.\n"
     canary = "SYNTHETIC_ONLY_#{SecureRandom.hex(20)}"
     managed = "<!-- helm-rule: agent-helm@v9.9.9 -->\n# Custom managed copy\n\nPreserve this exact customized body.\n"
-    independent = %w[writing design].to_h do |name|
+    independent = %w[writing design interaction].to_h do |name|
       [name, "<!-- helm-rule: agent-helm@v#{JSON.parse(package.join('.claude-plugin/plugin.json').read).fetch('version')} -->\n" + package.join("rules/#{name}.md").read]
     end
     shared = { "AGENTS.md" => standard, "CLAUDE.md" => "@AGENTS.md\n", "app.py" => "def greeting():\n    return 'Fictional fixture'\n\nif __name__ == '__main__':\n    print(greeting())\n" }
@@ -84,8 +84,8 @@ module HelmAcceptanceCases
       "adopt-protected-nested" => { files: shared.merge(protected_root), command: "adopt", nested_target: true,
         request: "Inspect adoption for this nested target inside the enclosing renamed Helm source fixture. Resolve the enclosing root's actual identity; a nested directory never bypasses that source guard. Do not write, install, repoint, commit or offer a bypass.", required: ["source"] },
       "adopt-custom-keep" => {
-        files: shared.merge(%w[git safety writing design].to_h { |name| [".claude/rules/#{name}.md", managed] }), command: "adopt",
-        request: "Review rule adoption. Keep all four customized managed copies exactly as they are; skip all updates, new copies and connections. No owner edit, commit or push is approved. Report the retained customized rules.", required: ["git.md", "safety.md", "writing.md", "design.md"]
+        files: shared.merge(%w[git safety writing design interaction].to_h { |name| [".claude/rules/#{name}.md", managed] }), command: "adopt",
+        request: "Review rule adoption. Keep all five customized managed copies exactly as they are; skip all updates, new copies and connections. No owner edit, commit or push is approved. Report the retained customized rules.", required: ["git.md", "safety.md", "writing.md", "design.md", "interaction.md"]
       },
       "adopt-writing-only" => {
         files: shared.merge(".claude/rules/git.md" => "# Foreign Git rules\nKeep this.\n", ".claude/rules/safety.md" => "# Foreign safety rules\nKeep this too.\n"), command: "adopt",
@@ -97,6 +97,11 @@ module HelmAcceptanceCases
           ".claude/rules/writing.md" => managed, "design-system.md" => "# Fictional brand\nUse the existing typography and colors.\n"), command: "adopt",
         approved: { ".claude/rules/design.md" => independent.fetch("design"), "AGENTS.md" => HelmSmoke.connected_owner(standard, rules: ["design"]) },
         request: "Skip Git, Safety and Writing completely, preserving their existing files and design-system.md. Install and connect only Design. I approve only the exact design copy and owner contents supplied below. Leave uncommitted, no push. Do not add a Writing dependency, merge local branding into the copy, create a design brief or redesign the application.", required: ["design.md"]
+      },
+      "adopt-interaction-only" => {
+        files: shared.merge(".claude/rules/writing.md" => managed, ".claude/rules/design.md" => managed), command: "adopt",
+        approved: { ".claude/rules/interaction.md" => independent.fetch("interaction"), "AGENTS.md" => HelmSmoke.connected_owner(standard, rules: ["interaction"]) },
+        request: "Install and connect only Interaction. Preserve existing Writing and Design copies; no companion, interface changes, commit or push is approved. I approve only the exact interaction copy and owner contents supplied below.", required: ["interaction.md"]
       },
       "log-partial-update" => {
         files: shared.merge("AGENTS.md" => memory), command: "log",
