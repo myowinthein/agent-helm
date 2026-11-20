@@ -35,6 +35,8 @@ The same applies to typography, color and motion. Automatically switching to cre
 
 For example, a short reference page may need a clear reading column and section links. Turning every paragraph into a card can add borders and spacing without making the explanation easier to absorb.
 
+Positive structure matters too. Use alignment and spacing to show which information belongs together, and use typography and hierarchy to communicate importance. The primary task and real content determine the composition. A repeated card or accent treatment only helps when it expresses a useful relationship; changing its color or border shape cannot give unrelated filler a purpose.
+
 ## Responsive interfaces and links
 
 Layouts should preserve access to content and actions as the viewport narrows, text grows or navigation changes. Consider keyboard operation, focus, reading order, contrast and reduced motion as part of normal interface work. WCAG 2.2 Level AA is the default accessibility reference, including its stated exceptions.
