@@ -30,6 +30,12 @@ flowchart TD
 
 ## Controls and feedback
 
+### Feedback and loading
+
+People should be able to tell whether work is pending and understand its relevant outcome. Errors need a clear connection to the affected task and a useful way forward. Similar operations reuse established feedback, while a page load and a button action can communicate progress differently.
+
+Keep unrelated controls usable while work runs. Where an action is temporarily unavailable, communicate that state and prevent duplicate activation when needed. Completion, cancellation and failure should clear stale loading feedback and leave controls in their appropriate state. The project chooses labels, spinners, icons and placement; the rule requires no universal loading style.
+
 ### Preferences and persistence
 
 A reusable preference and a temporary selection have different lifetimes. Someone may expect quality or display density to survive a later visit, while a resolution chosen for one item can remain specific to that item. Preserve the product's intended scope rather than saving every control automatically.

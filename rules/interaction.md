@@ -4,6 +4,10 @@ Keep preferences, input feedback, cursors and link behavior predictable during r
 
 Writing owns prose and editorial references; Design owns visual composition, responsive layout and visual accessibility. Neither is a dependency. Use their relevant guidance when separately selected, within the same task. Helm's hand cursor, external icon, underline and persistence defaults are preferences, not universal accessibility requirements.
 
+## Feedback and loading
+
+Reuse established feedback for comparable operations. Make pending work, relevant completion and failures clear, connecting errors to the affected task and useful recovery. Keep unrelated controls usable; communicate temporary unavailability and prevent duplicate activation where needed. After completion, cancellation or failure, clear stale loading feedback and restore controls to their appropriate state. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
+
 ## Preferences and persistence
 
 Reuse the project's controls, storage mechanism, defaults and intended setting scope. Persist choices meant for reuse, such as quality or theme; do not automatically persist transient inputs or per-item selections.

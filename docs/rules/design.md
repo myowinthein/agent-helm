@@ -20,6 +20,8 @@ Choose structure, typography and interaction for the actual content and user tas
 
 Use hierarchy, alignment, spacing and typography to make importance and relationships clear. Let the content and primary task determine the composition, with decoration supporting them.
 
+Reuse established styling for comparable messages, loading states, separators and spacing. Meaning and hierarchy can justify different treatments; exact colors, icons and measurements remain project choices.
+
 ## Responsive interfaces and links
 
 Layouts should work across narrow and wide viewports, preserving access to content and actions as navigation changes. [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) is the default accessibility reference, including its stated exceptions.

@@ -26,6 +26,10 @@ flowchart TD
 
 ## Controls and feedback
 
+### Feedback and loading
+
+Use established feedback for comparable operations so people can tell when work is pending, finished or unsuccessful. Keep unrelated controls usable, prevent duplicate actions where needed and restore appropriate controls when work ends. A page load and a button action can use different treatments suited to their context.
+
 ### Preferences and persistence
 
 Reusable choices such as quality and theme can be remembered across visits. Temporary inputs and per-item choices keep their intended lifetime. Reuse existing storage: page memory suits current-page state, `sessionStorage` suits a tab session, and `localStorage` suits small non-sensitive preferences across visits. Existing cookies or account settings can serve choices needed by the server or account.
