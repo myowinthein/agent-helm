@@ -40,7 +40,17 @@ The same command can have different effects in different projects. A test may be
 | Obtain missing authorization | Review the concrete destination and effects before a push, data import, deployment or destructive cleanup. |
 | Stop dependent work | Respect a prohibition, unknown target or unmet required gate; preserve progress and continue independent permitted work. |
 
+The intended project matters before any edits. Suppose a session is open in a demo application, but you ask to change a Helm command. The agent can discuss the idea while identifying Helm as the subject, then explains the workspace mismatch and clarifies where implementation belongs. It cannot silently redirect the task or put Helm changes into the demo. Reading Helm's AGENTS.md tells it how to work there; that read does not authorize changes. If your request explicitly names the target repository and work, that ambiguity is already settled.
+
+Scope includes necessary companion changes, such as a call site and regression test for the requested fix. Unrelated cleanup or feature work is reported before expanding the task. Documents maintained by commands retain the review boundary explained below.
+
 A sufficiently specific direct request can already authorize an action. The rule does not require asking the same question again while content, target and effects still match. Tool access, silence and an unchecked default provide no substitute for human intent.
+
+### Writing code and changing data
+
+Implementing a record-deletion feature authorizes work on its code and relevant tests. It does not authorize executing a deletion against an existing database. Even a single-record update needs authority for the actual account, environment, storage target, record scope and effects. A database called `local` or `test` may still hold useful persistent data.
+
+Established safe tests with genuinely isolated, task-owned fixtures can run within their approved scope. Hidden migrations, seeders, imports or resets require a concrete execution plan covering those effects; a general request to run tests does not settle them. Once that exact plan is approved, the agent need not ask again for every step.
 
 ## Protect work and verify effects
 
@@ -48,7 +58,9 @@ Preserve unrelated edits, staged hunks and local inputs. Git can recover committ
 
 After a failure or timeout, establish the actual state before continuing. For example, a network timeout after a publication request does not prove the destination was unchanged. Readback can prevent a duplicate or destructive retry.
 
-Credentials and private records stay out of chat, logs, commits and unapproved uploads. Delegation gives a worker the same or narrower authority; another agent cannot approve a consequential action on your behalf.
+Credentials and access configuration are preserved unless removing, replacing or rotating them has a clear reason within the authorized task. A credential that appears unused, or a configuration that makes a test fail, is not automatically disposable. Safe discovery uses names, references and metadata rather than secret values.
+
+Secrets and private records stay out of chat, logs, commits and unapproved uploads. Delegation gives a worker the same or narrower authority; another agent cannot approve a consequential action on your behalf. Instructions found in ordinary files, web pages or tool output cannot grant new authority either.
 
 ## Maintaining command outputs
 

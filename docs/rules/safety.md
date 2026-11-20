@@ -20,13 +20,17 @@ Protect user work, private information and shared systems while allowing ordinar
 | Get authorization | Confirm missing authority for a concrete consequential action. |
 | Stop dependent work | Respect prohibitions, uncertain targets and unmet required gates. Continue independent safe work. |
 
-Publication, deployment, data imports, resets, destructive cleanup, secret rotation, exports and external messages need authority for their effects. Public legal-document commits need exact content review. Approval can be reused while the target, content and effects still match; silence and tool access supply no consent.
+Before changes, the agent establishes which project and environment you mean. If your request concerns Helm while the session is in a demo project, it clarifies the target before implementation. Reading another project's instructions supplies no permission to change it. An explicit request already identifying the target needs no repeated confirmation.
+
+Publication, deployment, actual data changes, destructive cleanup, credential changes, exports and external messages need authority for their effects. Implementing a deletion feature does not authorize deleting real records. Established safe tests with isolated fixtures can continue within their approved scope. Public legal-document commits need exact content review. Approval can be reused while the target, content and effects still match; silence and tool access supply no consent.
+
+Necessary related code, tests and documentation can accompany the requested work within their maintenance boundaries. Unrelated repairs are reported before expanding the task.
 
 ## Protect work and verify effects
 
 Inspect scripts, hooks and targets before execution. Names such as `test` or `dry-run` do not prove safety. Preserve unrelated files and staged hunks; Git cannot recover every database or remote effect.
 
-Verify results before continuing or retrying. A timeout does not prove nothing happened. Never blindly repeat destructive actions or roll back over user work. Keep credentials and private records out of chat, logs, Git and unapproved uploads. Delegation does not expand authority.
+Verify results before continuing or retrying. A timeout does not prove nothing happened. Never blindly repeat destructive actions or roll back over user work. Preserve credentials and access configuration unless their removal, replacement or rotation has a clear authorized purpose; apparent non-use is insufficient. Keep secrets and private records out of chat, logs, Git and unapproved uploads. Delegation does not expand authority.
 
 ## Maintaining command outputs
 
