@@ -1,6 +1,6 @@
 ---
 title: Legal
-description: "Legal prepares complete document drafts from project evidence and confirmed business facts. You read the files, resolve material gaps and decide whether their exact content should be committed."
+description: "Legal prepares complete document proposals from project evidence and confirmed facts. Review exact content, resolve material gaps and approve writing and committing together."
 parent: Commands
 nav_exclude: true
 has_toc: false
@@ -15,7 +15,7 @@ source_files:
 
 {% include guide-depth.html %}
 
-Legal prepares complete document drafts from project evidence and confirmed business facts. You read the files, resolve material gaps and decide whether their exact content should be committed.
+Legal prepares complete document proposals from project evidence and confirmed facts. You review exact content and resolve material gaps before approving writing and committing together.
 
 ## Flow
 
@@ -28,16 +28,16 @@ flowchart TD
   Reconcile --> Table["Show the six document types,<br/>file status, decisions and reasons"]
   Table --> Needed{"Drafts or proposed removals?"}
   Needed -->|No| End(["Report the result, gaps<br/>and any record-only changes"])
-  Needed -->|Yes| Draft["Prepare eligible drafts;<br/>keep removal candidates intact"]
+  Needed -->|Yes| Draft["Prepare eligible proposals;<br/>keep documents intact"]
   Draft --> Facts{"Essential missing facts?"}
   Facts -->|Yes| Ask["Ask one consolidated batch;<br/>resolve or hold affected documents"]
-  Facts -->|No| Files["Write/read back drafts;<br/>link removal candidates for review"]
-  Ask --> Files
-  Files --> Review["Short summary and file links;<br/>developer reviews in editor"]
-  Review --> Approval{"Commit / Revise / Leave uncommitted"}
-  Approval -->|Revise| Draft
-  Approval -->|Leave uncommitted| End
-  Approval -->|Commit| Save["Apply approved removals,<br/>verify document records and commit"]
+  Facts -->|No| Review["Show exact diffs and proposed results,<br/>dates, paths and record/commit effects"]
+  Ask --> Review
+  Review --> Approval{"Write and commit<br/>or Cancel?"}
+  Approval -->|Cancel| End
+  Approval -->|Write and commit| Save["Write and verify approved content/removals,<br/>update eligible records and commit"]
+  Review -.->|Explicit approved write-only request| Files["Write and verify drafts;<br/>keep removals and assessment history unchanged"]
+  Files --> End
   Save --> End
 ```
 
@@ -65,11 +65,17 @@ A concrete material omission holds the affected draft until it can be resolved. 
 
 The drafts explain what the implementation and confirmed policy support. They do not establish compliance, add missing consent controls or publish a legal route automatically. Those integration changes have their own scope.
 
-## Review before committing
+<span id="review-before-committing"></span>
 
-Read the full drafts in your editor or Markdown preview. Chat links to the files and explains meaningful changes or gaps; it does not replace your review with a long pasted document.
+## Review before writing
 
-Choose **Commit**, **Revise** or **Leave uncommitted**. You can edit a file yourself before the agent rereads it for the approved commit. Removal candidates are named and require explicit approval; leaving drafts uncommitted also leaves those candidates intact.
+The proposal stays in conversation while existing documents remain intact. For each existing file, you see a diff with literal additions and removals, followed by a **Proposed result after approval** preview of affected passages. Each new document appears once in full, without a duplicate additions-only diff. Dates, metadata and protected clauses are included in the review. Proposed deletions show exactly what would disappear and explain their dependency effects.
+
+Choose **Write and commit** or **Cancel** after the exact content, paths, record changes and commit subject are visible. One approval covers those writes and the commit, even with auto-commit enabled; successful readback and required checks still come first. It grants no publication authority. A failed write or check leaves the actual work recoverable and stops dependent actions.
+
+You can type exact selections, corrections or replacement wording. Only affected previews and missing approval need refreshing; the command does not automatically restart its scan or rewrite unrelated clauses. You can also request **write without committing** for the shown content. Those files become uncommitted drafts with proposed dates, while removal candidates stay intact and assessment provenance does not advance.
+
+Cancel leaves pending document proposals unapplied. It preserves any earlier specifically approved work or verified record-path repairs, without a separate metadata commit. Files are linked after approved writes so you can continue reviewing them in your editor.
 
 ## Your result
 

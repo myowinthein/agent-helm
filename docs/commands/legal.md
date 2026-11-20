@@ -1,6 +1,6 @@
 ---
 title: Legal
-description: Prepare source-based legal document drafts for editor review. Choose document types, review gaps and decide whether to commit the exact content.
+description: Prepare source-based legal document proposals. Review exact changes before approving their write and commit.
 parent: Commands
 detailed: /docs/commands/legal/detailed.html
 nav_order: 7
@@ -10,7 +10,7 @@ nav_order: 7
 
 {% include guide-depth.html %}
 
-Use legal to prepare the legal documents a project needs, based on its source and confirmed facts. It writes complete drafts for you to read in your editor; you decide whether to commit them.
+Use legal to prepare the legal documents a project needs, based on its source and confirmed facts. You review exact changes and proposed results before approving their write and commit.
 
 ## Flow
 
@@ -18,11 +18,10 @@ Use legal to prepare the legal documents a project needs, based on its source an
 flowchart TD
   Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
   Gate -->|Yes| Assess
-  Assess["Assess existing documents and needs"] --> Draft["Prepare selected drafts"]
-  Draft --> Review{"Your decision"}
-  Review -->|Revise| Draft
-  Review -->|Commit| Save["Commit reviewed documents"]
-  Review -->|Leave uncommitted| Keep["Keep drafts for later"]
+  Assess["Assess needs and show document decisions"] --> Preview["Show exact changes and proposed results"]
+  Preview --> Review{"Write and commit<br/>or Cancel?"}
+  Review -->|Write and commit| Save["Write, verify and commit approved documents"]
+  Review -->|Cancel| Keep["Leave document proposals unapplied"]
 ```
 
 ## Start the command
@@ -60,11 +59,13 @@ Existing approved clauses, locations and language are preserved unless you agree
 
 A known material gap holds the affected document while other complete drafts may proceed. Missing facts do not become invented promises. Drafting and owner approval do not establish legal compliance; consent controls, routing and other implementation work remain separate.
 
-## Review before committing
+<span id="review-before-committing"></span>
 
-Read the full files in your editor or Markdown preview. Chat gives you file links, meaningful changes and important gaps.
+## Review before writing
 
-Choose **Commit / Revise / Leave uncommitted**. Any proposed removals are named with their effects and require explicit approval; leaving drafts uncommitted also preserves removal candidates. You can edit the drafts yourself before the agent rereads them for the approved commit.
+For existing documents, you see a diff and the clean proposed result for affected passages. Each new document appears once in full. Proposed dates, removals and record/commit effects are shown before any document write.
+
+Choose **Write and commit** or **Cancel**. You can type exact corrections, select particular files or request **write without committing**. That draft-only request leaves proposed removals intact and does not advance assessment dates or source records. Cancel leaves pending document changes unapplied; earlier approved work or verified record repairs remain preserved.
 
 ## Your result
 

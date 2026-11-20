@@ -100,7 +100,7 @@ When a project needs to explain how it handles data or what terms apply, I use l
 Codex → $legal    Claude → /legal
 ```
 
-It reviews source, existing documents and confirmed facts, asks for essential missing details together, then writes selected drafts from six supported document types as uncommitted files. I read them in my editor and choose Commit, Revise or Leave uncommitted. Committing needs my approval of the exact content, even with auto-commit enabled. Drafting does not establish legal compliance.
+It reviews source, existing documents and confirmed facts, then asks essential missing questions together. I see exact changes and proposed results before choosing Write and commit or Cancel. New documents appear once in full; I can type corrections or request uncommitted drafts. Exact content and commit approval remain required with auto-commit enabled. Drafting does not establish legal compliance.
 
 ### Normalize
 
