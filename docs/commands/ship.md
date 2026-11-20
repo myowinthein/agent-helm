@@ -45,7 +45,7 @@ A fresh session is useful for a long-running chat, but ship still discovers pend
 - **direct:** publish the reviewed current branch.
 - **pr:** publish source and create or reuse review handoffs. Main and environment work use a separate `ship/*` source; features use their own branch.
 
-The default is `pr`. One publication review can cover a safe preparatory commit, the push or PR and any fully explained target choices. Each selected action needs its content, destination and effects in view. Required checks and protection still apply; unchanged approval is reused and already-published work needs no duplicate push.
+The default is `direct`. One publication review can cover a safe preparatory commit, the push or PR and any fully explained target choices. Each selected action needs its content, destination and effects in view. Required checks and protection still apply; unchanged approval is reused and already-published work needs no duplicate push.
 
 Ship does not wait for reviews, merge PRs or delete branches. New pushes update open PRs sharing that source; an already merged PR needs a new handoff for later changes.
 

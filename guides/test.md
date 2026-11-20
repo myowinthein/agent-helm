@@ -8,7 +8,7 @@ Keep static assessment, setup/runner readiness, executed verification, case clos
 
 ## Before starting: scope and boundaries
 
-Read the shared runtime and resolve `{memory_file}`, instruction bridges/overrides, recognized configuration and `git-auto-commit` (default false) before dependent local writes. Publication settings do not select this workflow's branch or completion. Never create, migrate or edit instruction entries or Helm settings.
+Read the shared runtime and resolve `{memory_file}`, instruction bridges/overrides, recognized configuration and `git-auto-commit` (default true) before dependent local writes. Publication settings do not select this workflow's branch or completion. Never create, migrate or edit instruction entries or Helm settings.
 
 Test/setup and eligible ledger writes use the same current attached branch: actual main/master, an established feature/maintenance branch or a confirmed environment branch under the shared local-edit helper and project policy. Unresolved or unsupported roles block writes until classified. Recommend tests for related changes alongside a feature or against the environment branch's integrated snapshot, and base for project-wide Gap scan/Full scan, without restricting scan depth by branch role. Eligibility never creates/selects a branch, transfers a checkpoint to base or establishes a safe runtime target; actual test/service effects retain their existing approval and isolation requirements.
 

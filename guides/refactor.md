@@ -4,7 +4,7 @@ Find worthwhile code improvements and apply selected, behavior-preserving transf
 
 ## Before starting: scope and policy
 
-Read the shared runtime and resolve `{memory_file}`, bridges/overrides, recognized configuration and local `git-auto-commit` policy (default false) before dependent writes. Ship method does not select a branch or finalization route here. Never change instruction/configuration ownership or Helm settings.
+Read the shared runtime and resolve `{memory_file}`, bridges/overrides, recognized configuration and local `git-auto-commit` policy (default true) before dependent writes. Ship method does not select a branch or finalization route here. Never change instruction/configuration ownership or Helm settings.
 
 After entry eligibility and required own-state validation, preview source, then offer eligible Full scan / Gap scan / Revisit open findings / Skip choices. Honor an already explicit scope choice without asking again. Explicit source-only advice remains available on request, without a routine report-only menu option or own-state access. Report findings and propose exact coherent transformations, affected paths, invariants, tradeoffs, dependencies and verification before approved recording or edits. Pass developer answers unchanged and never interpret them as shell code. Both hosts follow this same workflow.
 

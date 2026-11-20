@@ -27,8 +27,8 @@ Ordinary work stays on its current permitted branch. Each invoked workflow owns 
 
 | Setting | Values | Default | Meaning |
 |---|---|---|---|
-| `git-auto-commit` | `true`, `false` | `false` | Authorize completed local commits after required verification, subject to explicit deferral and stronger content-approval rules. |
-| `ship-method` | `direct`, `pr` | `pr` | Direct publication/integration of reviewed work, or publication followed by PR/MR review handoffs. Neither selects targets, approves a push or grants auto-merge/release authority. |
+| `git-auto-commit` | `true`, `false` | `true` | Authorize completed local commits after required verification, subject to explicit deferral and stronger content-approval rules. |
+| `ship-method` | `direct`, `pr` | `direct` | Direct publication/integration of reviewed work, or publication followed by PR/MR review handoffs. Neither selects targets, approves a push or grants auto-merge/release authority. |
 | `git-merge-strategy` | `squash`, `rebase`, `merge` | `squash` | One reviewed integration commit, replay of reviewed private/unpushed work, or preserved merge topology. A rebase preference never authorizes rewriting shared/published history. |
 
 These choices are independent; team size, branch names and deployment topology do not set them. State relevant invocation policy once and revalidate it before dependent effects. Preserve explicit values; change preferences only through an authorized setting edit. Reconcile stronger project/provider restrictions rather than changing method, source or target to evade them. Local work need not contact a provider or resolve a push destination merely to finish.

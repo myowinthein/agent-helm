@@ -65,12 +65,12 @@ Before any Git mutation on a selected write path, retain explicit setting-change
 
 | Setting | Question and values |
 |---|---|
-| ship-method | For future ship only: Direct integration/push (`direct`) or PR/MR handoff (`pr`, default). No team-size/branch-layout question. Offer this during setup or an explicit configuration request; it never gates local editing. |
-| git-auto-commit | Commit completed tasks automatically (`true`), or ask before committing (`false`, default). Publication remains separately approved in ship. |
+| ship-method | For future ship only: Direct integration/push (`direct`, default) or PR/MR handoff (`pr`). No team-size/branch-layout question. Offer this during setup or an explicit configuration request; it never gates local editing. |
+| git-auto-commit | Commit completed tasks automatically (`true`, default), or ask before committing (`false`). Publication remains separately approved in ship. |
 | git-merge-strategy | For eligible future ship integrations: Squash (`squash`, default), Rebase (`rebase`), or Merge commit (`merge`), independently of ship method. |
 
 
-Record `{run_config_baseline}` from actual raw declarations/owner/overrides. Freeze `{run_auto_commit}` from existing effective policy plus an explicit answer for an absent key (default false); changed existing values apply next invocation. Publication/merge settings are future ship preferences, never branching permissions for this run. Missing answers use documented defaults without treating them as consent to persist a declaration. No unresolved publication-only choice prevents independent local knowledge work.
+Record `{run_config_baseline}` from actual raw declarations/owner/overrides. Freeze `{run_auto_commit}` from existing effective policy plus an explicit answer for an absent key (default true); changed existing values apply next invocation. Publication/merge settings are future ship preferences, never branching permissions for this run. Missing answers use documented defaults without treating them as consent to persist a declaration. No unresolved publication-only choice prevents independent local knowledge work.
 
 Answers are pending configuration, not permission to write an unseen diff. Persist only accepted choices in the existing recognized block, preserving its plain, bullet-list or fenced format. If none exists, show a minimal `## Project Config` addition with one `- key: value` bullet per accepted setting before inserting it. Never place shared settings in a wrapper, create a second owner or reask during generation. Cancel drops pending values. A genuinely fresh file receives settings only when its selected full scan writes it.
 

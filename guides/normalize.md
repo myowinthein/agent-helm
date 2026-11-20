@@ -4,7 +4,7 @@ Before reviewing history, display the coordination notice and wait for readiness
 
 ## Before starting: scope and policy
 
-Read the shared runtime, resolve `{memory_file}`, active overrides and local `git-auto-commit` (absent means off), signing and ref-update policy before dependent actions. Never edit instruction entries or Helm settings. The current attached branch is the eligible local ledger destination, whether base, feature or environment, under actual project restrictions. Ship method and merge strategy neither choose the rewrite set nor require a bookkeeping branch.
+Read the shared runtime, resolve `{memory_file}`, active overrides and local `git-auto-commit` (default true), signing and ref-update policy before dependent actions. Never edit instruction entries or Helm settings. The current attached branch is the eligible local ledger destination, whether base, feature or environment, under actual project restrictions. Ship method and merge strategy neither choose the rewrite set nor require a bookkeeping branch.
 
 Record the invocation's `{original_branch}` and starting HEAD before any rewrite or checkout; keep that branch identity through bookkeeping. On resume, preserve the saved original branch rather than substituting the resume checkout. A coordinated rewrite may legitimately change its tip. Returning later means the same original branch at its verified current tip, not restoring its old SHA. Initial read-only review never checks out a branch.
 

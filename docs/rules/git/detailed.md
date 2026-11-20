@@ -40,8 +40,8 @@ Conflicting settings block the actions that depend on them. A default applies on
 
 | Setting | Absent-setting default | What a choice means |
 |---|---|---|
-| `ship-method` | `pr` | Use direct publication or a PR/MR review handoff for ordinary shipping. |
-| `git-auto-commit` | `false` | Ask before local commits unless automatic local commits are enabled. |
+| `ship-method` | `direct` | Use direct publication or a PR/MR review handoff for ordinary shipping. |
+| `git-auto-commit` | `true` | Commit completed local work after required checks; explicit `false` requires commit approval. |
 | `git-merge-strategy` | `squash` | Select squash, merge or a permitted rebase for reviewed integrations. |
 
 A rebase preference does not authorize rewriting shared history. Team size and branch naming do not choose these settings. [Log](../../commands/log.html#shared-project-instructions) handles shared-instruction reconciliation.

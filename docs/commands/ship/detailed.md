@@ -51,7 +51,7 @@ A failed prerequisite or selected action stops the run, including further target
 
 ## Publish the current branch
 
-The project's [ship-method](../../rules/git.html#configuration-owner) chooses direct publication or a PR/MR handoff; the default is `pr`. Features use their own source branch. Main and environment work in PR mode use an associated `ship/*` helper so a real review handoff can be created.
+The project's [ship-method](../../rules/git.html#configuration-owner) chooses direct publication or a PR/MR handoff; the default is `direct`. Features use their own source branch. Main and environment work in PR mode use an associated `ship/*` helper so a real review handoff can be created.
 
 Before publication, you review the destination, outgoing changes, refs, required checks and deployment effects together. The plan can include a safe preparatory commit and the resulting push or PR. Ship verifies the created commit against the reviewed changes and reports its actual ID before continuing under that approval. Unexpected changes require a revised review; auto-commit alone grants no publication permission.
 
