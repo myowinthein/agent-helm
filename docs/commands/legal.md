@@ -18,7 +18,7 @@ Use legal to prepare the legal documents a project needs, based on its source an
 flowchart TD
   Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
   Gate -->|Yes| Assess
-  Assess["Assess needs and show document decisions"] --> Preview["Show exact changes and proposed results"]
+  Assess["Assess source and existing policies"] --> Preview["Preview files to create, update or remove"]
   Preview --> Review{"Write and commit<br/>or Cancel?"}
   Review -->|Write and commit| Save["Write, verify and commit approved documents"]
   Review -->|Cancel| Keep["Leave document proposals unapplied"]
@@ -32,7 +32,7 @@ Codex → $legal    Claude → /legal
 
 Use your client's [command prefix]({{ '/docs/setup/' | relative_url }}#run-a-command). Legal checks for clean **main or master** before source and document discovery. Legal document commits need explicit content and commit approval, even with [auto-commit](../rules/git.html#auto-commit) enabled.
 
-A Git, ownership, path or state-validation blocker ends the run before further investigation or a decision table. Missing facts for an individual document remain distinct from those workflow prerequisites.
+A Git, ownership, path or state-validation blocker ends the run before further investigation or proposals. Missing facts for an individual document remain distinct from those workflow prerequisites.
 
 <span id="understand-the-service-first"></span>
 
@@ -49,7 +49,7 @@ Helm reviews the service, data flows, integrations, payments and existing polici
 | EULA | An approved compatible licensing arrangement. |
 | Disclaimer | Relevant content or advice limitations. |
 
-Terms, refund policies and EULAs need your request or an existing approved policy. One decision table explains what to keep, update, create or recommend removing, with reasons. Excluded types stay out of scope. No useful change can mean no draft is needed.
+Terms, refund policies and EULAs need your request or an existing approved policy. Legal assesses the supported types within your scope, then previews only files it proposes to create, update or remove. Unchanged documents need no individual status entries. Excluded types stay out of scope; held documents and important gaps receive a short note. If no useful change is needed, it reports that directly.
 
 ## Draft from confirmed facts
 

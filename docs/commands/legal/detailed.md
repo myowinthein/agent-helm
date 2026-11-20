@@ -25,13 +25,12 @@ flowchart TD
   Entry -->|Yes| Start
   Start(["Start legal"]) --> Inspect["Inspect source, context<br/>and existing documents"]
   Inspect --> Reconcile["Confirm moved document locations;<br/>keep review history consistent"]
-  Reconcile --> Table["Show the six document types,<br/>file status, decisions and reasons"]
-  Table --> Needed{"Drafts or proposed removals?"}
+  Reconcile --> Needed{"Document changes needed?"}
   Needed -->|No| End(["Report the result, gaps<br/>and any record-only changes"])
   Needed -->|Yes| Draft["Prepare eligible proposals;<br/>keep documents intact"]
   Draft --> Facts{"Essential missing facts?"}
   Facts -->|Yes| Ask["Ask one consolidated batch;<br/>resolve or hold affected documents"]
-  Facts -->|No| Review["Show exact diffs and proposed results,<br/>dates, paths and record/commit effects"]
+  Facts -->|No| Review["Preview Create / Update / Remove files,<br/>exact content and record/commit effects"]
   Ask --> Review
   Review --> Approval{"Write and commit<br/>or Cancel?"}
   Approval -->|Cancel| End
@@ -47,11 +46,13 @@ Start on clean main or master. Git and ownership eligibility are checked before 
 
 Legal commits need your exact content and commit approval, even when local [auto-commit](../../rules/git.html#auto-commit) is enabled. Drafting, owner approval and publication remain separate results.
 
-A Git, ownership, path or state-validation blocker ends the run before further investigation or a decision table. Missing facts for an individual document remain distinct from those workflow prerequisites. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
+A Git, ownership, path or state-validation blocker ends the run before further investigation or proposals. Missing facts for an individual document remain distinct from those workflow prerequisites. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Prepare the useful documents
 
-The agent checks the service, data flows, integrations and existing policies. One decision table explains which documents should be kept, updated, created or considered for removal, with the reasons and unresolved facts.
+The agent checks the service, data flows, integrations and existing policies. An ordinary review assesses all six supported document types and relevant existing files within scope, including documents that may already be adequate. The preview then focuses on affected files, labelled **Create**, **Update** or **Remove**, with their paths and reasons. It does not print a status table for every type or list every unchanged document.
+
+Held documents, essential unknowns, material coverage gaps and important reasons not to create a suggested document receive a brief note. Uninspected or unreadable material remains distinct from missing or assessed-not-needed. When no document change is needed, the result states that and its actual scope and limits directly.
 
 Privacy, cookie and relevant disclaimer drafts follow evidenced processing and content. Terms, refunds and EULAs require your request or an existing approved policy. Requested exclusions remain out of scope; the workflow does not generate a standard bundle just to fill a checklist.
 
