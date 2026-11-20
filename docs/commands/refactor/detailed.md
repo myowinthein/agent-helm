@@ -53,6 +53,8 @@ Existing assessment records are validated before the normal source inventory. Wh
 | Fix Backlog | Selected saved findings, rechecked against the current source before work. |
 | Source-only report | Advice without persistent assessment or source edits. |
 
+Gap scan reassesses affected findings across open, resolved and obsolete states. Unrelated history keeps its earlier judgment and provenance; a bounded review does not become a fresh assessment of every saved record. Current patterns, contracts and consumers determine relevance, and a changed filename alone cannot determine a finding's status.
+
 Incomplete coverage remains incomplete. A local syntax pass or a small sample cannot stand in for a full project review. A changed or unusable baseline can require broader investigation before old findings are reused.
 
 ## The six review perspectives
@@ -82,6 +84,12 @@ Refactor may maintain existing tests and add guards needed for a selected transf
 ## Your result and finding history
 
 The report identifies actual local changes, verification and remaining findings. Stable finding identities preserve your selections and useful history. Skipping, deferring or accepting risk does not mean an issue was resolved.
+
+Before calling a problem new, refactor compares its underlying burden, preserved behavior and evidence with relevant records across all states. A different explanation, category, proposed remedy or set of files does not automatically justify a new finding. Several symptoms can be one problem; a genuine split into independent needs is explained with its old-to-new mapping. Ambiguous matches remain a reconciliation question rather than silently becoming more records.
+
+An open finding is checked for continuing need, a verified fix or proved loss of applicability. A successful past fix keeps its resolved record. If that problem demonstrably returns later, a new finding links to the earlier one through `recurrence_of`; this differs from test's same-case reopening. A formerly inapplicable problem can likewise return as a linked finding. A record closed as a duplicate leads back to its retained finding instead of generating another duplicate. A same-run attempt disproved by verification can reopen its original entry without pretending it was a successful historical fix. Missing old evidence alone does not prove recurrence.
+
+Summaries and judgments stay concise, with concrete evidence and check references instead of transcripts, raw logs or repeated run narratives. Bounded index pages and relevant full-record lookups keep unrelated history out of review context; moved files can require more than a narrow path lookup. Paging does not remove the cost of full structural validation. Unknown data, first-seen facts, decisions, dependency links and useful closed history remain preserved; age or size alone never authorizes deleting them. Git retains earlier judgments, and unrelated records are not rewritten merely to make the ledger look fresh or smaller.
 
 A source edit, complete assessment and verified fix are separate achievements. Only supported results advance their respective records. Work stays on the current branch; [ship](../ship.html) handles publication.
 

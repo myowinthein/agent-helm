@@ -70,4 +70,6 @@ Refactor can maintain existing tests and add guards needed for a chosen change. 
 
 You get verified local changes, actual check results and remaining findings. Saved history supports later runs; skipped, deferred or accepted-risk findings are not treated as fixed.
 
+Relevant findings are reconsidered across open, resolved and obsolete states. The same continuing problem keeps its identity despite new wording or moved files. A genuine later recurrence gets a new linked finding while preserving the earlier verified closure; repeated descriptions alone do not establish recurrence. Records stay concise and are retrieved in bounded pages, without deleting useful history or reassessing the whole ledger on every Gap scan.
+
 Work finishes on the same branch under your local commit policy. Use [ship](ship.html) separately to publish.
