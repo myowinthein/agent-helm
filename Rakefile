@@ -11,7 +11,7 @@ task :normalize_test do
   sh "python3", "-I", "-B", "scripts/test_normalize.py"
 end
 
-desc "Test private normalize-to-ship locator I/O in disposable clones"
+desc "Test private normalize handoff and completed-backup retention in disposable clones"
 task :normalize_handoff_test do
   sh "python3", "-I", "-B", "scripts/test_normalize_handoff.py"
 end

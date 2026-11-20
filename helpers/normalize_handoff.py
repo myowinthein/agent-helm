@@ -91,6 +91,19 @@ def entries(fd):
     return sorted(names)
 
 
+@contextmanager
+def writer_lock(common_dir):
+    import fcntl
+    with directory(str(Path(common_dir) / "agent-helm"), private=True) as fd:
+        opened = os.open("normalize-retention.lock", os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600, dir_fd=fd)
+        try:
+            owned(os.fstat(opened), private=True, regular=True)
+            fcntl.flock(opened, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            yield
+        finally:
+            os.close(opened)
+
+
 def unique(pairs):
     result = {}
     for key, value in pairs:
@@ -147,7 +160,7 @@ def register(common_dir, data):
     raw = (json.dumps(data, sort_keys=True, ensure_ascii=True) + "\n").encode("ascii")
     if len(raw) > MAX_BYTES:
         raise Invalid("Locator exceeds the size limit")
-    with registry(common_dir, create=True) as fd:
+    with registry(common_dir, create=True) as fd, writer_lock(common_dir):
         try:
             existing, saved = load(fd, name)
         except FileNotFoundError:

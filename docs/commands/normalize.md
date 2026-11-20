@@ -69,4 +69,4 @@ Applying needs **git-filter-repo and Python**. Fixed code shipped with Helm appl
 
 You get old/new tips, actual verification results and the recovery location. Private pointers let ship find the evidence in another session in the same clone; backups and pointers stay after publication. Another clone or machine may need the files transferred and an explicit path.
 
-Normalize finishes locally. [Ship](ship.html#publish-normalized-history) separately verifies the evidence and asks for publication approval. Review-only runs create no recovery artifacts.
+Normalize finishes locally. [Ship](ship.html#publish-normalized-history) separately verifies the evidence and asks for publication approval. After fully successful publication and any selected release, Ship automatically keeps the latest three completed recovery cycles for this clone, plus unfinished or historically required evidence. Creating a new backup never deletes an older one. Review-only runs create no recovery artifacts.

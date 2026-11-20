@@ -103,6 +103,10 @@ The report gives old and new tips, checks that actually ran and the recovery loc
 
 Private locators let [ship](../ship.html#publish-normalized-history) find the evidence later in the same clone. Another machine may need the retained files and an explicit path. Ship separately verifies that evidence and seeks publication approval with fixed lease expectations. Existing tags stay intact, and rewording released history alone does not create a release.
 
+After that publication and any selected release finish successfully, Ship automatically keeps the newest three completed recovery cycles for this clone. Unfinished runs and evidence required for older release boundaries remain protected, so the count can exceed three. No cleanup approval is added. A new Normalize backup alone never triggers deletion; failed or partial publication preserves recovery. Unknown historical records and files changed after completion are retained rather than guessed safe to delete.
+
+A later run can use the already-published history as its starting point. For example, after normalizing and publishing 50 commits, another 30 commits normally need only the new review and that cycle's own backup verification. Earlier backups are revisited when actual unpublished history or an older release boundary needs their correspondence, rather than as an automatic chain on every run.
+
 ## Explore the source
 
 For implementation details, read [guides/normalize.md](https://github.com/myowinthein/agent-helm/blob/main/guides/normalize.md).

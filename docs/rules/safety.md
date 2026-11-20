@@ -61,3 +61,5 @@ Findings explain the risk, evidence, uncertainty and proposed instruction. Accep
 ## Operational Helm state
 
 Records under `.helm/`, archive bundles and recovery evidence remain protected. Ordinary source work neither reads nor resets them. Only invoked owning workflows and narrow publication procedures access their permitted state. Unsupported state is not automatically converted or deleted.
+
+After a fully successful Normalize publication cycle, Ship's defined retention procedure can automatically keep the latest three completed backups for that clone and remove eligible older ones. Unfinished or dependency-required proof stays protected. This grants no general cleanup access, and changed or uncertain evidence is preserved.

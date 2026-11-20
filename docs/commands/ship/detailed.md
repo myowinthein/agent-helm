@@ -86,6 +86,10 @@ After approval, ship preserves the selected remote histories in a private bundle
 
 A separately approved push uses fixed force-with-lease expectations. If the remote moved, the old approval is not a reason to overwrite unseen work. Other clone owners receive synchronization guidance; the private recovery material is retained. The fallback backup protects the remote snapshot being replaced, while the original rewrite remains unverified. Release analysis still needs independently established boundaries; successful source publication does not invent that missing proof.
 
+Once every affected history branch and all selected publication/release work have been verified complete, Ship automatically retains the newest three completed Normalize recovery cycles for this clone. It removes eligible older folders and their matching local pointers, without another approval question. Unpublished, failed, partial or release-PR-pending runs do not qualify. A later cycle starts from actual published history and needs earlier correspondence only when a remote or preserved release boundary still depends on it.
+
+Required older proof remains protected beyond the three-cycle target. Unknown legacy records, stronger preservation policy, unsafe paths or files added/changed after completion prevent cleanup. The final result reports removed backups and space recovered, or explains skipped/incomplete retention. A cleanup failure preserves actual remaining evidence and does not undo verified publication; it does not trigger a blind retry. No real backups are deleted merely by installing a source update.
+
 ## Publish an archive backup
 
 For a prepared [archive](../archive.html), you approve an existing private destination. Ship verifies the payload backup before committing and publishing its completion receipt. The local payload and the receipt are distinct evidence of progress.
