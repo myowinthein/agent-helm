@@ -12,6 +12,7 @@ source_files:
   - prompts/ship/targets.md
   - prompts/ship/release.md
   - prompts/shared/history-publication.md
+  - prompts/shared/ci.md
 ---
 
 # Ship
@@ -32,8 +33,12 @@ flowchart TD
   Backup --> End(["Report verified results<br/>and any pending actions"])
   Special -->|History replacement| History["Review rewrite proof or a backed-up replacement;<br/>approve exact publication"]
   Special -->|Ordinary work| Source["Review publication and known targets;<br/>approve the selected actions"]
-  History --> Targets["Review any new target choices;<br/>apply approved branch updates"]
-  Source --> Targets
+  History --> Method{"Direct publication?"}
+  Source --> Method
+  Method -->|Yes| Validation{"Configured source<br/>validation passed?"}
+  Validation -->|Yes or none applies| Targets["Review any new target choices;<br/>apply approved branch updates"]
+  Validation -->|Failed or unresolved| End
+  Method -->|PR handoff| Targets
   Targets --> Ready{"Started on main/master<br/>with a ready release?"}
   Ready -->|No or skip| End
   Ready -->|Yes| Release["Review version, notes and<br/>tag-only or hosted-page choice"]
@@ -59,7 +64,11 @@ Before publication, you review the destination, outgoing changes, refs, required
 
 Applicable target choices can join that review when their effects are already known. You approve only the listed actions you select, with the option to publish the source alone. History replacement and destructive cleanup retain explicit reviews, and required protections and checks remain binding.
 
-Already-published source needs no duplicate push. Ship can create or reuse a matching review handoff, but does not wait for reviewers, merge the request or delete branches. Later pushes update open requests sharing that source; a request merged earlier needs a new handoff for new work.
+In direct mode, Ship verifies the push, then waits for configured build, lint and test validation for the exact published commit before continuing to branch updates or offering a release. Validation applies even if branch protection does not require it. With no applicable validation configured, there is nothing to wait for. A separate deployment job can continue independently unless the project requires its success; if one job combines validation and deployment, Ship must wait for that whole job.
+
+If validation fails or is cancelled, Ship reports the commit and failed check, preserves the published source and stops. Fix the problem and rerun Ship. Running or missing checks can remain pending, but a pending result does not permit a release. A rerun checks the actual current commit and results, so an already-published tip needs no duplicate push and an older successful build cannot validate new changes. Tag-triggered checks still run at the release stage; Ship does not expect a tag pipeline before creating its tag.
+
+Ship can create or reuse a matching review handoff, then reports its verified link without waiting for reviewers or later PR checks. It does not merge the request or delete branches. Later pushes update open requests sharing that source; a request merged earlier needs a new handoff for new work.
 
 ## Optional branch updates
 
@@ -106,4 +115,4 @@ The report separates published source, target updates, PR/MR status, release sta
 
 ## Explore the source
 
-For implementation details, read [guides/ship.md](https://github.com/myowinthein/agent-helm/blob/main/guides/ship.md), [target updates](https://github.com/myowinthein/agent-helm/blob/main/prompts/ship/targets.md), the [release procedure](https://github.com/myowinthein/agent-helm/blob/main/prompts/ship/release.md) and [history publication](https://github.com/myowinthein/agent-helm/blob/main/prompts/shared/history-publication.md).
+For implementation details, read [guides/ship.md](https://github.com/myowinthein/agent-helm/blob/main/guides/ship.md), [target updates](https://github.com/myowinthein/agent-helm/blob/main/prompts/ship/targets.md), the [release procedure](https://github.com/myowinthein/agent-helm/blob/main/prompts/ship/release.md), [history publication](https://github.com/myowinthein/agent-helm/blob/main/prompts/shared/history-publication.md) and [CI checks](https://github.com/myowinthein/agent-helm/blob/main/prompts/shared/ci.md).

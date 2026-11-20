@@ -21,9 +21,13 @@ flowchart TD
   Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
   Gate -->|Yes| Review
   Review["Review changes and destination"] --> Approve{"Approve publication?"}
-  Approve -->|Yes| Publish["Publish source or open a PR"]
+  Approve -->|Yes| Method{"Publication method?"}
   Approve -->|Not now| Keep["Keep work local"]
-  Publish --> Next["Optional targets or release"]
+  Method -->|Direct| Publish["Push source"]
+  Publish --> Checks{"Configured validation passed?"}
+  Checks -->|Yes or none applies| Next["Optional targets or release"]
+  Checks -->|Failed or unresolved| Stop
+  Method -->|PR| Handoff["Create or reuse PR;<br/>verify and report its link"]
 ```
 
 ## Start the command
@@ -42,7 +46,7 @@ A fresh session is useful for a long-running chat, but ship still discovers pend
 
 [`ship-method`](../rules/git.html#configuration-owner) selects the approach:
 
-- **direct:** publish the reviewed current branch.
+- **direct:** publish the reviewed current branch, then wait for configured build/test validation before continuing. If validation fails, Ship reports the result and stops; fix the problem and rerun.
 - **pr:** publish source and create or reuse review handoffs. Main and environment work use a separate `ship/*` source; features use their own branch.
 
 Ship works in projects that have never used Helm. It reads existing project instructions and uses their configured method; when the setting or instruction files are absent, it uses `direct` without requiring setup or creating configuration files. Invalid or conflicting settings still need resolution.
@@ -50,6 +54,8 @@ Ship works in projects that have never used Helm. It reads existing project inst
 One publication review can cover a safe preparatory commit, the push or PR and any fully explained target choices. Each selected action needs its content, destination and effects in view. Required checks and protection still apply; unchanged approval is reused and already-published work needs no duplicate push.
 
 Ship does not wait for reviews, merge PRs or delete branches. New pushes update open PRs sharing that source; an already merged PR needs a new handoff for later changes.
+
+Separate deployment jobs do not delay direct Ship unless the project requires them. If validation and deployment share one job, that whole job must succeed. With no applicable validation configured, there is no validation wait. A rerun verifies current checks and skips an already-completed push.
 
 ## Optional branch updates
 
