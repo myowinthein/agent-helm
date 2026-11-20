@@ -72,7 +72,7 @@ Skipping a release keeps published source intact. If metadata needs a PR, taggin
 ## Publish rewritten history
 {: #publish-normalized-history}
 
-Ship finds and verifies [normalize's recovery evidence](normalize.html#your-result-and-later-publication), including across sessions in the same clone. If original rewrite evidence is unavailable, the same publication review can offer **Publish replacement history / Leave local**. It explains the uncertainty and includes a verified backup of the current remote history before replacement; approval also acknowledges that stated risk.
+Ship finds and verifies [normalize's recovery evidence](normalize.html#your-result-and-later-publication), including across sessions in the same clone, then offers **Publish rewritten history / Cancel**. Cancel preserves local work and recovery evidence. If original rewrite evidence is unavailable, the same publication review can offer **Publish replacement history / Leave local**. It explains the uncertainty and includes a verified backup of the current remote history before replacement; approval also acknowledges that stated risk.
 
 Publication uses fixed `--force-with-lease` expectations and separate approval. A PR cannot replace published commit IDs. Other clone owners receive sync guidance; existing tags stay fixed, and rewording released history alone creates no release. A replacement backup preserves what is overwritten without proving the original rewrite or a missing release boundary. If you already pushed independently, ship verifies the remote and skips satisfied publication without retrospective approval.
 

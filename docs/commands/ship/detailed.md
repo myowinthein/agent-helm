@@ -78,7 +78,7 @@ Prerelease and Latest settings are explicit. Published tags and versions remain 
 
 Ship first checks the intended destination against the local result. If you already pushed independently and the remote matches, it reports publication satisfied without another push or retrospective approval. That observation does not certify how the earlier rewrite was performed.
 
-For a normalize run, ship verifies [the recovery evidence](../normalize.html#your-result-and-later-publication), including the approved correspondence and preserved refs. A PR cannot replace already-published commit identities.
+For a normalize run, ship verifies [the recovery evidence](../normalize.html#your-result-and-later-publication), including the approved correspondence and preserved refs, then offers **Publish rewritten history / Cancel**. The review lists the affected branches and force-push effects above those choices. Cancel preserves local work and recovery evidence. A PR cannot replace already-published commit identities.
 
 If you rewrote history manually or the original proof is unavailable, the existing publication review offers **Publish replacement history / Leave local**. It shows the exact current remote and intended local commits, the changes being replaced, known effects and any remaining uncertainty. Your approval covers both the backup and that replacement; no additional risk-acknowledgement question follows.
 
