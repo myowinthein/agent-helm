@@ -23,6 +23,8 @@ Start with the answer, purpose or action. Add the explanation a reader needs to 
 
 Clear writing can be detailed. An Overview establishes the journey; a Details guide explains the decisions and examples along that journey. Neither needs to reproduce every implementation instruction. Necessary qualifications, uncertainty and warnings remain visible even when the surrounding prose is shortened.
 
+Reading order matters as much as length. Introduce a concept before using it to explain another, and make the connection visible. Put a condition before the instruction it qualifies so someone knows whether it applies before acting. Shorten an overloaded sentence while keeping its relationship to the next one; a string of fragments can be harder to follow than a connected paragraph.
+
 When editing, preserve the requested scope and surrounding voice. A loaded writing preference is not permission to restyle a whole project, change quotations or rewrite legal commitments. Unsupported claims, invented measurements and generic praise should be removed rather than made more polished.
 
 ## Choose useful formatting
@@ -71,7 +73,8 @@ Read the linked phrase back in its sentence, check the destination and fragment,
 |---|---|
 | Utilise this command to commence installation. | Use this command to start installation. |
 | This seamless solution empowers developers. | Explain the actual task the tool helps complete. |
-| A long guide should include every source detail. | Explain the reader's journey and link implementation detail where useful. |
+| It is important to note that the cache could potentially return stale data. | The cache may return stale data. |
+| An offline-use answer lists themes and keyboard shortcuts too. | Explain local editing and the internet requirement for cloud sync. |
 
 ## Scope and safeguards
 

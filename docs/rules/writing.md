@@ -18,6 +18,8 @@ Lead with the answer, purpose or action. Give readers what they need to understa
 
 Depth follows the audience and task. A guide need not mirror its source’s detail. Maintenance should improve the affected passage at its intended depth, keeping necessary steps and decision context visible.
 
+Introduce concepts before relying on them and connect each explanation to what the reader already knows. Put conditions before the instructions they qualify. Comfortable reading can need several connected sentences; brevity does not require fragments.
+
 ## Choose useful formatting
 
 Use paragraphs for connected explanations, lists for choices or steps, and tables for comparisons. Code blocks preserve exact commands and configuration. Add diagrams or examples when they explain the subject more clearly.
@@ -47,8 +49,9 @@ Check the resulting sentence, destination and fragment. Preserve existing anchor
 | Before | After |
 |---|---|
 | Utilise this command to commence installation. | Use this command to start installation. |
-| It is important to note that this action may permanently delete data. | This action may permanently delete data. |
-| FooCLI is a seamless solution that empowers developers to manage configuration. | FooCLI helps you manage configuration. |
+| It is important to note that the cache could potentially return stale data. | The cache may return stale data. |
+| FooCLI is a seamless solution that empowers developers. | FooCLI helps developers manage configuration files. |
+| The editor works offline, has three themes and supports shortcuts. | You can edit local files offline. |
 
 ## Scope and safeguards
 
