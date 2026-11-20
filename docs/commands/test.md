@@ -39,10 +39,12 @@ A project without a saved assessment record needs no Python setup merely to begi
 
 ## Choose the review scope
 
-- **Full scan:** assess scoped behavior and the protection provided by existing tests.
-- **Gap scan:** follow changes since a valid saved assessment, including affected consumers and relevant findings in any status. Older open backlog remains visible without being presented as freshly reassessed.
+- **Full scan:** assess scoped behavior and existing test protection, reassessing every open finding within that project scope alongside new discovery.
+- **Gap scan:** follow changes since a valid saved assessment, including unchanged affected consumers, tests and related open findings. Relevant resolved/obsolete findings are also reconsidered; unrelated older backlog remains visible as not freshly reviewed.
 
 A first run or unusable baseline may need Full scan. Review itself is static: it does not run project code, test discovery or installers merely to find gaps.
+
+You can also explicitly ask to revisit particular open findings or all open findings. Test traces each selected need through current source, tests, contracts and relevant dependencies until its judgment is supported or the missing evidence is clear. It reports limits and may recommend broader review, without silently starting a discovery scan. This request adds no menu option and leaves the saved Full/Gap scan baselines unchanged.
 
 ## What kinds of tests can it suggest?
 
@@ -54,7 +56,7 @@ Existing tests can be improved, consolidated or replaced. Removal requires prove
 
 ## Review findings and choose changes
 
-Findings appear as numbered explanations of what the current tests could miss, why it matters and what a proposed test or maintenance change would establish. Related cases can be grouped by behavior; you do not need to read test code or interpret priority tiers to understand the proposal.
+Findings appear as numbered explanations of what the current tests could miss, why it matters and what a proposed test or maintenance change would establish. New and reassessed findings appear together by behavior, with each need shown once. Findings now protected or no longer applicable have their proposed record updates explained; older findings outside this review stay distinct. You do not need to read test code or interpret priority tiers to understand the proposal.
 
 Recommendations weigh useful protection and maintenance benefits against effort, setup, fragility and future upkeep. The report gives the deciding reason and any material tradeoff. Unknown behavior, blocked execution and production repairs stay visibly separate from ready changes.
 

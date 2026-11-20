@@ -25,7 +25,9 @@ flowchart TD
   Entry -->|Yes| Start
   Start(["Start test"]) --> Inspect["Identify project behavior,<br/>existing tests and tooling"]
   Inspect --> Scope["Choose Full scan or Gap scan<br/>using valid review history"]
+  Inspect -.->|Explicit request to revisit findings| Revisit["Trace selected needs through<br/>current source, tests and contracts"]
   Scope --> Assess["Explain numbered testing gaps<br/>and useful maintenance changes"]
+  Revisit --> Assess
   Assess --> Select["Review numbered plans, paths,<br/>checks and record effects"]
   Select --> Choice{"Apply recommended, all ready,<br/>or Skip?"}
   Choice -->|Skip| End(["Report findings and pending work"])
@@ -45,11 +47,21 @@ Existing assessment records are validated before the normal source inventory. Wh
 
 ## Choose the review scope
 
-A Full scan assesses behavior and the protection provided by existing tests. A Gap scan starts from a valid earlier assessment, follows changed behavior and consumers, and revisits affected findings across open, resolved and obsolete states. Older open backlog remains visible, with unchanged records outside the review distinguished from current assessments. A first run or an unusable baseline may need Full scan.
+A Full scan assesses behavior and the protection provided by existing tests, and reassesses every open finding within that project scope alongside new discovery. That includes findings in unchanged areas and those whose original files have moved or disappeared. Each needs a supported judgment: still missing protection, already protected, no longer applicable or uncertain. Relevant closed findings are compared when current evidence puts their guarantee in question; unrelated closed history does not require a complete reread.
+
+A Gap scan starts from the last valid saved assessment, which may be several commits back. It follows changes and their effects through relevant implementation, unchanged consumers, tests, fixtures and configuration, reassessing related findings in any status. It covers more than new code or diff lines, while unrelated older open findings remain visible as not freshly reviewed. They need reassessment before a current change is proposed. A first run or an unusable discovery baseline may need Full scan.
 
 The assessment asks what could go wrong and whether a test would detect it. Counts and coverage percentages alone cannot answer that. A passing test can still assert the wrong thing or never reach the important failure path.
 
 Before presenting a need as new, test compares it with relevant recorded guarantees, evidence and protecting tests. A changed title, moved file or different explanation does not by itself make a different finding. Several tests may address one guarantee; a genuine split into separate needs is explained with its old-to-new mapping. Matching records keep their identity rather than returning as new issues under new wording.
+
+You can explicitly request a revisit, such as “reassess the duplicate-enrolment finding” or “review all open findings.” This uses the existing records to identify the selected needs and adds no new menu choice. Ambiguous references need clarification; the request does not automatically start Full or Gap discovery.
+
+A revisit reads the current behavior, protecting assertions and fixtures, intended contract, and relevant callers, consumers, configuration and dependencies. The old record supplies leads rather than proof. For an enrolment retry finding, that might mean tracing a request through its handler, repository, database constraints and tests, including protection added outside the originally recorded file. There is no fixed file or reference-hop limit, and there is no need to investigate unrelated project areas once the selected judgment is supported.
+
+The result can retain the need, revise its testing proposal, propose resolution/obsolescence with evidence, or identify missing intent or evidence. If required context cannot be inspected or the effects cannot be bounded, test explains that limit and may recommend a broader review; it waits for your scope choice before starting one. Newly noticed unrelated gaps remain follow-ups outside the requested reassessment. Static review alone supplies no runtime pass, edit permission or record-write approval.
+
+Revisits use the same numbered report and Apply actions below. Approved meaningful case updates preserve both saved scan baselines, even when every open finding was revisited. A completed review of selected findings establishes that scope; it does not replace a project-wide assessment. An otherwise valid case review can proceed without a usable global scan baseline, while invalid or unsupported records still block it.
 
 ## What kinds of tests can it suggest?
 
@@ -63,9 +75,9 @@ For example, a payment retry case should verify the externally important outcome
 
 ## Review findings and choose changes
 
-The report leads with the finding count and the actual review scope and limits. Each numbered item has a short title and usually one or two sentences explaining what the current tests could miss, the consequence and what the proposed change would establish. Related findings can be grouped by behavior, and one finding can require several test functions. There is no priority table or implementation-code dump.
+The report leads with the finding count and the actual review scope and limits. Each numbered item has a short title and usually one or two sentences explaining what the current tests could miss, the consequence and what the proposed change would establish. New and reassessed findings share behavior groups, with the same guarantee shown once. One finding can require several test functions. There is no priority table or implementation-code dump.
 
-For example, “Retrying enrolment could create a duplicate enrolment” should explain whether current tests exercise a repeated request and that the proposed test would check that only one enrolment exists afterward. That tells you the protection being proposed without requiring you to inspect how the test will be written. The report identifies continuing or reopened findings so they are not presented as new discoveries.
+For example, “Retrying enrolment could create a duplicate enrolment” should explain whether current tests exercise a repeated request and that the proposed test would check that only one enrolment exists afterward. That tells you the protection being proposed without requiring you to inspect how the test will be written. The report identifies continuing or reopened findings so they are not presented as new discoveries. Proposed resolutions or obsolescence updates briefly explain the evidence under the existing finding identity. Older backlog outside the assessment is marked as not freshly reviewed, rather than mixed into current recommendations.
 
 Recommendations consider whether the finding is a current problem, a conditional risk or an improvement. Expected protection or maintenance benefits are weighed against effort, setup and execution needs, compatibility, fragility and future upkeep, using existing coverage and confidence in the intended behavior. Short- and long-term effects matter when they differ. You get the deciding reason and material tradeoff, without a score or a checklist of every factor. Optional maintenance can be recommended when it earns its cost; a serious concern can remain pending when its intended outcome or safe execution is unresolved.
 
