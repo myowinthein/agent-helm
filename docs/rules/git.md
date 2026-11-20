@@ -12,6 +12,8 @@ nav_order: 1
 
 Keep local work, commits and publication consistent across Claude and Codex. Install with [Safety](safety.html) through [adopt](../commands/adopt.html); Helm commands already load both.
 
+The rule defines settings, commit standards and shared safeguards. Each command keeps its own branch preparation and publication/recovery procedures; ordinary coding does not run those workflows merely by loading the rule.
+
 ## Configuration owner
 
 Shared settings normally live in `AGENTS.md`, imported by `CLAUDE.md`. Actual imports, nested instructions and overrides determine the policy. Conflicts block dependent actions; [log’s shared setup](../commands/log.html#shared-project-instructions) handles reconciliation.
@@ -44,6 +46,8 @@ feat(auth)!: replace sessions with JWT
 ```
 
 Use `feat` for features, `fix` for bugs and suitable types such as `docs`, `test` or `refactor` for other work. Helm requires a lowercase module/domain scope; [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) makes scope optional. Mark breaking changes with `!`, a `BREAKING CHANGE:` footer or both, and explain the break.
+
+Use a body when it adds a non-obvious reason or important tradeoff. Straightforward changes need no body. Reference links support maintaining the policy, without adding online checks to every commit.
 
 ## Quality checks
 

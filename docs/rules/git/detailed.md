@@ -17,6 +17,8 @@ source_files:
 
 The Git rule connects project preferences to the actions an agent may take. Its main distinction is between doing local work, saving a commit and publishing that work to a remote destination.
 
+Settings, everyday commit standards and portable safeguards belong here. Commands retain their own branch eligibility, preparation, target routing, release and recovery procedures. A copied Git/Safety pair remains usable for ordinary work without an installed plugin; loading it does not start a specialist workflow or grant access to its records.
+
 ## Flow
 
 ```mermaid
@@ -71,6 +73,8 @@ feat(auth)!: replace the session format
 ```
 
 The scope describes what changed, not a review severity. A breaking change needs an explanation, whether marked with `!`, a `BREAKING CHANGE:` footer or both. Bodies and trailers retain useful context rather than being discarded for a shorter subject.
+
+For a non-obvious change, the body can explain why it was needed and the important tradeoffs that a diff may not reveal. Simple changes need no body. The rule links to the commit specification, Git's lease documentation and Google's description guidance where they explain a specific policy. These references support later verification and maintenance; they are not mandatory reading during each coding session.
 
 ## Quality checks
 
