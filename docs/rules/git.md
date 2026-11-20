@@ -26,6 +26,8 @@ Shared settings normally live in `AGENTS.md`, imported by `CLAUDE.md`. Actual im
 
 Defaults apply only when a setting is absent. Team size does not select a mode. New configuration uses Markdown bullets; supported existing formats are preserved.
 
+Ship can use these defaults in a project with no instruction files or previous Helm setup. It does not create configuration files or require setup before preparing publication for approval.
+
 ## Local work
 
 Edits stay on the current permitted branch, subject to each command’s preparation requirements. The agent preserves unrelated changes, including staged work, without automatic resets, stashes or cleanup. Static inspection does not authorize code execution or access to operational records.

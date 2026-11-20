@@ -53,6 +53,8 @@ A failed prerequisite or selected action stops the run, including further target
 
 The project's [ship-method](../../rules/git.html#configuration-owner) chooses direct publication or a PR/MR handoff; the default is `direct`. Features use their own source branch. Main and environment work in PR mode use an associated `ship/*` helper so a real review handoff can be created.
 
+Previous Helm setup is not required. Ship checks the existing AGENTS.md/CLAUDE.md instructions, including active overrides and imports, for the method. An explicit `pr` remains PR mode. If the setting is absent, or neither file exists, Ship proceeds with direct-mode assessment without asking you to run Log/Adopt or creating instruction files. Missing files are different from unreadable files or invalid/conflicting settings; those unresolved cases cannot silently choose a default. Publication still needs your approval.
+
 Before publication, you review the destination, outgoing changes, refs, required checks and deployment effects together. The plan can include a safe preparatory commit and the resulting push or PR. Ship verifies the created commit against the reviewed changes and reports its actual ID before continuing under that approval. Unexpected changes require a revised review; auto-commit alone grants no publication permission.
 
 Applicable target choices can join that review when their effects are already known. You approve only the listed actions you select, with the option to publish the source alone. History replacement and destructive cleanup retain explicit reviews, and required protections and checks remain binding.

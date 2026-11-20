@@ -46,6 +46,8 @@ Conflicting settings block the actions that depend on them. A default applies on
 
 A rebase preference does not authorize rewriting shared history. Team size and branch naming do not choose these settings. [Log](../../commands/log.html#shared-project-instructions) handles shared-instruction reconciliation.
 
+If neither instruction file exists, Ship uses the absent-setting defaults and continues its normal assessment without a setup requirement. It creates no instruction files merely to publish. Existing declared settings remain authoritative, and an unreadable file, invalid value or real conflict is not treated as a missing setting.
+
 ## Local work
 
 Ordinary edits stay on the current permitted branch. Individual commands add their own preparation requirements; a source preview may be available where a saved scan or a fix is not.
