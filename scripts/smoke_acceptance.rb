@@ -173,7 +173,7 @@ Dir.mktmpdir("helm-acceptance-") do |temporary|
         answer.include?("update fixture readme") && answer.match?(/docs\([^)]+\):/i)
     elsif scenario[:readiness] == :ready
       raise "Readiness/private history was incorrectly sent back to the first gate" if
-        answer.include?("Team ready") && answer.include?("Review only") && answer.match?(/\bStop\b/)
+        answer.include?("Team ready") && answer.match?(/\bStop\b/)
     end
     if scenario[:waiting_history_canary]
       HelmAcceptance.assert_normalize_waiting!(result, history_canary: scenario.fetch(:waiting_history_canary))

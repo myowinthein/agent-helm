@@ -27,9 +27,8 @@ flowchart TD
   Start -->|No| Readonly{"Explicit read-only request?"}
   Readonly -->|Yes| ReviewOnly["Review local messages without writes"]
   Readonly -->|No| Notice["Show the full coordination notice"]
-  Notice --> Ready{"Team ready, Review only or Stop?"}
+  Notice --> Ready{"Team ready or Stop?"}
   Ready -->|Stop| Stop["Stop without further work"]
-  Ready -->|Review only| ReviewOnly
   Ready -->|Team ready| Discover["Discover agreed branches and approve any preparation"]
   Discover --> Freeze["Freeze policy, refs and review scope; validate own review history"]
   Freeze --> Messages["Check syntax and review message meaning"]
@@ -59,17 +58,17 @@ flowchart TD
 
 ## Start the command
 
-Request Review only from the outset for findings without writes; it can inspect a dirty or detached checkout without loading the review record. A normal run first requires a clean attached branch and no ongoing Git operation, before coordination or history reading. Applying corrections also needs safe access to every affected local branch.
+Explicitly request a read-only review from the outset for findings without writes; it can inspect a dirty or detached checkout without loading the review record. It is not a routine readiness or preparation menu choice. A normal run first requires a clean attached branch and no ongoing Git operation, before coordination or history reading. Applying corrections also needs safe access to every affected local branch.
 
 A failed prerequisite stops the run without further history reading, planning or writes. Later failures preserve successful preparation and recovery evidence; they do not trigger an automatic read-only continuation. An unanswered workflow question pauses the run; it does not authorize independent investigation while you decide.
 
 ## Before history review
 
-An ordinary run first shows the full coordination notice, then waits for **Team ready**, **Review only** or **Stop**. An explicitly read-only request skips that coordination question and creates no records or recovery artifacts.
+An ordinary run first shows the full coordination notice, then waits for **Team ready** or **Stop**. An explicitly read-only request skips that coordination question and creates no records or recovery artifacts.
 
 Readiness means you have coordinated included branches, conflicting work and later synchronization with other clones. It is not enforcement on teammates or devices, and approves neither rewriting nor pushing.
 
-After readiness, the agent checks for newly pushed agreed branches. Any fetch or local branch preparation needs its concrete approval before the inventory is frozen. Preparation continues in the same run so a newly discovered branch is not quietly omitted.
+After readiness, the agent checks for newly pushed agreed branches. Any fetch or local branch preparation needs its concrete **Prepare listed branches / Stop** approval before the inventory is frozen. Preparation continues in the same run so a newly discovered branch is not quietly omitted. A separately explicit local-only review remains read-only and cannot advance to Apply.
 
 ## Review messages
 

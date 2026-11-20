@@ -25,7 +25,7 @@ An absent/malformed/unavailable/divergent review anchor within otherwise valid i
 | Supplied facts | Recommendation |
 |---|---|
 | Explicit supported depth/scope | Honor it under the caller's prerequisites. Explicit Full scan remains Full scan even without a source gap; narrower work stays narrow. An explicit Gap scan request cannot make an unusable anchor valid. |
-| Unusable anchor within otherwise valid inputs | Recommend Full scan of the caller's relevant scope, with its existing repair/report-only/backlog/Skip alternatives where independently eligible. Do not offer a fictitious Gap scan or bypass a caller blocker. |
+| Unusable anchor within otherwise valid inputs | Recommend Full scan of the caller's relevant scope, retaining its independently eligible repair/revisit/Skip choices. Explicit source-only requests keep their own boundaries; add no routine report-only option. Do not offer a fictitious Gap scan or bypass a caller blocker. |
 | Valid baseline and bounded evidenced impact | Recommend Gap scan, following the caller's complete affected-surface coverage contract. |
 | Valid baseline and credible broad changes or insufficiently bounded impact/coverage | Recommend Full scan and state the evidence. This is not a silent upgrade or edit approval. |
 | Supported evidence of no source gap | Return that fact to the caller; it alone is not a no-op or completion decision. |
@@ -42,7 +42,7 @@ With a valid anchor, explicitly requested Gap scan can cover broad changes compl
 
 Explain briefly: recommended existing mode, observed reason, actual review scope/limits and independently eligible alternatives. For example: "Gap scan recommended: the validated range affects one reader workflow; Full scan or Skip is also available." Do not fabricate counts, prior coverage or a no-change result.
 
-Reuse explicit mode selections; otherwise use the caller's QM Single and its common fallback. Respect the caller's four-choice limit and the current host's potentially tighter limits; preserve all independent choices through permitted paging or the complete-list fallback, never merging report-only with Cancel or silently truncating choices. A recommendation, default, silence or timeout is not consent.
+Reuse explicit mode selections; otherwise use the caller's QM Single and its common fallback. Respect the caller's four-choice limit and the current host's potentially tighter limits; preserve the caller's independent choices and distinct effects through permitted paging or the complete-list fallback, without inventing extra modes or silently truncating choices. A recommendation, default, silence or timeout is not consent.
 
 Full scan is a review scope, not permission to replace files, run every test or execute effects. The caller alone owns investigation depth, branch/safety/approval gates, no-op handling and persistence: log/manifest retain their acceptance-and-marker rules; test retains separate assessment/case-closure checkpoints; refactor retains its scan/backlog history. This helper changes none of them and is not automatically loaded by the shared runtime.
 

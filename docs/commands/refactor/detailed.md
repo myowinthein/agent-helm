@@ -25,15 +25,15 @@ flowchart TD
   Entry -->|Yes| Start
   Start(["Start refactor"]) --> Preview["Inspect project scope<br/>and branch eligibility"]
   Preview --> Route{"Choose review work"}
-  Route -->|Report findings only| Advisory(["Report advice without writes"])
   Route -->|Full scan or Gap scan| Scan["Assess source and reconcile<br/>new and existing findings"]
-  Route -->|Fix Backlog| Backlog["Revalidate selected<br/>existing findings"]
-  Scan --> Assess["Record the completed assessment<br/>under local commit policy"]
-  Assess --> Plan["Review prepared plans<br/>or choose specific findings"]
+  Route -->|Revisit open findings| Backlog["Trace selected needs through<br/>current source, contracts and tests"]
+  Route -->|Skip| Finish(["Report results and pending work"])
+  Scan --> Plan["Review numbered findings,<br/>changes, checks and record effects"]
   Backlog --> Plan
-  Plan --> Choice{"Apply selected work?"}
-  Choice -->|No| Finish(["Report results and pending work"])
-  Choice -->|Yes| Work["Apply bounded units<br/>and verify preserved behavior"]
+  Plan --> Choice{"Apply recommended, all ready,<br/>or Cancel?"}
+  Choice -->|Cancel| Finish
+  Choice -->|Approved plan| Assess["Save the approved assessment<br/>under local commit policy"]
+  Assess --> Work["Apply bounded units<br/>and verify preserved behavior"]
   Work --> Record["Commit verified work and<br/>record supported closures"]
   Record --> Finish
 ```
@@ -48,12 +48,18 @@ Existing assessment records are validated before the normal source inventory. Wh
 
 | Choice | What is investigated |
 |---|---|
-| Full scan | Every eligible implementation and test file, read in full in manageable batches. |
-| Gap scan | Changes since a valid saved review, their affected consumers and relevant existing findings. |
-| Fix Backlog | Selected saved findings, rechecked against the current source before work. |
-| Source-only report | Advice without persistent assessment or source edits. |
+| Full scan | Every eligible implementation and test file, read in full, plus every open finding within the project scope. |
+| Gap scan | Changes since a valid saved review, their affected consumers and related existing findings. |
+| Revisit open findings | Selected saved needs and their current implementation, contracts, consumers and tests. |
+| Skip | No new source assessment or recording. |
 
-Gap scan reassesses affected findings across open, resolved and obsolete states. Unrelated history keeps its earlier judgment and provenance; a bounded review does not become a fresh assessment of every saved record. Current patterns, contracts and consumers determine relevance, and a changed filename alone cannot determine a finding's status.
+Full scan combines discovery with reassessment of all open findings in scope, including unchanged areas and moved/deleted evidence paths. Each receives a supported current judgment or an explanation of unresolved intent. Still-applicable human deferrals and accepted risks remain respected. Relevant closed records are compared under the existing identity and recurrence rules; unrelated closed history needs no exhaustive reread.
+
+Gap scan starts at the last valid saved assessment, which may be several commits back. It follows changed behavior and affected unchanged consumers, tests, configuration and dependencies, revisiting related findings in any status. Older open findings outside that surface remain visible as not freshly reviewed and need reassessment before current work is proposed. A changed filename alone cannot determine status.
+
+Revisit open findings replaces the Fix Backlog name, matching test's revisit terminology. It starts from selected records and follows complete relevant logical units through current patterns, contracts, consumers, tests and dependencies. An old path or fixed file/hop count cannot establish enough evidence. Once the selected judgment is supported, there is no need to inspect unrelated areas or search indefinitely. If context is unavailable or effects cannot be bounded, the report explains the limit and may recommend broader review, waiting for your choice before starting discovery. Incidental new observations stay separate follow-ups.
+
+A revisit can retain a need, revise its remedy or propose a supported resolution/obsolescence update. It preserves both saved scan baselines, even when all open findings were selected. Explicit source-only advice remains available on request without code or record writes, ledger access or helper execution, rather than as a normal menu choice.
 
 Incomplete coverage remains incomplete. A local syntax pass or a small sample cannot stand in for a full project review. A changed or unusable baseline can require broader investigation before old findings are reused.
 
@@ -63,13 +69,25 @@ The review considers architecture, contracts and state, code clarity, performanc
 
 A proposal needs a concrete benefit. Extracting a small function may clarify duplicated business behavior; adding a new abstraction around a single straightforward call may increase the maintenance burden instead. Bugs, features, behavior-changing security fixes, upgrades and migrations remain separate work.
 
-## Priority, risk and your selection
+<a id="priority-risk-and-your-selection"></a>
 
-Priority estimates the current cost or benefit. Transformation risk describes how confidently existing behavior can be preserved. A high-priority issue can still be unready because a contract is unclear or its tests do not establish the necessary guarantees.
+## Review findings and choose changes
 
-Choose recommended work, all ready findings, a subset or none. When a recommended plan or the plan for all ready findings already identifies the exact findings, paths, dependencies, preserved behavior and checks, Apply selects and approves it in one decision. The agent does not ask again to approve the unchanged plan.
+The report leads with its finding count and actual scope and limits. Each numbered item has a short title and usually one or two sentences explaining the present maintenance or resource burden, the smallest useful improvement and what behavior must stay unchanged. New and reassessed findings share behavior groups, with each logical need shown once. Changed judgments and genuine linked recurrences are identified; proposed closures briefly name their supporting evidence. A small before/after example or diff can clarify a structural change, without a full patch dump or priority table.
 
-A custom selection or unresolved remedy needs its resulting plan reviewed before edits. This applies to large and small sets alike; no ready-plan shortcut adds hidden findings or bypasses the earlier assessment checkpoint. Approval of a transformation plan does not approve an unknown implementation diff or later commit.
+Recommendations consider current burden, conditional future cost and useful improvements, weighing benefits against effort, compatibility/regression risk, complexity, coordination and future upkeep. Confidence, deliberate project choices and existing test protection matter. The report gives the deciding reason and material tradeoff without scores, fixed tier cutoffs or a checklist of every factor. Useful cleanup can earn a recommendation; an important concern can remain pending when intent or equivalence is unclear.
+
+The actions show exact finding numbers or ranges:
+
+- **Apply recommended:** approve the displayed ready plan whose benefits justify its tradeoffs.
+- **Apply all ready changes:** approve every displayed ready transformation, including optional maintenance. When it matches Recommended, only All is shown; empty Apply choices are omitted.
+- **Cancel:** make no new edits, run no guards and write no ledger checkpoint. Earlier accepted work is preserved; Skip/none expresses the same no-new-work intent.
+
+Type numbers, ranges, groups, exclusions or a requested revision directly. There are no separate Choose findings or Revise options. A changed selection or unresolved remedy needs its resulting plan reviewed, including dependencies, companion edits and preserved guarantees. An unchanged concrete Apply plan needs no repeated approval. Human holds, unknown intent, blocked work, behavior changes and separately unapproved intrusive effects remain visibly outside ready sets.
+
+A concise execution note supplies exact paths, coherent dependency units, guards/checks and targets, material effects, commit units and assessment/closure record changes before approval. Large reports use a numbered index and manageable batches with stable references. Apply covers only transformations whose concrete plan has been shown; the full assessment's finding and ledger effects must also be disclosed before recording. No undisplayed changes or unknown later diffs/commits are pre-approved.
+
+The findings and plan are reviewed before the assessment is saved. Once approved, the eligible assessment is committed before guard/code work, recording all meaningful findings actually assessed in scope, including unselected or held work. Cancel before that approval writes nothing and does not trigger another save prompt. An explicit request to save findings alone can receive its own concrete checkpoint review. Later fix failure or cancellation preserves an already accepted assessment without claiming a verified fix.
 
 ## Apply and verify
 

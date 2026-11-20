@@ -48,7 +48,7 @@ Choose what recovery should achieve: source preservation, a runnable demonstrati
 | [Documentation](archive/4-documentation.html) | The recovery entry point and ordered instructions. |
 | [Prepare locally](archive/5-finalize.html) | Storage, exclusions and the exact local payload commit. |
 
-Each phase needs report approval. When the next plan is ready, you can approve both together or save only the report and stop. Execution needs explicit reviewed effects; restored-result feedback and the final payload commit keep separate decisions.
+Each phase needs report approval. When the next plan is ready, you can approve both together, choose **Save report and stop**, revise, or stop without saving the report. Execution needs explicit reviewed effects; restored-result feedback and the final payload commit keep separate decisions.
 
 ## Output files
 

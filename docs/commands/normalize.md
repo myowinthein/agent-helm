@@ -37,11 +37,11 @@ A failed prerequisite stops the run without further history reading, planning or
 
 ## Before history review
 
-An ordinary run shows the full coordination notice before inspecting history, then waits for **Team ready / Review only / Stop**. An explicit read-only request bypasses this question and writes nothing.
+An ordinary run shows the full coordination notice before inspecting history, then waits for **Team ready / Stop**. Read-only review remains available through an explicit request, without an extra menu option; it bypasses this question and writes nothing.
 
 The notice asks you to coordinate included branches, pause conflicting work and plan how other clones will sync afterward. Readiness is not enforcement on teammates or devices, and it approves neither a rewrite nor a push.
 
-After readiness, normalize checks for branches pushed during preparation. Fetching or preparing an agreed local branch needs its own concrete approval before the review scope is frozen; it continues in the same run.
+After readiness, normalize checks for branches pushed during preparation. Fetching or preparing an agreed local branch needs its own concrete **Prepare listed branches / Stop** approval before the review scope is frozen; it continues in the same run.
 
 ## Review messages
 

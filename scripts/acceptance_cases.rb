@@ -35,21 +35,21 @@ module HelmAcceptanceCases
       },
       "refactor-source-preview" => {
         files: shared.merge("labels.py" => "def combine_labels(labels):\n    output = ''\n    for label in labels:\n        output = output + label + ', '\n    return output\n", ".helm/refactor-log.json" => "UNREAD_STATE_TRAP\n"), command: "refactor", no_state: true, no_inline_programs: true,
-        request: "Perform source-only preview and take its report-only exit. Inspect combine_labels and report the concrete source observations. Do not access any state, load a ledger helper, execute Python/project code or edit anything. No assessment checkpoint is approved.", required: ["combine_labels"]
+        request: "I explicitly request source-only advice. Inspect combine_labels and report the concrete source observations. Do not access any state, load a ledger helper, execute Python/project code or edit anything. No assessment checkpoint is approved.", required: ["combine_labels"]
       },
       "normalize-rewrite" => {
         files: shared, command: "normalize", prepare: ->(w,c) { prepare_normalize(w,c,package: package) }, required: ["normalize"]
       },
       "normalize-readiness-pending" => { files: shared, command: "normalize",
-        prepare: ->(w,c) { prepare_readiness(w,c,choice: :pending) }, required: ["Team ready", "Review only", "Stop"] },
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :pending) }, required: ["Team ready", "Stop"] },
       "normalize-readiness-review-only" => { files: shared.merge("AGENTS.md" => standard.sub("git-auto-commit: false", "git-auto-commit: true")), command: "normalize",
         prepare: ->(w,c) { prepare_readiness(w,c,choice: :review_only) }, required: ["readme"] },
       "normalize-readiness-ready" => { files: shared, command: "normalize",
         prepare: ->(w,c) { prepare_readiness(w,c,choice: :ready) }, required: ["Apply reviewed rewrite"] },
       "normalize-readiness-private" => { files: shared, command: "normalize",
-        prepare: ->(w,c) { prepare_readiness(w,c,choice: :private) }, required: ["Team ready", "Review only", "Stop"] },
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :private) }, required: ["Team ready", "Stop"] },
       "normalize-readiness-clean" => { files: shared, command: "normalize",
-        prepare: ->(w,c) { prepare_readiness(w,c,choice: :clean) }, required: ["Team ready", "Review only", "Stop"] },
+        prepare: ->(w,c) { prepare_readiness(w,c,choice: :clean) }, required: ["Team ready", "Stop"] },
       "normalize-readiness-stop" => { files: shared, command: "normalize",
         prepare: ->(w,c) { prepare_readiness(w,c,choice: :stop) }, required: ["stop"] },
       "normalize-branches-pending" => { files: shared, command: "normalize",
@@ -171,7 +171,7 @@ module HelmAcceptanceCases
       when :pending
         "No team-readiness answer has been supplied in this fresh session. Follow the workflow's questions and leave an unanswered question pending."
       when :review_only
-        "My answer to shared-history readiness is Review only. Finish the source-based message assessment and report the before/after proposal. Preserve all files/refs and leave no record, plan, recovery or commit write, even with auto-commit enabled. Reuse this answer."
+        "I explicitly request a read-only review. Finish the source-based message assessment and report the before/after proposal. Preserve all files/refs and leave no record, plan, recovery or commit write, even with auto-commit enabled. No rewrite or branch preparation is requested."
       when :ready
         "Team ready: I acknowledge the coordination notice for this exact scope. Reuse that acknowledgement without asking it again. Prepare the exact message/impact plan. No final Apply answer or publication approval has been supplied."
       when :stop

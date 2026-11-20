@@ -85,7 +85,7 @@ checks["malformed failed wrong-model and empty traces never pass"] = lambda do
 end
 checks["normalize waits before history state and remote investigation"] = lambda do
   canary = "SYNTHETIC_HISTORY_#{'7' * 40}"
-  safe = HelmAcceptance.trace("claude", wire(claude_events("Team ready / Review only / Stop")))
+  safe = HelmAcceptance.trace("claude", wire(claude_events("Team ready / Stop")))
   safe[:calls][0]["input"] = { "command" => "git rev-parse HEAD" }
   HelmAcceptance.assert_normalize_waiting!(safe, history_canary: canary)
   ["git rev-list HEAD", "git log -1", "git cat-file --batch", "git ls-remote origin",

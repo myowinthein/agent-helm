@@ -18,8 +18,10 @@ Use refactor when code has become harder to understand or maintain. It finds wor
 flowchart TD
   Gate{"Ready for the requested route?"} -->|No| Stop["Report the blocker and stop"]
   Gate -->|Yes| Review
-  Review["Review source or saved findings"] --> Plan["Choose and approve a prepared plan"]
-  Plan --> Work["Apply and verify changes"]
+  Review["Review source or saved findings"] --> Plan{"Apply recommended, all ready,<br/>or Cancel?"}
+  Plan -->|Cancel| End["Report findings without new changes"]
+  Plan -->|Approved plan| Save["Save the approved assessment"]
+  Save --> Work["Apply and verify changes"]
   Work --> Result["Report fixes and remaining work"]
 ```
 
@@ -39,12 +41,12 @@ A project without a saved assessment record needs no Python setup merely to begi
 
 | Choice | Use it to |
 |---|---|
-| Full scan | Read every eligible implementation and test file in full. |
-| Gap scan | Follow changes and affected consumers since a valid saved review. |
-| Fix Backlog | Recheck and work on selected existing findings. |
-| Source-only report | Get advice without code or record writes. |
+| Full scan | Read every eligible implementation and test file in full and reassess all open findings within scope. |
+| Gap scan | Follow changes and affected consumers since a valid saved review, reassessing related findings. |
+| Revisit open findings | Investigate selected saved findings against current source, contracts and tests. |
+| Skip | End without starting the assessment. |
 
-Broad changes or an unusable baseline may need Full scan.
+Broad changes or an unusable baseline may need Full scan. Revisit follows relevant evidence until the judgment is supported or missing evidence is identified, without new discovery or advancing scan baselines. Older findings outside a Gap scan remain visible as not freshly reviewed. Explicit source-only advice is still available on request, without a routine menu option.
 
 ## The six review perspectives
 
@@ -52,11 +54,15 @@ The review considers architecture, contracts/state, code clarity, performance, e
 
 Bugs, new features, behavior-changing security fixes, upgrades and migrations remain separate work.
 
-## Priority, risk and your selection
+<a id="priority-risk-and-your-selection"></a>
 
-Priority describes the present cost or benefit. Transformation risk describes how confidently behavior can be preserved. A high-priority finding can still need clarification before it is ready.
+## Review findings and choose changes
 
-Choose recommended work, all ready findings, a subset or none. A fully prepared plan can be selected and approved together, covering dependencies, preserved behavior and checks. Custom selections get their resulting plan reviewed first; unselected findings are not added automatically.
+Numbered findings explain the current burden, the proposed improvement and what behavior must stay unchanged, usually in one or two sentences. New and reassessed findings appear together by behavior, without priority tiers or a status grid. A small before/after example can clarify a structural change when needed.
+
+Recommendations weigh concrete benefit against effort, regression risk, complexity and future upkeep. Choose **Apply recommended**, **Apply all ready changes**, or **Cancel**, with exact finding numbers shown. Hide Recommended when it matches All and omit empty Apply choices. Type subsets, exclusions or revisions directly; their resulting changed plan needs review before work.
+
+Paths, dependencies, preserved behavior, checks and record effects are shown before approval. The approved assessment is saved before code or guard work begins. Cancel before recording makes no changes; later cancellation preserves earlier accepted work. Saving only findings remains available through an explicit request, without another routine menu option.
 
 ## Apply and verify
 

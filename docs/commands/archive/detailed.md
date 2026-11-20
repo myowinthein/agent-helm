@@ -58,7 +58,7 @@ A failed prerequisite stops the run before the gated phase, including additional
 
 [Postman collection](3-postman.html) preserves useful owned-API materials when applicable. [Documentation](4-documentation.html) gives future readers an entry point and ordered recovery instructions. [Prepare locally](5-finalize.html) reviews storage, exclusions and the exact payload commit.
 
-Each phase keeps its own complete report. When the next plan is fully prepared, one review can approve the current report and the exact next actions together. You can instead approve only the report and stop, revise, or leave it unsaved. A report-only approval grants no execution authority.
+Each phase keeps its own complete report. When the next plan is fully prepared, one review can approve the current report and the exact next actions together. **Save report and stop** approves and records only that phase; **Stop without saving report** leaves the current report unsaved. You can also revise. Saving a report grants no authority to execute the next plan.
 
 The approved report and checkpoint are saved and verified before next-phase actions begin. Unknown targets, effects or results still need later review; the agent never treats a plan as approval of a future report. Source confirmation, restored-result feedback and the final payload content/commit decision remain separate.
 
