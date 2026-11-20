@@ -39,7 +39,7 @@ A project without a saved assessment record needs no Python setup merely to begi
 ## Choose the review scope
 
 - **Full scan:** assess scoped behavior and the protection provided by existing tests.
-- **Gap scan:** follow changes since a valid saved assessment, including affected consumers and older open findings.
+- **Gap scan:** follow changes since a valid saved assessment, including affected consumers and relevant findings in any status. Older open backlog remains visible without being presented as freshly reassessed.
 
 A first run or unusable baseline may need Full scan. Review itself is static: it does not run project code, test discovery or installers merely to find gaps.
 
@@ -62,5 +62,7 @@ Existing tools come first; installation, upgrades and service/database effects s
 ## Your result and the next run
 
 You get test changes, actual check results and remaining work. An approved assessment saves findings before implementation; each case closes only when its protection is verified. Skipped or blocked work stays visible for later runs. Coverage is reported only when measured.
+
+The ledger helps recognise the same missing guarantee across scans, even when its explanation or files change. Relevant open, resolved and obsolete cases are reconsidered against current evidence; a closed case is neither ignored forever nor automatically reopened after an edit. The same need keeps its identity. Records stay concise, with bounded retrieval and useful closed history preserved; a Gap scan does not reassess the whole ledger every time.
 
 Work finishes on the same branch under your local commit policy. Use [refactor](refactor.html#refactor-vs-test) for behavior-preserving code maintenance and [ship](ship.html) for publication.
