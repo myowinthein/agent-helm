@@ -126,6 +126,7 @@ module HelmFrontend
       '        await window.navigator.clipboard.writeText(code);')
     source = replace_once(source, '        copyButton.innerHTML = svgCopied;',
       "        copyButton.innerHTML = svgCopied;\n        feedback.textContent = 'Copied';")
+    source = replace_once(source, '        var timeoutSetting = 4000;', '        var timeoutSetting = 2000;')
     replace_once(source, "          timeout = null;\n        }, timeoutSetting);", <<~JS.chomp)
                 timeout = null;
                 feedback.textContent = '';
