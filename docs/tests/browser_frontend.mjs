@@ -206,6 +206,10 @@ try {
   const block=page.locator('div.highlighter-rouge').first();
   const button=block.locator('button');const status=block.locator('.copy-status');
   await button.focus();await page.keyboard.press('Enter');
+  assert.equal(await status.textContent(),'','Fast copies should not flash pending feedback');
+  assert.equal(await button.evaluate(el=>getComputedStyle(el).cursor),'pointer');
+  assert(await button.evaluate(el=>el.matches(':focus-visible') && getComputedStyle(el).outlineStyle!=='none'));
+  await page.clock.runFor(200);
   assert.equal(await status.textContent(),'Copying…');
   assert(await status.isVisible());
   assert.equal(await button.getAttribute('aria-busy'),'true');
@@ -225,12 +229,15 @@ try {
   assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copied');
   assert.equal(await button.evaluate(el=>el===document.activeElement),true);
   await page.keyboard.press('Enter');
-  assert.equal(await status.textContent(),'Copying…');
-  assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copy');
+  assert.equal(await status.textContent(),'Copied','Repeated quick copy should keep its confirmation steady');
+  assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copied');
   await page.evaluate(()=>window.finishCopy());
+  await page.clock.runFor(250);
+  assert.equal(await status.textContent(),'Copied','Stale pending timer replaced confirmed success');
   const nextBlock=page.locator('div.highlighter-rouge').nth(1);
   const nextButton=nextBlock.locator('button');const nextStatus=nextBlock.locator('.copy-status');
   await nextButton.click();
+  assert(await nextButton.evaluate(el=>el===document.activeElement && !el.matches(':focus-visible') && getComputedStyle(el).outlineStyle==='none'));
   assert.equal(await status.textContent(),'Copied','Pending copy cleared the earlier success');
   await page.evaluate(()=>window.failCopy());
   assert((await nextStatus.textContent()).includes('Could not copy'));

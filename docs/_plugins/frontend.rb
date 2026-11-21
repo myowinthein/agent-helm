@@ -128,8 +128,10 @@ module HelmFrontend
               copying = true;
               copyButton.setAttribute('aria-busy', 'true');
               copyButton.setAttribute('aria-disabled', 'true');
-              copyButton.innerHTML = svgCopy;
-              feedback.textContent = 'Copying…';
+              const pendingFeedback = setTimeout(() => {
+                copyButton.innerHTML = svgCopy;
+                feedback.textContent = 'Copying…';
+              }, 200);
               try {
     JS
     source = replace_once(source, '        window.navigator.clipboard.writeText(code);',
@@ -147,6 +149,7 @@ module HelmFrontend
                 copyButton.innerHTML = svgCopy;
                 feedback.textContent = 'Could not copy. Try again or select the code to copy it manually.';
               } finally {
+                clearTimeout(pendingFeedback);
                 copying = false;
                 copyButton.removeAttribute('aria-busy');
                 copyButton.removeAttribute('aria-disabled');

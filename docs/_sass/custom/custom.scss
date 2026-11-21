@@ -9,6 +9,10 @@ figure.highlight {
   &:hover > button:not(:disabled):not([aria-disabled="true"]) {
     cursor: pointer;
   }
+
+  > button:focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
 :root :focus-visible {
@@ -79,7 +83,7 @@ a:not([class]) {
 div.highlighter-rouge > button[aria-busy="true"],
 div.listingblock > div.content > button[aria-busy="true"],
 figure.highlight > button[aria-busy="true"] {
-  cursor: progress;
+  cursor: pointer;
   opacity: 1;
 }
 
