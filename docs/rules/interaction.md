@@ -28,7 +28,9 @@ flowchart TD
 
 ### Feedback and loading
 
-Keep feedback behavior consistent across comparable operations: when pending, completion and failure states appear, change and clear. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends. Keep keyboard focus visible, using `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks. Respect reduced-motion preferences throughout affected controls and feedback, preserving purposeful motion where compatible.
+Keep feedback behavior consistent across comparable operations: when pending, completion and failure states appear, change and clear. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends.
+
+Keep keyboard focus visible, using `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks. Sticky headers, banners and overlays must not entirely hide the focused component under WCAG's minimum conditions. Respect reduced-motion preferences throughout affected controls and feedback, preserving purposeful motion where compatible.
 
 Recoverable error popups can default to four seconds when the failure and recovery remain discoverable afterward. A retry control can remain available, or visible text can still be copied manually. Preserve entered text and avoid retrying an unchanged failed setup on every keystroke. Essential errors without another recovery route remain available.
 
@@ -53,6 +55,8 @@ Preserve pasted answers and let people edit excess text where the field permits 
 ### Cursors
 
 Match the cursor to what the person can do: a hand for links and enabled custom actions, an I-beam for selectable text, and grab, resize or zoom cursors only for those working operations. Keep native form-control behavior and established design-system conventions. Read-only text can remain selectable; disabled controls should not promise an available action.
+
+Check actual clickable areas and spacing against WCAG's target-size requirements and exceptions. A small icon can have a larger activation area.
 
 Pressing an ordinary button changes its appearance, not its cursor. Processing and dragging can change the cursor when the operation changes. Keep keyboard focus and touch interaction usable, since cursors are only an extra cue. Preserve deliberate project styling without hiding useful operation hints.
 
@@ -80,6 +84,6 @@ Links need readable contrast in light and dark themes, visible keyboard focus an
 
 ## Scope and verification
 
-Use existing components, storage and validation boundaries. Preserve user input and explicit preferences; a new rule does not authorize unrelated changes. Verify affected states and recovery after completion, cancellation or failure with keyboard, touch and pointing devices. A cursor or hover effect alone does not establish usable interaction.
+Use existing components, storage and validation boundaries. Preserve user input and explicit preferences; a new rule does not authorize unrelated changes. Verify affected states and recovery after completion, cancellation or failure with keyboard, touch and pointing devices. For affected mobile forms, check that fields and actions remain reachable with the on-screen keyboard open. A cursor or hover effect alone does not establish usable interaction.
 
 The hand cursor, external icon and link underline defaults are Helm conventions. Follow explicit project requirements and distinguish these preferences from accessibility requirements. Report checks that could not be performed.

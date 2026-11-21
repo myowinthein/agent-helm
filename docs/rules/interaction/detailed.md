@@ -36,7 +36,7 @@ People should be able to tell whether work is pending and understand its relevan
 
 Across buttons, links and other controls, a near-instant action should not briefly flash a loading label, spinner or busy cursor. Slower work still needs clear pending feedback. Delaying that visual must not delay the operation, its accessibility state or protection against duplicate activation. The timing suits the task rather than one universal delay. Keep unrelated controls usable and clear stale loading feedback when work ends; labels, icons and placement follow the project.
 
-Keyboard users need to see which control has focus. Using `:focus-visible` lets that indicator remain available without forcing the same outline after ordinary mouse clicks. Preserve native focus behavior, especially while editing text, and keep focus on the control rather than removing it just to hide an outline.
+Keyboard users need to see which control has focus. Using `:focus-visible` lets that indicator remain available without forcing the same outline after ordinary mouse clicks. Preserve native focus behavior, especially while editing text, and keep focus on the control rather than removing it just to hide an outline. Author-created sticky headers, banners and overlays must not entirely hide the focused component under [WCAG's minimum conditions](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html).
 
 Respect reduced-motion preferences across affected controls, feedback and transitions. Purposeful animation can remain where compatible; the same safeguard applies to pointer effects and link transitions.
 
@@ -113,6 +113,8 @@ When a task only changes the interface, preserve the existing accepted-data cont
 
 A cursor describes an available operation at the pointer's location. An enabled Save button can use a hand; pressing it needs visible pressed feedback rather than a different cursor. If saving starts a pending operation, its feedback should reflect that state and return to normal after success or failure.
 
+Pointer activation also depends on the actual clickable area and its separation from neighboring controls. [WCAG 2.2's target-size minimum](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html) is 24 by 24 CSS pixels, with spacing and other exceptions, including inline text links. A small icon can have a larger activation area; visual size alone does not establish compliance. Preserve stronger project requirements.
+
 | Situation | Expected cue |
 |---|---|
 | Ordinary content | Browser defaults, including text selection. |
@@ -175,6 +177,8 @@ Visited styling is useful when people need to know which references they have re
 The rule uses the project's existing components, palette, preference storage and accepted-data contracts. It does not introduce a backend, a new theme selector or a redesign merely to enforce its defaults. Writing owns editorial references and prose; Design owns visual composition and responsive layout. When selected together, their relevant guidance applies within the same task.
 
 Verification follows the affected area: preference changes need checks of restored/default values, storage failures, view synchronization and unaffected active work. Theme changes also need initial-appearance and system-change checks; input changes need boundary, counting and preserved-answer checks. Cursor and link changes need the relevant hit areas, states, destinations and feedback. Verify recovery after completion, cancellation or failure, with keyboard and touch access even when the visible change concerns a cursor.
+
+For affected mobile forms, also check whether fields and actions remain reachable when the on-screen keyboard is open. It can change the visible viewport without changing the layout viewport, as [MDN explains](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport). The rule asks for usable results, not a particular viewport API or script.
 
 Source inspection, screenshots and observed interaction provide different evidence. Report important gaps and unavailable checks in the normal task handoff without claiming complete accessibility or creating a separate report merely to follow this rule.
 

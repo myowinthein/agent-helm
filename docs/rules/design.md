@@ -24,7 +24,9 @@ Reuse established visual treatments for comparable messages, loading indicators 
 
 ## Responsive interfaces and links
 
-Layouts should work across narrow and wide viewports, preserving access to content and actions as navigation changes. [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) is the default accessibility reference, including its stated exceptions.
+Layouts should work across narrow and wide viewports, preserving access to content and actions as navigation changes. Reading and keyboard-navigation order must remain meaningful when columns stack or content moves. Media should keep its proportions and reserve space to avoid unexpected movement while loading.
+
+Check representative long labels, URLs, supported languages and user-adjusted text spacing, alongside viewport sizes and zoom. [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) is the default accessibility reference, including its stated conditions and exceptions.
 
 <span id="theme-preferences"></span><span id="input-limits"></span><span id="cursors"></span><span id="links"></span><span id="link-appearance"></span>
 The separately selected [Interaction rule](interaction.html#controls-and-feedback) covers themes, input feedback, cursors and link behavior. Design keeps layouts and visual states readable while preserving existing working controls.

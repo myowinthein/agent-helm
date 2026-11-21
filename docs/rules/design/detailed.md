@@ -41,7 +41,11 @@ Comparable elements should reuse established visual treatments. Similar dialog e
 
 ## Responsive interfaces and links
 
-Layouts should preserve access to content and actions as the viewport narrows, text grows or navigation changes. Consider keyboard operation, focus, reading order, contrast and reduced motion as part of normal interface work. WCAG 2.2 Level AA is the default accessibility reference, including its stated exceptions.
+Layouts should preserve access to content and actions as the viewport narrows, text grows or navigation changes. Stacking columns or moving a panel must preserve meaningful reading and keyboard-navigation order; a sensible visual arrangement alone does not establish either. Consider contrast and reduced motion as part of normal interface work. WCAG 2.2 Level AA is the default accessibility reference, including its stated exceptions.
+
+Use representative content when checking a layout. A short sample label may fit where a real translated label or long URL does not. Content and actions must also survive the [WCAG text-spacing overrides](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html); those are tolerance checks, not required default typography. Preserve access to genuinely two-dimensional content, such as tables and maps, without clipping it to force a narrow layout.
+
+Flexible media should retain its proportions. Reserve appropriate space from known dimensions or aspect ratios so a late-loading image does not unexpectedly move the text or controls around it. Google's [responsive-image guidance](https://web.dev/learn/design/responsive-images) explains how this works without requiring a particular framework.
 
 <span id="theme-preferences"></span><span id="input-limits"></span><span id="cursors"></span><span id="links"></span><span id="link-appearance"></span>
 Visual work keeps labels, hints, errors and links readable across the supported layouts and themes. The separately selected [Interaction rule](../interaction/detailed.html#controls-and-feedback) explains control behavior: saved preferences, input feedback, cursors and navigation. Design preserves existing working controls even when Interaction is not selected; meaningful editorial references remain with Writing.

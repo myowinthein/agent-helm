@@ -10,7 +10,7 @@ Keep feedback behavior consistent for comparable operations across buttons, link
 
 Avoid flashing loading labels, spinners or busy cursors for near-instant actions. Any delay applies to pending visuals, not the operation, required accessibility state or duplicate-activation protection. Keep unrelated controls usable, communicate temporary unavailability, and clear stale loading feedback and restore appropriate controls when work ends. Choose visual timing for the task rather than imposing a universal delay.
 
-Preserve visible keyboard focus for links, buttons and other controls independently of hover. Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator.
+Preserve visible keyboard focus for links, buttons and other controls independently of hover. Author-created sticky headers, banners and overlays must not entirely hide a focused component under [WCAG's Focus Not Obscured minimum](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html), retaining its stated conditions. Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator.
 
 Respect reduced-motion preferences across affected controls, feedback and transitions, preserving purposeful motion where compatible.
 
@@ -62,6 +62,8 @@ Keep existing accepted-data contracts. Limits need a product, format or resource
 ## Cursors and pointer feedback
 
 Match the cue to the available operation, using system cursors and established project conventions.
+
+Pointer targets meet [WCAG 2.2's 24 by 24 CSS-pixel minimum](https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html) or its spacing and other exceptions, including inline text links. Measure the actual activation area, which can extend beyond a smaller visible icon, and preserve stronger project requirements.
 
 | Element or operation | Default treatment |
 |---|---|
@@ -123,11 +125,11 @@ Make links recognizable before interaction, using the existing palette and compo
 
 ## Review and verification
 
-Use available authorized tools on affected controls and states, preserving required project checks, palette, layout and accessibility. Check keyboard, touch and pointer use without relying solely on hover or cursors, and verify recovery after completion, cancellation or failure.
+Use available authorized tools on affected controls and states, preserving required project checks, palette, layout and accessibility. Check keyboard, touch and pointer use without relying solely on hover or cursors, and verify recovery after completion, cancellation or failure. For affected mobile forms, check that fields and actions remain reachable when the [on-screen keyboard changes the visible viewport](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport); no particular viewport API is required.
 
 | Changed area | Relevant checks |
 |---|---|
-| Feedback and focus | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, recovery after timed errors, stale timers, copy-confirmation replacement, keyboard focus and pointer activation. |
+| Feedback and focus | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, recovery after timed errors, stale timers, copy-confirmation replacement, focused-component visibility and pointer target size/spacing. |
 | Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
 | Themes | Initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
