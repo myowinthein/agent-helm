@@ -1,7 +1,7 @@
 ---
 layout: home
 title: Agent Helm
-description: Workflows for Claude and Codex to keep project context, improve code and tests, maintain docs and publish reviewed changes.
+description: Workflows for Claude and Codex to keep project context, improve code, tests and interfaces, maintain docs and publish reviewed changes.
 nav_order: 1
 permalink: /
 ---
@@ -14,7 +14,7 @@ Take the helm.
 
 Agent Helm is a workflow plugin for developers using Claude or Codex.
 
-It helps you keep project context between sessions and handle recurring development tasks consistently. Reusable workflows guide your agent as it improves code and tests, maintains documentation and configuration, publishes reviewed changes and preserves older projects.
+It helps you keep project context between sessions and handle recurring development tasks consistently. Reusable workflows guide your agent as it improves code, tests and interfaces, maintains documentation and configuration, publishes reviewed changes and preserves older projects.
 
 [Documentation site](https://myowinthein.github.io/agent-helm/)
 

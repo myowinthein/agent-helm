@@ -9,7 +9,7 @@
       "name": "agent-helm",
       "version": "3.9.0",
       "source": "./",
-      "description": "A workflow plugin for developers using Claude and Codex. Keep project context, improve code and tests, maintain docs and configuration, publish reviewed changes and preserve older projects.",
+      "description": "A workflow plugin for developers using Claude and Codex. Keep project context, improve code, tests and interfaces, maintain docs and configuration, publish reviewed changes and preserve older projects.",
       "policy": {
         "installation": "AVAILABLE",
         "authentication": "ON_USE"
