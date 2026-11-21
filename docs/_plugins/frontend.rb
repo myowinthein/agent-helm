@@ -71,7 +71,7 @@ module HelmFrontend
         helmSearchInput.removeAttribute('aria-busy');
         helmSearchRetry.hidden = false;
         helmSearchRetry.disabled = false;
-        helmSearchStatus.textContent = 'Could not load search. Use Retry search to try again.';
+        helmSearchStatus.textContent = 'Search unavailable. Press Enter or select Retry search.';
         helmSearchErrorTimer = setTimeout(() => { helmSearchStatus.textContent = ''; }, 4000);
       }
       function initSearch() {
@@ -117,6 +117,12 @@ module HelmFrontend
           helmSearchRetry = document.getElementById('search-retry');
           searchInput.addEventListener("focus", initSearch);
           searchInput.addEventListener("input", () => { if (!helmSearchFailedState) initSearch(); });
+          searchInput.addEventListener("keydown", event => {
+            if (event.key === 'Enter' && !event.isComposing && !event.repeat && helmSearchFailedState) {
+              event.preventDefault();
+              initSearch();
+            }
+          });
           helmSearchRetry.addEventListener("click", () => {
             initSearch();
             searchInput.focus();

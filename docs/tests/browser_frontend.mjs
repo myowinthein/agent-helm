@@ -102,20 +102,20 @@ try {
   await page.clock.install();
   await page.route('**/search-data.json',async route=>{
    count++;
-   if(count!==1)return route.continue();
+   if(count!==1){await new Promise(resolve=>setTimeout(resolve,500));return route.continue();}
    if(failure==='network')return route.abort();
    await route.fulfill({status:failure==='http'?503:200,body:failure==='http'?'Unavailable':'{invalid'});
   });
   await page.goto(pageUrl('docs/commands/log.html'));
   if(failure==='network')await page.locator('#menu-button').click();
   await page.locator('#search-input').focus();
-  await page.waitForFunction(()=>document.getElementById('search-status').textContent.includes('Could not load search'));
+  await page.waitForFunction(()=>document.getElementById('search-status').textContent.includes('Search unavailable'));
   assert.equal(await page.locator('#search-status').getAttribute('role'),'status');
   assert(await page.locator('#search-status').isVisible());
   assert.equal(await page.locator('#search-input').getAttribute('aria-busy'),null);
   await page.locator('#search-input').fill('archive');
   assert.equal(count,1,'Typing retried a failed index request');
-  assert.equal(await page.locator('#search-status').textContent(),'Could not load search. Use Retry search to try again.');
+  assert.equal(await page.locator('#search-status').textContent(),'Search unavailable. Press Enter or select Retry search.');
   await page.clock.runFor(4000);
   assert.equal(await page.locator('#search-status').textContent(),'');
   assert(await page.locator('#search-retry').isVisible(),'Timed popup removed the recovery action');
@@ -125,7 +125,16 @@ try {
    return retry.left>bounds.left+parseFloat(getComputedStyle(input).paddingLeft) && retry.right<=bounds.right;
   }),'Retry control overlaps the search text or escapes the field');
   assert.equal(await page.locator('#search-input').inputValue(),'archive');
-  await page.locator('#search-retry').focus();await page.keyboard.press('Enter');
+  await page.locator('#search-input').dispatchEvent('keydown',{key:'Enter',isComposing:true});
+  await page.locator('#search-input').dispatchEvent('keydown',{key:'Enter',repeat:true});
+  assert.equal(count,1,'Composition or a held Enter key retried the search');
+  if(failure==='invalid-json') {
+   await page.locator('#search-retry').focus();await page.keyboard.press('Enter');
+  } else {
+   await page.locator('#search-input').press('Enter');
+  }
+  await page.locator('#search-input').press('Enter');
+  assert.equal(count,2,'Pending search retry started duplicate requests');
   await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
   assert.equal(await page.locator('#search-status').textContent(),'');
   assert.equal(await page.locator('#search-retry').isVisible(),false);
