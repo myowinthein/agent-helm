@@ -152,7 +152,7 @@ module HelmFrontend
                 if (clearCopyFailure) clearCopyFailure();
                 clearCopyFailure = resetConfirmation;
                 copyButton.innerHTML = svgCopy;
-                feedback.textContent = 'Copy failed; try again or copy the text manually.';
+                feedback.textContent = 'Could not copy. Try again or select the code to copy it manually.';
                 timeout = setTimeout(resetConfirmation, 4000);
               } finally {
                 clearTimeout(pendingFeedback);

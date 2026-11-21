@@ -217,7 +217,7 @@ try {
   await page.keyboard.press('Enter');
   assert.equal(await page.evaluate(()=>window.copyRequests),1);
   await page.evaluate(()=>window.failCopy());
-  await page.waitForFunction(()=>document.querySelector('.copy-status').textContent.includes('Copy failed'));
+  await page.waitForFunction(()=>document.querySelector('.copy-status').textContent.includes('Could not copy'));
   assert(await status.isVisible());
   assert.equal(await button.getAttribute('aria-busy'),null);
   assert.equal(await button.getAttribute('aria-disabled'),null);
@@ -240,7 +240,7 @@ try {
   assert(await nextButton.evaluate(el=>el===document.activeElement && !el.matches(':focus-visible') && getComputedStyle(el).outlineStyle==='none'));
   assert.equal(await status.textContent(),'Copied','Pending copy cleared the earlier success');
   await page.evaluate(()=>window.failCopy());
-  assert.equal(await nextStatus.textContent(),'Copy failed; try again or copy the text manually.');
+  assert.equal(await nextStatus.textContent(),'Could not copy. Try again or select the code to copy it manually.');
   assert.equal(await status.textContent(),'Copied','Failed copy cleared the earlier success');
   await page.clock.runFor(1000);
   await nextButton.click();await page.evaluate(()=>window.finishCopy());
@@ -253,16 +253,16 @@ try {
   assert.equal(await nextStatus.textContent(),'');
   assert.equal(await nextButton.locator('use').getAttribute('xlink:href'),'#svg-copy');
   await button.click();await page.evaluate(()=>window.failCopy());
-  assert.equal(await status.textContent(),'Copy failed; try again or copy the text manually.');
+  assert.equal(await status.textContent(),'Could not copy. Try again or select the code to copy it manually.');
   await nextButton.click();
   assert.equal(await status.textContent(),'','A new attempt left an earlier copy error visible');
   await page.evaluate(()=>window.failCopy());
-  assert.equal(await nextStatus.textContent(),'Copy failed; try again or copy the text manually.');
+  assert.equal(await nextStatus.textContent(),'Could not copy. Try again or select the code to copy it manually.');
   await nextButton.click();
   assert.equal(await nextStatus.textContent(),'','Retry did not clear its previous error');
   await page.evaluate(()=>window.failCopy());
   await page.clock.runFor(3000);
-  assert.equal(await nextStatus.textContent(),'Copy failed; try again or copy the text manually.');
+  assert.equal(await nextStatus.textContent(),'Could not copy. Try again or select the code to copy it manually.');
   await page.clock.runFor(1000);
   assert.equal(await nextStatus.textContent(),'');
   assert.equal(await nextButton.locator('use').getAttribute('xlink:href'),'#svg-copy');
