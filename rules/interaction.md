@@ -6,9 +6,15 @@ Writing owns prose and editorial references; Design owns visual composition, res
 
 ## Feedback and loading
 
-Reuse established feedback for comparable operations. Make pending work, relevant completion and failures clear, connecting errors to the affected task and useful recovery. Keep unrelated controls usable; communicate temporary unavailability and prevent duplicate activation where needed. After completion, cancellation or failure, clear stale loading feedback and restore controls to their appropriate state. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
+Reuse established feedback for comparable operations across buttons, links and other controls. Make pending work, relevant completion and failures clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery, keeping them available until retried, resolved or deliberately dismissed. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
 
-Copy actions show success only after the clipboard write succeeds, without requiring hover. Default to 2 seconds of success feedback from that result, preserving explicit project timing or accessibility requirements. Across copy controls in the same interface, keep only the latest successful confirmation: clear earlier success messages, icons and timers when the new write succeeds. Pending or failed writes must not clear another control's success feedback. Keep failures and recovery guidance available until retried, resolved or deliberately dismissed.
+Avoid flashing loading labels, spinners or busy cursors for near-instant actions. Any delay applies to pending visuals, not the operation, required accessibility state or duplicate-activation protection. Keep unrelated controls usable, communicate temporary unavailability, and clear stale loading feedback and restore appropriate controls when work ends. Choose visual timing for the task rather than imposing a universal delay.
+
+Preserve visible keyboard focus for links, buttons and other controls independently of hover. Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator.
+
+### Copy feedback
+
+Default to 2 seconds of success feedback from the confirmed clipboard write, preserving explicit project timing or accessibility requirements. Across copy controls in the same interface, keep only the latest successful confirmation: clear earlier success messages, icons and timers when the new write succeeds. Pending or failed writes must not clear another control's success feedback.
 
 ## Preferences and persistence
 
@@ -55,13 +61,13 @@ Match the cue to the available operation, using system cursors and established p
 | Disabled custom action | `not-allowed` or the design system's arrow; no enabled-action hand or hover cue. |
 | Working drag handle / engaged drag | `grab` / `grabbing`. |
 | Available resize or zoom operation | Matching directional resize or `zoom-in` / `zoom-out`. |
-| Processing | `progress` while interaction remains available; `wait` only over the blocked area. |
+| Sustained processing | `progress` while interaction remains available; `wait` only over the blocked area. |
 
-Ordinary hover and press keep the operation's cursor; pressing needs visible feedback. Change cues when the operation or availability changes and restore them after completion, cancellation or failure. Copy buttons use the action cursor; `copy`, `move` and `no-drop` describe transfer operations. Use `help` only for an available help interaction.
+Ordinary hover and press keep the operation's cursor; pressing needs visible feedback. Change cues when the operation or availability changes and restore them after completion, cancellation or failure. The `copy`, `move` and `no-drop` cursors describe transfer operations, not ordinary button activation. Use `help` only for an available help interaction.
 
 Scope styling to the actual control or handle, not an unrelated card, row or label. Avoid wildcard overrides hiding text selection, native controls or specialized cues; validation errors do not disable editable fields. Cursor styling, `aria-disabled` or `pointer-events: none` alone cannot prevent every activation path: implement correct native semantics and handlers and preserve selectable read-only content.
 
-Keep recognizable controls, visible focus, keyboard and touch use independently of cursors. Prefer native click activation so users can cancel before release. Dragging needs keyboard access and a non-drag single-pointer alternative unless an applicable exception applies. Avoid decorative cursor replacements or trails by default; preserve deliberate designs that retain operation cues and native usability. Respect reduced motion and platform differences, without demanding identical cursor artwork.
+Keep recognizable controls, keyboard and touch use independently of cursors. Prefer native click activation so users can cancel before release. Dragging needs keyboard access and a non-drag single-pointer alternative unless an applicable exception applies. Avoid decorative cursor replacements or trails by default; preserve deliberate designs that retain operation cues and native usability. Respect reduced motion and platform differences, without demanding identical cursor artwork.
 
 ## Links and navigation
 
@@ -101,7 +107,7 @@ Make links recognizable before interaction, using the existing palette and compo
 
 - Do not rely on hue or hover alone. Keep underlines visible at rest; reserve them for links rather than ordinary emphasis. If an explicit convention omits them, verify a persistent distinction; 3:1 contrast against surrounding text is one W3C technique, separate from background contrast.
 - Text contrast against its background in rest, hover and visited states meets WCAG AA: 4.5:1 for ordinary text or 3:1 for qualifying large text. Muted links must remain readable and usable-looking; blue is not required.
-- Provide visible keyboard focus independently of hover. Essential labels and indicators remain available on touch. Avoid emphasis that shifts layout; preserve purposeful motion and reduced-motion preferences.
+- Essential labels and indicators remain available on touch. Avoid emphasis that shifts layout; preserve purposeful motion and reduced-motion preferences.
 - Use visited styling when reading history helps; it is optional for menus or buttons where it adds little. Keep it readable and distinct from the current-page marker, which indicates location.
 
 ## Review and verification
@@ -110,7 +116,7 @@ Use available authorized tools on affected controls and states, preserving requi
 
 | Changed area | Relevant checks |
 |---|---|
-| Copy feedback | Confirmed success, two-second default, replacement across controls, pending/failed attempts, stale timers and accessible feedback. |
+| Feedback and focus | Quick/slow actions, confirmed outcomes, recovery, copy-confirmation replacement and timers, keyboard focus and pointer activation. |
 | Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
 | Themes | Initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |

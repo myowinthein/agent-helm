@@ -34,7 +34,9 @@ flowchart TD
 
 People should be able to tell whether work is pending and understand its relevant outcome. Errors need a clear connection to the affected task and a useful way forward. Similar operations reuse established feedback, while a page load and a button action can communicate progress differently.
 
-Keep unrelated controls usable while work runs. Where an action is temporarily unavailable, communicate that state and prevent duplicate activation when needed. Completion, cancellation and failure should clear stale loading feedback and leave controls in their appropriate state. The project chooses labels, spinners, icons and placement; the rule requires no universal loading style.
+Across buttons, links and other controls, a near-instant action should not briefly flash a loading label, spinner or busy cursor. Slower work still needs clear pending feedback. Delaying that visual must not delay the operation, its accessibility state or protection against duplicate activation. The timing suits the task rather than one universal delay. Keep unrelated controls usable and clear stale loading feedback when work ends; labels, icons and placement follow the project.
+
+Keyboard users need to see which control has focus. Using `:focus-visible` lets that indicator remain available without forcing the same outline after ordinary mouse clicks. Preserve native focus behavior, especially while editing text, and keep focus on the control rather than removing it just to hide an outline.
 
 For copy controls, “Copied” confirms an actual clipboard result and appears without requiring hover. Its default duration is two seconds from success, with explicit project or accessibility requirements taking priority. If you copy another block successfully, its confirmation replaces the earlier message and copied icon, matching the latest clipboard content. A pending or failed attempt has not replaced that content, so it leaves the earlier confirmation alone. Error messages stay available until another attempt, resolution or deliberate dismissal.
 
@@ -112,7 +114,7 @@ A cursor describes an available operation at the pointer's location. An enabled 
 | Disabled custom action | Prohibited cursor or the established design system's arrow; no enabled-action hover cue. |
 | Working drag handle | Open hand, becoming a grabbing hand during the drag. |
 | Working resize or zoom control | Cursor matching the available direction or zoom action. |
-| Pending work | Progress while interaction remains possible; wait only for a blocked interaction. |
+| Longer pending work | Progress while interaction remains possible; wait only for a blocked interaction. |
 
 The hand on custom actions is Helm's default convention. It is not a universal requirement: [Tailwind follows native button arrows](https://tailwindcss.com/docs/upgrade-guide#buttons-use-the-default-cursor), while [GOV.UK uses a hand for its menu button](https://design-system.service.gov.uk/components/header/history/). Preserve a project's established design system rather than treating a different valid convention as a defect.
 

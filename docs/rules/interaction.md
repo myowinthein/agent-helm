@@ -28,7 +28,7 @@ flowchart TD
 
 ### Feedback and loading
 
-Use established feedback for comparable operations so people can tell when work is pending, finished or unsuccessful. Keep unrelated controls usable, prevent duplicate actions where needed and restore appropriate controls when work ends. A page load and a button action can use different treatments suited to their context.
+Use established feedback across buttons, links and other controls so people can tell when work is pending, finished or unsuccessful. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends. Keep keyboard focus visible, using `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks.
 
 Copy confirmation appears after success, without needing hover, and defaults to two seconds. Copying something else successfully clears the earlier confirmation and icon; a pending or failed attempt leaves it alone. Errors remain available for recovery.
 
