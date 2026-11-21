@@ -36,6 +36,8 @@ People should be able to tell whether work is pending and understand its relevan
 
 Keep unrelated controls usable while work runs. Where an action is temporarily unavailable, communicate that state and prevent duplicate activation when needed. Completion, cancellation and failure should clear stale loading feedback and leave controls in their appropriate state. The project chooses labels, spinners, icons and placement; the rule requires no universal loading style.
 
+For copy controls, “Copied” confirms an actual clipboard result and appears without requiring hover. Its default duration is two seconds from success, with explicit project or accessibility requirements taking priority. If you copy another block successfully, its confirmation replaces the earlier message and copied icon, matching the latest clipboard content. A pending or failed attempt has not replaced that content, so it leaves the earlier confirmation alone. Error messages stay available until another attempt, resolution or deliberate dismissal.
+
 ### Preferences and persistence
 
 A reusable preference and a temporary selection have different lifetimes. Someone may expect quality or display density to survive a later visit, while a resolution chosen for one item can remain specific to that item. Preserve the product's intended scope rather than saving every control automatically.

@@ -8,6 +8,8 @@ Writing owns prose and editorial references; Design owns visual composition, res
 
 Reuse established feedback for comparable operations. Make pending work, relevant completion and failures clear, connecting errors to the affected task and useful recovery. Keep unrelated controls usable; communicate temporary unavailability and prevent duplicate activation where needed. After completion, cancellation or failure, clear stale loading feedback and restore controls to their appropriate state. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
 
+Copy actions show success only after the clipboard write succeeds, without requiring hover. Default to 2 seconds of success feedback from that result, preserving explicit project timing or accessibility requirements. Across copy controls in the same interface, keep only the latest successful confirmation: clear earlier success messages, icons and timers when the new write succeeds. Pending or failed writes must not clear another control's success feedback. Keep failures and recovery guidance available until retried, resolved or deliberately dismissed.
+
 ## Preferences and persistence
 
 Reuse the project's controls, storage mechanism, defaults and intended setting scope. Persist choices meant for reuse, such as quality or theme; do not automatically persist transient inputs or per-item selections.
@@ -108,6 +110,7 @@ Use available authorized tools on affected controls and states, preserving requi
 
 | Changed area | Relevant checks |
 |---|---|
+| Copy feedback | Confirmed success, two-second default, replacement across controls, pending/failed attempts, stale timers and accessible feedback. |
 | Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
 | Themes | Initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
