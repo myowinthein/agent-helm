@@ -144,8 +144,8 @@ try {
   const expected=['no-js','saved-light','dark-css-failed'].includes(fault)?'light':'dark';
   await background(expected)(page);
   if(fault==='dark-css-failed') {
-   await page.waitForFunction(()=>document.getElementById('theme-status').textContent.includes('Using Light'));
-   assert.equal(await page.locator('#theme-mode').inputValue(),'system');
+   await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
+   assert.equal(await page.locator('#theme-mode').inputValue(),'light');
    assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),null);
   }
   assert(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)));
@@ -194,52 +194,60 @@ try {
   assert.equal(await second.locator('#theme-mode').inputValue(),'system');
   console.log('PASS cross-tab theme: choice applied, reset returns to system');await context.close();
  }
- // Failed theme loads explain the retained appearance without discarding the choice.
+ // Failed changes retain the working theme, selector and saved preference together.
  for(const width of [1280,390]) {
-  const context=await createContext({colorScheme:'light',viewport:{width,height:900}});const page=await context.newPage();
+ for(const currentTheme of ['light','dark']) {
+  const targetTheme=currentTheme==='light'?'dark':'light';
+  const context=await createContext({colorScheme:currentTheme,viewport:{width,height:900}});const page=await context.newPage();
   await page.clock.install();
   await page.goto(pageUrl('docs/commands/log.html'));
   if(width===390)await page.locator('#menu-button').click();
+  await background(currentTheme)(page);
+  await page.locator('#theme-mode').selectOption(currentTheme);
   let attempts=0;
-  await page.route('**/just-the-docs-dark.css',async route=>{
+  const stylesheet=`**/just-the-docs-${targetTheme}.css`;
+  await page.route(stylesheet,async route=>{
    attempts++;
    if(attempts===2)await new Promise(resolve=>setTimeout(resolve,500));
    await route.abort();
   });
-  await page.locator('#theme-mode').selectOption('dark');
-  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Using Light.');
+  await page.locator('#theme-mode').selectOption(targetTheme);
+  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
   assert(await page.locator('#theme-status').isVisible());
   assert(await page.locator('#theme-status').evaluate(status=>{
    const style=getComputedStyle(status);
    return status.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)<=2*parseFloat(style.lineHeight)+1;
   }),'Theme error needs more than two lines');
-  await background('light')(page);
-  assert.equal(await page.locator('#theme-mode').inputValue(),'dark');
-  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),'dark');
+  await background(currentTheme)(page);
+  assert.equal(await page.locator('#theme-mode').inputValue(),currentTheme);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),currentTheme);
   await page.clock.runFor(250);
-  assert.equal(await page.locator('#theme-status').textContent(),'Theme unavailable. Using Light.','Stale loading text replaced the failure');
+  assert.equal(await page.locator('#theme-status').textContent(),'Theme unavailable. Try again.','Stale loading text replaced the failure');
   await page.clock.runFor(3750);
   assert.equal(await page.locator('#theme-status').textContent(),'');
-  assert(await page.locator('#theme-fallback').isVisible());
-  assert.equal(await page.locator('#theme-fallback').textContent(),'Using Light');
-  assert((await page.locator('#theme-mode').getAttribute('title')).includes('Choose another theme to retry'));
-  await page.locator('#theme-mode').selectOption('system');
-  assert.equal(await page.locator('#theme-fallback').isVisible(),false);
-  await page.locator('#theme-mode').selectOption('dark');
+  assert.equal(await page.locator('#theme-fallback').count(),0);
+  assert.equal(await page.locator('#theme-mode').inputValue(),currentTheme);
+  await page.locator('#theme-mode').selectOption(targetTheme);
+  assert.equal(await page.locator('#theme-mode').inputValue(),currentTheme);
+  assert.equal(await page.locator('#theme-mode').getAttribute('aria-busy'),'true');
   assert.equal(await page.locator('#theme-status').textContent(),'','Theme loading feedback appeared without a delay');
   await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Loading theme…');
-  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Using Light.');
-  await page.unroute('**/just-the-docs-dark.css');
-  await page.locator('#theme-mode').selectOption('system');
-  assert.equal(await page.locator('#theme-status').textContent(),'');
-  await page.locator('#theme-mode').selectOption('dark');
-  await background('dark')(page);
+  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
+  assert.equal(await page.locator('#theme-mode').inputValue(),currentTheme);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),currentTheme);
+  await page.unroute(stylesheet);
+  await page.locator('#theme-mode').selectOption(targetTheme);
+  await background(targetTheme)(page);
+  assert.equal(await page.locator('#theme-mode').inputValue(),targetTheme);
+  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),targetTheme);
   assert.equal(await page.locator('#theme-status').textContent(),'');
   await page.clock.runFor(4000);
   assert.equal(await page.locator('#theme-status').textContent(),'');
-  assert.equal(await page.locator('#theme-fallback').isVisible(),false);
+  assert.equal(await page.locator('#theme-fallback').count(),0);
+  assert.equal(await page.locator('#theme-mode').getAttribute('aria-busy'),null);
   assert.equal(await page.locator('#theme-mode').getAttribute('title'),null);
-  console.log(`PASS failed theme ${width}px: concise timed error, delayed loading, retained choice, applied-theme label and recovery`);await context.close();
+  console.log(`PASS failed ${currentTheme} to ${targetTheme} ${width}px: working selection restored, saved choice preserved, concise timed error and direct retry`);await context.close();
+ }
  }
  // Clipboard feedback follows the actual result and prevents duplicate pending writes.
  {

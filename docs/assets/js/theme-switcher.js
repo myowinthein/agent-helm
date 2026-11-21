@@ -5,8 +5,9 @@
   let stylesheet = document.getElementById('helm-theme-stylesheet') || document.querySelector('link[rel="stylesheet"]');
   let pendingStylesheet;
   let mode = 'system';
+  let committedMode = mode;
+  let savePendingChoice = false;
   let feedback = '';
-  let fallbackTheme = '';
   let pendingFeedbackTimer;
   let errorTimer;
 
@@ -20,25 +21,39 @@
     clearTimeout(errorTimer);
     showFeedback('');
   };
-  const showFallback = current => {
-    fallbackTheme = current;
-    const fallback = document.getElementById('theme-fallback');
-    if (fallback) {
-      fallback.hidden = !current;
-      fallback.textContent = current ? `Using ${current}` : '';
-    }
+  const finishChange = () => {
+    committedMode = mode;
     const selector = document.getElementById('theme-mode');
     if (selector) {
-      if (current) selector.title = `Theme unavailable. Using ${current}. Choose another theme to retry.`;
-      else selector.removeAttribute('title');
+      selector.value = committedMode;
+      selector.removeAttribute('aria-busy');
     }
+    if (savePendingChoice) {
+      try {
+        localStorage.setItem(storageKey, committedMode);
+      } catch {
+        // Keep the working choice in memory when storage is unavailable.
+      }
+    }
+    savePendingChoice = false;
+    clearFeedback();
   };
   const reportFailure = () => {
     clearFeedback();
-    const current = stylesheet.href.endsWith('just-the-docs-dark.css') ? 'Dark' : 'Light';
-    document.documentElement.style.colorScheme = current.toLowerCase();
-    showFallback(current);
-    showFeedback(`Theme unavailable. Using ${current}.`);
+    pendingStylesheet?.remove();
+    pendingStylesheet = null;
+    const current = stylesheet.href.endsWith('just-the-docs-dark.css') ? 'dark' : 'light';
+    const previousTheme = committedMode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : committedMode;
+    mode = previousTheme === current ? committedMode : current;
+    committedMode = mode;
+    savePendingChoice = false;
+    document.documentElement.style.colorScheme = current;
+    const selector = document.getElementById('theme-mode');
+    if (selector) {
+      selector.value = committedMode;
+      selector.removeAttribute('aria-busy');
+    }
+    showFeedback('Theme unavailable. Try again.');
     errorTimer = setTimeout(() => showFeedback(''), 4000);
   };
   stylesheet.addEventListener('error', () => {
@@ -51,11 +66,12 @@
   } catch {
     // Browser storage may be blocked by privacy settings.
   }
+  committedMode = mode;
 
-  const applyTheme = () => {
+  const applyTheme = (save = false) => {
     delete stylesheet.dataset.themeLoadFailed;
     clearFeedback();
-    showFallback('');
+    savePendingChoice = save;
     const theme = mode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : mode;
     const href = new URL(`just-the-docs-${theme}.css`, stylesheet.href).href;
     pendingStylesheet?.remove();
@@ -73,7 +89,7 @@
         stylesheet.id = 'helm-theme-stylesheet';
         pendingStylesheet = null;
         document.documentElement.style.colorScheme = theme;
-        clearFeedback();
+        finishChange();
       });
       next.addEventListener('error', () => {
         if (pendingStylesheet !== next) return;
@@ -88,15 +104,21 @@
       stylesheet.after(next);
     }
 
-    if (!pendingStylesheet) document.documentElement.style.colorScheme = theme;
+    if (!pendingStylesheet) {
+      document.documentElement.style.colorScheme = theme;
+      finishChange();
+    }
     const selector = document.getElementById('theme-mode');
-    if (selector) selector.value = mode;
+    if (selector) {
+      selector.value = committedMode;
+      if (pendingStylesheet) selector.setAttribute('aria-busy', 'true');
+    }
   };
 
   if (stylesheet.dataset.themeLoadFailed) reportFailure();
   else applyTheme();
   systemTheme.addEventListener('change', () => {
-    if (mode === 'system') applyTheme();
+    if (mode === 'system') applyTheme(savePendingChoice);
   });
 
   window.addEventListener('storage', event => {
@@ -108,18 +130,13 @@
   document.addEventListener('DOMContentLoaded', () => {
     const selector = document.getElementById('theme-mode');
     if (!selector) return;
-    selector.value = mode;
+    selector.value = committedMode;
     showFeedback(feedback);
-    showFallback(fallbackTheme);
+    if (pendingStylesheet) selector.setAttribute('aria-busy', 'true');
     selector.closest('.theme-switcher').hidden = false;
     selector.addEventListener('change', () => {
       mode = selector.value;
-      applyTheme();
-      try {
-        localStorage.setItem(storageKey, mode);
-      } catch {
-        // Switching still works when the preference cannot be saved.
-      }
+      applyTheme(true);
     });
   });
 })();

@@ -59,7 +59,7 @@ A reusable preference and a temporary selection have different lifetimes. Someon
 
 Save intentional changes rather than turning a calculated default into a saved choice on page load. Validate restored values and use the documented default for missing, cleared or invalid values without automatically rewriting storage. Keep the current choice usable in memory if reading or writing fails. Present restored choices consistently without misleading initial selections or broken server/client rendering.
 
-Saving a preference and applying it are separate outcomes. If a requested dark theme cannot load, for example, retain that choice while identifying the light theme still in use and how to retry. That distinction stays available after a temporary error message disappears, so the saved selection does not claim a change that never happened.
+Saving a preference and applying it are separate outcomes. If switching from Dark to Light fails, leave Dark applied and restore Dark in the control. Save the new choice only after it works. The brief error explains the failed attempt, while the control continues to show the working value and lets the person try again directly.
 
 Shared choices can update other open views without resetting unrelated inputs or writing the same value back repeatedly. For example, an ongoing download can retain the quality it started with while the new preference applies to the next download. A product with intentional live controls can define another behavior. Per-item or per-view choices remain separate.
 
