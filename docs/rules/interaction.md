@@ -30,7 +30,7 @@ flowchart TD
 
 Use established feedback across buttons, links and other controls so people can tell when work is pending, finished or unsuccessful. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends. Keep keyboard focus visible, using `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks.
 
-Copy confirmation appears after success, without needing hover, and defaults to two seconds. Copying something else successfully clears the earlier confirmation and icon; a pending or failed attempt leaves it alone. Errors remain available for recovery.
+Copy confirmation appears after success, without needing hover, and defaults to two seconds. Copying something else successfully clears the earlier confirmation and icon; a pending or failed attempt leaves it alone. A new copy attempt clears earlier copy errors. When manual copying remains available, a short, one-sentence error defaults to four seconds before disappearing.
 
 ### Preferences and persistence
 

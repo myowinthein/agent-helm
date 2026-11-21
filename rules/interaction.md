@@ -6,7 +6,7 @@ Writing owns prose and editorial references; Design owns visual composition, res
 
 ## Feedback and loading
 
-Reuse established feedback for comparable operations across buttons, links and other controls. Make pending work, relevant completion and failures clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery, keeping them available until retried, resolved or deliberately dismissed. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
+Reuse established feedback for comparable operations across buttons, links and other controls. Make pending work, relevant completion and failures clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery, keeping them available until retried, resolved or deliberately dismissed, with the recoverable-copy exception below. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
 
 Avoid flashing loading labels, spinners or busy cursors for near-instant actions. Any delay applies to pending visuals, not the operation, required accessibility state or duplicate-activation protection. Keep unrelated controls usable, communicate temporary unavailability, and clear stale loading feedback and restore appropriate controls when work ends. Choose visual timing for the task rather than imposing a universal delay.
 
@@ -15,6 +15,8 @@ Preserve visible keyboard focus for links, buttons and other controls independen
 ### Copy feedback
 
 Default to 2 seconds of success feedback from the confirmed clipboard write, preserving explicit project timing or accessibility requirements. Across copy controls in the same interface, keep only the latest successful confirmation: clear earlier success messages, icons and timers when the new write succeeds. Pending or failed writes must not clear another control's success feedback.
+
+Keep only the latest copy error, clearing earlier error messages and their timers when a new copy attempt starts. For recoverable failures where manual copying remains available, use one concise sentence explaining retry or manual copying and default to 4 seconds before dismissal. Preserve explicit project timing or accessibility requirements; errors requiring attention or otherwise unavailable recovery guidance remain accessible.
 
 ## Preferences and persistence
 

@@ -105,7 +105,7 @@ module HelmFrontend
 
   def self.clipboard_feedback(source)
     source = replace_once(source, '  codeBlocks.forEach(codeBlock => {',
-      "  let clearCopyConfirmation = null;\n  codeBlocks.forEach(codeBlock => {")
+      "  let clearCopyConfirmation = null;\n  let clearCopyFailure = null;\n  codeBlocks.forEach(codeBlock => {")
     source = replace_once(source, "    copyButton.addEventListener('click', function () {", <<~JS.chomp)
           const feedback = document.createElement('span');
           feedback.className = 'interaction-feedback copy-status';
@@ -118,11 +118,13 @@ module HelmFrontend
             copyButton.innerHTML = svgCopy;
             feedback.textContent = '';
             if (clearCopyConfirmation === resetConfirmation) clearCopyConfirmation = null;
+            if (clearCopyFailure === resetConfirmation) clearCopyFailure = null;
           };
           copyButton.addEventListener('click', async function () {
     JS
     source = replace_once(source, '      if(timeout === null) {', <<~JS.chomp)
             if (!copying) {
+              if (clearCopyFailure) clearCopyFailure();
               clearTimeout(timeout);
               if (clearCopyConfirmation === resetConfirmation) clearCopyConfirmation = null;
               copying = true;
@@ -138,6 +140,7 @@ module HelmFrontend
       '        await window.navigator.clipboard.writeText(code);')
     source = replace_once(source, '        copyButton.innerHTML = svgCopied;', <<~JS.chomp)
             if (clearCopyConfirmation) clearCopyConfirmation();
+            if (clearCopyFailure) clearCopyFailure();
             clearCopyConfirmation = resetConfirmation;
             copyButton.innerHTML = svgCopied;
             feedback.textContent = 'Copied';
@@ -146,8 +149,11 @@ module HelmFrontend
     replace_once(source, "        timeout = setTimeout(function () {\n          copyButton.innerHTML = svgCopy;\n          timeout = null;\n        }, timeoutSetting);", <<~JS.chomp)
               timeout = setTimeout(resetConfirmation, timeoutSetting);
               } catch {
+                if (clearCopyFailure) clearCopyFailure();
+                clearCopyFailure = resetConfirmation;
                 copyButton.innerHTML = svgCopy;
-                feedback.textContent = 'Could not copy. Try again or select the code to copy it manually.';
+                feedback.textContent = 'Copy failed; try again or copy the text manually.';
+                timeout = setTimeout(resetConfirmation, 4000);
               } finally {
                 clearTimeout(pendingFeedback);
                 copying = false;

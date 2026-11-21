@@ -217,7 +217,7 @@ try {
   await page.keyboard.press('Enter');
   assert.equal(await page.evaluate(()=>window.copyRequests),1);
   await page.evaluate(()=>window.failCopy());
-  await page.waitForFunction(()=>document.querySelector('.copy-status').textContent.includes('Could not copy'));
+  await page.waitForFunction(()=>document.querySelector('.copy-status').textContent.includes('Copy failed'));
   assert(await status.isVisible());
   assert.equal(await button.getAttribute('aria-busy'),null);
   assert.equal(await button.getAttribute('aria-disabled'),null);
@@ -240,7 +240,7 @@ try {
   assert(await nextButton.evaluate(el=>el===document.activeElement && !el.matches(':focus-visible') && getComputedStyle(el).outlineStyle==='none'));
   assert.equal(await status.textContent(),'Copied','Pending copy cleared the earlier success');
   await page.evaluate(()=>window.failCopy());
-  assert((await nextStatus.textContent()).includes('Could not copy'));
+  assert.equal(await nextStatus.textContent(),'Copy failed; try again or copy the text manually.');
   assert.equal(await status.textContent(),'Copied','Failed copy cleared the earlier success');
   await page.clock.runFor(1000);
   await nextButton.click();await page.evaluate(()=>window.finishCopy());
@@ -252,7 +252,21 @@ try {
   await page.clock.runFor(900);
   assert.equal(await nextStatus.textContent(),'');
   assert.equal(await nextButton.locator('use').getAttribute('xlink:href'),'#svg-copy');
-  console.log('PASS clipboard: confirmed results, retry, latest success only, two-second dismissal and keyboard focus');await context.close();
+  await button.click();await page.evaluate(()=>window.failCopy());
+  assert.equal(await status.textContent(),'Copy failed; try again or copy the text manually.');
+  await nextButton.click();
+  assert.equal(await status.textContent(),'','A new attempt left an earlier copy error visible');
+  await page.evaluate(()=>window.failCopy());
+  assert.equal(await nextStatus.textContent(),'Copy failed; try again or copy the text manually.');
+  await nextButton.click();
+  assert.equal(await nextStatus.textContent(),'','Retry did not clear its previous error');
+  await page.evaluate(()=>window.failCopy());
+  await page.clock.runFor(3000);
+  assert.equal(await nextStatus.textContent(),'Copy failed; try again or copy the text manually.');
+  await page.clock.runFor(1000);
+  assert.equal(await nextStatus.textContent(),'');
+  assert.equal(await nextButton.locator('use').getAttribute('xlink:href'),'#svg-copy');
+  console.log('PASS clipboard: confirmed results, latest success/error only, two/four-second dismissal, retry and keyboard focus');await context.close();
  }
  // A detailed guide keeps its overview entry active in the menu.
  {
