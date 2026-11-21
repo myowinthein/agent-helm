@@ -1,6 +1,6 @@
 ---
 title: Polish
-description: Understand how Polish uses selected project rules, presents meaningful findings and verifies the fixes you approve.
+description: Understand how Polish discovers project rules and custom standards, asks about optional groups and verifies the fixes you approve.
 parent: Commands
 nav_exclude: true
 has_toc: false
@@ -27,17 +27,30 @@ For feedback on pending work, explicitly request a read-only review. That route 
 
 ## Use the standards your project chose
 
-Writing, Design and Interaction are independently optional. Polish follows the versions actually selected by your project, including direct project-maintained rules and customizations. A rule merely existing in a plugin or a disconnected file does not make it a review standard.
+Polish starts with active project instructions and their real rule references, including applicable nested instructions. It also checks existing rule locations, such as `.claude/rules/` or a project-maintained `rules/` directory, and custom-standard locations identified by the project or your request. It reads enough guidance to judge relevance without treating every Markdown file as a rule or beginning the interface review before you choose.
 
-| Project selection | What happens |
-|---|---|
-| Writing only | Review relevant wording, structure and references. Skip unselected visual and interaction standards. |
-| Design and Interaction | Review the interface against those rules without requiring Writing. |
-| All three | Combine relevant findings rather than producing three overlapping reports. |
-| None | Stop before investigating the target and explain that a rule must be selected. |
-| A selected rule cannot be read | Stop and identify the broken reference; do not quietly use another copy. |
+The discovery table shows file paths, whether they are Helm rules or custom standards, suggested use and a short reason. Relevant required standards are already included. Optional files can be suggested even when not connected to regular coding sessions; finding them alone does not select them. Git, Safety and other operational guidance stay outside the audit subjects.
 
-For example, a valid Writing rule does not let the command ignore a broken selected Interaction reference. Conversely, intentionally leaving Design unselected is not an error. Polish neither installs missing rules nor changes how regular coding sessions load them. Git and Safety continue to govern the work without becoming audit subjects.
+For example, a documentation review may use the project's Writing rule and a custom documentation standard. A mechanical-helper audit standard would usually be unrelated. A document does not need interface-only checks merely because an Interaction rule is available. Online research is reserved for a meaningful uncertainty, rather than used to assemble more standards on every run.
+
+Polish uses the actual consumer copies, including authorized customizations and directly maintained rules. Installed plugin copies do not fill missing consumer standards automatically. An unreadable optional candidate is identified as unavailable; a broken required or explicitly selected reference stops the run instead of silently falling back to another copy.
+
+## Choose optional standards
+
+After showing the candidates, Polish asks about up to two optional groups:
+
+| Question | Yes | No |
+|---|---|---|
+| Use the suggested Helm rules for this review? | Include all named optional Writing, Design and Interaction files. | Leave that optional group out. |
+| Also use the suggested custom standards? | Include all named optional custom standards. | Leave that optional group out. |
+
+These are two Yes/No decisions, not a checkbox picker or a question for every file. They can appear together when the client supports it. Empty groups and choices you have already supplied are skipped, and the agent waits for your answers before reviewing the target.
+
+The questions also explain that you can type file names, numbers, exclusions or another rule path. For example, “use Writing and the documentation standard, skip Design” selects that precise scope without installing anything. Additional paths are checked for relevance and readability; an unclear answer needs clarification rather than an assumed Yes.
+
+Required project instructions stay binding regardless of either answer. Declining an optional group does not switch those instructions off. At least one valid, applicable Writing, Design or Interaction rule must remain included, whether required or selected for this invocation. Custom standards supplement that foundation; if none remains, Polish explains the limit and stops before target investigation.
+
+Polish summarizes the resulting standards and reviews the requested scope without saving the selection. It neither installs files nor changes how regular coding sessions load rules. Selecting standards also does not approve the later fixes.
 
 ## Understand the findings
 

@@ -1,6 +1,6 @@
 ---
 name: polish
-description: Review requested user-facing content and interfaces against the project's selected Writing, Design and Interaction rules, then apply approved fixes
+description: Review requested user-facing content and interfaces against selected Writing, Design and Interaction rules and relevant custom standards, then apply approved fixes
 ---
 
 Read [the shared runtime](../../prompts/shared/runtime.md) and [the polish workflow](../../guides/polish.md) together in one batch when possible. Apply the runtime first, then follow only this workflow.

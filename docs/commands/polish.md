@@ -1,6 +1,6 @@
 ---
 title: Polish
-description: Review user-facing wording, design and interactions against your selected project rules, then choose worthwhile fixes.
+description: Discover relevant project rules and custom standards, choose optional groups, then review user-facing content and approve worthwhile fixes.
 parent: Commands
 detailed: /docs/commands/polish/detailed.html
 nav_order: 6
@@ -10,14 +10,16 @@ nav_order: 6
 
 {% include guide-depth.html %}
 
-Use polish when a page, component or document needs a focused review of its wording, appearance or behavior. It uses your project's selected Writing, Design and Interaction rules, then proposes fixes that preserve its style.
+Use polish when a page, component or document needs a focused review of its wording, appearance or behavior. It finds relevant project rules and custom standards, lets you choose optional ones, then proposes fixes that preserve the project's style.
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Ready{"Eligible route and selected rules?"} -->|No| Stop["Explain the blocker and stop"]
-  Ready -->|Yes| Review["Review the requested scope"]
+  Ready{"Eligible route?"} -->|No| Stop["Explain the blocker and stop"]
+  Ready -->|Yes| Discover["Find relevant rules and custom standards"]
+  Discover --> Select["Choose optional groups"]
+  Select --> Review["Review the requested scope"]
   Review --> Findings["Explain issues and concrete fixes"]
   Findings --> Choice{"Apply selected fixes?"}
   Choice -->|Yes| Apply["Apply and verify locally"]
@@ -36,9 +38,11 @@ Normal polish starts on a clean, eligible main/master, established feature or ma
 
 ## Which rules apply
 
-At least one of [Writing]({{ '/docs/rules/writing.html' | relative_url }}), [Design]({{ '/docs/rules/design.html' | relative_url }}) or [Interaction]({{ '/docs/rules/interaction.html' | relative_url }}) must be selected by your project. Polish uses that subset and skips unselected rules. A broken selected reference stops the review, even if another rule is available.
+Polish follows project instruction references and checks existing rule locations for [Writing]({{ '/docs/rules/writing.html' | relative_url }}), [Design]({{ '/docs/rules/design.html' | relative_url }}) and [Interaction]({{ '/docs/rules/interaction.html' | relative_url }}). It also identifies relevant custom standards, such as a documentation or README guide, and shows a compact table of paths, suggested use and reasons. Git, Safety and other operational rules are excluded from the review.
 
-It does not install rules or replace your selected versions with bundled copies. Git and Safety still govern operations. Only relevant provisions apply: a prose document does not need interface checks.
+For optional candidates, it asks **Use the suggested Helm rules?** and **Also use the suggested custom standards?**, each with **Yes / No**. Yes includes the whole named group; No declines that optional group. You can type file names, numbers, exclusions or another rule path instead. Empty or already-decided groups need no question, and required project standards remain binding.
+
+At least one valid, applicable Writing, Design or Interaction rule must remain included; custom standards supplement it. A required or selected broken reference stops the run. These choices select review standards without installing files or changing rule loading. Git and Safety still govern operations.
 
 ## Review the fixes
 
