@@ -185,7 +185,7 @@ Dir.mktmpdir("helm-package-") do |temp|
     HelmValidation.check(failure == message, "Validator did not reject #{label} with its own message: #{failure.inspect}")
   end
   {
-    "extra skill" => ["skills/extra/SKILL.md", "Expected the same ten skills and workflows"],
+    "extra skill" => ["skills/extra/SKILL.md", "Expected matching skill and workflow inventories"],
     "extra archive step" => ["prompts/archive/step6-extra.md", "Archive steps must stay separate from discoverable entry points"]
   }.each do |label, (relative, message)|
     extra = installation.join(relative)

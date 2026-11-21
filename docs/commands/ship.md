@@ -3,7 +3,7 @@ title: Ship
 description: Publish reviewed changes, select independent branch updates and approve releases through separate checks and concrete publication decisions.
 parent: Commands
 detailed: /docs/commands/ship/detailed.html
-nav_order: 9
+nav_order: 10
 ---
 
 # Ship

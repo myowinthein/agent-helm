@@ -5,7 +5,7 @@ require_relative "guide_pairs"
 root = Pathname(__dir__).parent.parent.realpath
 config = YAML.safe_load_file(root.join("docs/_config.yml"))
 repository = config.fetch("baseurl").delete_prefix("/")
-expected_count = { "agent-helm" => 20, "agent-compass" => 18 }.fetch(repository)
+expected_count = { "agent-helm" => 21, "agent-compass" => 18 }.fetch(repository)
 source_url = "https://github.com/myowinthein/#{repository}/blob/main/"
 
 def document(path)

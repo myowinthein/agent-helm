@@ -3,7 +3,7 @@ title: Archive
 description: Restore an agreed project scope and prepare source, setup, data and recovery instructions locally for a separately approved private backup.
 parent: Commands
 detailed: /docs/commands/archive/detailed.html
-nav_order: 10
+nav_order: 11
 has_children: true
 has_toc: false
 ---

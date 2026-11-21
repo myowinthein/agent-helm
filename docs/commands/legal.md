@@ -3,7 +3,7 @@ title: Legal
 description: Prepare source-based legal document proposals. Review exact changes before approving their write and commit.
 parent: Commands
 detailed: /docs/commands/legal/detailed.html
-nav_order: 7
+nav_order: 8
 ---
 
 # Legal

@@ -122,7 +122,7 @@ module HelmAcceptanceCases
   end
 
   def entry_blocked_cases(shared)
-    %w[log adopt manifest env test refactor legal normalize ship archive].to_h do |command|
+    %w[log adopt manifest env test refactor polish legal normalize ship archive].to_h do |command|
       canary = "SYNTHETIC_BLOCKED_#{SecureRandom.hex(20)}"
       files = shared.merge("consumer-surface.py" => "# #{canary}\n")
       if command == "ship"

@@ -1,6 +1,6 @@
 ---
 title: Commands
-description: Choose among ten Agent Helm commands for project context, rules, configuration, tests, refactoring, documentation, Git history, releases and archiving.
+description: Choose among eleven Agent Helm commands for project context, rules, configuration, tests, refactoring, user-facing quality, documentation, Git history, releases and archiving.
 nav_order: 3
 has_children: true
 has_toc: false
@@ -18,6 +18,7 @@ Guides to using Agent Helm at different points during project development. Each 
 | Check environment configuration and Git protection | [env]({{ '/docs/commands/env.html' | relative_url }}) |
 | Find gaps in automated test protection | [test]({{ '/docs/commands/test.html' | relative_url }}) |
 | Improve code structure while preserving behavior | [refactor]({{ '/docs/commands/refactor.html' | relative_url }}) |
+| Review wording, design and interaction quality | [polish]({{ '/docs/commands/polish.html' | relative_url }}) |
 | Create or refresh a README | [manifest]({{ '/docs/commands/manifest.html' | relative_url }}) |
 | Draft or review public legal documents | [legal]({{ '/docs/commands/legal.html' | relative_url }}) |
 | Review and standardize commit messages | [normalize]({{ '/docs/commands/normalize.html' | relative_url }}) |

@@ -4,7 +4,7 @@ require "rexml/document"
 require "yaml"
 
 module HelmValidation
-  NAMES = %w[adopt archive env legal log manifest normalize refactor ship test].freeze
+  NAMES = %w[adopt archive env legal log manifest normalize polish refactor ship test].freeze
   COMPONENTS = %w[.claude-plugin assets skills guides prompts rules helpers README.md LICENSE].freeze
   module_function
 
@@ -87,7 +87,7 @@ module HelmValidation
 
     groups = [root.glob("guides/*.md").map { |path| path.basename(".md").to_s },
               root.glob("skills/*/SKILL.md").map { |path| path.parent.basename.to_s }]
-    check(groups.all? { |names| names.sort == NAMES }, "Expected the same ten skills and workflows")
+    check(groups.all? { |names| names.sort == NAMES }, "Expected matching skill and workflow inventories")
 
     NAMES.each do |name|
       workflow_file = workflow_path(name)
@@ -140,5 +140,5 @@ end
 
 if $PROGRAM_NAME == __FILE__
   HelmValidation.validate(ARGV.fetch(0, Pathname(__dir__).parent))
-  puts "Validated ten shared Helm workflows, entry points, metadata, and resource links."
+  puts "Validated #{HelmValidation::NAMES.length} shared Helm workflows, entry points, metadata, and resource links."
 end

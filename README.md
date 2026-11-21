@@ -30,7 +30,7 @@ You can install Agent Helm in Claude or Codex by following the [setup guide](htt
 
 ## When I use it
 
-Agent Helm has ten commands that I use at different points during project development.
+Agent Helm has eleven commands that I use at different points during project development.
 
 ### Log
 
@@ -81,6 +81,16 @@ Codex → $refactor    Claude → /refactor
 ```
 
 It reviews code changes, the whole project or saved findings, then explains each improvement’s priority and risk. I choose the work and approve a plan before edits. It makes and checks the changes while preserving behaviour and existing test protection. Failed or postponed required checks keep the work pending.
+
+### Polish
+
+When a page, component or document feels inconsistent, I use polish to [review its wording, appearance and behavior](https://myowinthein.github.io/agent-helm/docs/commands/polish.html), so I can improve the experience while keeping the project's style.
+
+```text
+Codex → $polish    Claude → /polish
+```
+
+It reviews the scope I choose against the project's selected Writing, Design and Interaction rules. I see meaningful findings and concrete proposed changes before approving fixes. It applies and verifies the selected work without keeping a ledger. At least one rule must be selected, and a broken selected reference stops the review.
 
 ### Manifest
 

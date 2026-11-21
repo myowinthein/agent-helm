@@ -2,7 +2,7 @@
 
 ## Project Identity
 
-Agent Helm is a workflow plugin for Claude and Codex. Its ten portable skills load Markdown workflows; Python provides read-only ledger/normalize checks and private recovery-locator I/O, Ruby scripts check packaging, client discovery and offline acceptance oracles, and Jekyll publishes the documentation site.
+Agent Helm is a workflow plugin for Claude and Codex. Its eleven portable skills load Markdown workflows; Python provides read-only ledger/normalize checks and private recovery-locator I/O, Ruby scripts check packaging, client discovery and offline acceptance oracles, and Jekyll publishes the documentation site.
 
 Plugin name: `agent-helm`. Marketplace: `agent-helm-marketplace`. Workflow changes affect installed consumers; changes to copied rules also affect projects that adopt those updates.
 
@@ -30,10 +30,11 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 
 ## Architecture Pointers
 
-- `skills/*/SKILL.md` are the only ten discoverable entry points. They resolve the loaded package's `prompts/shared/runtime.md` and canonical `guides/*.md`; each `agents/openai.yaml` disables implicit invocation. Never keep competing instruction copies in `workflows/`.
+- `skills/*/SKILL.md` are the only eleven discoverable entry points. They resolve the loaded package's `prompts/shared/runtime.md` and canonical `guides/*.md`; each `agents/openai.yaml` disables implicit invocation. Never keep competing instruction copies in `workflows/`.
 - `prompts/shared/runtime.md` owns package/workspace resolution and host boundaries. `content-sync.md` owns shared local-edit Git steps; `project-layout.md` owns log's shared instruction setup.
-- `prompts/shared/question-mechanism.md` owns native question routing and one common fallback. All ten workflows map their question points to Single, Multi, Input or Review; keep client-specific fields out of workflow bodies.
-- `rules/safety.md` owns output maintenance for all ten workflows: targeted development edits, stronger commitment/protection review, actual generator ownership and protected assessment/recovery evidence. The runtime applies its output map without widening a selected command's write scope.
+- `prompts/shared/question-mechanism.md` owns native question routing and one common fallback. All eleven workflows map their question points to Single, Multi, Input or Review; keep client-specific fields out of workflow bodies.
+- `rules/safety.md` owns output maintenance for all eleven workflows: targeted development edits, stronger commitment/protection review, actual generator ownership and protected assessment/recovery evidence. The runtime applies its output map without widening a selected command's write scope.
+- `guides/polish.md` reviews scoped user-facing content/interfaces against consumer-selected Writing, Design and Interaction rules. Runtime-loaded bundled Writing does not establish that selection. At least one selected rule is required; broken selected references stop the run. Polish keeps no ledger and changes no rule loading.
 - `prompts/shared/scan-scope.md` recommends Full scan / Gap scan only at an existing choice. `investigation-evidence.md` defines transient source/commit inventories and coverage; neither is runtime-autoloaded or grants state access.
 - `helpers/helm.py`, `helpers/helm_lib/` and `helpers/ledger-contract.json` implement read-only validation and digest-bound retrieval. Python 3.11+ and standard library only; no writer, project-code execution or network. `prompts/shared/ledger-helper.md` owns invocation and the checked fallback when Python is unavailable.
 - `prompts/refactor-ledger.md` defines refactor's native provenance and checkpoint semantics. `prompts/shared/project-state.md` defines owning-workflow access and preservation.
@@ -100,7 +101,7 @@ This covers Helm's agent-facing instructions. Generic prose stays in `rules/writ
 - Normalize uses explicit `git filter-repo --refs` partial mode to preserve remotes and excluded refs. Default full-rewrite mode removes `origin` and affects more refs; never substitute it or reconstruct a remote from its URL alone.
 - Headless `claude -p` has no native question tool, so workflows ask in chat and end the run; profiling needs `--resume <session_id>` per answer. Runs that return $0 or a 429 hit the usage limit; discard them.
 - `docs/_plugins/frontend.rb` and `docs/_plugins/repository_content.rb` patch Just the Docs output with exact-string replacements and raise `Just the Docs theme changed`. CI resolves the latest stable theme, so a theme release can fail the Pages build until those patterns and `docs/tests/test_frontend.rb` or `test_repository_content.rb` are updated.
-- `docs/tests/test_human_guides.rb` hard-codes the expected Overview and Details pair count per site (20 here). Adding or removing a pair fails it until the count changes.
+- `docs/tests/test_human_guides.rb` hard-codes the expected Overview and Details pair count per site (21 here). Adding or removing a pair fails it until the count changes.
 - `docs/_plugins/repository_content.rb` links the sidebar version to the `myowinthein/agent-helm` GitHub release `v<version>` from `plugin.json`. Browser tests stub that URL and HTMLProofer skips external links, so keep ship's `v`-prefixed tag and hosted release in step with the version; a mismatch leaves a dead link that no check reports.
 - `docs/legal/privacy.md` states that the site serves its pages, diagrams and favicon from GitHub Pages and stores only the `agent-helm-theme` preference. Adding a CDN, external font or asset, analytics or another stored value makes the notice inaccurate until it is updated.
 

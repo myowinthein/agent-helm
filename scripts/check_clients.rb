@@ -13,8 +13,8 @@ output, status = Open3.capture2e("claude", "--setting-sources", "", "--plugin-di
 HelmValidation.check(status.success?, "Claude inventory failed: #{output}")
 inventories = output.scan(/^\s+(Skills|Commands) \((\d+)\)\s*([^\n]*)/)
 names = inventories.flat_map { |_, count, entries| count.to_i.zero? ? [] : entries.split(", ") }
-HelmValidation.check(!inventories.empty? && inventories.sum { |_, count, _| count.to_i } == 10 && names.sort == HelmValidation::NAMES, "Claude exposes missing or duplicate workflows: #{output}")
-puts "Claude: exactly ten Helm entries through native plugin discovery."
+HelmValidation.check(!inventories.empty? && inventories.sum { |_, count, _| count.to_i } == HelmValidation::NAMES.length && names.sort == HelmValidation::NAMES, "Claude exposes missing or duplicate workflows: #{output}")
+puts "Claude: exactly #{HelmValidation::NAMES.length} Helm entries through native plugin discovery."
 
 Dir.mktmpdir("helm-client-check-") do |temp|
   env = { "CODEX_HOME" => File.join(temp, "codex") }
@@ -71,7 +71,7 @@ Dir.mktmpdir("helm-client-check-") do |temp|
                              entry.binread == root.join("skills", entry.parent.basename, "SKILL.md").binread,
                              "Codex must load an enabled shared skill from this package: #{entry}")
       end
-      puts "Codex: shared SVG icon and exactly ten enabled commands in the native session catalog."
+      puts "Codex: shared SVG icon and exactly #{HelmValidation::NAMES.length} enabled commands in the native session catalog."
     ensure
       input.close
       Process.kill("TERM", waiter.pid) if waiter.alive?
