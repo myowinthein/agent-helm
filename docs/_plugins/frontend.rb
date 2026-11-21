@@ -54,18 +54,42 @@ module HelmFrontend
   def self.lazy_search(source)
     source = replace_once(source, 'function initSearch() {', <<~JS.chomp)
       let helmSearchStarted = false;
+      let helmSearchFailedState = false;
+      let helmSearchPendingTimer;
+      let helmSearchErrorTimer;
+      let helmSearchInput;
+      let helmSearchStatus;
+      let helmSearchRetry;
+      function clearHelmSearchFeedback() {
+        clearTimeout(helmSearchPendingTimer);
+        clearTimeout(helmSearchErrorTimer);
+        helmSearchStatus.textContent = '';
+      }
+      function helmSearchFailed() {
+        clearHelmSearchFeedback();
+        helmSearchFailedState = true;
+        helmSearchInput.removeAttribute('aria-busy');
+        helmSearchRetry.hidden = false;
+        helmSearchRetry.disabled = false;
+        helmSearchStatus.textContent = 'Could not load search. Use Retry search to try again.';
+        helmSearchErrorTimer = setTimeout(() => { helmSearchStatus.textContent = ''; }, 4000);
+      }
       function initSearch() {
         if (helmSearchStarted) return;
         helmSearchStarted = true;
-        document.getElementById('search-status').textContent = 'Loading search…';
-        document.getElementById('search-input').setAttribute('aria-busy', 'true');
+        helmSearchFailedState = false;
+        clearHelmSearchFeedback();
+        helmSearchRetry.disabled = true;
+        helmSearchInput.setAttribute('aria-busy', 'true');
+        helmSearchPendingTimer = setTimeout(() => { helmSearchStatus.textContent = 'Loading search…'; }, 200);
     JS
     source = replace_once(source, '      var docs = JSON.parse(request.responseText);',
       "      try {\n      var docs = JSON.parse(request.responseText);")
     source = replace_once(source, '      searchLoaded(index, docs);', <<~JS.chomp)
             searchLoaded(index, docs);
-            document.getElementById('search-status').textContent = '';
-            document.getElementById('search-input').removeAttribute('aria-busy');
+            clearHelmSearchFeedback();
+            helmSearchRetry.hidden = true;
+            helmSearchInput.removeAttribute('aria-busy');
             const input = document.getElementById('search-input');
             if (document.activeElement === input) input.dispatchEvent(new Event("focus"));
             } catch {
@@ -88,19 +112,21 @@ module HelmFrontend
     source = replace_once(source, '  initSearch();', <<~JS.chomp)
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
+          helmSearchInput = searchInput;
+          helmSearchStatus = document.getElementById('search-status');
+          helmSearchRetry = document.getElementById('search-retry');
           searchInput.addEventListener("focus", initSearch);
-          searchInput.addEventListener("input", initSearch);
+          searchInput.addEventListener("input", () => { if (!helmSearchFailedState) initSearch(); });
+          helmSearchRetry.addEventListener("click", () => {
+            initSearch();
+            searchInput.focus();
+          });
           const mainHeader = document.getElementById('main-header');
           #{shortcut && shortcut[0]}
           if (document.activeElement === searchInput || searchInput.value) initSearch();
         }
     JS
-    <<~JS + source
-      function helmSearchFailed() {
-        document.getElementById('search-input').removeAttribute('aria-busy');
-        document.getElementById('search-status').textContent = 'Could not load search. Type again or refocus the search box to retry.';
-      }
-    JS
+    source
   end
 
   def self.clipboard_feedback(source)
@@ -205,6 +231,10 @@ module HelmFrontend
         html = replace_once(html, '<div id="search-results" class="search-results"></div>',
           '<p id="search-status" class="interaction-feedback search-status" role="status"></p><div id="search-results" class="search-results"></div>')
         html = replace_once(html, 'id="search-input"', 'id="search-input" aria-describedby="search-status"')
+        label = html.match(%r{<label for="search-input" class="search-label">.*?</label>}m)&.to_s
+        raise ArgumentError, 'Just the Docs theme changed: missing search label' unless label
+        html = replace_once(html, label,
+          label + '<button id="search-retry" class="search-retry" type="button" aria-label="Search unavailable. Retry search." title="Search unavailable" hidden>Retry search</button>')
       end
       page.output = html.gsub(DIAGRAM) do
         source = CGI.unescapeHTML(Regexp.last_match(1))

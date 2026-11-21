@@ -84,6 +84,8 @@ try {
   await page.route('**/search-data.json',async route=>{count++;await new Promise(resolve=>setTimeout(resolve,500));await route.continue();});
   await page.goto(pageUrl('docs/commands/log.html'));
   await page.locator('#search-input').fill('archive');
+  assert.equal(await page.locator('#search-status').textContent(),'','Quick search initialization should not flash loading text');
+  await page.waitForFunction(()=>document.getElementById('search-status').textContent==='Loading search…');
   assert.equal(await page.locator('#search-status').textContent(),'Loading search…');
   assert(await page.locator('#search-status').isVisible());
   assert.equal(await page.locator('#search-input').getAttribute('aria-busy'),'true');
@@ -93,9 +95,11 @@ try {
   assert.equal(await page.locator('#search-input').getAttribute('aria-busy'),null);
   console.log('PASS slow search: first query preserved, one request');await context.close();
  }
- // Failed requests may be retried on the next search interaction.
+ // Typing after a failure preserves the query without repeatedly downloading the index.
  for (const failure of ['http', 'network', 'invalid-json']) {
-  const context=await createContext();const page=await context.newPage();let count=0;
+  const context=await createContext(failure==='network'?{viewport:{width:390,height:900},colorScheme:'dark'}:{});
+  const page=await context.newPage();let count=0;
+  await page.clock.install();
   await page.route('**/search-data.json',async route=>{
    count++;
    if(count!==1)return route.continue();
@@ -103,15 +107,33 @@ try {
    await route.fulfill({status:failure==='http'?503:200,body:failure==='http'?'Unavailable':'{invalid'});
   });
   await page.goto(pageUrl('docs/commands/log.html'));
+  if(failure==='network')await page.locator('#menu-button').click();
   await page.locator('#search-input').focus();
   await page.waitForFunction(()=>document.getElementById('search-status').textContent.includes('Could not load search'));
   assert.equal(await page.locator('#search-status').getAttribute('role'),'status');
   assert(await page.locator('#search-status').isVisible());
   assert.equal(await page.locator('#search-input').getAttribute('aria-busy'),null);
   await page.locator('#search-input').fill('archive');
+  assert.equal(count,1,'Typing retried a failed index request');
+  assert.equal(await page.locator('#search-status').textContent(),'Could not load search. Use Retry search to try again.');
+  await page.clock.runFor(4000);
+  assert.equal(await page.locator('#search-status').textContent(),'');
+  assert(await page.locator('#search-retry').isVisible(),'Timed popup removed the recovery action');
+  assert(await page.locator('#search-retry').evaluate(button=>{
+   const input=document.getElementById('search-input');const bounds=input.getBoundingClientRect();
+   const retry=button.getBoundingClientRect();
+   return retry.left>bounds.left+parseFloat(getComputedStyle(input).paddingLeft) && retry.right<=bounds.right;
+  }),'Retry control overlaps the search text or escapes the field');
+  assert.equal(await page.locator('#search-input').inputValue(),'archive');
+  await page.locator('#search-retry').focus();await page.keyboard.press('Enter');
   await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
   assert.equal(await page.locator('#search-status').textContent(),'');
-  assert.equal(count,2);console.log(`PASS failed search (${failure}): visible feedback and retry`);await context.close();
+  assert.equal(await page.locator('#search-retry').isVisible(),false);
+  assert.equal(await page.locator('#search-input').inputValue(),'archive');
+  assert.equal(await page.locator('#search-input').evaluate(el=>el===document.activeElement),true);
+  await page.clock.runFor(250);
+  assert.equal(await page.locator('#search-status').textContent(),'','Stale loading timer appeared after recovery');
+  assert.equal(count,2);console.log(`PASS failed search (${failure}): stable typing, timed popup and persistent keyboard retry`);await context.close();
  }
  for(const fault of ['no-js','storage-blocked','saved-light','saved-dark','dark-css-failed']) {
   const context=await createContext({javaScriptEnabled:fault!=='no-js',colorScheme:'dark'});const page=await context.newPage();

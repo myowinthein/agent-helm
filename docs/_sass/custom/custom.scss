@@ -61,6 +61,23 @@ a:not([class]) {
   right: 0;
 }
 
+.search-retry {
+  position: absolute;
+  top: 50%;
+  right: $sp-3;
+  transform: translateY(-50%);
+  padding: $sp-1 $sp-2;
+  font: inherit;
+  color: $link-color;
+  background: $body-background-color;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+}
+
+.search-input-wrap:has(.search-retry:not([hidden])) .search-input {
+  padding-right: 7rem;
+}
+
 .theme-switcher {
   position: relative;
 }
