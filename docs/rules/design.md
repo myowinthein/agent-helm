@@ -20,7 +20,7 @@ Choose structure, typography and interaction for the actual content and user tas
 
 Use hierarchy, alignment, spacing and typography to make importance and relationships clear. Let the content and primary task determine the composition, with decoration supporting them.
 
-Reuse established styling for comparable messages, loading states, separators and spacing. Meaning and hierarchy can justify different treatments; exact colors, icons and measurements remain project choices.
+Reuse established visual treatments for comparable messages, loading indicators and separators, with consistent placement and spacing. Meaning and hierarchy can justify different treatments; exact colors, icons and measurements remain project choices.
 
 ## Responsive interfaces and links
 

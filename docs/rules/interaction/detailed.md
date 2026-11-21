@@ -32,11 +32,13 @@ flowchart TD
 
 ### Feedback and loading
 
-People should be able to tell whether work is pending and understand its relevant outcome. Errors need a clear connection to the affected task and a useful way forward. Similar operations reuse established feedback, while a page load and a button action can communicate progress differently.
+People should be able to tell whether work is pending and understand its relevant outcome. Errors need a clear connection to the affected task and a useful way forward. Comparable operations should be consistent about when feedback appears, changes and clears, while a page load and a button action can communicate progress differently. Visual treatments follow the project's components and design guidance.
 
 Across buttons, links and other controls, a near-instant action should not briefly flash a loading label, spinner or busy cursor. Slower work still needs clear pending feedback. Delaying that visual must not delay the operation, its accessibility state or protection against duplicate activation. The timing suits the task rather than one universal delay. Keep unrelated controls usable and clear stale loading feedback when work ends; labels, icons and placement follow the project.
 
 Keyboard users need to see which control has focus. Using `:focus-visible` lets that indicator remain available without forcing the same outline after ordinary mouse clicks. Preserve native focus behavior, especially while editing text, and keep focus on the control rather than removing it just to hide an outline.
+
+Respect reduced-motion preferences across affected controls, feedback and transitions. Purposeful animation can remain where compatible; the same safeguard applies to pointer effects and link transitions.
 
 A timed error needs a lasting way to understand and recover from the failure. For example, search can show a short explanation while a labeled retry control remains available. Four seconds is the default for this recoverable feedback, subject to project and accessibility requirements. Essential errors without another way to understand and recover remain available. Keep the query intact and retry failed setup deliberately, rather than downloading the same unavailable search data on every keystroke. A new query can still start a new search; feedback from an earlier attempt must not replace its result.
 
@@ -164,7 +166,7 @@ For example, a sentence linking to a Git procedure should not require hover to r
 
 Distinguishing a link from nearby prose is a separate question. Helm defaults to underlines, but WCAG does not require them everywhere. Where an explicit project convention omits them, another persistent distinction is needed. W3C's [G183 technique](https://www.w3.org/WAI/WCAG22/Techniques/general/G183) uses at least 3:1 contrast against surrounding text. That comparison does not replace the text-to-background check. Reserve ordinary underlines for links so readers do not mistake non-link emphasis for navigation.
 
-**Keyboard and touch users need the same clarity.** Keep a visible keyboard focus indicator, using the project's existing treatment and meaningful hover emphasis where appropriate. Essential labels and external indicators remain available without hover. Avoid font-size or font-weight changes that move neighboring content. Preserve purposeful animation while respecting reduced-motion preferences.
+**Keyboard and touch users need the same clarity.** Keep a visible keyboard focus indicator, using the project's existing treatment and meaningful hover emphasis where appropriate. Essential labels and external indicators remain available without hover. Avoid font-size or font-weight changes that move neighboring content.
 
 Visited styling is useful when people need to know which references they have read. It is optional when history adds little, such as a primary menu or button link. A current-page marker answers “where am I?” rather than “have I visited this?”; keep those meanings distinct.
 

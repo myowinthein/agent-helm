@@ -37,7 +37,7 @@ For example, a short reference page may need a clear reading column and section 
 
 Positive structure matters too. Use alignment and spacing to show which information belongs together, and use typography and hierarchy to communicate importance. The primary task and real content determine the composition. A repeated card or accent treatment only helps when it expresses a useful relationship; changing its color or border shape cannot give unrelated filler a purpose.
 
-Comparable elements should reuse established patterns. Similar dialog errors can share placement and styling, while separators at the same level can use consistent spacing. A field error and a dialog-wide failure may need different treatment, just as a major section break may need more space than an internal divider. Preserve those intentional differences. Where no pattern exists, choose a coherent treatment for the requested surface; exact colors, icons and measurements belong to the project's components and design guidance.
+Comparable elements should reuse established visual treatments. Similar dialog errors can share placement and styling, while separators at the same level can use consistent spacing. A field error and a dialog-wide failure may need different treatment, just as a major section break may need more space than an internal divider. Preserve those intentional differences. Where no pattern exists, choose a coherent treatment for the requested surface; exact colors, icons and measurements belong to the project's components and design guidance. Interaction governs when feedback appears, changes and clears.
 
 ## Responsive interfaces and links
 

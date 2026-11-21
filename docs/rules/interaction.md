@@ -28,7 +28,7 @@ flowchart TD
 
 ### Feedback and loading
 
-Use established feedback across buttons, links and other controls so people can tell when work is pending, finished or unsuccessful. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends. Keep keyboard focus visible, using `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks.
+Keep feedback behavior consistent across comparable operations: when pending, completion and failure states appear, change and clear. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends. Keep keyboard focus visible, using `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks. Respect reduced-motion preferences throughout affected controls and feedback, preserving purposeful motion where compatible.
 
 Recoverable error popups can default to four seconds when the failure and recovery remain discoverable afterward. A retry control can remain available, or visible text can still be copied manually. Preserve entered text and avoid retrying an unchanged failed setup on every keystroke. Essential errors without another recovery route remain available.
 

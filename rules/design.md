@@ -12,7 +12,7 @@ Build responsive, accessible interfaces around the project's real content and us
 
 Use hierarchy, alignment, spacing and typography to make importance and relationships clear. Let the real content and primary task determine the composition; decoration should support them. An irrelevant template section stays irrelevant after recoloring, changing fonts or replacing rounded cards with sharp boxes.
 
-Reuse established patterns for comparable messages, loading states, separators and spacing. When no pattern exists, choose a coherent treatment within the requested surface. Vary presentation when meaning or hierarchy differs, and preserve intentional project choices. Exact placement, colors, icons and spacing belong to the project's components and design guidance.
+Reuse established visual treatments for comparable messages, loading indicators and separators, with consistent placement and spacing. When no pattern exists, choose a coherent treatment within the requested surface. Vary presentation when meaning or hierarchy differs, and preserve intentional project choices. Exact placement, colors, icons and spacing belong to the project's components and design guidance.
 
 ## Prevent generic AI design patterns
 

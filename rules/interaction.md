@@ -6,11 +6,13 @@ Writing owns prose and editorial references; Design owns visual composition, res
 
 ## Feedback and loading
 
-Reuse established feedback for comparable operations across buttons, links and other controls. Make pending work, relevant completion and failures clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
+Keep feedback behavior consistent for comparable operations across buttons, links and other controls: when pending, completion and failure states appear, change and clear. Make these states clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery. Follow project presentation conventions, allowing different treatments where the context warrants them.
 
 Avoid flashing loading labels, spinners or busy cursors for near-instant actions. Any delay applies to pending visuals, not the operation, required accessibility state or duplicate-activation protection. Keep unrelated controls usable, communicate temporary unavailability, and clear stale loading feedback and restore appropriate controls when work ends. Choose visual timing for the task rather than imposing a universal delay.
 
 Preserve visible keyboard focus for links, buttons and other controls independently of hover. Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator.
+
+Respect reduced-motion preferences across affected controls, feedback and transitions, preserving purposeful motion where compatible.
 
 ### Errors and retries
 
@@ -76,7 +78,7 @@ Ordinary hover and press keep the operation's cursor; pressing needs visible fee
 
 Scope styling to the actual control or handle, not an unrelated card, row or label. Avoid wildcard overrides hiding text selection, native controls or specialized cues; validation errors do not disable editable fields. Cursor styling, `aria-disabled` or `pointer-events: none` alone cannot prevent every activation path: implement correct native semantics and handlers and preserve selectable read-only content.
 
-Keep recognizable controls, keyboard and touch use independently of cursors. Prefer native click activation so users can cancel before release. Dragging needs keyboard access and a non-drag single-pointer alternative unless an applicable exception applies. Avoid decorative cursor replacements or trails by default; preserve deliberate designs that retain operation cues and native usability. Respect reduced motion and platform differences, without demanding identical cursor artwork.
+Keep recognizable controls, keyboard and touch use independently of cursors. Prefer native click activation so users can cancel before release. Dragging needs keyboard access and a non-drag single-pointer alternative unless an applicable exception applies. Avoid decorative cursor replacements or trails by default; preserve deliberate designs that retain operation cues and native usability. Respect platform differences, without demanding identical cursor artwork.
 
 ## Links and navigation
 
@@ -116,7 +118,7 @@ Make links recognizable before interaction, using the existing palette and compo
 
 - Do not rely on hue or hover alone. Keep underlines visible at rest; reserve them for links rather than ordinary emphasis. If an explicit convention omits them, verify a persistent distinction; 3:1 contrast against surrounding text is one W3C technique, separate from background contrast.
 - Text contrast against its background in rest, hover and visited states meets WCAG AA: 4.5:1 for ordinary text or 3:1 for qualifying large text. Muted links must remain readable and usable-looking; blue is not required.
-- Essential labels and indicators remain available on touch. Avoid emphasis that shifts layout; preserve purposeful motion and reduced-motion preferences.
+- Essential labels and indicators remain available on touch. Avoid emphasis that shifts layout.
 - Use visited styling when reading history helps; it is optional for menus or buttons where it adds little. Keep it readable and distinct from the current-page marker, which indicates location.
 
 ## Review and verification
