@@ -33,6 +33,7 @@ Reuse the project's controls, storage mechanism, defaults and intended setting s
 - Persistent local preferences belong to the site's origin and browser profile, not the browser globally. Use keys scoped to the project and setting, especially for projects sharing an origin. They last until changed or site data is removed, subject to browser/private-mode limits; existing account synchronization or explicit requirements may define another scope.
 - Synchronize shared preferences across the appropriate open views without write-back loops or unrelated input resets. Keep per-view/per-item choices separate. Do not silently change an active operation's starting configuration when that would alter its result; apply the new preference to subsequent work unless the product explicitly supports live changes.
 - Handle unavailable storage and read/write failures with usable in-memory controls. A failed save must not undo the current choice; later visits without usable storage return to the documented default. Respect intentional reset/clear behavior and make no cross-browser/device persistence promise.
+- If applying a preference fails, preserve the user's choice while clearly showing the effective value and available recovery. A saved selection alone must not imply that it was successfully applied; keep this distinction discoverable after transient error feedback disappears.
 
 ### Theme preferences
 

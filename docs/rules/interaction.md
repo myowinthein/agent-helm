@@ -38,7 +38,7 @@ Copy confirmation appears after success, without needing hover, and defaults to 
 
 Reusable choices such as quality and theme can be remembered across visits. Temporary inputs and per-item choices keep their intended lifetime. Reuse existing storage: page memory suits current-page state, `sessionStorage` suits a tab session, and `localStorage` suits small non-sensitive preferences across visits. Existing cookies or account settings can serve choices needed by the server or account.
 
-Save deliberate changes, validate stored values and fall back to the product's default when a value is missing, cleared or invalid. Browser preferences are scoped to the site and browser profile; projects sharing an origin need separate keys. Keep controls usable when saving fails. Shared choices can update other open views without clearing unrelated inputs or silently changing active work.
+Save deliberate changes, validate stored values and fall back to the product's default when a value is missing, cleared or invalid. Browser preferences are scoped to the site and browser profile; projects sharing an origin need separate keys. Keep controls usable when saving fails. If a choice cannot be applied, preserve it and show the effective value and recovery even after a temporary error clears. Shared choices can update other open views without clearing unrelated inputs or silently changing active work.
 
 ### Theme preferences
 

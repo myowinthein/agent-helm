@@ -90,6 +90,18 @@ a:not([class]) {
   max-width: calc(100vw - 2rem);
 }
 
+.theme-fallback {
+  position: absolute;
+  top: 100%;
+  right: $sp-4;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.theme-switcher:has(.theme-status:not(:empty)) .theme-fallback {
+  visibility: hidden;
+}
+
 .copy-status {
   position: absolute;
   bottom: 100%;

@@ -6,16 +6,40 @@
   let pendingStylesheet;
   let mode = 'system';
   let feedback = '';
+  let fallbackTheme = '';
+  let pendingFeedbackTimer;
+  let errorTimer;
 
   const showFeedback = message => {
     feedback = message;
     const status = document.getElementById('theme-status');
     if (status) status.textContent = message;
   };
+  const clearFeedback = () => {
+    clearTimeout(pendingFeedbackTimer);
+    clearTimeout(errorTimer);
+    showFeedback('');
+  };
+  const showFallback = current => {
+    fallbackTheme = current;
+    const fallback = document.getElementById('theme-fallback');
+    if (fallback) {
+      fallback.hidden = !current;
+      fallback.textContent = current ? `Using ${current}` : '';
+    }
+    const selector = document.getElementById('theme-mode');
+    if (selector) {
+      if (current) selector.title = `Theme unavailable. Using ${current}. Choose another theme to retry.`;
+      else selector.removeAttribute('title');
+    }
+  };
   const reportFailure = () => {
+    clearFeedback();
     const current = stylesheet.href.endsWith('just-the-docs-dark.css') ? 'Dark' : 'Light';
     document.documentElement.style.colorScheme = current.toLowerCase();
-    showFeedback(`Could not load the selected theme. Still using ${current}. Choose another theme to try again.`);
+    showFallback(current);
+    showFeedback(`Theme unavailable. Using ${current}.`);
+    errorTimer = setTimeout(() => showFeedback(''), 4000);
   };
   stylesheet.addEventListener('error', () => {
     if (stylesheet.dataset.themeLoadFailed) reportFailure();
@@ -30,14 +54,14 @@
 
   const applyTheme = () => {
     delete stylesheet.dataset.themeLoadFailed;
-    showFeedback('');
+    clearFeedback();
+    showFallback('');
     const theme = mode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : mode;
     const href = new URL(`just-the-docs-${theme}.css`, stylesheet.href).href;
     pendingStylesheet?.remove();
     pendingStylesheet = null;
 
     if (stylesheet.href !== href) {
-      showFeedback('Loading theme…');
       // Keep the current styles active while the selected theme loads.
       const next = stylesheet.cloneNode();
       next.removeAttribute('id');
@@ -49,7 +73,7 @@
         stylesheet.id = 'helm-theme-stylesheet';
         pendingStylesheet = null;
         document.documentElement.style.colorScheme = theme;
-        showFeedback('');
+        clearFeedback();
       });
       next.addEventListener('error', () => {
         if (pendingStylesheet !== next) return;
@@ -58,6 +82,9 @@
         reportFailure();
       });
       pendingStylesheet = next;
+      pendingFeedbackTimer = setTimeout(() => {
+        if (pendingStylesheet === next) showFeedback('Loading theme…');
+      }, 200);
       stylesheet.after(next);
     }
 
@@ -83,6 +110,7 @@
     if (!selector) return;
     selector.value = mode;
     showFeedback(feedback);
+    showFallback(fallbackTheme);
     selector.closest('.theme-switcher').hidden = false;
     selector.addEventListener('change', () => {
       mode = selector.value;
