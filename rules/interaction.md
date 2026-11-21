@@ -6,17 +6,23 @@ Writing owns prose and editorial references; Design owns visual composition, res
 
 ## Feedback and loading
 
-Reuse established feedback for comparable operations across buttons, links and other controls. Make pending work, relevant completion and failures clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery, keeping them available until retried, resolved or deliberately dismissed, with the recoverable-copy exception below. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
+Reuse established feedback for comparable operations across buttons, links and other controls. Make pending work, relevant completion and failures clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery. Labels, spinners, placement and other presentation choices follow project conventions and may differ by context.
 
 Avoid flashing loading labels, spinners or busy cursors for near-instant actions. Any delay applies to pending visuals, not the operation, required accessibility state or duplicate-activation protection. Keep unrelated controls usable, communicate temporary unavailability, and clear stale loading feedback and restore appropriate controls when work ends. Choose visual timing for the task rather than imposing a universal delay.
 
 Preserve visible keyboard focus for links, buttons and other controls independently of hover. Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator.
 
+### Errors and retries
+
+Keep errors and recovery available until retried, resolved or deliberately dismissed. A recoverable error popup can default to 4 seconds when the failure and recovery remain discoverable without it, such as a labeled retry control or visible text that can be copied manually; otherwise keep the message available. Respect explicit project timing and accessibility requirements.
+
+Preserve entered text. Typing must not repeatedly retry an unchanged failed prerequisite; use deliberate retry for that failure while allowing new work when relevant inputs change. Clear obsolete loading/error timers when attempts change or finish so they cannot overwrite newer feedback.
+
 ### Copy feedback
 
 Default to 2 seconds of success feedback from the confirmed clipboard write, preserving explicit project timing or accessibility requirements. Across copy controls in the same interface, keep only the latest successful confirmation: clear earlier success messages, icons and timers when the new write succeeds. Pending or failed writes must not clear another control's success feedback.
 
-Keep only the latest copy error, clearing earlier error messages and their timers when a new copy attempt starts. For recoverable failures where manual copying remains available, use one concise sentence explaining retry or manual copying and default to 4 seconds before dismissal. Preserve explicit project timing or accessibility requirements; errors requiring attention or otherwise unavailable recovery guidance remain accessible.
+Keep only the latest copy error, clearing earlier error messages and their timers when a new copy attempt starts. Explain retry or manual copying in one concise sentence; the recoverable-error default applies only when manual copying remains available.
 
 ## Preferences and persistence
 
@@ -118,7 +124,7 @@ Use available authorized tools on affected controls and states, preserving requi
 
 | Changed area | Relevant checks |
 |---|---|
-| Feedback and focus | Quick/slow actions, confirmed outcomes, recovery, copy-confirmation replacement and timers, keyboard focus and pointer activation. |
+| Feedback and focus | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, recovery after timed errors, stale timers, copy-confirmation replacement, keyboard focus and pointer activation. |
 | Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
 | Themes | Initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |

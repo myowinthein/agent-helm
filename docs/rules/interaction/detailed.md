@@ -38,9 +38,11 @@ Across buttons, links and other controls, a near-instant action should not brief
 
 Keyboard users need to see which control has focus. Using `:focus-visible` lets that indicator remain available without forcing the same outline after ordinary mouse clicks. Preserve native focus behavior, especially while editing text, and keep focus on the control rather than removing it just to hide an outline.
 
+A timed error needs a lasting way to understand and recover from the failure. For example, search can show a short explanation while a labeled retry control remains available. Four seconds is the default for this recoverable feedback, subject to project and accessibility requirements. Essential errors without another way to understand and recover remain available. Keep the query intact and retry failed setup deliberately, rather than downloading the same unavailable search data on every keystroke. A new query can still start a new search; feedback from an earlier attempt must not replace its result.
+
 For copy controls, “Copied” confirms an actual clipboard result and appears without requiring hover. Its default duration is two seconds from success, with explicit project or accessibility requirements taking priority. If you copy another block successfully, its confirmation replaces the earlier message and copied icon, matching the latest clipboard content. A pending or failed attempt has not replaced that content, so it leaves the earlier confirmation alone.
 
-Copy errors do not accumulate: a new attempt clears earlier error messages and their timers. A concise sentence can explain retry or manual copying, such as “Copy failed; try again or copy the text manually.” When the text remains available to copy manually, that recoverable error defaults to four seconds before disappearing, subject to explicit project or accessibility requirements. Essential errors and otherwise unavailable recovery guidance remain accessible rather than depending on this short message.
+Copy errors do not accumulate: a new attempt clears earlier error messages and their timers. A concise sentence explains retry or manual copying. When the text remains available to copy manually, the shared recoverable-error timing applies; otherwise the explanation and recovery remain available.
 
 ### Preferences and persistence
 
