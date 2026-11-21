@@ -30,11 +30,17 @@ flowchart TD
 
 Keep feedback behavior consistent across comparable operations: when pending, completion and failure states appear, change and clear. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends.
 
-Keep keyboard focus visible, using `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks. Sticky headers, banners and overlays must not entirely hide the focused component under WCAG's minimum conditions. Respect reduced-motion preferences throughout affected controls and feedback, preserving purposeful motion where compatible.
+Respect reduced-motion preferences throughout affected controls and feedback, preserving purposeful motion where compatible.
 
 Recoverable error popups can default to four seconds when the failure and recovery remain discoverable afterward. A retry control can remain available, or visible text can still be copied manually. Preserve entered text and avoid retrying an unchanged failed setup on every keystroke. Essential errors without another recovery route remain available.
 
 Copy confirmation appears after success, without needing hover, and defaults to two seconds. Copying something else successfully clears the earlier confirmation and icon; a pending or failed attempt leaves it alone. A new copy attempt clears earlier copy errors, which use the recoverable-error default when manual copying remains available.
+
+### Keyboard focus and autofocus
+
+Keyboard focus uses a clear, consistent project treatment that stays visible while the control is focused. It should work across supported themes and forced-colors mode without moving nearby content. Use `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks, preserving native input behavior and a visible fallback. Never remove focus just to hide the indicator; overlays must not entirely hide the focused component under WCAG's minimum conditions.
+
+Autofocus moves focus automatically and needs a clear task purpose, avoiding unexpected scrolling, mobile keyboards or skipped context. Actual tab widgets distinguish focus from selection and activate automatically only when their panels appear without noticeable delay. Page-navigation links styled as tabs remain links.
 
 ### Preferences and persistence
 

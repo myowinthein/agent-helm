@@ -10,9 +10,17 @@ Keep feedback behavior consistent for comparable operations across buttons, link
 
 Avoid flashing loading labels, spinners or busy cursors for near-instant actions. Any delay applies to pending visuals, not the operation, required accessibility state or duplicate-activation protection. Keep unrelated controls usable, communicate temporary unavailability, and clear stale loading feedback and restore appropriate controls when work ends. Choose visual timing for the task rather than imposing a universal delay.
 
-Preserve visible keyboard focus for links, buttons and other controls independently of hover. Author-created sticky headers, banners and overlays must not entirely hide a focused component under [WCAG's Focus Not Obscured minimum](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html), retaining its stated conditions. Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator.
-
 Respect reduced-motion preferences across affected controls, feedback and transitions, preserving purposeful motion where compatible.
+
+### Keyboard focus and autofocus
+
+Keep keyboard focus visible on the actual focused control independently of hover, for as long as it remains focused; feedback dismissal timers never apply to focus indicators. Reuse the project's focus treatment across comparable controls, with appropriate contrast in supported themes and forced-colors mode. A replacement for the native indicator must remain clearly visible; a shadow alone can disappear in forced colors. Avoid moving surrounding content when focus appears. Exact colors, shape and thickness remain project choices, subject to accessibility requirements.
+
+Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation, retaining a visible fallback where needed. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator. Author-created sticky headers, banners and overlays must not entirely hide a focused component under [WCAG's Focus Not Obscured minimum](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html), retaining its stated conditions.
+
+Autofocus means moving focus automatically, not styling Tab-key navigation. Use it only for a clear task purpose; avoid unexpected scrolling, opening a mobile keyboard or skipping necessary context. Do not steal focus on routine renders or updates, or move it merely to display a visual effect.
+
+For true tab widgets, follow the [WAI tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/), distinguishing focus from selection. Automatic activation on focus requires panels that appear without noticeable latency; otherwise use manual activation with Enter or Space. Navigation links styled as tabs remain links, not an automatic widget conversion.
 
 ### Errors and retries
 
@@ -129,17 +137,19 @@ Use available authorized tools on affected controls and states, preserving requi
 
 | Changed area | Relevant checks |
 |---|---|
-| Feedback and focus | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, recovery after timed errors, stale timers, copy-confirmation replacement, focused-component visibility and pointer target size/spacing. |
+| Feedback | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, recovery after timed errors, stale timers and copy-confirmation replacement. |
+| Focus and autofocus | Tab/Shift+Tab navigation, persistent visible indication, supported themes/forced colors, no layout shift, deliberate initial focus and applicable tab-widget behavior. |
 | Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
 | Themes | Initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
-| Cursors | Actual hit area, hover, press, disabled/read-only, processing and drag states, and selection. |
+| Cursors | Actual hit area, pointer target size/spacing, hover, press, disabled/read-only, processing and drag states, and selection. |
 | Links | Destinations, fragments, opening behavior, indicators, contrast at rest/focus/hover/visited states in supported themes, and stable layout. |
 
 Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Report unavailable checks, important limitations and unfinished placeholders in the normal handoff. This rule requires no detector, tool installation, report artifact or added approval process.
 
 ## References
 
+- **Focus:** [W3C Focus Visible](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html) and [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) ground visible custom indicators. [Focus Appearance](https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html) adds AAA criteria, not an automatic AA requirement. MDN explains [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:focus-visible), [forced colors](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/forced-colors) and [autofocus concerns](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/autofocus).
 - **Preferences and themes:** MDN explains [local storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), [tab-session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage), [cross-view events](https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event) and [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies). [Google's theme switch](https://web.dev/articles/building/a-theme-switch-component) informs theme handling; Helm defines its persistence defaults and optional System control.
 - **Input:** [GOV.UK guidance](https://design-system.service.gov.uk/components/character-count/) supports selective counters and preserved paste; [HTML length constraints](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#limiting-user-input-length:-the-maxlength-attribute) define counting limits. [W3C guidance on status messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html) informs accessible feedback.
 - **Cursors:** [CSS definitions](https://www.w3.org/TR/css-ui-3/#cursor), [pointer cancellation](https://www.w3.org/WAI/WCAG22/Understanding/pointer-cancellation.html) and [dragging alternatives](https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html) ground operation cues and input access.

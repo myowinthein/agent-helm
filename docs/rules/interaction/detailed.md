@@ -36,8 +36,6 @@ People should be able to tell whether work is pending and understand its relevan
 
 Across buttons, links and other controls, a near-instant action should not briefly flash a loading label, spinner or busy cursor. Slower work still needs clear pending feedback. Delaying that visual must not delay the operation, its accessibility state or protection against duplicate activation. The timing suits the task rather than one universal delay. Keep unrelated controls usable and clear stale loading feedback when work ends; labels, icons and placement follow the project.
 
-Keyboard users need to see which control has focus. Using `:focus-visible` lets that indicator remain available without forcing the same outline after ordinary mouse clicks. Preserve native focus behavior, especially while editing text, and keep focus on the control rather than removing it just to hide an outline. Author-created sticky headers, banners and overlays must not entirely hide the focused component under [WCAG's minimum conditions](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html).
-
 Respect reduced-motion preferences across affected controls, feedback and transitions. Purposeful animation can remain where compatible; the same safeguard applies to pointer effects and link transitions.
 
 A timed error needs a lasting way to understand and recover from the failure. For example, search can show a short explanation while a labeled retry control remains available. Four seconds is the default for this recoverable feedback, subject to project and accessibility requirements. Essential errors without another way to understand and recover remain available. Keep the query intact and retry failed setup deliberately, rather than downloading the same unavailable search data on every keystroke. A new query can still start a new search; feedback from an earlier attempt must not replace its result.
@@ -45,6 +43,18 @@ A timed error needs a lasting way to understand and recover from the failure. Fo
 For copy controls, “Copied” confirms an actual clipboard result and appears without requiring hover. Its default duration is two seconds from success, with explicit project or accessibility requirements taking priority. If you copy another block successfully, its confirmation replaces the earlier message and copied icon, matching the latest clipboard content. A pending or failed attempt has not replaced that content, so it leaves the earlier confirmation alone.
 
 Copy errors do not accumulate: a new attempt clears earlier error messages and their timers. A concise sentence explains retry or manual copying. When the text remains available to copy manually, the shared recoverable-error timing applies; otherwise the explanation and recovery remain available.
+
+### Keyboard focus and autofocus
+
+Pressing Tab or Shift+Tab should leave the person able to identify the focused control. Its indicator stays visible while focus remains there, as [W3C Focus Visible](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html) explains. The two- and four-second feedback timers do not apply. Reuse the project's focus treatment across comparable controls, with appropriate contrast against the surrounding colors; no universal blue rectangle, shape or thickness is prescribed.
+
+A custom indicator needs to remain clear in supported themes and forced-colors mode. Shadows can disappear in forced colors, so a shadow-only design needs a visible alternative. Focus styling should not move neighboring content. W3C's more detailed [Focus Appearance criterion](https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html) is AAA, distinct from the AA baseline; preserving a usable native indicator can also be appropriate.
+
+Using `:focus-visible` lets the browser identify when focus needs visual emphasis without forcing the same outline after every mouse click. Keep a visible fallback where needed and preserve native text-input focus, which may still show after a click. Never blur a control merely to hide its outline. Author-created sticky headers, banners and overlays must not entirely hide the focused component under [WCAG's minimum conditions](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html).
+
+Autofocus is a separate decision: it moves focus automatically. It can scroll the page, open a touch keyboard or bypass context, as [MDN explains](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/autofocus). Use it for a clear task purpose rather than appearance, and preserve the person's focus during routine updates.
+
+For actual tab widgets, focus identifies the current keyboard position while selection determines the visible panel. The [WAI tabs pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/) recommends automatic activation on focus only when panels appear without noticeable delay; slower panels use manual activation with Enter or Space. This pattern does not turn ordinary page-navigation links into widgets merely because they look like tabs.
 
 ### Preferences and persistence
 
@@ -176,7 +186,7 @@ Visited styling is useful when people need to know which references they have re
 
 The rule uses the project's existing components, palette, preference storage and accepted-data contracts. It does not introduce a backend, a new theme selector or a redesign merely to enforce its defaults. Writing owns editorial references and prose; Design owns visual composition and responsive layout. When selected together, their relevant guidance applies within the same task.
 
-Verification follows the affected area: preference changes need checks of restored/default values, storage failures, view synchronization and unaffected active work. Theme changes also need initial-appearance and system-change checks; input changes need boundary, counting and preserved-answer checks. Cursor and link changes need the relevant hit areas, states, destinations and feedback. Verify recovery after completion, cancellation or failure, with keyboard and touch access even when the visible change concerns a cursor.
+Verification follows the affected area: preference changes need checks of restored/default values, storage failures, view synchronization and unaffected active work. Theme changes also need initial-appearance and system-change checks; input changes need boundary, counting and preserved-answer checks. Focus changes need Tab and Shift+Tab checks, persistent visible indication, supported themes/forced colors, stable layout and deliberate focus placement. Cursor and link changes need the relevant hit areas, states, destinations and feedback. Verify recovery after completion, cancellation or failure, with keyboard and touch access even when the visible change concerns a cursor.
 
 For affected mobile forms, also check whether fields and actions remain reachable when the on-screen keyboard is open. It can change the visible viewport without changing the layout viewport, as [MDN explains](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport). The rule asks for usable results, not a particular viewport API or script.
 
