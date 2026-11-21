@@ -104,17 +104,27 @@ module HelmFrontend
   end
 
   def self.clipboard_feedback(source)
+    source = replace_once(source, '  codeBlocks.forEach(codeBlock => {',
+      "  let clearCopyConfirmation = null;\n  codeBlocks.forEach(codeBlock => {")
     source = replace_once(source, "    copyButton.addEventListener('click', function () {", <<~JS.chomp)
           const feedback = document.createElement('span');
           feedback.className = 'interaction-feedback copy-status';
           feedback.setAttribute('role', 'status');
           codeBlock.append(feedback);
           let copying = false;
+          const resetConfirmation = () => {
+            clearTimeout(timeout);
+            timeout = null;
+            copyButton.innerHTML = svgCopy;
+            feedback.textContent = '';
+            if (clearCopyConfirmation === resetConfirmation) clearCopyConfirmation = null;
+          };
           copyButton.addEventListener('click', async function () {
     JS
     source = replace_once(source, '      if(timeout === null) {', <<~JS.chomp)
             if (!copying) {
               clearTimeout(timeout);
+              if (clearCopyConfirmation === resetConfirmation) clearCopyConfirmation = null;
               copying = true;
               copyButton.setAttribute('aria-busy', 'true');
               copyButton.setAttribute('aria-disabled', 'true');
@@ -124,13 +134,15 @@ module HelmFrontend
     JS
     source = replace_once(source, '        window.navigator.clipboard.writeText(code);',
       '        await window.navigator.clipboard.writeText(code);')
-    source = replace_once(source, '        copyButton.innerHTML = svgCopied;',
-      "        copyButton.innerHTML = svgCopied;\n        feedback.textContent = 'Copied';")
+    source = replace_once(source, '        copyButton.innerHTML = svgCopied;', <<~JS.chomp)
+            if (clearCopyConfirmation) clearCopyConfirmation();
+            clearCopyConfirmation = resetConfirmation;
+            copyButton.innerHTML = svgCopied;
+            feedback.textContent = 'Copied';
+    JS
     source = replace_once(source, '        var timeoutSetting = 4000;', '        var timeoutSetting = 2000;')
-    replace_once(source, "          timeout = null;\n        }, timeoutSetting);", <<~JS.chomp)
-                timeout = null;
-                feedback.textContent = '';
-              }, timeoutSetting);
+    replace_once(source, "        timeout = setTimeout(function () {\n          copyButton.innerHTML = svgCopy;\n          timeout = null;\n        }, timeoutSetting);", <<~JS.chomp)
+              timeout = setTimeout(resetConfirmation, timeoutSetting);
               } catch {
                 copyButton.innerHTML = svgCopy;
                 feedback.textContent = 'Could not copy. Try again or select the code to copy it manually.';

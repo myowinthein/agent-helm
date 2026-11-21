@@ -194,6 +194,7 @@ try {
  // Clipboard feedback follows the actual result and prevents duplicate pending writes.
  {
   const context=await createContext();const page=await context.newPage();
+  await page.clock.install();
   await page.addInitScript(()=>{
    window.copyRequests=0;
    Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>{
@@ -201,7 +202,7 @@ try {
     return new Promise((resolve,reject)=>{window.finishCopy=resolve;window.failCopy=()=>reject(new Error('Denied fixture'));});
    }}});
   });
-  await page.goto(pageUrl('docs/commands/log.html'));
+  await page.goto(pageUrl(''));
   const block=page.locator('div.highlighter-rouge').first();
   const button=block.locator('button');const status=block.locator('.copy-status');
   await button.focus();await page.keyboard.press('Enter');
@@ -227,7 +228,24 @@ try {
   assert.equal(await status.textContent(),'Copying…');
   assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copy');
   await page.evaluate(()=>window.finishCopy());
-  console.log('PASS clipboard: pending, rejected, retry, confirmed success and keyboard focus');await context.close();
+  const nextBlock=page.locator('div.highlighter-rouge').nth(1);
+  const nextButton=nextBlock.locator('button');const nextStatus=nextBlock.locator('.copy-status');
+  await nextButton.click();
+  assert.equal(await status.textContent(),'Copied','Pending copy cleared the earlier success');
+  await page.evaluate(()=>window.failCopy());
+  assert((await nextStatus.textContent()).includes('Could not copy'));
+  assert.equal(await status.textContent(),'Copied','Failed copy cleared the earlier success');
+  await page.clock.runFor(1000);
+  await nextButton.click();await page.evaluate(()=>window.finishCopy());
+  assert.equal(await status.textContent(),'');
+  assert.equal(await button.locator('use').getAttribute('xlink:href'),'#svg-copy');
+  assert.equal(await nextStatus.textContent(),'Copied');
+  await page.clock.runFor(1100);
+  assert.equal(await nextStatus.textContent(),'Copied','Earlier timeout cleared the latest success');
+  await page.clock.runFor(900);
+  assert.equal(await nextStatus.textContent(),'');
+  assert.equal(await nextButton.locator('use').getAttribute('xlink:href'),'#svg-copy');
+  console.log('PASS clipboard: confirmed results, retry, latest success only, two-second dismissal and keyboard focus');await context.close();
  }
  // A detailed guide keeps its overview entry active in the menu.
  {
