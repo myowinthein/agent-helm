@@ -79,6 +79,8 @@ Shared choices can update other open views without resetting unrelated inputs or
 
 Automatic behavior can work behind a simple Light/Dark toggle. Keep the project's existing control and settings mechanism; a System option is useful when already supported, but the rule does not require adding one.
 
+The control needs a clear accessible name and a selected mode exposed through suitable semantics. An actual binary switch has a stable label, such as “Dark theme,” and exposes its on/off state, following the [WAI switch pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/). System/Light/Dark is a three-choice setting, not a third state on that switch; an appropriate selector can expose those choices. These are behavior and accessibility decisions. Design governs the palette and appearance across pages.
+
 The important distinction is between the visitor's choice and the appearance currently shown:
 
 | Situation | Expected behavior |
@@ -94,7 +96,7 @@ For example, an initial dark system theme should not create a saved Dark overrid
 
 Themes use the shared persistence guidance above. Their additional system-following behavior does not create a System mode for quality or other unrelated settings; each keeps its own product default.
 
-Set the initial theme before the page appears so the wrong scheme does not flash first, and keep browser-drawn controls aligned with it. Verify the automatic and manual paths, updates in another tab and unavailable storage. These defaults guide theme work; they do not introduce a new control, account service or redesign into unrelated tasks.
+Set the initial theme before the page appears so the wrong scheme does not flash first, and keep browser-drawn controls aligned with it. CSS `color-scheme` affects native controls and other browser-provided UI; custom page elements still need their own theme styling. Verify the control's name and selected mode, automatic and manual paths, updates in another tab and unavailable storage. These defaults guide theme work; they do not introduce a new control, account service or redesign into unrelated tasks.
 
 ### Input limits
 

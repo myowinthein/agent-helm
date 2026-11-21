@@ -1,6 +1,6 @@
 # Writing Rules
 
-Write clear, natural prose that people can comfortably understand and use. Writing owns language, document structure and editorial references. Design owns visual composition and responsive layout; Interaction owns controls, themes and link behavior. Both are separately selected, not dependencies of this rule.
+Write clear, natural prose that people can comfortably understand and use. Writing owns language, document structure and editorial references. Design owns visual composition, responsive layout and theme appearance; Interaction owns controls, theme selection and persistence, and link behavior. Both are separately selected, not dependencies of this rule.
 
 ## Scope and safeguards
 

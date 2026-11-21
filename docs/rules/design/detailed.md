@@ -39,6 +39,14 @@ Positive structure matters too. Use alignment and spacing to show which informat
 
 Comparable elements should reuse established visual treatments. Similar dialog errors can share placement and styling, while separators at the same level can use consistent spacing. A field error and a dialog-wide failure may need different treatment, just as a major section break may need more space than an internal divider. Preserve those intentional differences. Where no pattern exists, choose a coherent treatment for the requested surface; exact colors, icons and measurements belong to the project's components and design guidance. Interaction governs when feedback appears, changes and clears.
 
+## Theme appearance
+
+A working Light/Dark control does not establish that both appearances look good throughout a product. Theme design keeps the same roles meaningful across pages: primary text, secondary text, backgrounds, surfaces, borders and status cues. Reuse the project's existing palette and token or theme mechanism, as illustrated by [Carbon's role-based color guidance](https://www.carbondesignsystem.com/building-blocks/foundations/color/overview). No new framework or project-wide migration follows merely from selecting this rule.
+
+Each appearance needs a coherent hierarchy. A card or dialog should remain distinguishable from the page behind it, and secondary text should remain readable. Check affected page types and shared components in their relevant states, rather than judging the theme from the homepage alone. A readable body can still contain an unreadable tooltip, selected item or error message.
+
+WCAG text contrast normally requires 4.5:1, or 3:1 for qualifying large text. Essential control cues and meaningful graphics need 3:1 non-text contrast. Each criterion retains its conditions and exceptions, including those for inactive controls. Inspect relevant logos, icons, diagrams, charts and code blocks too. Reuse assets that work in both modes; adapt or supply alternatives where needed, preserving meaning and branding instead of blanket-inverting photographs or logos. Exact palettes remain project choices. Interaction governs which appearance is selected, how it is applied and how the choice is remembered.
+
 ## Responsive interfaces and links
 
 Layouts should preserve access to content and actions as the viewport narrows, text grows or navigation changes. Stacking columns or moving a panel must preserve meaningful reading and keyboard-navigation order; a sensible visual arrangement alone does not establish either. Consider contrast and reduced motion as part of normal interface work. WCAG 2.2 Level AA is the default accessibility reference, including its stated exceptions.
@@ -48,7 +56,7 @@ Use representative content when checking a layout. A short sample label may fit 
 Flexible media should retain its proportions. Reserve appropriate space from known dimensions or aspect ratios so a late-loading image does not unexpectedly move the text or controls around it. Google's [responsive-image guidance](https://web.dev/learn/design/responsive-images) explains how this works without requiring a particular framework.
 
 <span id="theme-preferences"></span><span id="input-limits"></span><span id="cursors"></span><span id="links"></span><span id="link-appearance"></span>
-Visual work keeps labels, hints, errors and links readable across the supported layouts and themes. The separately selected [Interaction rule](../interaction/detailed.html#controls-and-feedback) explains control behavior: saved preferences, input feedback, cursors and navigation. Design preserves existing working controls even when Interaction is not selected; meaningful editorial references remain with Writing.
+Visual work keeps labels, hints, errors and links readable across the supported layouts and themes. The separately selected [Interaction rule](../interaction/detailed.html#controls-and-feedback) explains control behavior: theme selection and persistence, other saved preferences, input feedback, cursors and navigation. Design preserves existing working controls even when Interaction is not selected; meaningful editorial references remain with Writing.
 
 ## Preserve project choices
 

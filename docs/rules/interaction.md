@@ -50,7 +50,9 @@ Save deliberate changes, validate stored values and fall back to the product's d
 
 ### Theme preferences
 
-When a theme control is part of the task, use the system preference initially unless a valid saved choice or project requirement takes priority. Manual Light/Dark choices win; system changes apply only in automatic mode. Preserve the existing toggle or selector; a visible System option is optional. Other preferences use their own product defaults rather than inheriting a System mode.
+When a theme control is part of the task, use the system preference initially unless a valid saved choice or project requirement takes priority. Manual Light/Dark choices win; system changes apply only in automatic mode. Preserve the existing toggle or selector; a visible System option is optional.
+
+Give the control a clear accessible name and expose its selected mode appropriately. A binary switch represents two values; a System/Light/Dark control needs suitable three-choice semantics. Other preferences use their own product defaults rather than inheriting a System mode. Design owns the visual appearance of supported themes.
 
 ### Input limits
 

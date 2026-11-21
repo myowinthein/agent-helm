@@ -1,6 +1,6 @@
 ---
 title: Design
-description: Guide visual composition and responsive, accessible layouts while preserving project identity and avoiding generic website defaults.
+description: Guide visual composition, theme appearance and responsive, accessible layouts while preserving project identity and avoiding generic website defaults.
 parent: Rules
 detailed: /docs/rules/design/detailed.html
 nav_order: 4
@@ -22,6 +22,12 @@ Use hierarchy, alignment, spacing and typography to make importance and relation
 
 Reuse established visual treatments for comparable messages, loading indicators and separators, with consistent placement and spacing. Meaning and hierarchy can justify different treatments; exact colors, icons and measurements remain project choices.
 
+## Theme appearance
+
+For work on supported themes, reuse the project's color roles across pages and components so backgrounds, surfaces, text, borders and status cues stay consistent. Give each appearance a coherent palette and clear hierarchy, preserving branding and the existing design system.
+
+Check affected pages, components and assets in each supported appearance and relevant state. Text, essential controls and meaningful graphics need appropriate contrast under WCAG's conditions and exceptions. Logos, icons, diagrams and code blocks should remain readable; reuse assets that work in both modes and adapt them only where needed.
+
 ## Responsive interfaces and links
 
 Layouts should work across narrow and wide viewports, preserving access to content and actions as navigation changes. Reading and keyboard-navigation order must remain meaningful when columns stack or content moves. Media should keep its proportions and reserve space to avoid unexpected movement while loading.
@@ -29,7 +35,7 @@ Layouts should work across narrow and wide viewports, preserving access to conte
 Check representative long labels, URLs, supported languages and user-adjusted text spacing, alongside viewport sizes and zoom. [WCAG 2.2 Level AA](https://www.w3.org/TR/WCAG22/) is the default accessibility reference, including its stated conditions and exceptions.
 
 <span id="theme-preferences"></span><span id="input-limits"></span><span id="cursors"></span><span id="links"></span><span id="link-appearance"></span>
-The separately selected [Interaction rule](interaction.html#controls-and-feedback) covers themes, input feedback, cursors and link behavior. Design keeps layouts and visual states readable while preserving existing working controls.
+The separately selected [Interaction rule](interaction.html#controls-and-feedback) covers theme selection and persistence, input feedback, cursors and link behavior. Design keeps layouts, theme appearance and visual states readable while preserving existing working controls.
 
 ## Preserve project choices
 

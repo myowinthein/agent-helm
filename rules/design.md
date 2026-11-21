@@ -5,7 +5,7 @@ Build responsive, accessible interfaces around the project's real content and us
 ## Scope and project conventions
 
 - Apply to requested interface creation, edits, planning and critique, including documentation sites. Follow explicit user choices, branding and existing components. Targeted edits preserve surrounding style, content, functionality and accessibility; loading this rule starts no scan, adjacent redesign or removal of deliberate choices.
-- Design owns visual composition, responsive layout and visual accessibility. Follow project prose guidance; Writing owns editorial references and Interaction owns themes, input feedback, cursors and link/control behavior. Neither is a dependency. Preserve working interactions even when those rules are unselected.
+- Design owns visual composition, responsive layout, theme appearance and visual accessibility. Follow project prose guidance; Writing owns editorial references and Interaction owns theme selection and persistence, input feedback, cursors and link/control behavior. Neither is a dependency. Preserve working interactions even when those rules are unselected.
 - Keep project-specific branding, tokens, grids and components in existing local guidance or design-system sources unless rule customization is explicitly requested. Make reasonable reversible choices; clarify material unknowns without requiring a brief, questionnaire, mood board, new setting or planning workflow. Existing operational boundaries and required checks remain binding.
 
 ## Visual hierarchy
@@ -38,6 +38,16 @@ Do not automatically add these patterns to make a page seem modern, polished or 
 
 These examples are illustrative. Recognize the same habits in new forms; an unlisted effect is not automatically appropriate. Missing branding does not justify a stock SaaS theme, and appropriate existing design-system components need no replacement merely because they are common.
 
+## Theme appearance
+
+For requested work on supported themes, reuse the project's palette and role-based colors for backgrounds, surfaces, primary/secondary text, borders and status cues. Keep those roles consistent across affected pages and components, using existing tokens or theme mechanisms rather than introducing a framework or unrelated migration.
+
+- Give each appearance a coherent palette and preserve visual hierarchy between backgrounds, cards, dialogs and other surfaces. Adapt colors deliberately instead of blindly inverting the entire interface; exact colors remain project choices.
+- Verify [text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) of at least 4.5:1, or 3:1 for qualifying large text, and [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) of at least 3:1 for required control cues and meaningful graphics. Apply each criterion's conditions and exceptions in every supported appearance and relevant state.
+- Check relevant logos, icons, diagrams, charts and other assets in both light and dark appearances when supported. Reuse assets that work in both; adapt or provide alternatives only where needed, preserving meaning and branding instead of blanket-inverting photographs or brand assets.
+
+Review affected page types and shared components in each supported appearance, including relevant overlays, forms and code blocks, plus hover, focus, selection, error and disabled states. Theme selection, persistence and control semantics remain with Interaction when separately selected.
+
 ## Responsive and accessible interfaces
 
 - Use flexible layouts and media with content-driven changes within the established responsive system. For new layouts without one, start usable at narrow widths and expand as content benefits. Keep wide-screen text readable too.
@@ -55,5 +65,7 @@ Use proportionate authorized rendering and interaction checks. For layout, navig
 Preserve required project checks. Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Report unavailable checks, important limitations and unfinished placeholders in the normal handoff. Loading this rule requires no detector, tool installation, report artifact or new approval process.
 
 ## References
+
+[Carbon's color guidance](https://www.carbondesignsystem.com/building-blocks/foundations/color/overview) informs shared semantic roles across themes; [Apple's Dark Mode guidance](https://developer.apple.com/design/human-interface-guidelines/dark-mode) informs visual hierarchy, legibility and asset adaptation. Apply those design principles within the project's platform and conventions, without importing a native-app control policy or a prescribed palette.
 
 [Apple's layout guidance](https://developer.apple.com/design/human-interface-guidelines/layout) supports hierarchy and grouping; [Google's responsive guidance](https://web.dev/articles/responsive-web-design-basics) supports flexible, content-driven layouts and its [image guidance](https://web.dev/learn/design/responsive-images) explains proportion and reserved space. WCAG above supplies the accessibility baseline. [Anthropic's frontend guidance](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md) and its [article on recurring defaults](https://claude.com/resources/articles/improving-frontend-design-through-skills) inform the pattern examples. Those are practitioner observations and editorial preferences, not universal usability findings. References require no routine research, external-skill loading, framework or extra planning stages.
