@@ -52,6 +52,16 @@ Required project instructions stay binding regardless of either answer. Declinin
 
 Polish summarizes the resulting standards and reviews the requested scope without saving the selection. It neither installs files nor changes how regular coding sessions load rules. Selecting standards also does not approve the later fixes.
 
+## Understand review coverage
+
+Once the standards are chosen, Polish reads their bodies in full and determines which sections apply to the scoped work. Discovery alone does not establish that the rules were assessed. The review identifies the actual pages, components, document sections or defined changes and makes its evidence depth clear without asking you to approve every file.
+
+Each coherent unit receives its relevant checks together. For a checkout dialog, that might mean reviewing labels and explanations, layout at supported sizes and themes, and keyboard, loading and error behavior before moving on. An irrelevant section can be excluded with a reason; insufficient time or context does not make an instruction irrelevant.
+
+Larger requests can be organized into batches, keeping the whole agreed scope visible. Shared-component evidence can help with another page only where it supports that page's actual variant and context. Finding several useful issues does not justify stopping the remaining review. If a real limit prevents completion, the report identifies the exact unread areas or unfinished checks instead of silently replacing them with a sample.
+
+Coverage notes stay within the invocation. They connect the scoped work to relevant rule sections and actual evidence without creating a ledger or a large checklist for you to maintain. Lost or truncated material must be recovered before it can count as reviewed. Those notes make gaps visible; they do not establish that every possible defect was found.
+
 ## Understand the findings
 
 The report explains each meaningful issue, where it occurs, the selected guidance behind it and the proposed remedy. Overlap is combined: an unclear error message and its inconsistent placement may form one coherent finding instead of separate rule-by-rule tickets.
@@ -74,9 +84,19 @@ For a normal review, an available safe preview can help establish how the scoped
 
 A source inspection may show that a button has a loading handler; it cannot establish that the loading state looks right or works with a keyboard. Unavailable rendered checks remain unverified. A required failure stops the run with actual drafts and prior verified changes preserved.
 
-The final report identifies what was reviewed, which rules applied, what changed, the local commit if any, and remaining findings or verification gaps. Auto-commit follows project policy; with it disabled, exact known changes can be approved with or without a commit. Publication is a separate [ship](../ship.html) action.
+The final report separates review coverage from fixes and verification:
 
-Polish keeps no ledger, review dates or Full/Gap checkpoint. Each invocation reviews its current requested scope, so a declined or deferred issue may appear again. With no meaningful findings, it finishes without edits or a commit.
+| Term | Meaning |
+|---|---|
+| Complete | The agreed scope received the promised review depth, including areas with no findings. |
+| Partial | Some intended areas or promised review depth remain incomplete; the exact remainder is identified. |
+| Unverified | A particular claim lacks sufficient evidence. This can accompany either coverage result and never means passed. |
+
+For example, a complete explicitly static review can still leave visual and runtime behavior unverified. If the promised work included rendered checks that were not completed, the review remains partial. Likewise, applying and testing three fixes does not complete a broader review when other pages have not been examined. No findings in the inspected portion does not establish that the unread portion is clear.
+
+The report keeps reviewed scope, important evidence limits and remaining review concise, then identifies actual changes, the local commit if any and remaining findings. Auto-commit follows project policy; with it disabled, exact known changes can be approved with or without a commit. Publication is a separate [ship](../ship.html) action.
+
+Polish keeps no ledger, review dates or Full/Gap checkpoint. Each invocation reviews its current requested scope, so a declined or deferred issue may appear again. With no meaningful findings, it finishes without edits or a commit, retaining any partial coverage and exact remaining work in the report.
 
 ## Explore the source
 

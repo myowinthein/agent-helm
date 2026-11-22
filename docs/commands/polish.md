@@ -19,8 +19,8 @@ flowchart TD
   Ready{"Eligible route?"} -->|No| Stop["Explain the blocker and stop"]
   Ready -->|Yes| Discover["Find relevant rules and custom standards"]
   Discover --> Select["Choose optional groups"]
-  Select --> Review["Review the requested scope"]
-  Review --> Findings["Explain issues and concrete fixes"]
+  Select --> Review["Review scoped units across relevant rules"]
+  Review --> Findings["Report coverage, limits and concrete fixes"]
   Findings --> Choice{"Apply selected fixes?"}
   Choice -->|Yes| Apply["Apply and verify locally"]
   Choice -->|Leave unchanged| Finish["Finish with findings"]
@@ -44,6 +44,12 @@ For optional candidates, it asks **Use the suggested Helm rules?** and **Also us
 
 At least one valid, applicable Writing, Design or Interaction rule must remain included; custom standards supplement it. A required or selected broken reference stops the run. These choices select review standards without installing files or changing rule loading. Git and Safety still govern operations.
 
+## How the review works
+
+After selection, Polish reads the rule bodies in full and identifies the pages, components, document sections or changes within your request. It reviews one coherent unit across all relevant selected rules before moving on. A checkout dialog, for example, can receive wording, layout and interaction review together.
+
+Large targets can use batches while preserving the full agreed scope. Finding several issues does not end the review. If an actual limit prevents completion, the report identifies what was reviewed and the exact remainder; unread work is not treated as covered.
+
 ## Review the fixes
 
 Findings explain the location, user impact and proposed change, with before/after text or readable diffs. Overlapping issues appear together. Intentional style choices are preserved, and optional suggestions stay distinct from demonstrated problems.
@@ -52,6 +58,8 @@ Choose **Apply recommended**, **Apply all proposed fixes** or **Leave unchanged*
 
 ## Your result
 
-Polish verifies approved changes using relevant existing checks and reports anything it could not test. Source review alone does not prove how an interface looks or behaves. Custom README and other command-maintained documents retain their authoring and approval boundaries.
+The report distinguishes **Complete** coverage of the agreed scope and depth from a **Partial** review with remaining work. **Unverified** identifies claims without sufficient evidence. A complete source-only review does not prove how the interface looks or behaves.
+
+Polish verifies approved fixes using relevant existing checks. Finishing those fixes does not complete an unfinished broader review. Custom README and other command-maintained documents retain their authoring and approval boundaries.
 
 Work finishes on the same branch, with a local commit according to project policy. No ledger or review checkpoint is kept, so unresolved issues may appear again. Use [ship](ship.html) separately to publish changes.
