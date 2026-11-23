@@ -24,18 +24,15 @@ figure.highlight {
   box-shadow: none;
 }
 
-.nav-list .nav-list-item {
-  // Target this row's controls so hovering a child leaves its parent alone.
-  &:has(> .nav-list-link:hover, > .nav-list-expander:hover) > .nav-list-link {
-    color: $link-color;
-    background-image: none;
-    background-color: rgba($link-color, 0.06);
-  }
-
-  > .nav-list-expander:hover {
-    background-image: none;
-    background-color: rgba($link-color, 0.12);
-  }
+// Extend the theme's original row highlight to arrow hover, excluding child rows.
+.nav-list .nav-list-item:has(> .nav-list-expander:hover) > .nav-list-link {
+  color: darken($link-color, 5%);
+  background-image: linear-gradient(
+    -90deg,
+    rgba($feedback-color, 1) 0%,
+    rgba($feedback-color, 0.8) 80%,
+    rgba($feedback-color, 0) 100%
+  );
 }
 
 a:not([class]) {
