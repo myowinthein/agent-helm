@@ -26,6 +26,10 @@ Publication, deployment, actual data changes, destructive cleanup, credential ch
 
 Necessary related code, tests and documentation can accompany the requested work within their maintenance boundaries. Unrelated repairs are reported before expanding the task.
 
+## Recommendation judgment
+
+Recommendations need a concrete problem, credible failure risk or meaningful maintenance benefit that justifies the added complexity and upkeep. Existing guidance or protection may already be sufficient. When the current approach meets the need, the agent says no changes are needed. Ideas from requested brainstorming remain distinct from recommended work.
+
 ## Network access
 
 Helm works offline by default from written instructions, supplied material and local evidence. Citation links are background sources, not a recurring reading list or a reason to check for updated or better instructions.

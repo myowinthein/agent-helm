@@ -52,6 +52,12 @@ Implementing a record-deletion feature authorizes work on its code and relevant 
 
 Established safe tests with genuinely isolated, task-owned fixtures can run within their approved scope. Hidden migrations, seeders, imports or resets require a concrete execution plan covering those effects; a general request to run tests does not settle them. Once that exact plan is approved, the agent need not ask again for every step.
 
+## Recommendation judgment
+
+A review can conclude that the current approach is sufficient. Recommendations need evidence of a concrete problem, credible failure risk or meaningful maintenance benefit, weighed against the complexity and upkeep of changing it. A generic best practice or harmless addition does not establish that benefit, and existing guidance or protection may already address the concern.
+
+For example, an extra instruction is useful when it resolves an ambiguity that changes an agent's decision. Restating an existing rule without improving that decision adds maintenance work. When you request brainstorming, possible ideas can still be explored, with a clear distinction between those ideas and changes worth implementing.
+
 ## Protect work and verify effects
 
 Preserve unrelated edits, staged hunks and local inputs. Git can recover committed source, but not every discarded draft, overwritten database or remote message. Requested targeted editing is different from wholesale discard.
