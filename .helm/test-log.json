@@ -241,11 +241,23 @@
       "reason": "The oracle checks the reviewed prefix but accepts its positive fixture's outdated review_contract 1 and omits date and fingerprint validation, so invalid new provenance can pass. Fingerprint shape alone cannot establish correspondence to the actual effective policy; the live fixture supplies no complete independent policy snapshot.",
       "action": "improve",
       "layer": "acceptance oracle",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
       "tests": [
         "scripts/test_acceptance_oracles.rb::direct normalize oracle"
-      ]
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/acceptance_support.rb::verify_normalize!",
+          "scripts/test_acceptance_oracles.rb::direct normalize oracle"
+        ],
+        "method": "runtime",
+        "outcome": "The oracle requires integer review_contract 2, a real canonical Gregorian date and a lowercase 64-hex fingerprint. Direct tests accepted leap-day and mixed-hex inputs and rejected 20 malformed, missing or outdated metadata controls. All five direct-oracle groups, 17 acceptance-support groups and the Git acceptance suite passed. Fingerprint format does not prove correspondence to an independently resolved policy; no live model run was performed.",
+        "commit": "1d7cbb278fef877047a8d6312be33ca9ebcc460f",
+        "command": "ruby scripts/test_acceptance_oracles.rb; ruby scripts/test_acceptance_support.rb; ruby scripts/test_git_acceptance.rb",
+        "scope": "Offline synthetic consumers and owned local Git fixtures; no model, hosted provider or real operational recovery evidence"
+      }
     },
     {
       "id": "g-5bd8c9f8-2c65-408a-ba75-6413770a7bea",
@@ -677,11 +689,23 @@
       "reason": "Existing changed-content cases always corrupt the oldest candidate. Removing whole-set prevalidation while retaining per-run checks would still pass them and could delete an unchanged older backup before detecting a changed later candidate.",
       "action": "improve",
       "layer": "unit",
-      "state": "open",
+      "state": "resolved",
       "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
       "tests": [
-        "scripts/test_normalize_handoff.py::RetentionTests.test_new_file_changed_file_or_link_blocks_whole_deletion_set"
-      ]
+        "scripts/test_normalize_handoff.py::RetentionTests.test_new_file_changed_file_or_link_blocks_whole_deletion_set",
+        "scripts/test_normalize_handoff.py::RetentionTests.test_changed_later_candidate_preserves_the_entire_deletion_set"
+      ],
+      "closure": {
+        "reason": "tested",
+        "refs": [
+          "scripts/test_normalize_handoff.py::RetentionTests.test_changed_later_candidate_preserves_the_entire_deletion_set"
+        ],
+        "method": "runtime",
+        "outcome": "With two eligible deletion candidates and only the later backup changed, cleanup reported incomplete, recovered zero bytes and preserved both backups, locators and completion checksums byte-for-byte without creating retirement staging. All 42 handoff and retention tests passed; existing partial-I/O-failure and successful cleanup protections remain intact.",
+        "commit": "6f7a9bca69f52cca89be56fe0c9e6986e6a678c0",
+        "command": "python3 -I -B scripts/test_normalize_handoff.py",
+        "scope": "42 offline POSIX locator and retention tests in disposable repositories with the account-home boundary explicitly mocked; no real backups or locators accessed"
+      }
     },
     {
       "id": "g-b38adff8-a9fd-4f1b-be78-dec4165f9593",
