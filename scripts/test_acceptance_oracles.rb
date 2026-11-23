@@ -53,7 +53,7 @@ with_consumer do |workspace, container|
   record.parent.mkpath
   checkpoint = { "schema_version" => 2, "branches" => { "main" => {
     "last_checked_commit" => new_first, "last_checked_date" => "2026-01-01",
-    "review_kind" => "semantic", "review_contract" => 1, "policy_fingerprint" => "0" * 64 } } }
+    "review_kind" => "semantic", "review_contract" => 2, "policy_fingerprint" => "0" * 64 } } }
   record.write(JSON.generate(checkpoint))
   HelmSmoke.git(workspace, "add", ".helm/normalize-log.json")
   commit_fixture(workspace, "chore(fixture): record reviewed prefix")
@@ -65,6 +65,34 @@ with_consumer do |workspace, container|
   expect(approved == { ".helm/normalize-log.json" => record.binread })
   expect(HelmSmoke.git(container.join("independent recovery"), "cat-file", "-t", tip).strip == "commit")
   original = record.binread
+  review = checkpoint.fetch("branches").fetch("main").dup
+  # These synthetic fingerprints test format, not the fixture's effective policy.
+  checkpoint["branches"]["main"] = review.merge("last_checked_date" => "2024-02-29",
+    "policy_fingerprint" => "0123456789abcdef" * 4)
+  record.write(JSON.generate(checkpoint))
+  verify.call
+  [
+    { "review_contract" => 1 }, { "review_contract" => 3 },
+    { "review_contract" => 2.0 }, { "review_contract" => "2" }, { "review_contract" => nil },
+    { "last_checked_date" => "2025-02-29" }, { "last_checked_date" => "2026-04-31" },
+    { "last_checked_date" => "0000-01-01" }, { "last_checked_date" => "2026-1-01" },
+    { "last_checked_date" => "2026-01-01T00:00:00Z" }, { "last_checked_date" => nil },
+    { "policy_fingerprint" => "a" * 63 }, { "policy_fingerprint" => "a" * 65 },
+    { "policy_fingerprint" => "A" * 64 }, { "policy_fingerprint" => "g" * 64 },
+    { "policy_fingerprint" => 0 }, { "policy_fingerprint" => nil }
+  ].each do |invalid|
+    checkpoint["branches"]["main"] = review.merge(invalid)
+    record.write(JSON.generate(checkpoint))
+    rejects_with("Normalize checkpoint has invalid current review provenance", &verify)
+  end
+  %w[review_contract last_checked_date policy_fingerprint].each do |missing|
+    checkpoint["branches"]["main"] = review.reject { |key, _| key == missing }
+    record.write(JSON.generate(checkpoint))
+    rejects_with("Normalize checkpoint has invalid current review provenance", &verify)
+  end
+  checkpoint["branches"]["main"] = review
+  record.binwrite(original)
+  verify.call
   checkpoint["branches"]["main"]["last_checked_commit"] = new_tip
   record.write(JSON.generate(checkpoint))
   rejects_with("Normalize checkpoint overstates the reviewed prefix", &verify)
@@ -106,7 +134,7 @@ with_consumer do |workspace, container|
   write_locators.call(locator, published)
   verify.call
 end
-puts "PASS direct normalize oracle: reviewed prefix, approved bytes, independent recovery, private proof, pre-filter locator and standard recovery location"
+puts "PASS direct normalize oracle: current checkpoint provenance, reviewed prefix, approved bytes, independent recovery, private proof, pre-filter locator and standard recovery location"
 
 with_consumer do |workspace, container|
   backend_bin = container.join("stub backend")

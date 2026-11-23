@@ -1,5 +1,6 @@
 # Trace handling and acceptance oracles. Requiring this file executes no client or workflow.
 require "base64"
+require "date"
 require "json"
 require "shellwords"
 require "timeout"
@@ -198,6 +199,16 @@ module HelmAcceptance
            checkpoint.dig("branches", "main", "review_kind") == "semantic"
       raise "Normalize checkpoint overstates the reviewed prefix"
     end
+    review = checkpoint.fetch("branches").fetch("main")
+    date = review["last_checked_date"]
+    valid_date = date.is_a?(String) && date.match?(/\A[0-9]{4}-[0-9]{2}-[0-9]{2}\z/) &&
+      date[0, 4] != "0000" && Date.valid_date?(*date.split("-").map(&:to_i), Date::GREGORIAN)
+    fingerprint = review["policy_fingerprint"]
+    unless review["review_contract"].is_a?(Integer) && review["review_contract"] == 2 && valid_date &&
+           fingerprint.is_a?(String) && fingerprint.match?(/\A[0-9a-f]{64}\z/)
+      raise "Normalize checkpoint has invalid current review provenance"
+    end
+    # This fixture supplies no complete policy snapshot; format is not policy correspondence.
     tip = graph_after.fetch(:refs).fetch("refs/heads/main")
     parents = graph_after.fetch(:commits).fetch(tip).fetch(:headers).grep(/^parent /)
     expected_parent = mapping.fetch(graph_before.fetch(:refs).fetch("refs/heads/main"))
