@@ -19,6 +19,8 @@ Log helps agents pick up a project with useful context. It combines source evide
 
 ## Flow
 
+### Setup and scope
+
 ```mermaid
 flowchart TD
   Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
@@ -34,12 +36,15 @@ flowchart TD
   Review --> Choice{"Approve layout?"}
   Choice -->|Yes| Save["Apply, verify and separately commit layout"]
   Choice -->|No| Block
-  Layout -->|No| Next["Continue selected source review or finish layout only"]
+  Layout -->|No| Next["Continue to source review decision below"]
   Save --> Next
 ```
 
+### Source review and completion
+
 ```mermaid
 flowchart TD
+  Next["Continue from setup and scope"] --> Scope
   Scope{"Source review selected?"} -->|No| Finish["Finalize approved local work and report"]
   Scope -->|Yes| Scan["Investigate the pinned Full or Gap scope"]
   Scan --> Audit["Check accuracy, preservation and useful context"]
