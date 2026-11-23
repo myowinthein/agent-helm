@@ -30,6 +30,11 @@ try {
     const output = {};
     for (const [id, source] of Object.entries(diagrams)) {
       const result = await mermaid.render(`diagram-${id}`, source);
+      const svg = new DOMParser().parseFromString(result.svg, 'image/svg+xml').documentElement;
+      const [, , width, height] = svg.getAttribute('viewBox').split(/\s+/).map(Number);
+      // Keep direct SVG views readable; the guide's image CSS scales its preview.
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
       // Embedded SVG media queries inherit the page's selected color-scheme.
       const selector = `#diagram-${id}`;
       const colors = `<style>
@@ -37,12 +42,15 @@ try {
           --diagram-text: #27262b;
           --diagram-surface: #f5f6fa;
           --diagram-line: #5c5962;
+          --diagram-background: #fff;
+          background-color: var(--diagram-background);
         }
         @media (prefers-color-scheme: dark) {
           ${selector} {
             --diagram-text: #e6e1e8;
             --diagram-surface: #302d36;
             --diagram-line: #a6a1ad;
+            --diagram-background: #27262b;
           }
         }
         ${selector} text, ${selector} span, ${selector} p, ${selector} .label,
@@ -67,7 +75,7 @@ try {
           opacity: 1;
         }
       </style>`;
-      output[id] = result.svg.replace('</svg>', `${colors}</svg>`);
+      output[id] = new XMLSerializer().serializeToString(svg).replace('</svg>', `${colors}</svg>`);
     }
     return output;
   }, diagrams);

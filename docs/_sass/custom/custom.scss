@@ -166,9 +166,25 @@ figure.highlight > button[aria-busy="true"] {
 
 .header-controls {
   display: flex;
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
   align-items: center;
+  max-width: 100%;
   padding-right: $sp-4;
+}
+
+@include mq(md) {
+  .main-header {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 3.75rem;
+  }
+
+  .main-header .search {
+    flex: 1 1 10rem;
+    min-width: 0;
+    height: 3.75rem !important;
+  }
 }
 
 .site-version {
@@ -295,6 +311,7 @@ a:is([href^="https://"], [href^="http://"]):not(
 
 .setup-tabs__list {
   display: flex;
+  flex-wrap: wrap;
   gap: $sp-4;
   margin: $sp-4 0;
   border-bottom: 1px solid $border-color;
@@ -369,6 +386,11 @@ a:is([href^="https://"], [href^="http://"]):not(
 
 .mermaid {
   margin: $sp-4 0;
+
+  figcaption {
+    margin-top: $sp-2;
+    font-size: 0.875rem;
+  }
 
   img {
     display: block;

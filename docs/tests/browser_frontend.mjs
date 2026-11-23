@@ -69,6 +69,66 @@ try {
    await context.close();
   }
  }
+ // Enlarged text keeps header controls and setup tabs within the page.
+ for(const width of [320,800,1280]) for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width,height:900},colorScheme:scheme});
+  const page=await context.newPage();
+  await page.goto(pageUrl('docs/setup/codex.html'));
+  if(width<800)await page.locator('#menu-button').click();
+  const fontSize=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));
+  await page.addStyleTag({content:`html { font-size: ${fontSize*2}px !important; }`});
+  assert.equal(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize)),fontSize*2);
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Enlarged text causes horizontal page scrolling');
+  const header=await page.locator('#main-header').boundingBox();
+  for(const selector of ['#search-input','#theme-mode','.site-version']) {
+   const control=page.locator(selector);
+   assert(await control.isVisible(),`${selector} disappeared with enlarged text`);
+   const box=await control.boundingBox();
+   assert(box.x>=0&&box.x+box.width<=width+1,`${selector} overflows with enlarged text`);
+   assert(box.y>=header.y&&box.y+box.height<=header.y+header.height+1,`${selector} escapes the header`);
+  }
+  const chooser=await page.locator('#theme-mode').boundingBox();
+  const version=await page.locator('.site-version').boundingBox();
+  assert(version.x>=chooser.x+chooser.width||version.y>=chooser.y+chooser.height,'Enlarged header controls overlap');
+  const query=page.locator('#search-input');
+  await query.fill('normalize');
+  await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
+  await query.press('Escape');
+  await page.addStyleTag({content:'* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }'});
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Enlarged, spaced text causes horizontal page scrolling');
+  console.log(`PASS ${width}px ${scheme}: doubled text, spacing overrides, header controls, search and wrapping setup tabs`);
+  await context.close();
+ }
+ // A native full-size SVG view remains readable and works without site scripts.
+ for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width:320,height:900},colorScheme:scheme,javaScriptEnabled:scheme!=='light'});
+  const page=await context.newPage();
+  await page.goto(pageUrl('docs/commands/log/detailed.html'));
+  const figures=page.locator('figure.mermaid');
+  assert.equal(await figures.locator('figcaption a').count(),await figures.count());
+  const figure=figures.first();const image=figure.locator('img');const fullSize=figure.getByRole('link',{name:'View full-size diagram',exact:true});
+  const authoredWidth=Number(await image.getAttribute('width'));
+  const preview=await image.boundingBox();
+  assert(preview.width<authoredWidth,'Diagram preview no longer fits the narrow article');
+  assert.equal(await fullSize.getAttribute('href'),await image.getAttribute('src'));
+  assert.equal(await fullSize.getAttribute('target'),null,'Full-size view unexpectedly opens another tab');
+  await page.locator('#main-content h1').focus();
+  await fullSize.focus();
+  await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');
+  assert(await fullSize.evaluate(el=>el===document.activeElement&&el.matches(':focus-visible')&&getComputedStyle(el).outlineStyle!=='none'),'Full-size link has no keyboard focus indication');
+  const destination=new URL(await fullSize.getAttribute('href'),page.url()).href;
+  await page.keyboard.press('Enter');await page.waitForURL(destination);
+  const svg=page.locator('svg');
+  const full=await svg.boundingBox();
+  assert(full.width>=authoredWidth-1,'Standalone SVG still shrinks its labels to fit the phone');
+  assert.equal(await svg.evaluate(el=>getComputedStyle(el).backgroundColor),scheme==='dark'?'rgb(39, 38, 43)':'rgb(255, 255, 255)','Standalone SVG lost its theme canvas');
+  assert.equal(await svg.getAttribute('viewBox')!==null,true);
+  await page.goBack();
+  assert.equal(new URL(page.url()).pathname,'/agent-helm/docs/commands/log/detailed.html');
+  assert.equal(context.pages().length,1);
+  console.log(`PASS 320px ${scheme}: readable full-size SVG, keyboard activation, same-tab return${scheme==='light'?', no JavaScript':''}`);
+  await context.close();
+ }
  // The floating arrow appears after scrolling and leaves the article unobscured.
  for(const width of [320,390,800,1280]) for(const scheme of ['light','dark']) {
   const reducedMotion=width===320||width===800?'reduce':'no-preference';

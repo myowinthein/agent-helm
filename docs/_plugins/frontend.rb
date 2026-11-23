@@ -247,7 +247,8 @@ module HelmFrontend
         id = Digest::SHA256.hexdigest(renderer + source)
         width, height = dimensions(File.read(File.join(cache, "#{id}.svg")))
         label = CGI.escapeHTML("Workflow diagram for #{page.data['title']}")
-        %(<figure class="mermaid"><img src="#{site.baseurl}/assets/diagrams/#{id}.svg" width="#{width.ceil}" height="#{height.ceil}" style="aspect-ratio: #{width} / #{height};" alt="#{label}" decoding="async"></figure>)
+        url = "#{site.baseurl}/assets/diagrams/#{id}.svg"
+        %(<figure class="mermaid"><img src="#{url}" width="#{width.ceil}" height="#{height.ceil}" style="aspect-ratio: #{width} / #{height};" alt="#{label}" decoding="async"><figcaption><a href="#{url}">View full-size diagram</a></figcaption></figure>)
       end
     end
     site.pages.select { |page| page.url == '/assets/js/just-the-docs.js' }.each do |page|
