@@ -1,6 +1,16 @@
 require "rake"
 require_relative "docs/tasks"
 
+desc "Compare shared maintainer standards with the local sibling checkout (no network)"
+task :standards_check do
+  ruby "scripts/check_standards.rb"
+end
+
+desc "Test standards drift detection in disposable paired repositories"
+task :standards_test do
+  ruby "scripts/test_standards.rb"
+end
+
 desc "Validate shared workflows and exported package contents"
 task :plugin_test do
   ruby "scripts/test_plugin.rb"
@@ -34,5 +44,5 @@ task :acceptance_support_test do
 end
 
 desc "Check plugin packaging, helpers, smoke assertions and documentation"
-task test: %i[plugin_test normalize_test normalize_handoff_test ledger_test smoke_support_test acceptance_support_test docs_links_test docs_test docs_browser_test]
+task test: %i[standards_test plugin_test normalize_test normalize_handoff_test ledger_test smoke_support_test acceptance_support_test docs_links_test docs_test docs_browser_test]
 task default: :test

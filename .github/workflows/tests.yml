@@ -23,8 +23,9 @@ jobs:
         with:
           ruby-version: '3.4'
 
-      - name: Test the package and helpers
+      - name: Test the package, helpers and standards checker
         run: |
+          ruby scripts/test_standards.rb
           ruby scripts/test_plugin.rb
           python3 -I -B scripts/test_normalize.py
           python3 -I -B scripts/test_normalize_handoff.py
