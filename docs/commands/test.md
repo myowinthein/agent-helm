@@ -70,6 +70,8 @@ Paths, setup, checks and record effects appear before approval. A complete Apply
 
 Existing tools come first; installation, upgrades and service/database effects stay within the approved plan and isolated targets. When required checks cannot run, findings remain unverified and approved additive drafts stay uncommitted.
 
+Checks follow the [shared verification policy](../rules/git.html#quality-checks): start with the affected behavior and consumers, reuse matching passes and broaden when the impact or required gates call for it. Full scan describes source assessment; it does not automatically require every runtime test.
+
 ## Your result and the next run
 
 You get test changes, actual check results and remaining work. An approved assessment saves findings before implementation; each case closes only when its protection is verified. Skipped or blocked work stays visible for later runs. Coverage is reported only when measured.

@@ -80,7 +80,15 @@ For a non-obvious change, the body can explain why it was needed and the importa
 
 ## Quality checks
 
-Checks follow the affected code and consumers. Shared changes require the full suite unless you explicitly authorize another plan; project-specific gates still apply. Results must describe the intended snapshot: passed, failed, unavailable and deferred are different outcomes.
+Verification starts with the changed behavior and the consumers that depend on it. The agent chooses the smallest established checks that cover those effects, including relevant regression cases. A filename or small diff alone cannot establish isolation: shared fixtures, configuration, dependencies and generated inputs can affect otherwise unchanged code.
+
+For example, a wording change on a documentation page may need a site build and link checks. A change to a shared request contract may need tests for its callers and integration boundaries. Markdown that implements an agent workflow needs its relevant package and workflow checks, even though the file looks like documentation.
+
+Fast checks provide early feedback, followed by slower checks when they add needed evidence. The agent uses supported test selectors and checks that the intended cases ran. An already fast adequate suite may cost less than an elaborate selection. If the runner cannot select cases separately, its smallest adequate suite is appropriate. A full run remains necessary when required, when effects span the project or when the affected scope cannot be established reliably. A shared file does not automatically trigger every suite, and saving time does not justify guessing which consumers are unaffected.
+
+Passed results can be reused while their relevant source, tests, dependencies, configuration, tools and environment still match. Unknown external state prevents that reuse for affected checks. New changes or unexplained failures can require renewed checks; a new phase, local commit or final response alone does not. Repeated runs for flakiness or performance need a specific purpose, rather than continuing until one passes.
+
+The report gives actual commands, tested scope, reused results and limits, with concise output and useful failure details. A focused pass does not prove whole-project health. Passed, failed, unavailable and deferred remain different outcomes, and project-specific gates still apply.
 
 A test name, green result from an older commit or successful source build does not prove a new target integration is ready. Failures and unmet protection requirements block dependent publication.
 

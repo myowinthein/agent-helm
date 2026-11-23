@@ -9,6 +9,7 @@ permalink: /docs/commands/test/detailed.html
 title_category: Details
 source_files:
   - guides/test.md
+  - rules/git.md
   - rules/safety.md
 ---
 
@@ -100,6 +101,8 @@ Existing tools come first. Runner setup, installations, upgrades and database or
 
 Work proceeds in coherent groups of cases. Failed, unavailable or deferred required checks keep those cases unverified. Approved additive drafts may remain uncommitted when the required verification cannot run. Coverage claims need measurements, and a failed case can reveal production work outside the testing task.
 
+The [shared verification policy](../../rules/git/detailed.html#quality-checks) guides execution. The agent selects an adequate baseline for the affected modules, then reuses it while its relevant inputs still match. After test changes, it checks the new or modified cases and affected consumers, expanding for shared fixture or runner effects when necessary. It does not automatically run each case, then its file, then every suite over the same unchanged inputs. Whole-project effects, uncertain impact or explicit project gates can still require a full run. Full scan remains a source-assessment scope, separate from runtime execution.
+
 ## Your result and the next run
 
 The report separates the assessment, test changes, measured results and remaining work. Saved findings preserve decisions, evidence and useful closed history. Deferred, skipped and accepted-risk cases do not count as verified protection.
@@ -114,4 +117,4 @@ Changes finish locally on the same branch. [Refactor](../refactor.html#refactor-
 
 ## Explore the source
 
-For implementation details, read [guides/test.md](https://github.com/myowinthein/agent-helm/blob/main/guides/test.md) and [rules/safety.md](https://github.com/myowinthein/agent-helm/blob/main/rules/safety.md).
+For implementation details, read [guides/test.md](https://github.com/myowinthein/agent-helm/blob/main/guides/test.md), [rules/git.md](https://github.com/myowinthein/agent-helm/blob/main/rules/git.md) and [rules/safety.md](https://github.com/myowinthein/agent-helm/blob/main/rules/safety.md).

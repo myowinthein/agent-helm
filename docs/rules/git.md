@@ -53,7 +53,9 @@ Use a body when it adds a non-obvious reason or important tradeoff. Straightforw
 
 ## Quality checks
 
-Use configured checks for changed code and affected consumers. Shared changes require the full suite unless another plan is explicitly authorized. Report passed, failed, unavailable and deferred checks accurately. Required checks and reviews must match the intended commit; failures block publication.
+Start with the smallest established checks that cover the change and affected consumers. Broaden to the full suite when required, when effects span the project or when impact cannot be reliably bounded. Shared files do not automatically mean every test must run.
+
+Reuse passed results while their relevant inputs and environment still match; task completion alone does not require another run. Report the tested scope and limits accurately. Required checks and reviews still apply, and failures block dependent publication.
 
 ## Publication
 
