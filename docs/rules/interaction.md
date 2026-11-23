@@ -28,45 +28,39 @@ flowchart TD
 
 ### Feedback and loading
 
-Keep feedback behavior consistent across comparable operations: when pending, completion and failure states appear, change and clear. Quick actions should not flash loading labels or busy cursors; slower work needs clear pending feedback. Prevent duplicate actions where needed and restore appropriate controls when work ends.
+Comparable controls should communicate pending work, success and failure consistently. Quick actions avoid flashing loading indicators; slower work needs clear progress feedback and protection against accidental repeats. A copy confirmation follows an actual clipboard success.
 
-Respect reduced-motion preferences throughout affected controls and feedback, preserving purposeful motion where compatible.
-
-Recoverable error popups can default to four seconds when the failure and recovery remain discoverable afterward. A retry control can remain available, or visible text can still be copied manually. Preserve entered text and avoid retrying an unchanged failed setup on every keystroke. Essential errors without another recovery route remain available.
-
-Copy confirmation appears after success, without needing hover, and defaults to two seconds. Copying something else successfully clears the earlier confirmation and icon; a pending or failed attempt leaves it alone. A new copy attempt clears earlier copy errors, which use the recoverable-error default when manual copying remains available.
+Errors preserve the person's input and leave a way to understand and recover from the failure. Essential feedback remains available without hover, and old messages should not overwrite a newer result. Controls and feedback respect reduced-motion preferences.
 
 ### Keyboard focus and autofocus
 
-Keyboard focus uses a clear, consistent project treatment that stays visible while the control is focused. It should work across supported themes and forced-colors mode without moving nearby content. Use `:focus-visible` to avoid unnecessary outlines after ordinary mouse clicks, preserving native input behavior and a visible fallback. Never remove focus just to hide the indicator; overlays must not entirely hide the focused component under WCAG's minimum conditions.
+Keyboard users should be able to identify the focused control throughout their task. Focus remains visible without moving nearby content, using the project's treatment across supported themes and accessibility settings.
 
-Autofocus moves focus automatically and needs a clear task purpose, avoiding unexpected scrolling, mobile keyboards or skipped context. Actual tab widgets distinguish focus from selection and activate automatically only when their panels appear without noticeable delay. Page-navigation links styled as tabs remain links.
+Moving focus automatically needs a clear purpose because it can scroll the page, open a mobile keyboard or skip context. Tab widgets distinguish keyboard focus from the selected panel; navigation links styled as tabs remain links.
 
 ### Preferences and persistence
 
-Reusable choices such as quality and theme can be remembered across visits. Temporary inputs and per-item choices keep their intended lifetime. Reuse existing storage: page memory suits current-page state, `sessionStorage` suits a tab session, and `localStorage` suits small non-sensitive preferences across visits. Existing cookies or account settings can serve choices needed by the server or account.
+Reusable choices such as quality or theme can be remembered across visits. Temporary inputs and per-item selections keep their intended lifetime. The rule follows the product's existing settings mechanism and saves deliberate choices, using the documented default when a saved value is missing or invalid.
 
-Save deliberate changes, validate stored values and fall back to the product's default when a value is missing, cleared or invalid. Browser preferences are scoped to the site and browser profile; projects sharing an origin need separate keys. Keep controls usable when saving fails. If a new choice cannot be applied, keep the last working value and restore the control to it, rather than saving the failed selection. Shared choices can update other open views without clearing unrelated inputs or silently changing active work.
+If a new choice cannot be applied, the control returns to the last working value. If saving is unavailable, the current choice remains usable. Shared preferences can update other open views without clearing unrelated input or silently changing work already underway.
 
 ### Theme preferences
 
-When a theme control is part of the task, use the system preference initially unless a valid saved choice or project requirement takes priority. Manual Light/Dark choices win; system changes apply only in automatic mode. Preserve the existing toggle or selector; a visible System option is optional.
+The starting appearance follows the system unless a saved choice or project requirement takes priority. Manual Light/Dark choices stay in effect through system changes until the person returns to automatic behavior.
 
-Give the control a clear accessible name and expose its selected mode appropriately. A binary switch represents two values; a System/Light/Dark control needs suitable three-choice semantics. Other preferences use their own product defaults rather than inheriting a System mode. Design owns the visual appearance of supported themes.
+The existing toggle or selector keeps a clear accessible name and selected mode. A visible System option is optional. Design owns how the supported themes look; Interaction owns how the choice behaves and is remembered.
 
 ### Input limits
 
-A maximum length does not automatically need a counter. Ordinary fields with generous limits usually need none; fixed-format values need clear instructions. Show a count when people need to plan or shorten their writing, or consider revealing it near a rarely reached limit. Explain important restrictions without relying on placeholders or color alone.
+Explain restrictions where they help someone enter or correct an answer. A counter is useful for constrained writing, but a generous technical limit rarely needs one.
 
-Preserve pasted answers and let people edit excess text where the field permits it. Describe errors without deleting their work, and keep counts consistent with the accepted value, including emoji and other languages. Browser checks help people correct mistakes; receiving code must enforce its own constraints. Local-only apps use their existing save and import boundaries rather than adding a backend.
+For composed text, the usual approach keeps pasted drafts available for correction rather than silently cutting them off. Feedback and counts agree with what the application accepts, including relevant languages and emoji. A working counter alone does not establish that the full validation path works.
 
 ### Cursors
 
-Match the cursor to what the person can do: a hand for links and enabled custom actions, an I-beam for selectable text, and grab, resize or zoom cursors only for those working operations. Keep native form-control behavior and established design-system conventions. Read-only text can remain selectable; disabled controls should not promise an available action.
+The cursor reflects an available action without promising behavior that does not exist. Links, selectable text, disabled controls and working drag handles need different cues, while native controls and established project conventions keep their usual behavior.
 
-Check actual clickable areas and spacing against WCAG's target-size requirements and exceptions. A small icon can have a larger activation area.
-
-Pressing an ordinary button changes its appearance, not its cursor. Processing and dragging can change the cursor when the operation changes. Keep keyboard focus and touch interaction usable, since cursors are only an extra cue. Preserve deliberate project styling without hiding useful operation hints.
+A small icon can have a larger activation area. Keyboard and touch use remain available independently of pointer cues.
 
 ### Links
 
@@ -78,17 +72,15 @@ Links navigate; buttons perform in-page actions. Destinations should answer the 
 | External text link | Current tab; northeast arrow leaving an open square. |
 | Necessary new tab/window | No opening notice; external icon only if the destination is external. |
 
-New contexts are limited to preserving an active task, explicit user choice or project requirements. Keep native browser opening choices available. Downloads and email, phone or app links use native handling and clear outcome wording. Identify material surprises such as a login requirement or file format.
+A new tab or window is reserved for preserving an active task, explicit user choice or a project requirement. Native browser opening choices remain available. Downloads and email, phone or app links keep their native handling, with wording that explains material surprises such as a file format or login requirement.
 
-Do not add visible or hidden notices solely to announce a new tab/window, including label suffixes, tooltips or screen-reader-only equivalents. Keep labels and accessible names focused on the destination.
-
-Classify destinations by the actual site/service boundary and explicit aliases; absolute URLs can be internal. Follow established design-system conventions and renderer limits. When Writing is also selected, apply these choices within its [reference-link workflow](writing.html#reference-links).
+Labels describe the destination without extra announcements solely for opening a new tab. Internal and external destinations follow the actual site boundary; an absolute URL can still be internal. When Writing is also selected, these choices join its [reference-link workflow](writing.html#reference-links).
 
 ### Link appearance
 
-Use clearly visible underlines for prose, reference and table-text links so readers can spot them before interacting. Hover and keyboard focus can strengthen them; color and thickness follow the project's style. Clearly grouped navigation, button links, cards and icons can use their established component styling instead.
+Readers should recognize links before interacting. Prose and reference links normally use visible underlines; clearly grouped navigation, button links, cards and icons can use their established styling.
 
-Links need readable contrast in light and dark themes, visible keyboard focus and useful feedback without layout shifts. Muted styling should not make links look disabled. Touch users must be able to recognize links without hovering. Use visited styling where reading history helps, keeping it distinct from the current-page marker. Preserve the project's palette and purposeful motion.
+Links remain readable across supported themes, with visible keyboard focus and feedback that does not move nearby content. Touch users do not need hover to discover them. Visited styling can show reading history, while a current-page marker shows location.
 
 ## Scope and verification
 

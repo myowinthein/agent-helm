@@ -91,7 +91,7 @@ Type numbers, ranges, exclusions or a requested revision directly when neither A
 
 A concise execution note supplies paths, setup, checks and targets, meaningful verification limits, commit units and record effects before approval. It reuses the finding explanations rather than repeating them as a long implementation plan. Large reports start with a numbered index and explain manageable groups, keeping their numbers stable. Apply covers only changes with a displayed ready plan, never unseen later batches. The assessment checkpoint still needs its findings and effects disclosed before it is approved.
 
-The approved assessment saves all meaningful findings reviewed in scope before implementation, including those not selected for test changes. An explicit request to record the assessment without test changes can use its own record-only approval; Skip does not trigger that question or mark anything fixed. The existing ledger format and historical priority metadata remain compatible, while recommendations use the current benefits and tradeoffs. Approval does not cover unknown later diffs, commits or separately required intrusive execution.
+The approved assessment saves all meaningful findings reviewed in scope before implementation, including those not selected for test changes. An explicit request to record the assessment without test changes can use its own record-only approval; Skip does not trigger that question or mark anything fixed. Approval does not cover unknown later diffs, commits or separately required intrusive execution.
 
 ## Tools and verification
 
@@ -101,11 +101,11 @@ Work proceeds in coherent groups of cases. Failed, unavailable or deferred requi
 
 ## Your result and the next run
 
-The report separates the assessment, test changes, measured results and remaining work. Saved findings preserve decisions and useful closed history; deferred, skipped and accepted-risk cases do not count as verified protection.
+The report separates the assessment, test changes, measured results and remaining work. Saved findings preserve decisions, evidence and useful closed history. Deferred, skipped and accepted-risk cases do not count as verified protection.
 
-Later reviews reconsider relevant cases against current behavior and tests. An open case may still need work, already be protected or no longer apply. If a resolved case loses its protection, or an obsolete requirement returns, test reopens the same case. A file edit or unavailable runner alone proves none of these outcomes, and an old pass does not become a current pass automatically.
+Later reviews reconsider relevant cases against current behavior and tests. Changed wording or paths do not turn the same missing guarantee into a new finding. An open case may still need work, already be protected or no longer apply. If a resolved case loses its protection, or an obsolete requirement returns, test reopens the same case. A file edit or unavailable runner alone proves none of these outcomes, and an old pass does not become a current pass automatically.
 
-Saved findings retain your decisions, evidence and useful closed history. Changed wording or paths do not turn the same missing guarantee into a new finding. Earlier deferrals apply only while their context still holds. A Gap scan leaves unrelated history intact and makes clear which findings were not freshly reviewed.
+A Gap scan leaves unrelated history intact and makes clear which findings were not freshly reviewed. Earlier deferrals apply only while their context still holds.
 
 Changes finish locally on the same branch. [Refactor](../refactor.html#refactor-vs-test) owns behavior-preserving source improvements; neither workflow invokes the other automatically.
 

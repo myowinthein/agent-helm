@@ -93,7 +93,7 @@ The final actions are **Rewrite all proposed changes / Cancel**. “All” cover
 
 You can type a wording correction or narrower message selection without a separate menu action. The revised messages and branch impact are shown before approval. Uncertain findings remain outside the proposed rewrite. The unchanged plan is not asked twice, but changed scope or messages need the corresponding review again. Cancel or skip creates no new checkpoint or recovery artifacts and preserves any earlier approved branch preparation.
 
-Applying requires Python and git-filter-repo. The approved message map is data; fixed code shipped with Helm applies replacements to exact commit IDs. The agent does not generate or edit a rewrite callback during the run. Unsupported replacement encodings require a separately reviewed implementation before rewriting. Before rewriting, the agent verifies recovery material under `Agent Helm/normalize/<run-id>/` in your OS user's home, outside every checkout. An interrupted continuation reuses its existing folder.
+Applying requires Python and git-filter-repo. Before rewriting, normalize verifies recovery material under `Agent Helm/normalize/<run-id>/` in your OS user's home, outside every checkout. An interrupted continuation reuses its existing folder.
 
 After the bounded rewrite, verification compares messages, file contents, graph relationships and preserved refs. A mismatch stops dependent work and retains the actual results and recovery evidence. It does not cause an automatic destructive retry or rollback.
 

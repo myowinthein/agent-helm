@@ -4,7 +4,7 @@
 2. Choose **Add plugin → Add marketplace → Add from a repository**.
 3. Enter `myowinthein/agent-helm`, select the repository or **Use “myowinthein/agent-helm”**, then click **Sync**.
 4. Find **Agent Helm** in the marketplace and click **Add**.
-5. Open **Yours** and check that the plugin is enabled and lists all ten skills.
+5. Open **Yours** and check that the plugin is enabled and lists all eleven skills.
 6. Start a fresh chat in your project workspace. Type `/` and select a Helm workflow, such as `log`, `test` or `ship`.
 
 ## Update
