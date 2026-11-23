@@ -32,7 +32,7 @@ figure.highlight {
   outline-offset: -2px;
 }
 
-// Both sidebar actions mark the same row, retaining their separate Tab stops.
+// The submenu arrow shares its row's focus indicator.
 :root .nav-list-expander:focus-visible {
   outline: none;
 }

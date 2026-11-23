@@ -517,6 +517,51 @@ try {
   assert.equal(await nextButton.locator('use').getAttribute('xlink:href'),'#svg-copy');
   console.log('PASS clipboard: confirmed results, latest success/error only, two/four-second dismissal, retry and keyboard focus');await context.close();
  }
+ // Each sidebar row has one Tab stop, with keyboard and pointer submenu access.
+ for(const width of [390,1280]) for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width,height:900},colorScheme:scheme});
+  const page=await context.newPage();await page.goto(pageUrl('docs/commands/log.html'));
+  if(width<800)await page.locator('#menu-button').click();
+  const navigation=page.locator('#site-nav');
+  const setup=navigation.getByRole('link',{name:'Setup',exact:true});
+  const commands=navigation.getByRole('link',{name:'Commands',exact:true});
+  const setupButton=navigation.getByRole('button',{name:'Setup submenu',exact:true});
+  assert(await navigation.locator('.nav-list-expander').evaluateAll(buttons=>buttons.every(button=>button.tabIndex===-1)));
+  assert(await navigation.locator('.nav-list-link').evaluateAll(links=>links.every(link=>link.hasAttribute('href'))),'A current-page row lost its Tab stop');
+  await navigation.getByRole('link',{name:'Home',exact:true}).focus();
+  await page.keyboard.press('Tab');assert(await setup.evaluate(el=>el===document.activeElement),'Tab stopped on the arrow before the row');
+  assert(await setup.evaluate(el=>el.matches(':focus-visible')&&getComputedStyle(el).outlineStyle==='solid'));
+  const initial=page.url();await page.keyboard.press('ArrowRight');
+  assert.equal(page.url(),initial);assert.equal(await setup.getAttribute('aria-expanded'),'true');
+  assert.equal(await setupButton.getAttribute('aria-expanded'),'true');
+  assert.equal(await setup.getAttribute('aria-controls'),await setupButton.getAttribute('aria-controls'));
+  await page.keyboard.press('ArrowRight');assert.equal(await setup.getAttribute('aria-expanded'),'true');
+  await page.keyboard.press('Tab');assert(await navigation.getByRole('link',{name:'Claude',exact:true}).evaluate(el=>el===document.activeElement));
+  await page.keyboard.press('Shift+Tab');assert(await setup.evaluate(el=>el===document.activeElement));
+  await page.keyboard.press('ArrowLeft');assert.equal(await setup.getAttribute('aria-expanded'),'false');
+  assert.equal(await setupButton.getAttribute('aria-expanded'),'false');
+  await page.keyboard.press('Tab');assert(await commands.evaluate(el=>el===document.activeElement),'Tab visited the collapsed submenu or a second row control');
+  await page.keyboard.press('Shift+Tab');assert(await setup.evaluate(el=>el===document.activeElement));
+  await setupButton.click();assert.equal(await setup.getAttribute('aria-expanded'),'true');
+  await setupButton.click();assert.equal(await setup.getAttribute('aria-expanded'),'false');
+  const archive=navigation.getByRole('link',{name:'Archive',exact:true});
+  await archive.focus();await page.keyboard.press('ArrowRight');
+  assert.equal(await archive.getAttribute('aria-expanded'),'true');
+  await page.keyboard.press('Tab');assert(await navigation.getByRole('link',{name:'Step 1: Explore',exact:true}).evaluate(el=>el===document.activeElement));
+  await page.keyboard.press('Shift+Tab');await page.keyboard.press('ArrowLeft');
+  assert.equal(await archive.getAttribute('aria-expanded'),'false');
+  await setup.focus();await page.keyboard.press('Enter');await page.waitForURL(pageUrl('docs/setup/'));
+  if(width<800)await page.locator('#menu-button').click();
+  const current=page.locator('#site-nav').getByRole('link',{name:'Setup',exact:true});
+  assert.equal(await current.getAttribute('href'),'/agent-helm/docs/setup/');
+  assert.equal(await current.getAttribute('aria-expanded'),'true');
+  await current.focus();await page.keyboard.press('ArrowLeft');assert.equal(await current.getAttribute('aria-expanded'),'false');
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));
+  if(width<800)await page.locator('#menu-button').click();
+  assert.equal(await page.locator('#site-nav').getByRole('link',{name:'Commands',exact:true}).getAttribute('aria-expanded'),'true');
+  console.log(`PASS ${width}px ${scheme}: one sidebar Tab stop per row, arrows, nested menus, pointer toggles, Enter and current-page access`);
+  await context.close();
+ }
  // A detailed guide keeps its overview entry active in the menu.
  {
   const context=await createContext();const page=await context.newPage();
