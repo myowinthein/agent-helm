@@ -24,6 +24,20 @@ figure.highlight {
   box-shadow: none;
 }
 
+.nav-list .nav-list-item {
+  // Target this row's controls so hovering a child leaves its parent alone.
+  &:has(> .nav-list-link:hover, > .nav-list-expander:hover) > .nav-list-link {
+    color: $link-color;
+    background-image: none;
+    background-color: rgba($link-color, 0.06);
+  }
+
+  > .nav-list-expander:hover {
+    background-image: none;
+    background-color: rgba($link-color, 0.12);
+  }
+}
+
 a:not([class]) {
   text-decoration-color: currentColor;
 
