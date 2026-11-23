@@ -50,7 +50,7 @@ I want agents to follow the same working rules across sessions. I use adopt to [
 Codex → $adopt    Claude → /adopt
 ```
 
-It compares existing and bundled rules, then installs the shared local copies I approve. [Git](https://myowinthein.github.io/agent-helm/docs/rules/git.html) and [Safety](https://myowinthein.github.io/agent-helm/docs/rules/safety.html) stay paired for commits, publishing and consequential actions. I can also choose [Writing](https://myowinthein.github.io/agent-helm/docs/rules/writing.html) for clear prose and [Design](https://myowinthein.github.io/agent-helm/docs/rules/design.html) for responsive, accessible interfaces without repetitive AI patterns. Plugin updates leave these copies unchanged until I review an update through adopt.
+It compares existing and bundled rules, then installs the shared local copies I approve. [Git](https://myowinthein.github.io/agent-helm/docs/rules/git.html) and [Safety](https://myowinthein.github.io/agent-helm/docs/rules/safety.html) stay paired for commits, publishing and consequential actions. I can also choose [Writing](https://myowinthein.github.io/agent-helm/docs/rules/writing.html) for clear prose, [Design](https://myowinthein.github.io/agent-helm/docs/rules/design.html) for responsive, accessible interfaces without repetitive AI patterns, and [Interaction](https://myowinthein.github.io/agent-helm/docs/rules/interaction.html) for predictable controls, feedback and preferences. Plugin updates leave these copies unchanged until I review an update through adopt.
 
 ### Env
 
@@ -90,7 +90,7 @@ When a page, component or document feels inconsistent, I use polish to [review i
 Codex → $polish    Claude → /polish
 ```
 
-It reviews the scope I choose against the project's selected Writing, Design and Interaction rules. I see meaningful findings and concrete proposed changes before approving fixes. It applies and verifies the selected work without keeping a ledger. At least one rule must be selected, and a broken selected reference stops the review.
+It discovers relevant Writing, Design and Interaction rules and custom standards for the scope I choose. I select optional groups and review concrete changes before approving fixes. It reports complete or partial coverage, identifies unverified behavior and applies and checks approved work without a ledger. At least one core rule must be included, and broken required or selected references stop the review.
 
 ### Manifest
 
