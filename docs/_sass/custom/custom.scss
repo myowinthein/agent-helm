@@ -121,6 +121,15 @@ a:not([class]) {
   container-type: inline-size;
 }
 
+// Release the page immediately while the inactive overlay finishes fading.
+.search-overlay {
+  pointer-events: none;
+}
+
+.search-active .search-overlay {
+  pointer-events: auto;
+}
+
 @container (max-width: 28rem) {
   .search-result-title,
   .search-result-previews {

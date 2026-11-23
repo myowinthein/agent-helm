@@ -98,6 +98,31 @@ try {
    await context.close();
   }
  }
+ // The closing fade must not swallow the next navigation click.
+ for(const scheme of ['light','dark']) for(const reducedMotion of ['no-preference','reduce']) {
+  const context=await createContext({viewport:{width:1280,height:900},colorScheme:scheme,reducedMotion});
+  const page=await context.newPage();const guide=pageUrl('docs/commands/log.html');await page.goto(guide);
+  const query=page.locator('#search-input'),overlay=page.locator('.search-overlay'),link=page.locator('.guide-depth a').nth(1);
+  const destination=new URL(await link.getAttribute('href'),page.url()).href;
+  await query.fill('normalize');await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
+  await overlay.evaluate(el=>el.getAnimations().forEach(animation=>animation.finish()));
+  let box=await page.locator('#site-nav').getByRole('link',{name:'Home',exact:true}).boundingBox();
+  await page.mouse.click(box.x+box.width/2,box.y+box.height/2);
+  await page.waitForFunction(()=>!document.documentElement.classList.contains('search-active'));
+  assert.equal(page.url(),guide,'The active search overlay allowed navigation instead of dismissing search');
+  await query.focus();await page.waitForFunction(()=>document.documentElement.classList.contains('search-active'));
+  await overlay.evaluate(el=>el.getAnimations().forEach(animation=>animation.finish()));
+  await query.press('Escape');
+  // Hold the fade in progress so this check cannot pass by waiting it out.
+  if(reducedMotion==='no-preference') {
+   await overlay.evaluate(el=>el.getAnimations().forEach(animation=>animation.pause()));
+   assert(await overlay.evaluate(el=>parseFloat(getComputedStyle(el).opacity)>0),'The closing fade was removed');
+  }
+  box=await link.boundingBox();await page.mouse.click(box.x+box.width/2,box.y+box.height/2);
+  await page.waitForURL(destination);
+  console.log(`PASS ${scheme} ${reducedMotion}: active overlay dismisses search, closing overlay releases navigation immediately`);
+  await context.close();
+ }
  // Arrow navigation uses real link focus and keeps the selected result visible.
  for(const width of [390,1280]) for(const scheme of ['light','dark']) {
   const context=await createContext({viewport:{width,height:390},colorScheme:scheme,reducedMotion:'reduce'});
