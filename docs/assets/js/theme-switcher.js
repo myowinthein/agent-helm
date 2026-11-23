@@ -17,6 +17,11 @@
       url.hash = committedMode === 'system' ? '' : `theme-${committedMode}`;
       link.setAttribute('href', `${url.pathname}${url.search}${url.hash}`);
     });
+    if (document.documentElement.hasAttribute('data-diagram-viewer')) {
+      const url = new URL(location.href);
+      url.hash = committedMode === 'system' ? '' : `theme-${committedMode}`;
+      history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    }
   };
 
   const showFeedback = message => {
@@ -75,6 +80,9 @@
     if (modes.includes(saved)) mode = saved;
   } catch {
     // Browser storage may be blocked by privacy settings.
+  }
+  if (document.documentElement.hasAttribute('data-diagram-viewer') && /^#theme-(light|dark)$/.test(location.hash)) {
+    mode = location.hash.slice(7);
   }
   committedMode = mode;
 

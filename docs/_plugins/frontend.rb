@@ -15,7 +15,7 @@ module HelmFrontend
     source.sub(before, after)
   end
 
-  def self.initial_theme(html, base)
+  def self.initial_theme(html, base, viewer: false)
     default = "#{base}/assets/css/just-the-docs-default.css"
     link = %(<link rel="stylesheet" href="#{default}">)
     return html unless html.include?(link)
@@ -30,6 +30,9 @@ module HelmFrontend
             const saved = localStorage.getItem('agent-helm-theme');
             if (['system', 'light', 'dark'].includes(saved)) mode = saved;
           } catch {}
+          if (#{viewer} && /^#theme-(light|dark)$/.test(location.hash)) {
+            mode = location.hash.slice(7);
+          }
           const theme = mode === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : mode;
           const stylesheet = document.createElement('link');
           stylesheet.id = 'helm-theme-stylesheet';
@@ -248,6 +251,21 @@ module HelmFrontend
     view_box[2..]
   end
 
+  def self.diagram_viewer(site, guide, index, image_url, width, height)
+    anchor = "helm-diagram-#{index}"
+    name = "#{Digest::SHA256.hexdigest("#{guide.url}##{anchor}")[0, 16]}.html"
+    viewer = Jekyll::PageWithoutAFile.new(site, site.source, 'diagrams', name)
+    viewer.data.merge!(
+      'layout' => 'diagram', 'nav_exclude' => true, 'search_exclude' => true,
+      'sitemap' => false, 'title' => "#{guide.data['title']}: diagram #{index}",
+      'guide_url' => "#{site.baseurl}#{guide.url}##{anchor}",
+      'diagram_url' => image_url, 'diagram_width' => width, 'diagram_height' => height
+    )
+    viewer.output = initial_theme(viewer.renderer.run, site.baseurl.to_s, viewer: true)
+    site.pages << viewer
+    ["#{site.baseurl}#{viewer.url}", anchor]
+  end
+
   def self.optimize(site)
     pages = site.pages.select { |page| page.output_ext == '.html' }
     worker = File.join(site.source, 'scripts/render-diagrams.mjs')
@@ -287,13 +305,16 @@ module HelmFrontend
         html = replace_once(html, label,
           label + '<button id="search-retry" class="search-retry" type="button" aria-label="Search unavailable. Retry search." title="Search unavailable" hidden>Retry search</button>')
       end
+      diagram_index = 0
       page.output = html.gsub(DIAGRAM) do
+        diagram_index += 1
         source = CGI.unescapeHTML(Regexp.last_match(1))
         id = Digest::SHA256.hexdigest(renderer + source)
         width, height = dimensions(File.read(File.join(cache, "#{id}.svg")))
         label = CGI.escapeHTML("Workflow diagram for #{page.data['title']}")
         url = "#{site.baseurl}/assets/diagrams/#{id}.svg"
-        %(<figure class="mermaid"><img src="#{url}" width="#{width.ceil}" height="#{height.ceil}" style="aspect-ratio: #{width} / #{height};" alt="#{label}" decoding="async"><figcaption><a href="#{url}" data-diagram-full-size>View full-size diagram</a></figcaption></figure>)
+        viewer_url, anchor = diagram_viewer(site, page, diagram_index, url, width, height)
+        %(<figure class="mermaid"><img src="#{url}" width="#{width.ceil}" height="#{height.ceil}" style="aspect-ratio: #{width} / #{height};" alt="#{label}" decoding="async"><figcaption><a id="#{anchor}" href="#{viewer_url}" data-diagram-full-size>View full-size diagram</a></figcaption></figure>)
       end
     end
     site.pages.select { |page| page.url == '/assets/js/just-the-docs.js' }.each do |page|
