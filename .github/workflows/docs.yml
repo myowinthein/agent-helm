@@ -64,6 +64,7 @@ jobs:
         working-directory: docs
         run: |
           bundle exec ruby tests/test_frontend.rb
+          bundle exec ruby tests/test_seo.rb
           node tests/browser_frontend.mjs
 
       - name: Upload the built site

@@ -1,5 +1,6 @@
 ---
 title: Privacy Notice
+description: Read how Agent Helm and its documentation site handle information, browser storage and project correspondence.
 nav_exclude: true
 ---
 

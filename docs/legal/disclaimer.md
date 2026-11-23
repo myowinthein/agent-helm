@@ -1,5 +1,6 @@
 ---
 title: Disclaimer
+description: Read the limitations of Agent Helm workflows and AI-generated output, including review responsibilities and operational risks.
 nav_exclude: true
 ---
 
