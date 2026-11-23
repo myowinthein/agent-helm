@@ -500,6 +500,36 @@ class RetentionTests(unittest.TestCase):
         self.assertEqual(self.finish(6)["deleted_runs"], [])
         self.assertEqual(outside.read_bytes(), b"Never delete me")
 
+    def test_changed_later_candidate_preserves_the_entire_deletion_set(self):
+        self.add_run(9)  # Keep two deletion candidates until this cycle completes.
+        for number in range(1, 5):
+            self.add_run(number)
+            self.finish(number)
+        candidates = [self.base / self.run_id(number) for number in (1, 2)]
+        (candidates[1] / "recovery.bundle").write_bytes(b"Preserve changed later recovery")
+        protected = {path: path.read_bytes() for folder in candidates
+                     for path in folder.rglob("*") if path.is_file()}
+        for number in (1, 2):
+            for directory, suffix in (("normalize-handoffs", ".json"),
+                                      ("normalize-completions", ".sha256")):
+                path = self.common / "agent-helm" / directory / (self.run_id(number) + suffix)
+                protected[path] = path.read_bytes()
+
+        result = self.finish(9)
+
+        self.assertEqual(result["cleanup"], "incomplete")
+        self.assertEqual(result["deleted_runs"], [])
+        self.assertEqual(result["removed_backup_runs"], [])
+        self.assertEqual(result["removed_locator_runs"], [])
+        self.assertEqual(result["recovered_bytes"], 0)
+        self.assertEqual(result["kept_completed"], 5)
+        self.assertEqual({path: path.read_bytes() for path in protected}, protected)
+        for folder in candidates:
+            self.assertEqual({str(path.relative_to(folder)) for path in folder.rglob("*")},
+                             {"handoff.json", "recovery.bundle", retention.RECEIPT})
+        self.assertFalse(list(self.base.glob(".retiring-*")))
+        self.assertNotIn("pending_retirement_directory", result)
+
     def test_wrong_clone_or_incomplete_release_creates_no_completion(self):
         path = self.add_run(1)
         for changes in ({"git_common_dir": str(self.root / "another/.git")},
