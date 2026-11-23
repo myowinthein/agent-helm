@@ -41,6 +41,9 @@ nav_external_links:
     url: https://github.com/myowinthein/agent-helm
     hide_icon: false
 
+back_to_top: true
+back_to_top_text: "Back to top"
+
 plugins:
   - jekyll-seo-tag
   - jekyll-remote-theme
