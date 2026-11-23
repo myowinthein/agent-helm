@@ -52,6 +52,27 @@ a:not([class]) {
   opacity: 1;
 }
 
+.search-results {
+  container-type: inline-size;
+}
+
+@container (max-width: 28rem) {
+  .search-result-title,
+  .search-result-previews {
+    display: block;
+    width: auto;
+  }
+
+  .search-result-title {
+    padding-right: 0;
+  }
+
+  .search-result-previews {
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+  }
+}
+
 .interaction-feedback {
   margin: 0;
   font-size: 0.875rem;
@@ -175,6 +196,7 @@ figure.highlight > button[aria-busy="true"] {
 
 @include mq(md) {
   .main-header {
+    container-type: inline-size;
     flex-wrap: wrap;
     height: auto;
     min-height: 3.75rem;
@@ -184,6 +206,11 @@ figure.highlight > button[aria-busy="true"] {
     flex: 1 1 10rem;
     min-width: 0;
     height: 3.75rem !important;
+  }
+
+  .search-active .search-input-wrap,
+  .search-results {
+    width: min(33.5rem, 100cqi);
   }
 }
 
@@ -281,6 +308,11 @@ a:is([href^="https://"], [href^="http://"]):not(
   vertical-align: -0.1em;
   background-color: currentColor;
   mask: url("../icons/external-link.svg") center / contain no-repeat;
+
+  @media (forced-colors: active) {
+    forced-color-adjust: none;
+    background-color: LinkText;
+  }
 }
 
 .guide-depth {

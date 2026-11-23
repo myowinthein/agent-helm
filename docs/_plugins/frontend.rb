@@ -107,6 +107,51 @@ module HelmFrontend
       "  searchInput.addEventListener('input', update);\n\n  jtd.addEvent(searchInput, 'focus', function(){")
     source = replace_once(source, '    const nextFocusedElement = evt.relatedTarget;',
       "    const nextFocusedElement = evt.relatedTarget;\n    if (!nextFocusedElement) { hideSearch(); return; }")
+    # Focus and repeated input events must not cancel unchanged result batches.
+    source = replace_once(source, "    currentSearchIndex++;\n\n", '')
+    source = replace_once(source, '    currentInput = input;',
+      "    currentInput = input;\n    currentSearchIndex++;")
+    source = replace_once(source, "  jtd.addEvent(searchInput, 'keydown', function(e){", <<~JS.chomp)
+        function focusSearchResult(result) {
+          result.focus({ preventScroll: true });
+          result.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+        }
+        function handleSearchKeydown(e) {
+          if (e.isComposing) return;
+    JS
+    source = replace_once(source, "            previous.classList.add('active');",
+      "            previous.classList.add('active');\n            focusSearchResult(previous);")
+    next_selection = "            next.classList.add('active');"
+    unless source.scan(Regexp.new(Regexp.escape(next_selection))).size == 2
+      raise ArgumentError, 'Just the Docs theme changed: expected two next-result selections'
+    end
+    source = source.gsub(next_selection, "#{next_selection}\n            focusSearchResult(next);")
+    previous_selection = "            previous.classList.add('active');\n            focusSearchResult(previous);\n          }"
+    source = replace_once(source, previous_selection,
+      "#{previous_selection} else {\n            searchInput.focus();\n          }")
+    keyboard_end = "        return;\n    }\n  });\n\n  jtd.addEvent(document, 'click', function(e){"
+    source = replace_once(source, keyboard_end, <<~JS.chomp)
+              return;
+            case 27:
+              e.preventDefault();
+              searchInput.value = '';
+              update();
+              searchInput.focus();
+              return;
+          }
+        }
+        searchInput.addEventListener('keydown', handleSearchKeydown);
+        searchResults.addEventListener('keydown', handleSearchKeydown);
+        searchResults.addEventListener('focusin', event => {
+          const result = event.target.closest('a.search-result');
+          if (!result) return;
+          const active = searchResults.querySelector('.search-result.active');
+          if (active) active.classList.remove('active');
+          result.classList.add('active');
+        });
+
+        jtd.addEvent(document, 'click', function(e){
+    JS
     shortcut = source.match(%r{  // add event listener on ctrl[^\n]*\n  jtd\.addEvent\(document, 'keydown',[\s\S]*?\n  \}\);})
     source = source.sub(shortcut[0], '') if shortcut
     source = replace_once(source, '  initSearch();', <<~JS.chomp)
@@ -248,7 +293,7 @@ module HelmFrontend
         width, height = dimensions(File.read(File.join(cache, "#{id}.svg")))
         label = CGI.escapeHTML("Workflow diagram for #{page.data['title']}")
         url = "#{site.baseurl}/assets/diagrams/#{id}.svg"
-        %(<figure class="mermaid"><img src="#{url}" width="#{width.ceil}" height="#{height.ceil}" style="aspect-ratio: #{width} / #{height};" alt="#{label}" decoding="async"><figcaption><a href="#{url}">View full-size diagram</a></figcaption></figure>)
+        %(<figure class="mermaid"><img src="#{url}" width="#{width.ceil}" height="#{height.ceil}" style="aspect-ratio: #{width} / #{height};" alt="#{label}" decoding="async"><figcaption><a href="#{url}" data-diagram-full-size>View full-size diagram</a></figcaption></figure>)
       end
     end
     site.pages.select { |page| page.url == '/assets/js/just-the-docs.js' }.each do |page|

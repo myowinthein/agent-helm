@@ -69,6 +69,73 @@ try {
    await context.close();
   }
  }
+ // Arrow navigation uses real link focus and keeps the selected result visible.
+ for(const width of [390,1280]) for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width,height:390},colorScheme:scheme,reducedMotion:'reduce'});
+  const page=await context.newPage();await page.goto(pageUrl('docs/commands/log.html'));
+  if(width<800)await page.locator('#menu-button').click();
+  const query=page.locator('#search-input');await query.pressSequentially('test');
+  await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>12);
+  for(let i=0;i<12;i++)await page.keyboard.press('ArrowDown');
+  const selected=page.locator('.search-result.active');
+  assert(await selected.evaluate(el=>el===document.activeElement&&el.matches(':focus-visible')),'Search selection has no real keyboard focus');
+  assert(await selected.evaluate(el=>{const a=el.getBoundingClientRect(),r=document.getElementById('search-results').getBoundingClientRect();return a.top>=r.top-1&&a.bottom<=r.bottom+1;}),'Keyboard selection is outside the visible result list');
+  assert(await page.locator('#search-results').evaluate(el=>el.scrollTop>0));
+  await page.keyboard.press('Escape');
+  assert(await query.evaluate(el=>el===document.activeElement));assert.equal(await query.inputValue(),'');
+  assert.equal(await page.locator('#search-results').isVisible(),false);
+  await query.fill('normalize');await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
+  await page.keyboard.press('Tab');
+  assert(await page.locator('.search-result.active').evaluate(el=>el===document.activeElement),'Tab focus and selected result diverged');
+  const destination=new URL(await page.locator('.search-result.active').getAttribute('href'),page.url()).href;
+  await page.keyboard.press('Enter');await page.waitForURL(destination);
+  console.log(`PASS ${width}px ${scheme}: typed search, result scrolling, real link focus, Escape, Tab and Enter`);
+  await context.close();
+ }
+ // Expanded search must fit even when the header has wrapped with larger text.
+ for(const width of [800,1280]) for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width,height:390},colorScheme:scheme,reducedMotion:'reduce'});
+  const page=await context.newPage();await page.goto(pageUrl('docs/commands/log.html'));
+  await page.addStyleTag({content:'html {font-size:32px!important;}'});
+  await page.locator('#search-input').fill('normalize');await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
+  for(const selector of ['#search-input','#search-results']) {
+   const box=await page.locator(selector).boundingBox();
+   assert(box.x>=0&&box.x+box.width<=width+1,`${selector} overflows with enlarged text`);
+   assert(box.height>0&&box.y+box.height<=390+1,`${selector} is clipped in a short viewport`);
+  }
+  const title=await page.locator('.search-result-title').first().boundingBox();
+  const preview=await page.locator('.search-result-previews').first().boundingBox();
+  assert(preview.y>=title.y+title.height-1,'Enlarged result columns did not stack in the narrow panel');
+  console.log(`PASS ${width}px ${scheme}: enlarged search field and results stay in the visible viewport`);
+  await context.close();
+ }
+ // CSS masks retain the system link color in forced-colors palettes.
+ for(const scheme of ['light','dark']) {
+  const context=await createContext({colorScheme:scheme,forcedColors:'active'});const page=await context.newPage();
+  await page.goto(pageUrl('docs/commands/log.html'));
+  const link=page.locator('.footer-links a[href^="https://github.com"]').first();
+  const colors=await link.evaluate(el=>({text:getComputedStyle(el).color,icon:getComputedStyle(el,'::after').backgroundColor,body:getComputedStyle(document.body).backgroundColor}));
+  assert.equal(colors.icon,colors.text);assert.notEqual(colors.icon,colors.body);
+  console.log(`PASS forced colors ${scheme}: external icons retain the system link color`);await context.close();
+ }
+ // Manual appearance travels with full-size links, including blocked storage.
+ for(const system of ['light','dark']) for(const blocked of [false,true]) {
+  const context=await createContext({viewport:{width:390,height:900},colorScheme:system});
+  if(blocked)await context.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Blocked','SecurityError');}}));
+  const page=await context.newPage();await page.goto(pageUrl('docs/commands/log/detailed.html'));
+  await page.locator('#menu-button').click();const manual=system==='light'?'dark':'light';
+  await page.locator('#theme-mode').selectOption(manual);await background(manual)(page);
+  const link=page.locator('[data-diagram-full-size]').first();
+  assert((await link.getAttribute('href')).endsWith(`#theme-${manual}`));
+  await link.click();assert.equal(await page.locator('svg').evaluate(el=>getComputedStyle(el).backgroundColor),manual==='dark'?'rgb(39, 38, 43)':'rgb(255, 255, 255)');
+  await page.goBack();
+  if(!await page.locator('#theme-mode').isVisible())await page.locator('#menu-button').click();
+  await page.locator('#theme-mode').selectOption('system');
+  await page.waitForFunction(()=>document.getElementById('theme-mode').value==='system');
+  assert(!(await page.locator('[data-diagram-full-size]').first().getAttribute('href')).includes('#'),'System choice retained a manual diagram override');
+  console.log(`PASS full-size ${manual} on ${system} system${blocked?', storage blocked':''}: manual theme retained and System clears it`);
+  await context.close();
+ }
  // Enlarged text keeps header controls and setup tabs within the page.
  for(const width of [320,800,1280]) for(const scheme of ['light','dark']) {
   const context=await createContext({viewport:{width,height:900},colorScheme:scheme});

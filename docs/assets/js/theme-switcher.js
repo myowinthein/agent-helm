@@ -11,6 +11,14 @@
   let pendingFeedbackTimer;
   let errorTimer;
 
+  const updateDiagramLinks = () => {
+    document.querySelectorAll('[data-diagram-full-size]').forEach(link => {
+      const url = new URL(link.href);
+      url.hash = committedMode === 'system' ? '' : `theme-${committedMode}`;
+      link.setAttribute('href', `${url.pathname}${url.search}${url.hash}`);
+    });
+  };
+
   const showFeedback = message => {
     feedback = message;
     const status = document.getElementById('theme-status');
@@ -23,6 +31,7 @@
   };
   const finishChange = () => {
     committedMode = mode;
+    updateDiagramLinks();
     const selector = document.getElementById('theme-mode');
     if (selector) {
       selector.value = committedMode;
@@ -46,6 +55,7 @@
     const previousTheme = committedMode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : committedMode;
     mode = previousTheme === current ? committedMode : current;
     committedMode = mode;
+    updateDiagramLinks();
     savePendingChoice = false;
     document.documentElement.style.colorScheme = current;
     const selector = document.getElementById('theme-mode');
@@ -128,6 +138,7 @@
   });
 
   document.addEventListener('DOMContentLoaded', () => {
+    updateDiagramLinks();
     const selector = document.getElementById('theme-mode');
     if (!selector) return;
     selector.value = committedMode;

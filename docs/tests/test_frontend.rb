@@ -25,6 +25,12 @@ source = <<~JS
     };
   }
   function searchLoaded(index, docs) {
+    function update() {
+      currentSearchIndex++;
+
+      if (input === currentInput) return;
+      currentInput = input;
+    }
     jtd.addEvent(searchInput, 'focus', function(){
       setTimeout(update, 0);
     });
@@ -34,6 +40,34 @@ source = <<~JS
       if (nextFocusedElement.classList.contains('search-result')) return;
       hideSearch();
     };
+    jtd.addEvent(searchInput, 'keydown', function(e){
+      switch (e.keyCode) {
+        case 38:
+          if (active) {
+            if (active.parentElement.previousSibling) {
+              previous.classList.add('active');
+            }
+          }
+          return;
+        case 40:
+          if (active) {
+            if (active.parentElement.nextSibling) {
+              next.classList.add('active');
+            }
+          } else {
+            if (next) {
+              next.classList.add('active');
+            }
+          }
+          return;
+        case 13:
+          return;
+      }
+    });
+
+    jtd.addEvent(document, 'click', function(e){
+      hideSearch();
+    });
   }
   jtd.onReady(function(){
     initSearch();
