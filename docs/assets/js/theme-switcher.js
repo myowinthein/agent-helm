@@ -87,7 +87,7 @@
     clearFeedback();
     pendingStylesheet?.remove();
     pendingStylesheet = null;
-    const current = stylesheet.href.endsWith('just-the-docs-dark.css') ? 'dark' : 'light';
+    const current = new URL(stylesheet.href).pathname.endsWith('just-the-docs-dark.css') ? 'dark' : 'light';
     // A failed automatic appearance change does not change the preference.
     mode = committedMode === 'system' ? 'system' : current;
     committedMode = mode;
@@ -122,7 +122,7 @@
     clearFeedback();
     savePendingChoice = save;
     const theme = mode === 'system' ? (systemTheme.matches ? 'dark' : 'light') : mode;
-    const href = new URL(`just-the-docs-${theme}.css`, stylesheet.href).href;
+    const href = new URL(stylesheet.dataset[`${theme}Href`] || `just-the-docs-${theme}.css`, stylesheet.href).href;
     pendingStylesheet?.remove();
     pendingStylesheet = null;
 

@@ -68,7 +68,10 @@ try {
    assert(!requests.some(url=>url.includes('search-data.json')),'Search downloaded before interaction');
    assert(!requests.some(url=>url.includes('mermaid')),'Browser downloaded Mermaid');
    assert.equal(requests.filter(url=>/just-the-docs-(default|light|dark)\.css/.test(url)).length,1,'Duplicate initial theme stylesheets');
-   assert(requests.some(url=>url.endsWith(`just-the-docs-${scheme}.css`)),'Wrong system theme');
+   assert(requests.some(url=>new URL(url).pathname.endsWith(`just-the-docs-${scheme}.css`)),'Wrong system theme');
+   for(const url of requests.filter(url=>/\/assets\/(?:css\/.*\.css|js\/just-the-docs\.js)(?:\?|$)/.test(url))) {
+    assert(/^[0-9a-f]{16}$/.test(new URL(url).searchParams.get('v')||''),'Generated stylesheet or script has no content version');
+   }
    assert(requests.every(url=>new URL(url).origin===origin),'Initial load requested another origin');
    assert.equal(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)),true,'Diagram not visible');
    const cls=await page.evaluate(()=>window.shifts.reduce((sum,n)=>sum+n,0));
@@ -79,6 +82,7 @@ try {
    await query.fill('normalize');
    await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
    assert.equal(requests.filter(url=>url.includes('search-data.json')).length,1,'Search initialized multiple times');
+   assert(/^[0-9a-f]{16}$/.test(new URL(requests.find(url=>url.includes('search-data.json'))).searchParams.get('v')||''),'Search index has no content version');
    await query.evaluate(input => input.blur());
    assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('search-active')),false);
    await query.focus();
@@ -86,7 +90,8 @@ try {
    await query.press('Escape');
    assert.equal(await query.inputValue(),'');
    await page.locator('#theme-mode').selectOption(scheme==='light'?'dark':'light');
-   await page.waitForFunction(expected=>document.querySelector('link[rel="stylesheet"]').href.endsWith(`just-the-docs-${expected}.css`),scheme==='light'?'dark':'light');
+   await page.waitForFunction(expected=>new URL(document.querySelector('link[rel="stylesheet"]').href).pathname.endsWith(`just-the-docs-${expected}.css`),scheme==='light'?'dark':'light');
+   assert(/^[0-9a-f]{16}$/.test(new URL(await page.locator('#helm-theme-stylesheet').getAttribute('href'),page.url()).searchParams.get('v')||''),'Theme change lost its content version');
    await checkThemeColors(page, scheme==='light'?'dark':'light', assert);
    assert.equal(errors.length,0,errors.join('\n'));
    console.log(`PASS ${width}px ${scheme}: one theme stylesheet, no initial index, static diagrams, CLS ${cls.toFixed(3)}, search and theme switching`);
@@ -401,7 +406,7 @@ try {
  // A slow first search must retain text typed before the index becomes ready.
  {
   const context=await createContext();const page=await context.newPage();let count=0;
-  await page.route('**/search-data.json',async route=>{count++;await new Promise(resolve=>setTimeout(resolve,500));await route.continue();});
+  await page.route('**/search-data.json?v=*',async route=>{count++;await new Promise(resolve=>setTimeout(resolve,500));await route.continue();});
   await page.goto(pageUrl('docs/commands/log.html'));
   await page.locator('#search-input').fill('archive');
   assert.equal(await page.locator('#search-status').textContent(),'','Quick search initialization should not flash loading text');
@@ -420,7 +425,7 @@ try {
   const context=await createContext(failure==='network'?{viewport:{width:390,height:900},colorScheme:'dark'}:{});
   const page=await context.newPage();let count=0;
   await page.clock.install();
-  await page.route('**/search-data.json',async route=>{
+  await page.route('**/search-data.json?v=*',async route=>{
    count++;
    if(count!==1){await new Promise(resolve=>setTimeout(resolve,500));return route.continue();}
    if(failure==='network')return route.abort();
@@ -518,7 +523,7 @@ try {
   const context=await createContext({viewport:{width,height:390},colorScheme:scheme,hasTouch:true,isMobile:true,reducedMotion:'reduce'});
   const page=await context.newPage();await page.clock.install();let attempts=0,failDownload;
   const download=new Promise(resolve=>{failDownload=resolve;});
-  await page.route('**/search-data.json',async route=>{if(++attempts===1){await download;await route.abort();}else await route.continue();});
+  await page.route('**/search-data.json?v=*',async route=>{if(++attempts===1){await download;await route.abort();}else await route.continue();});
   await page.goto(pageUrl('docs/commands/log.html'));
   if(enlarged){const font=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.addStyleTag({content:`html {font-size:${font*2}px!important;} * {line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important;}`});}
   if(width<800||enlarged)await openCompactMenu(page);
@@ -551,7 +556,7 @@ try {
   const context=await createContext({javaScriptEnabled:fault!=='no-js',colorScheme:'dark'});const page=await context.newPage();
   if(fault==='storage-blocked')await page.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Blocked','SecurityError');}}));
   if(fault.startsWith('saved-'))await page.addInitScript(mode=>localStorage.setItem('agent-helm-theme',mode),fault.slice(6));
-  if(fault==='dark-css-failed')await page.route('**/just-the-docs-dark.css',route=>route.abort());
+  if(fault==='dark-css-failed')await page.route('**/just-the-docs-dark.css?v=*',route=>route.abort());
   await page.goto(pageUrl('docs/commands/ship/detailed.html'));
   if(fault==='no-js')assert.equal(await page.locator('#back-to-top').isVisible(),false,'Nonfunctional arrow appears without JavaScript');
   const expected=['no-js','saved-light','dark-css-failed'].includes(fault)?'light':'dark';
@@ -570,7 +575,7 @@ try {
   const context=await createContext({colorScheme:initial});const page=await context.newPage();
   if(saved)await page.addInitScript(mode=>localStorage.setItem('agent-helm-theme',mode),saved);
   await page.goto(pageUrl('docs/commands/log.html'));await background(initial)(page);
-  const stylesheet=`**/just-the-docs-${target}.css`;
+  const stylesheet=`**/just-the-docs-${target}.css?v=*`;
   await page.route(stylesheet,route=>route.abort());
   await page.emulateMedia({colorScheme:target});
   await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
@@ -642,7 +647,7 @@ try {
   await background(currentTheme)(page);
   await page.locator('#theme-mode').selectOption(currentTheme);
   let attempts=0;
-  const stylesheet=`**/just-the-docs-${targetTheme}.css`;
+  const stylesheet=`**/just-the-docs-${targetTheme}.css?v=*`;
   await page.route(stylesheet,async route=>{
    attempts++;
    if(attempts===2)await new Promise(resolve=>setTimeout(resolve,500));
@@ -699,7 +704,7 @@ try {
   let failDownload;
   const download=new Promise(resolve=>{failDownload=resolve;});
   const target=scheme==='light'?'dark':'light';
-  await page.route(`**/just-the-docs-${target}.css`,async route=>{await download;await route.abort();});
+  await page.route(`**/just-the-docs-${target}.css?v=*`,async route=>{await download;await route.abort();});
   const before=await page.locator('#theme-mode').evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight}));
   await page.locator('#theme-mode').selectOption(target);
   await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Loading theme…');

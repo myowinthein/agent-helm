@@ -4,6 +4,7 @@ require 'fileutils'
 require 'json'
 require 'open3'
 require 'rexml/document'
+require 'tempfile'
 
 module HelmFrontend
   DIAGRAM = %r{<pre><code class="language-mermaid">(.*?)</code></pre>}m
@@ -38,6 +39,8 @@ module HelmFrontend
           stylesheet.id = 'helm-theme-stylesheet';
           stylesheet.rel = 'stylesheet';
           stylesheet.setAttribute('blocking', 'render');
+          stylesheet.dataset.lightHref = light;
+          stylesheet.dataset.darkHref = dark;
           stylesheet.href = theme === 'dark' ? dark : light;
           stylesheet.addEventListener('error', () => {
             stylesheet.dataset.themeLoadFailed = 'true';
@@ -279,11 +282,82 @@ module HelmFrontend
   end
 
   def self.dimensions(svg)
-    view_box = REXML::Document.new(svg).root.attributes['viewBox'].to_s.split.map { |number| Float(number) }
+    raise ArgumentError, 'Invalid Mermaid diagram SVG' unless svg.is_a?(String)
+
+    root = REXML::Document.new(svg).root
+    raise ArgumentError, 'Invalid Mermaid diagram SVG' unless root && root.name == 'svg' && root.namespace == 'http://www.w3.org/2000/svg'
+
+    view_box = root.attributes['viewBox'].to_s.split.map { |number| Float(number) }
     unless view_box.size == 4 && view_box.all?(&:finite?) && view_box[2..].all?(&:positive?)
       raise ArgumentError, 'Invalid Mermaid diagram dimensions'
     end
     view_box[2..]
+  rescue REXML::ParseException
+    raise ArgumentError, 'Invalid Mermaid diagram SVG', cause: nil
+  end
+
+  def self.cached_diagram(path)
+    svg = File.read(path)
+    dimensions(svg)
+    svg
+  rescue SystemCallError, IOError, ArgumentError
+    nil
+  end
+
+  def self.cache_diagram(path, svg)
+    FileUtils.mkdir_p(File.dirname(path))
+    Tempfile.create(['.mermaid-', '.tmp'], File.dirname(path)) do |file|
+      file.write(svg)
+      file.close
+      File.rename(file.path, path)
+    end
+  rescue SystemCallError, IOError => error
+    Jekyll.logger.warn 'Mermaid cache:', "Could not save #{File.basename(path)} (#{error.class}); using rendered diagram."
+  end
+
+  def self.render_diagrams(site, worker, diagrams)
+    cache = File.join(site.cache_dir, 'mermaid/assets/diagrams') unless site.config['disable_disk_cache'] || site.config['safe']
+    rendered = {}
+    diagrams.each_key do |id|
+      svg = cached_diagram(File.join(cache, "#{id}.svg")) if cache
+      rendered[id] = svg if svg
+    end
+    missing = diagrams.reject { |id, _| rendered.key?(id) }
+    unless missing.empty?
+      output, error, status = Open3.capture3('node', worker, stdin_data: JSON.generate(missing))
+      raise "Diagram rendering failed: #{error}" unless status.success?
+      fresh = JSON.parse(output)
+      raise 'Incomplete Mermaid render result' unless fresh.is_a?(Hash) && fresh.keys.sort == missing.keys.sort
+
+      fresh.each_value { |svg| dimensions(svg) }
+      fresh.each do |id, svg|
+        cache_diagram(File.join(cache, "#{id}.svg"), svg) if cache
+        rendered[id] = svg
+      end
+    end
+    rendered
+  end
+
+  def self.versioned_asset_url(base, asset)
+    "#{base}#{asset.url}?v=#{Digest::SHA256.hexdigest(asset.output)[0, 16]}"
+  end
+
+  def self.version_assets(site)
+    assets = site.pages.select { |page| page.url.start_with?('/assets/') && page.url.match?(/\.(?:css|js|json)\z/) }
+    loader = assets.find { |page| page.url == '/assets/js/just-the-docs.js' }
+    if loader && site.config['search_enabled'] != false
+      index = assets.find { |page| page.url == '/assets/js/search-data.json' }
+      raise 'Missing generated search index' unless index
+
+      loader.output = replace_once(loader.output, "#{site.baseurl}#{index.url}", versioned_asset_url(site.baseurl, index))
+    end
+    urls = assets.to_h { |asset| ["#{site.baseurl}#{asset.url}", versioned_asset_url(site.baseurl, asset)] }
+    return if urls.empty?
+
+    references = /(?:#{Regexp.union(urls.keys)})(?=["'\s<>])/
+    site.pages.select { |page| page.output_ext == '.html' }.each do |page|
+      page.output = page.output.gsub(references) { |url| urls.fetch(url) }
+    end
   end
 
   def self.diagram_viewer(site, guide, index, image_url, width, height)
@@ -313,21 +387,12 @@ module HelmFrontend
         diagrams[id] = source
       end
     end
-    cache = File.join(site.source, '.jekyll-cache/mermaid/assets/diagrams')
-    FileUtils.mkdir_p(cache) unless diagrams.empty?
-    missing = diagrams.reject { |id, _| File.file?(File.join(cache, "#{id}.svg")) }
-    unless missing.empty?
-      output, error, status = Open3.capture3('node', worker, stdin_data: JSON.generate(missing))
-      raise "Diagram rendering failed: #{error}" unless status.success?
-      rendered = JSON.parse(output)
-      raise 'Incomplete Mermaid render result' unless rendered.keys.sort == missing.keys.sort
-      rendered.each do |id, svg|
-        dimensions(svg)
-        File.write(File.join(cache, "#{id}.svg"), svg)
-      end
-    end
-    diagrams.each_key do |id|
-      site.static_files << Jekyll::StaticFile.new(site, File.join(site.source, '.jekyll-cache/mermaid'), '/assets/diagrams', "#{id}.svg")
+    rendered = render_diagrams(site, worker, diagrams)
+    rendered.each do |id, svg|
+      asset = Jekyll::PageWithoutAFile.new(site, site.source, 'assets/diagrams', "#{id}.svg")
+      asset.data.merge!('layout' => nil, 'sitemap' => false)
+      asset.output = svg
+      site.pages << asset
     end
     pages.each do |page|
       html = initial_theme(page.output, site.baseurl.to_s)
@@ -345,7 +410,7 @@ module HelmFrontend
         diagram_index += 1
         source = CGI.unescapeHTML(Regexp.last_match(1))
         id = Digest::SHA256.hexdigest(renderer + source)
-        width, height = dimensions(File.read(File.join(cache, "#{id}.svg")))
+        width, height = dimensions(rendered.fetch(id))
         label = CGI.escapeHTML("Workflow diagram for #{page.data['title']}")
         url = "#{site.baseurl}/assets/diagrams/#{id}.svg"
         viewer_url, anchor = diagram_viewer(site, page, diagram_index, url, width, height)
@@ -356,6 +421,7 @@ module HelmFrontend
       page.output = lazy_search(page.output) unless site.config['search_enabled'] == false
       page.output = clipboard_feedback(page.output) unless site.config['enable_copy_code_button'] == false
     end
+    version_assets(site)
   end
 end
 
