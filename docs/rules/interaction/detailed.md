@@ -203,6 +203,16 @@ For affected mobile forms, also check whether fields and actions remain reachabl
 
 Source inspection, screenshots and observed interaction provide different evidence. An automated check can confirm that an outline exists while missing its clipped edges or cramped spacing. Report the pages, components and states actually checked, and distinguish representative sampling from complete requested coverage. A passing test suite does not establish visual correctness or complete accessibility. Include important gaps and unavailable checks in the normal task handoff without creating a separate report merely to follow this rule.
 
+## Background reading
+
+These sources add implementation detail and examples to the explanations above. They support maintenance; applying Interaction does not require reading every source or adding a research phase.
+
+- **Focus:** W3C explains [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html). MDN covers [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:focus-visible) and [forced colors](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/forced-colors).
+- **Preferences and themes:** MDN describes [tab-session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage), [cross-view storage events](https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event), [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies) and [`color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/color-scheme). Google's [theme-switch example](https://web.dev/articles/building/a-theme-switch-component) illustrates an implementation; Helm defines its own persistence defaults and optional System control.
+- **Input and feedback:** The HTML Standard defines [length constraints](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#limiting-user-input-length:-the-maxlength-attribute), while W3C explains accessible [status messages](https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html).
+- **Cursors:** The [CSS cursor definitions](https://www.w3.org/TR/css-ui-3/#cursor) describe the available operation cues.
+- **Links:** W3C explains [link purpose](https://www.w3.org/WAI/WCAG22/Understanding/link-purpose-in-context.html) and [text contrast](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html); the HTML Standard covers [opener protection](https://html.spec.whatwg.org/multipage/links.html#link-type-noopener). [GOV.UK](https://design-system.service.gov.uk/styles/links/) and [USWDS](https://designsystem.digital.gov/components/link/) provide design-system examples. Their conventions can differ from Helm's defaults.
+
 ## Explore the source
 
 For agent instructions, read [rules/interaction.md](https://github.com/myowinthein/agent-helm/blob/main/rules/interaction.md).

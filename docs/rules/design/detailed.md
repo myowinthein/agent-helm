@@ -72,6 +72,12 @@ A useful review points to concrete issues, explains their effect and proposes bo
 
 Loading Design alone starts no redesign or scan. The requested task and the project's users determine what should change.
 
+## Background reading
+
+Apple's [layout](https://developer.apple.com/design/human-interface-guidelines/layout) and [Dark Mode](https://developer.apple.com/design/human-interface-guidelines/dark-mode) guidance explain hierarchy, legibility and adaptation. Google's [responsive design guide](https://web.dev/articles/responsive-web-design-basics) provides more detail on flexible layouts. Apply relevant principles within the project's platform and conventions; these sources do not prescribe a palette or native-app control policy for every project.
+
+Anthropic's [frontend-design guidance](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md) and [article on recurring defaults](https://claude.com/resources/articles/improving-frontend-design-through-skills) provide background for the pattern examples. They are practitioner observations and editorial preferences, not universal usability findings. This reading is optional; applying Design does not require loading another skill or adding a research phase.
+
 ## Explore the source
 
 For implementation details, read [rules/design.md](https://github.com/myowinthein/agent-helm/blob/main/rules/design.md).

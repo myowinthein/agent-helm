@@ -6,7 +6,7 @@ Build responsive, accessible interfaces around the project's real content and us
 
 - Apply to requested interface creation, edits, planning and critique, including documentation sites. Follow explicit user choices, branding and existing components. Targeted edits preserve surrounding style, content, functionality and accessibility; loading this rule starts no scan, adjacent redesign or removal of deliberate choices.
 - Design owns visual composition, responsive layout, theme appearance and visual accessibility. Follow project prose guidance; Writing owns editorial references and Interaction owns theme selection and persistence, input feedback, cursors and link/control behavior. Neither is a dependency. Preserve working interactions even when those rules are unselected.
-- Keep project-specific branding, tokens, grids and components in existing local guidance or design-system sources unless rule customization is explicitly requested. Make reasonable reversible choices; clarify material unknowns without requiring a brief, questionnaire, mood board, new setting or planning workflow. Existing operational boundaries and required checks remain binding.
+- Keep project-specific branding, tokens, grids and components in existing local guidance or design-system sources unless rule customization is explicitly requested. External examples do not prescribe a palette or native-app control policy. Make reasonable reversible choices; clarify material unknowns without requiring a brief, questionnaire, mood board, new setting or planning workflow. Existing operational boundaries and required checks remain binding.
 
 ## Visual hierarchy
 
@@ -36,7 +36,7 @@ Do not automatically add these patterns to make a page seem modern, polished or 
 | Product-looking filler | Decorative browser windows, terminals, dashboards or charts that show nothing specific to the product. Requested prototypes/illustrations may use clearly identified simulated states. |
 | Replacement clichés | Automatically swapping purple gradients for cream-and-serif/clay, dark-and-neon or a severe newspaper layout without project context. |
 
-These examples are illustrative. Recognize the same habits in new forms; an unlisted effect is not automatically appropriate. Missing branding does not justify a stock SaaS theme, and appropriate existing design-system components need no replacement merely because they are common.
+These illustrative examples reflect practitioner observations and editorial preferences, not universal usability findings. Recognize the same habits in new forms; an unlisted effect is not automatically appropriate. Missing branding does not justify a stock SaaS theme, and appropriate existing design-system components need no replacement merely because they are common.
 
 ## Theme appearance
 
@@ -62,10 +62,4 @@ Silently check whether the affected composition could serve an unrelated product
 
 Use proportionate authorized rendering and interaction checks. For layout, navigation or sizing changes, check affected narrow, intermediate and wide views, breakpoint transitions and relevant orientations. Use representative long labels, URLs and supported languages; verify that the [WCAG text-spacing overrides](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html) cause no loss of content or functionality. Verify applicable [reflow](https://www.w3.org/TR/WCAG22/#reflow) at 320 CSS pixels for vertically scrolling content and [text resizing](https://www.w3.org/TR/WCAG22/#resize-text) to 200%, retaining each criterion's exceptions. These are accessibility checks, not mandated design breakpoints. Interaction owns detailed control-state checks when selected.
 
-Preserve required project checks. Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Report unavailable checks, important limitations and unfinished placeholders in the normal handoff. Loading this rule requires no detector, tool installation, report artifact or new approval process.
-
-## References
-
-[Carbon's color guidance](https://www.carbondesignsystem.com/building-blocks/foundations/color/overview) informs shared semantic roles across themes; [Apple's Dark Mode guidance](https://developer.apple.com/design/human-interface-guidelines/dark-mode) informs visual hierarchy, legibility and asset adaptation. Apply those design principles within the project's platform and conventions, without importing a native-app control policy or a prescribed palette.
-
-[Apple's layout guidance](https://developer.apple.com/design/human-interface-guidelines/layout) supports hierarchy and grouping; [Google's responsive guidance](https://web.dev/articles/responsive-web-design-basics) supports flexible, content-driven layouts and its [image guidance](https://web.dev/learn/design/responsive-images) explains proportion and reserved space. WCAG above supplies the accessibility baseline. [Anthropic's frontend guidance](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md) and its [article on recurring defaults](https://claude.com/resources/articles/improving-frontend-design-through-skills) inform the pattern examples. Those are practitioner observations and editorial preferences, not universal usability findings. References require no routine research, external-skill loading, framework or extra planning stages.
+Preserve required project checks. Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Report unavailable checks, important limitations and unfinished placeholders in the normal handoff. Loading this rule requires no routine research, external-skill loading, detector, framework, tool installation, report artifact or new planning or approval process.
