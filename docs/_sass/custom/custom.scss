@@ -506,8 +506,6 @@ a:is([href^="https://"], [href^="http://"]):not(
   align-items: center;
   gap: $sp-2;
   padding: $sp-2 $sp-3;
-  border: 1px solid $border-color;
-  border-radius: 4px;
   svg {
     flex-shrink: 0;
   }
