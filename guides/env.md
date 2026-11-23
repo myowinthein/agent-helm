@@ -92,7 +92,7 @@ Do not repeat the same explanation in a long plan below the diff. The issue and 
 
 Consider whether each finding is a current problem, a conditional/future risk or an improvement without a demonstrated failure. Weigh the expected benefit against implementation effort, regression/compatibility risk, added complexity and future maintenance in this project. Distinguish short- and long-term effects when they meaningfully differ. Use evidence, confidence, intentional configuration and practical judgment; no scores, fixed matrix or mandatory per-factor commentary.
 
-Recommend fixes whose expected benefit justifies their tradeoffs and whose concrete implementation is ready without unresolved intent or dependencies. Importance alone does not make a fix ready; optional wording/optimization work is not automatically recommended or automatically excluded. Explain the deciding reason briefly. Consult authoritative primary guidance only when uncertainty or the decision warrants it, and identify relevant supporting sources without a research requirement for every issue.
+Recommend fixes whose expected benefit justifies their tradeoffs and whose concrete implementation is ready without unresolved intent or dependencies. Importance alone does not make a fix ready; optional wording/optimization work is not automatically recommended or automatically excluded. Explain the deciding reason briefly. Use available authoritative guidance and label unresolved uncertainty; external research follows Safety's Network access policy rather than starting automatically for a finding.
 
 ### Large reports
 

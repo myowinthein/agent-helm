@@ -55,6 +55,8 @@ Terms, refund policies and EULAs need your request or an existing approved polic
 
 Existing approved clauses, locations and language are preserved unless you agree to a replacement. Essential missing facts are asked together; there is no standard home-address intake or worldwide clearance process.
 
+Legal starts from local and supplied evidence. Online legal, provider or store research needs your explicit request or agreed scope. Unverified external requirements remain identified limits, and indispensable missing evidence keeps the affected conclusion pending.
+
 <span id="handle-gaps-precisely"></span>
 
 A known material gap holds the affected document while other complete drafts may proceed. Missing facts do not become invented promises. Drafting and owner approval do not establish legal compliance; consent controls, routing and other implementation work remain separate.

@@ -81,7 +81,7 @@ After success or an uncertain response, read back the same release, tag name, co
 
 ## Primary references
 
-Use installed capabilities and current applicable provider documentation; unsupported versions leave the affected step pending. These references define mechanisms, not runtime verification of Helm:
+Use installed capabilities and the written provider procedures, checking local help when needed. Unsupported versions leave the affected step pending; external documentation research follows Safety's Network access policy. These links are maintenance sources, not instructions to fetch documentation on each invocation. Required scoped provider/API state checks remain operational work under the selected procedure:
 
 - [GitHub release creation](https://cli.github.com/manual/gh_release_create)
 - [GitHub pull requests API](https://docs.github.com/en/rest/pulls/pulls) and [GitLab merge requests API](https://docs.gitlab.com/api/merge_requests/)

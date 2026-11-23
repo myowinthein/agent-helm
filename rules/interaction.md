@@ -2,7 +2,7 @@
 
 Keep preferences, input feedback, cursors and link behavior predictable during requested interface work, including documentation sites. Preserve explicit user choices, project conventions, existing controls and the output medium's capabilities. Apply only relevant sections; loading this rule starts no redesign, scan, installation, workflow or extra execution authority.
 
-Writing owns prose and editorial references; Design owns visual composition, responsive layout, theme appearance and visual accessibility. Neither is a dependency. Use their relevant guidance when separately selected, within the same task. Helm's hand cursor, external icon, underline and persistence defaults are preferences, not universal accessibility requirements.
+Writing owns prose and editorial references; Design owns visual composition, responsive layout, theme appearance and visual accessibility. Neither is a dependency. Use their relevant guidance when separately selected, within the same task. Apply this rule's written guidance; linked standards are maintenance sources, not instructions to browse or check updates. Helm's hand cursor, external icon, underline and persistence defaults are preferences, not universal accessibility requirements.
 
 ## Feedback and loading
 
@@ -99,7 +99,7 @@ Keep recognizable controls, keyboard and touch use independently of cursors. Pre
 
 ## Links and navigation
 
-Use real links for navigation and downloads and buttons for in-page actions. Verify relevant destinations, fragments and meaningful labels; no invented URLs or placeholders presented as working links. When Writing is selected, apply these behaviors within its editorial reference pass without repeating selection.
+Use real links for navigation and downloads and buttons for in-page actions. Check relevant destinations, fragments and meaningful labels from available evidence; live external verification needs an explicit scope. Do not present invented URLs or placeholders as working links. When Writing is selected, apply these behaviors within its editorial reference pass without repeating selection.
 
 Current tab is the default. Existing `target="_blank"` alone establishes no requirement for a new context.
 

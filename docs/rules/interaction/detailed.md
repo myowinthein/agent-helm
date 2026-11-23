@@ -205,7 +205,7 @@ Source inspection, screenshots and observed interaction provide different eviden
 
 ## Background reading
 
-These sources add implementation detail and examples to the explanations above. They support maintenance; applying Interaction does not require reading every source or adding a research phase.
+These sources record background research and implementation examples. Apply the written rule without reopening them or checking for updates; external reading needs an explicit research, named-source or live-verification scope.
 
 - **Focus:** W3C explains [non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html). MDN covers [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:focus-visible) and [forced colors](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/forced-colors).
 - **Preferences and themes:** MDN describes [tab-session storage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage), [cross-view storage events](https://developer.mozilla.org/en-US/docs/Web/API/Window/storage_event), [cookies](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies) and [`color-scheme`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/color-scheme). Google's [theme-switch example](https://web.dev/articles/building/a-theme-switch-component) illustrates an implementation; Helm defines its own persistence defaults and optional System control.

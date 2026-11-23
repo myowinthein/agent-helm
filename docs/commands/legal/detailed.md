@@ -62,6 +62,8 @@ For example, browser storage already explained clearly in a privacy notice may n
 
 Existing approved clauses, document locations and language provide the baseline. The agent asks essential missing questions together. There is no routine home-address intake, and uncertain retention periods, refund promises or jurisdictions are not invented.
 
+The default review uses local and supplied evidence without researching provider policies, legal sources or store requirements online. You can request that research for a named issue; a generic legal invocation does not authorize it. If external evidence is indispensable, the agent explains the missing scope or leaves the affected conclusion pending. Offline drafting does not establish current legal or store compliance.
+
 A concrete material omission holds the affected draft until it can be resolved. Other complete documents may proceed. This differs from declaring an entire project legally insufficient when no such assessment was made.
 
 The drafts explain what the implementation and confirmed policy support. They do not establish compliance, add missing consent controls or publish a legal route automatically. Those integration changes have their own scope.

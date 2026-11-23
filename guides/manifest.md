@@ -108,7 +108,7 @@ Prepare only the approved setting diff. No project scan, README write or marker 
 
 ### Standard and custom structure contract
 
-For `standard`, follow the [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md), interpreting its applicability rather than enforcing a reduced template:
+For `standard`, apply the written structure contract below, based on the [Standard Readme specification](https://github.com/RichardLitt/standard-readme/blob/main/spec.md). The citation records the source; do not fetch or compare its current version merely to run manifest. Interpret applicability rather than enforcing a reduced template:
 
 - Order: Title, optional Banner/Badges, Short Description, optional Long Description, Table of Contents, optional Security/Background, Install, Usage, relevant extra sections, optional API/Maintainers/Thanks, Contributing, License.
 - Use the real project display title and disclose any repo/package naming mismatch; do not rename the project or its metadata. Keep the short description under 120 characters and consistent with the applicable package-manager description when one exists, not just `package.json`. Report unresolved mismatches rather than changing metadata or claiming compliance.

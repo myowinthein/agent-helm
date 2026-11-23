@@ -53,7 +53,9 @@ Default to one useful contextual occurrence per destination on a page. Distant s
 
 ### Match the destination, then preserve the phrase
 
-A specific topic should lead to the relevant section when it answers the question without skipping prerequisites. A broad introduction should lead to the page. Read the destination and verify the actual section anchor; a successful HTTP response alone does not establish relevance.
+A specific topic should lead to the relevant section when it answers the question without skipping prerequisites. A broad introduction should lead to the page. Check available local or supplied target content and actual local section anchors. External destinations can use supplied or previously verified evidence, with any unverified details reported honestly.
+
+Reading external targets requires an explicit research, named-source reading or live-link verification scope. Within it, check meaning and the relevant section rather than treating HTTP success as proof of relevance. These checks concern links in the requested content; background citations inside loaded rules do not trigger browsing, update checks or comparisons against their sources.
 
 Wrap an existing clear phrase. Make only the smallest wording correction needed for a vague or misleading label. For example, a sentence about a release decision should link to [the release section](../../commands/ship.html#optional-versioned-release), while a general introduction to publishing can link to the whole ship guide.
 

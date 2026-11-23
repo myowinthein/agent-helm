@@ -26,6 +26,14 @@ Publication, deployment, actual data changes, destructive cleanup, credential ch
 
 Necessary related code, tests and documentation can accompany the requested work within their maintenance boundaries. Unrelated repairs are reported before expanding the task.
 
+## Network access
+
+Helm works offline by default from written instructions, supplied material and local evidence. Citation links are background sources, not a recurring reading list or a reason to check for updated or better instructions.
+
+Task-required operations can still use GitHub, GitLab or an established provider for remote branches, CI status and selected publication work. Authorized builds or installs can retain their known network effects. Existing approval and data-sharing requirements still apply; this is permission for the selected operation, not general access to everything on that host.
+
+Online research, reading a named external source or live link verification needs your explicit request or agreed scope. Optional missing facts stay unknown. If a required conclusion needs external evidence, the agent explains that gap and obtains the missing research scope or leaves the conclusion pending.
+
 ## Protect work and verify effects
 
 Inspect scripts, hooks and targets before execution. Names such as `test` or `dry-run` do not prove safety. Preserve unrelated files and staged hunks; Git cannot recover every database or remote effect.

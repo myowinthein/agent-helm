@@ -38,7 +38,9 @@ flowchart TD
 
 Link when it helps readers act, understand context or verify a claim. Default to one useful contextual link per destination per page; distant sections, independent tasks and required citations can justify repetition. Every mention need not become a link.
 
-Specific topics point to the relevant section; broad introductions point to the page. Prefer authoritative external sources. Check meaning and actual section anchors, then wrap an existing clear phrase. Change wording only as much as needed to correct a vague or mismatched label.
+Specific topics point to the relevant section; broad introductions point to the page. Check available local or supplied content and actual local anchors. For external links, reuse supplied or previously verified evidence and report unverified details. Opening external targets needs an explicit research, named-source reading or live-link verification scope. Citation links inside loaded rules do not start that process.
+
+Wrap an existing clear phrase, changing wording only enough to correct a vague or mismatched label.
 
 Use the project's verified canonical URLs, preferring HTTPS where supported. Preserve working hostnames; non-www is a default for new projects only when hosting and HTTPS support it. Display origins like `https://example.com` without a trailing slash, while page paths follow the site's routing; a serialized root `/` remains valid. Preserve queries, fragments and external sites' canonical addresses.
 

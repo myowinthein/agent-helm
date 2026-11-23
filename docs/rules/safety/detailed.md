@@ -90,6 +90,16 @@ For example, a retry test should check that the operation happens once despite r
 
 Broader audits, suite cleanup and tooling changes need their own selected scope. The [test command](../../commands/test.html) can assess those needs and maintain saved findings. Direct test edits do not update those records or close their findings.
 
+## Network access
+
+Ordinary work starts from written instructions, supplied material and local evidence. An agent does not reopen research citations to look for updates, compare the instructions with their sources or find a better approach merely because a rule was loaded.
+
+The distinction is the purpose of the connection. Ship can inspect the selected repository's GitHub or GitLab CI results and release state under its existing procedure. That does not authorize reading unrelated advice hosted on GitHub. Known network effects of an approved dependency restore, build or check remain part of that concrete execution plan. Separate push, fetch, credential and data-sharing approvals are preserved.
+
+You can explicitly request online research, reading a named external page or live link verification. That request supplies the bounded scope without another question for every source. The agent stops when the requested question is answered instead of enriching every missing fact or refreshing unrelated instructions.
+
+Optional unknowns remain visible. When external verification is indispensable to a required conclusion, the agent names that specific gap and obtains only the missing scope or leaves the conclusion pending. It neither invents facts nor presents offline evidence as current external verification.
+
 ## Host capabilities
 
 The agent verifies only the capabilities needed for the action: the actual workspace, account, runtime and target. Folder access is not proof of Git permissions or a safe database. Missing access blocks the dependent action while drafts and completed results remain intact.
