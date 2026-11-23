@@ -37,6 +37,8 @@ figure.highlight {
 
 a:not([class]) {
   text-decoration-color: currentColor;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 0.25em;
 
   &:hover,
   &:focus-visible {
