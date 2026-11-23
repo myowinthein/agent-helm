@@ -19,6 +19,8 @@ Log helps agents pick up a project with useful context. It combines source evide
 
 ## Flow
 
+The diagrams show setup followed by the source-review decision. After setup, continue to the second diagram. A layout-only run follows its **No** branch and finishes without a source scan.
+
 ### Setup and scope
 
 ```mermaid

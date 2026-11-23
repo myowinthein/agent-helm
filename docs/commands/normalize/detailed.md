@@ -19,6 +19,10 @@ Normalize reviews commit messages and can apply the corrections you approve. Bec
 
 ## Flow
 
+The first diagram covers review and the rewrite decision. The second expands **Rewrite all proposed changes** into recovery, rewriting and verification. Read-only reviews and runs with no proposed corrections finish in the first diagram.
+
+### Review and approval
+
 ```mermaid
 flowchart TD
   Entry{"Requested route eligible?"} -->|No| Blocked["Report the reason and stop"]
@@ -40,6 +44,8 @@ flowchart TD
   Approval -->|Rewrite all proposed changes| Rewrite["Continue to approved rewrite and verification"]
   ReviewOnly --> Report
 ```
+
+### Approved rewrite and verification
 
 ```mermaid
 flowchart TD
