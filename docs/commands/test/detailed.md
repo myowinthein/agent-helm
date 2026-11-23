@@ -53,8 +53,6 @@ A Gap scan starts from the last valid saved assessment, which may be several com
 
 The assessment asks what could go wrong and whether a test would detect it. Counts and coverage percentages alone cannot answer that. A passing test can still assert the wrong thing or never reach the important failure path.
 
-Before presenting a need as new, test compares it with relevant recorded guarantees, evidence and protecting tests. A changed title, moved file or different explanation does not by itself make a different finding. Several tests may address one guarantee; a genuine split into separate needs is explained with its old-to-new mapping. Matching records keep their identity rather than returning as new issues under new wording.
-
 You can explicitly request a revisit, such as “reassess the duplicate-enrolment finding” or “review all open findings.” This uses the existing records to identify the selected needs and adds no new menu choice. Ambiguous references need clarification; the request does not automatically start Full or Gap discovery.
 
 A revisit reads the current behavior, protecting assertions and fixtures, intended contract, and relevant callers, consumers, configuration and dependencies. The old record supplies leads rather than proof. For an enrolment retry finding, that might mean tracing a request through its handler, repository, database constraints and tests, including protection added outside the originally recorded file. There is no fixed file or reference-hop limit, and there is no need to investigate unrelated project areas once the selected judgment is supported.
@@ -103,7 +101,9 @@ Work proceeds in coherent groups of cases. Failed, unavailable or deferred requi
 
 The report separates the assessment, test changes, measured results and remaining work. Saved findings preserve decisions, evidence and useful closed history. Deferred, skipped and accepted-risk cases do not count as verified protection.
 
-Later reviews reconsider relevant cases against current behavior and tests. Changed wording or paths do not turn the same missing guarantee into a new finding. An open case may still need work, already be protected or no longer apply. If a resolved case loses its protection, or an obsolete requirement returns, test reopens the same case. A file edit or unavailable runner alone proves none of these outcomes, and an old pass does not become a current pass automatically.
+Later reviews compare current behavior and tests with earlier findings before presenting a need as new. A continuing need keeps its identity even when its title, explanation or evidence paths change. Several tests may address one guarantee. When a finding splits into separate testing needs, the report links each new finding to the earlier one.
+
+An open case may still need work, already be protected or no longer apply. If a resolved case loses its protection, or an obsolete requirement returns, test reopens the same case. A file edit or unavailable runner alone proves none of these outcomes, and an old pass does not become a current pass automatically.
 
 A Gap scan leaves unrelated history intact and makes clear which findings were not freshly reviewed. Earlier deferrals apply only while their context still holds.
 

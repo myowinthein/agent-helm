@@ -29,7 +29,7 @@ Guides to using Agent Helm at different points during project development. Each 
 
 Helm saves workflow records in your project and recovery backups in your home directory. Claude and Codex share these locations in the same project folder and OS account.
 
-| OS | Folder |
+| Location | Folder |
 |---|---|
 | Project records | `<project>/.helm/` |
 | macOS | `/Users/<username>/Agent Helm/` |

@@ -49,7 +49,7 @@ Interaction now owns interface policies extracted from Writing and Design. An up
 
 ## What to expect
 
-You see a plain table with each file, suggested action, reason and local-to-package version. Clear labels distinguish updates, repairs, kept files and optional installations; custom-file replacements and downgrades are explicit. No colors or badges are required. Full rule bodies and diffs are available on request.
+You see a plain table with each file, suggested action, reason and local-to-package version. Clear labels distinguish updates, repairs, kept files and optional installations; custom-file replacements and downgrades are explicit. Full rule bodies and diffs are available on request.
 
 When existing rules need maintenance and other rules are available, choose maintenance only or maintenance plus the named missing rules. Required repairs stay in the minimum choice. If only one kind of work applies, only that action is offered alongside the relevant keep/cancel exits. You can select a subset in the same response; an explicitly limited request does not offer unrelated installations.
 

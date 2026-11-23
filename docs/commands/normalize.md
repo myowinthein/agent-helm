@@ -63,7 +63,7 @@ Tags and excluded refs remain fixed. Tags can lose ancestry from rewritten branc
 
 Choose **Rewrite all proposed changes / Cancel** after reviewing the exact messages, complete branch list, ID/tag effects and recovery plan together. “All” means the proposed corrections and their affected history, within the displayed plan. You can type a wording or selection change without another menu option; the updated plan is shown before rewriting. The same unchanged rewrite plan is not asked twice.
 
-Applying needs **git-filter-repo and Python**. Fixed code shipped with Helm applies the approved corrections; no helper program is generated during the run. Recovery bundles are verified before rewriting and stored outside the checkout under your OS user's home at `Agent Helm/normalize/<run-id>/`. Continuing a run reuses its folder; earlier backups remain. After rewriting, normalize checks messages, file contents and history structure before reporting success.
+Applying needs **git-filter-repo and Python**. Recovery bundles are verified before rewriting and stored outside the checkout under your OS user's home at `Agent Helm/normalize/<run-id>/`. Continuing a run reuses its folder; earlier backups remain. After rewriting, normalize checks messages, file contents and history structure before reporting success.
 
 ## Your result and later publication
 

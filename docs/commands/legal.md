@@ -65,7 +65,7 @@ A known material gap holds the affected document while other complete drafts may
 
 For existing documents, you see a diff and the clean proposed result for affected passages. Each new document appears once in full. Proposed dates, removals and record/commit effects are shown before any document write.
 
-Choose **Write and commit** or **Cancel**. You can type exact corrections, select particular files or request **write without committing**. That draft-only request leaves proposed removals intact and does not advance assessment dates or source records. Cancel leaves pending document changes unapplied; earlier approved work or verified record repairs remain preserved.
+Choose **Write and commit** or **Cancel**. You can type exact corrections, select particular files or request **write without committing**. That draft-only request leaves files proposed for removal untouched and does not advance assessment dates or source records. Cancel leaves pending document changes unapplied; earlier approved work or verified record repairs remain preserved.
 
 ## Your result
 
