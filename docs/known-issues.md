@@ -26,11 +26,9 @@ Observations from maintainer testing and use on macOS, alongside documented plat
 <details id="repeated-reviews-may-keep-producing-findings" markdown="block">
 <summary>Repeated reviews may keep producing findings</summary>
 
-**Observed:** Repeating the same review request in fresh Claude or Codex sessions has produced additional findings after earlier fixes.
+**Observed:** Repeating a review in fresh Claude or Codex sessions has produced new findings after earlier fixes.
 
-Code-review studies report [inconsistent assessments across repeated runs](https://arxiv.org/abs/2502.20747) and [correct implementations rejected as defective](https://link.springer.com/article/10.1007/s10515-026-00638-5). These results describe tested models and benchmarks; they do not establish the cause of each new finding.
-
-New findings can be missed defects, regressions, optional improvements or false alarms. Keep the review scope and requirements consistent, ask for reproducible evidence of each defect, and separate optional changes from required fixes. A no-findings result applies only to what was actually checked.
+Studies of specific models report [inconsistent reviews](https://arxiv.org/abs/2502.20747) and [unnecessary corrections](https://link.springer.com/article/10.1007/s10515-026-00638-5). Keep the review scope consistent, require evidence for defects, and separate optional improvements from required fixes. A no-findings result applies only to the checked scope.
 
 </details>
 
