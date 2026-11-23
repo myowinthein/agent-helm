@@ -517,6 +517,52 @@ try {
   assert.equal(await nextButton.locator('use').getAttribute('xlink:href'),'#svg-copy');
   console.log('PASS clipboard: confirmed results, latest success/error only, two/four-second dismissal, retry and keyboard focus');await context.close();
  }
+ // Focus frames must leave surrounding words readable, including wrapped links.
+ for(const width of [320,1280]) for(const scheme of ['light','dark']) for(const forcedColors of ['none','active']) {
+  const context=await createContext({viewport:{width,height:900},colorScheme:scheme,forcedColors,reducedMotion:'reduce'});
+  const page=await context.newPage();
+  for(const [path,selectors] of [
+   ['docs/commands/log.html',['main p a[href$="#run-a-command"]','figcaption a','.footer-links a:first-child',width<800?'footer .d-md-none a':'.site-footer a']],
+   ['', ['main a[href*="/docs/commands/adopt.html"]','div.highlight[tabindex]']],
+   ['docs/commands.html',['td a']],
+   ['docs/known-issues.html',['details p a','summary']],
+  ]) {
+   await page.goto(pageUrl(path));
+   await page.locator('details').evaluateAll(details=>details.forEach(el=>el.open=true));
+   for(const selector of selectors) {
+    const target=page.locator(selector).first();
+    const before=await target.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight}));
+    await target.focus();await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');
+    const result=await target.evaluate(el=>{
+     const style=getComputedStyle(el),width=parseFloat(style.outlineWidth),offset=parseFloat(style.outlineOffset);
+     const frames=Array.from(el.getClientRects(),r=>({left:r.left-offset-width,right:r.right+offset+width,top:r.top-offset-width,bottom:r.bottom+offset+width,innerLeft:r.left-offset,innerRight:r.right+offset,innerTop:r.top-offset,innerBottom:r.bottom+offset}));
+     const scope=el.closest('p,td,figcaption,.site-footer,.d-md-none');const collisions=[];
+     if(scope) {
+      const walker=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT);
+      for(let node;node=walker.nextNode();) {
+       if(el.contains(node)||node.parentElement.closest('.sr-only,[hidden]'))continue;
+       const range=document.createRange();
+       for(const word of node.textContent.matchAll(/\S+/g)) {
+        range.setStart(node,word.index);range.setEnd(node,word.index+word[0].length);
+        for(const r of range.getClientRects())for(const f of frames) {
+         const intersects=r.right>f.left+.5&&r.left<f.right-.5&&r.bottom>f.top+.5&&r.top<f.bottom-.5;
+         const inside=r.left>=f.innerLeft&&r.right<=f.innerRight&&r.top>=f.innerTop&&r.bottom<=f.innerBottom;
+         if(intersects&&!inside)collisions.push(word[0]);
+        }
+       }
+      }
+     }
+     return {focused:el===document.activeElement&&el.matches(':focus-visible'),visible:style.outlineStyle==='solid'&&width>0,collisions,inViewport:frames.every(f=>f.left>=-.6&&f.top>=-.6&&f.right<=innerWidth+.6&&f.bottom<=innerHeight+.6),top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight};
+    });
+    assert(result.focused&&result.visible,`${selector} lost its keyboard focus indicator`);
+    assert.equal(result.collisions.length,0,`${selector} covers neighboring words: ${result.collisions.join(', ')}`);
+    assert(result.inViewport,`${selector} focus frame is clipped by the viewport`);
+    assert(Math.abs(result.top-before.top)<1&&result.height===before.height,`${selector} moves content when focus appears`);
+   }
+  }
+  console.log(`PASS ${width}px ${scheme}, forced colors ${forcedColors}: prose, wrapped links, tables, captions, footer and code frames avoid adjacent text, clipping and focus layout shifts`);
+  await context.close();
+ }
  // Each sidebar row has one Tab stop, with keyboard and pointer submenu access.
  for(const width of [390,1280]) for(const scheme of ['light','dark']) {
   const context=await createContext({viewport:{width,height:900},colorScheme:scheme});
