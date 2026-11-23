@@ -29,6 +29,16 @@ async function createContext(options = {}) {
 let assertions=0;
 const counted=check=>(...args)=>{assertions++;return check(...args);};
 const assert=Object.assign(counted(assertStrict),{equal:counted(assertStrict.equal),notEqual:counted(assertStrict.notEqual)});
+async function checkThemeFeedback(page) {
+ const status=page.locator('#theme-status');
+ assert(await status.isVisible(),'Theme feedback is hidden');
+ assert(await status.evaluate(el=>{
+  const box=el.getBoundingClientRect(),viewport=window.visualViewport;
+  const left=viewport?.offsetLeft||0,top=viewport?.offsetTop||0;
+  return box.left>=left&&box.right<=left+(viewport?.width||innerWidth)+1&&
+   box.top>=top&&box.bottom<=top+(viewport?.height||innerHeight)+1;
+ }),'Theme feedback escapes the visible viewport');
+}
 try {
  browser=await chromium.launch({executablePath:await chromeExecutable('run the browser checks'),headless:true});
  for(const width of [1280,390]) {
@@ -370,11 +380,35 @@ try {
   await background(expected)(page);
   if(fault==='dark-css-failed') {
    await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
-   assert.equal(await page.locator('#theme-mode').inputValue(),'light');
+   assert.equal(await page.locator('#theme-mode').inputValue(),'system');
    assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),null);
   }
   assert(await page.locator('figure.mermaid img').evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)));
   console.log(`PASS ${fault}: readable ${expected} theme and diagrams`);await context.close();
+ }
+ // An automatic download failure preserves System and later OS changes recover.
+ for(const initial of ['light','dark']) for(const saved of [null,'system']) {
+  const target=initial==='light'?'dark':'light';
+  const context=await createContext({colorScheme:initial});const page=await context.newPage();
+  if(saved)await page.addInitScript(mode=>localStorage.setItem('agent-helm-theme',mode),saved);
+  await page.goto(pageUrl('docs/commands/log.html'));await background(initial)(page);
+  const stylesheet=`**/just-the-docs-${target}.css`;
+  await page.route(stylesheet,route=>route.abort());
+  await page.emulateMedia({colorScheme:target});
+  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
+  await background(initial)(page);
+  assert.equal(await page.locator('#theme-mode').inputValue(),'system');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),saved);
+  assert.equal(await page.evaluate(()=>document.documentElement.style.colorScheme),initial);
+  await page.unroute(stylesheet);
+  await page.emulateMedia({colorScheme:initial});
+  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='');
+  await page.emulateMedia({colorScheme:target});await background(target)(page);
+  assert.equal(await page.locator('#theme-mode').inputValue(),'system');
+  assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),saved);
+  assert.equal(await page.locator('#theme-status').textContent(),'');
+  console.log(`PASS System ${initial} to ${target}, saved ${saved}: failed download retains preference and later OS changes recover`);
+  await context.close();
  }
  // An unrecognized saved value falls back to the system theme.
  {
@@ -420,13 +454,13 @@ try {
   console.log('PASS cross-tab theme: choice applied, reset returns to system');await context.close();
  }
  // Failed changes retain the working theme, selector and saved preference together.
- for(const width of [1280,390]) {
+ for(const width of [320,390,800,1280]) {
  for(const currentTheme of ['light','dark']) {
   const targetTheme=currentTheme==='light'?'dark':'light';
   const context=await createContext({colorScheme:currentTheme,viewport:{width,height:900}});const page=await context.newPage();
   await page.clock.install();
   await page.goto(pageUrl('docs/commands/log.html'));
-  if(width===390)await page.locator('#menu-button').click();
+  if(width<800)await page.locator('#menu-button').click();
   await background(currentTheme)(page);
   await page.locator('#theme-mode').selectOption(currentTheme);
   let attempts=0;
@@ -438,7 +472,7 @@ try {
   });
   await page.locator('#theme-mode').selectOption(targetTheme);
   await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
-  assert(await page.locator('#theme-status').isVisible());
+  await checkThemeFeedback(page);
   assert(await page.locator('#theme-status').evaluate(status=>{
    const style=getComputedStyle(status);
    return status.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)<=2*parseFloat(style.lineHeight)+1;
@@ -457,6 +491,7 @@ try {
   assert.equal(await page.locator('#theme-mode').getAttribute('aria-busy'),'true');
   assert.equal(await page.locator('#theme-status').textContent(),'','Theme loading feedback appeared without a delay');
   await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Loading theme…');
+  await checkThemeFeedback(page);
   await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
   assert.equal(await page.locator('#theme-mode').inputValue(),currentTheme);
   assert.equal(await page.evaluate(()=>localStorage.getItem('agent-helm-theme')),currentTheme);
@@ -473,6 +508,39 @@ try {
   assert.equal(await page.locator('#theme-mode').getAttribute('title'),null);
   console.log(`PASS failed ${currentTheme} to ${targetTheme} ${width}px: working selection restored, saved choice preserved, concise timed error and direct retry`);await context.close();
  }
+ }
+ // Feedback repositions when text, viewport, scroll or keyboard focus changes.
+ for(const width of [320,800]) for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width,height:390},colorScheme:scheme});
+  const page=await context.newPage();await page.goto(pageUrl('docs/commands/log.html'));
+  if(width<800)await page.locator('#menu-button').click();
+  await page.addStyleTag({content:'html {font-size:32px!important;} body {line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important;}'});
+  await page.locator('#theme-mode').focus();
+  await background(scheme)(page);
+  let failDownload;
+  const download=new Promise(resolve=>{failDownload=resolve;});
+  const target=scheme==='light'?'dark':'light';
+  await page.route(`**/just-the-docs-${target}.css`,async route=>{await download;await route.abort();});
+  const before=await page.locator('#theme-mode').evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight}));
+  await page.locator('#theme-mode').selectOption(target);
+  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Loading theme…');
+  await checkThemeFeedback(page);
+  const after=await page.locator('#theme-mode').evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight}));
+  assert.equal(after.top,before.top,'Feedback moved the theme control');
+  assert.equal(after.height,before.height,'Feedback changed the document height');
+  await page.locator('.breadcrumb-nav a').first().focus();
+  await checkThemeFeedback(page);
+  assert(await page.locator('#theme-status').evaluate(el=>{
+   const a=el.getBoundingClientRect(),b=document.activeElement.getBoundingClientRect();
+   return a.right<=b.left||a.left>=b.right||a.bottom<=b.top||a.top>=b.bottom;
+  }),'Theme feedback obscures the focused breadcrumb');
+  await page.setViewportSize({width:width===320?390:1280,height:500});
+  await page.waitForTimeout(50);await checkThemeFeedback(page);
+  failDownload();
+  await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
+  await checkThemeFeedback(page);
+  console.log(`PASS ${width}px ${scheme}: enlarged and spaced feedback fits a short viewport, follows resize/scroll and avoids focused content without layout shifts`);
+  await context.close();
  }
  // Clipboard feedback follows the actual result and prevents duplicate pending writes.
  {
