@@ -8,6 +8,8 @@ Writing owns prose and editorial references; Design owns visual composition, res
 
 Keep feedback behavior consistent for comparable operations across buttons, links and other controls: when pending, completion and failure states appear, change and clear. Make these states clear without requiring hover for essential feedback. Confirm success only after the operation succeeds. Connect errors to the affected task and useful recovery. Follow project presentation conventions, allowing different treatments where the context warrants them.
 
+Keep loading and error popups readable within the visible viewport as people scroll, resize, zoom or adjust text size and spacing. Reposition or reflow them without moving surrounding content or obscuring the focused control.
+
 Avoid flashing loading labels, spinners or busy cursors for near-instant actions. Any delay applies to pending visuals, not the operation, required accessibility state or duplicate-activation protection. Keep unrelated controls usable, communicate temporary unavailability, and clear stale loading feedback and restore appropriate controls when work ends. Choose visual timing for the task rather than imposing a universal delay.
 
 Respect reduced-motion preferences across affected controls, feedback and transitions, preserving purposeful motion where compatible.
@@ -45,12 +47,12 @@ Reuse the project's controls, storage mechanism, defaults and intended setting s
 - Persistent local preferences belong to the site's origin and browser profile, not the browser globally. Use keys scoped to the project and setting, especially for projects sharing an origin. They last until changed or site data is removed, subject to browser/private-mode limits; existing account synchronization or explicit requirements may define another scope.
 - Synchronize shared preferences across the appropriate open views without write-back loops or unrelated input resets. Keep per-view/per-item choices separate. Do not silently change an active operation's starting configuration when that would alter its result; apply the new preference to subsequent work unless the product explicitly supports live changes.
 - Handle unavailable storage and read/write failures with usable in-memory controls. A failed save must not undo the current choice; later visits without usable storage return to the documented default. Respect intentional reset/clear behavior and make no cross-browser/device persistence promise.
-- If applying a new preference fails, keep the previous working value and restore the control to it. Do not persist the failed attempt as an applied choice. Keep the control, effective value and saved successful preference consistent; storage failure after successful application retains the working in-memory choice as above.
+- If applying a deliberate new preference fails, keep the previous working value and restore the control to it. Do not persist the failed attempt as an applied choice. Keep the control, effective value and saved successful preference consistent; storage failure after successful application retains the working in-memory choice as above.
 
 ### Theme preferences
 
 - With no valid manual override, follow the browser-reported system preference; if unavailable, use the project default or light. Apply the initial theme before paint and align browser controls' `color-scheme`.
-- Manual Light/Dark wins even when it matches the system. Follow live system changes only in automatic mode, without creating or overwriting a manual choice.
+- Manual Light/Dark wins even when it matches the system. Follow live system changes only in automatic mode, without creating or overwriting a manual choice. If an automatic appearance change fails, retain the working appearance and automatic preference, report the failure and continue following later system changes. A temporary fallback must not become a manual override.
 - Give the theme control a clear accessible name and expose its selected mode through semantics matching the control. An actual [binary switch](https://www.w3.org/WAI/ARIA/apg/patterns/switch/) keeps a stable label and exposes its on/off state; System/Light/Dark requires suitable three-choice semantics, not a third switch state.
 - Preserve the toggle or selector style; a visible System option is optional. Selecting System when available, or clearing the override, restores automatic behavior. Do not invent hidden modes or reinterpret a matching manual choice. Other settings use their own defaults; theme-following behavior supplies no automatic quality or device-based mode.
 
@@ -140,10 +142,10 @@ Use available authorized tools on affected controls and states, preserving requi
 
 | Changed area | Relevant checks |
 |---|---|
-| Feedback | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, recovery after timed errors, stale timers and copy-confirmation replacement. |
+| Feedback | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, readable popups after viewport/text changes, recovery after timed errors, stale timers and copy-confirmation replacement. |
 | Focus and autofocus | Tab/Shift+Tab order and meaningful stops, persistent indication, rendered focus appearance across affected components, page layouts, viewport widths and themes/forced colors, no layout shift, deliberate initial focus and applicable tab-widget behavior. |
 | Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
-| Themes | Named control and selected-mode semantics, initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
+| Themes | Named control and selected-mode semantics, initial paint, manual overrides, automatic system changes and recovery after failed appearance changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
 | Cursors | Actual hit area, pointer target size/spacing, hover, press, disabled/read-only, processing and drag states, and selection. |
 | Links | Destinations, fragments, opening behavior, indicators, contrast at rest/focus/hover/visited states in supported themes, and stable layout. |

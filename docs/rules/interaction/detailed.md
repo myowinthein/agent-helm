@@ -34,6 +34,8 @@ flowchart TD
 
 People should be able to tell whether work is pending and understand its relevant outcome. Errors need a clear connection to the affected task and a useful way forward. Comparable operations should be consistent about when feedback appears, changes and clears, while a page load and a button action can communicate progress differently. Visual treatments follow the project's components and design guidance.
 
+Feedback can be present yet unreadable if a popup extends beyond the screen. Loading and error popups need to fit the visible area as someone scrolls, resizes, zooms or changes text size and spacing. They can move above the control or reflow into the available space, keeping the focused control visible without shifting nearby content.
+
 Across buttons, links and other controls, a near-instant action should not briefly flash a loading label, spinner or busy cursor. Slower work still needs clear pending feedback. Delaying that visual must not delay the operation, its accessibility state or protection against duplicate activation. The timing suits the task rather than one universal delay. Keep unrelated controls usable and clear stale loading feedback when work ends; labels, icons and placement follow the project.
 
 Respect reduced-motion preferences across affected controls, feedback and transitions. Purposeful animation can remain where compatible; the same safeguard applies to pointer effects and link transitions.
@@ -75,7 +77,7 @@ A reusable preference and a temporary selection have different lifetimes. Someon
 
 Save intentional changes rather than turning a calculated default into a saved choice on page load. Validate restored values and use the documented default for missing, cleared or invalid values without automatically rewriting storage. Keep the current choice usable in memory if reading or writing fails. Present restored choices consistently without misleading initial selections or broken server/client rendering.
 
-Saving a preference and applying it are separate outcomes. If switching from Dark to Light fails, leave Dark applied and restore Dark in the control. Save the new choice only after it works. The brief error explains the failed attempt, while the control continues to show the working value and lets the person try again directly.
+Saving a preference and applying it are separate outcomes. If a visitor changes a saved Dark preference to Light and the change fails, leave Dark applied and restore Dark in the control. Save the new choice only after it works. The brief error explains the failed attempt, while the control continues to show the working value and lets the person try again directly.
 
 Shared choices can update other open views without resetting unrelated inputs or writing the same value back repeatedly. For example, an ongoing download can retain the quality it started with while the new preference applies to the next download. A product with intentional live controls can define another behavior. Per-item or per-view choices remain separate.
 
@@ -92,11 +94,12 @@ The important distinction is between the visitor's choice and the appearance cur
 | No valid saved choice | Follow the browser-reported system preference, subject to an explicit project default. Use the project default or light if the browser cannot report a preference. |
 | Visitor chooses Light or Dark | Apply and remember that choice, even when it matches the current system theme. |
 | System theme changes | Update only while following the system; preserve manual overrides. |
+| An automatic appearance change fails | Keep the working appearance and automatic mode, explain the failure and continue following later system changes. |
 | Another tab changes this project's preference | Reflect the new choice in its other open tabs and windows. |
 | System is selected, when available, or the override is cleared | Resume automatic behavior. |
 | Storage is blocked | Keep switching available for the current page; a later visit may return to the default. |
 
-For example, an initial dark system theme should not create a saved Dark override. If the visitor then chooses Light, the site stays light through later system changes until that override is changed or cleared.
+For example, an initial dark system theme should not create a saved Dark override. If the visitor then chooses Light, the site stays light through later system changes until that override is changed or cleared. Similarly, if System is selected and a dark stylesheet fails to load, a temporary light appearance does not mean Light was selected. System remains selected so a later system change can try loading the matching appearance again.
 
 Themes use the shared persistence guidance above. Their additional system-following behavior does not create a System mode for quality or other unrelated settings; each keeps its own product default.
 

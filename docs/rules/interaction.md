@@ -30,7 +30,7 @@ flowchart TD
 
 Comparable controls should communicate pending work, success and failure consistently. Quick actions avoid flashing loading indicators; slower work needs clear progress feedback and protection against accidental repeats. A copy confirmation follows an actual clipboard success.
 
-Errors preserve the person's input and leave a way to understand and recover from the failure. Essential feedback remains available without hover, and old messages should not overwrite a newer result. Controls and feedback respect reduced-motion preferences.
+Errors preserve the person's input and leave a way to understand and recover from the failure. Loading and error popups stay readable as the visible screen area or text settings change, without covering keyboard focus or moving nearby content. Essential feedback remains available without hover, and old messages should not overwrite a newer result. Controls and feedback respect reduced-motion preferences.
 
 ### Keyboard focus and autofocus
 
@@ -44,11 +44,13 @@ Moving focus automatically needs a clear purpose because it can scroll the page,
 
 Reusable choices such as quality or theme can be remembered across visits. Temporary inputs and per-item selections keep their intended lifetime. The rule follows the product's existing settings mechanism and saves deliberate choices, using the documented default when a saved value is missing or invalid.
 
-If a new choice cannot be applied, the control returns to the last working value. If saving is unavailable, the current choice remains usable. Shared preferences can update other open views without clearing unrelated input or silently changing work already underway.
+If a deliberately selected new choice cannot be applied, the control returns to the last working value. If saving is unavailable, the current choice remains usable. Shared preferences can update other open views without clearing unrelated input or silently changing work already underway.
 
 ### Theme preferences
 
 The starting appearance follows the system unless a saved choice or project requirement takes priority. Manual Light/Dark choices stay in effect through system changes until the person returns to automatic behavior.
+
+If an automatic appearance change fails, the last working appearance remains visible while automatic mode stays selected. The failure does not create a manual override, so later system changes can still update the theme.
 
 The existing toggle or selector keeps a clear accessible name and selected mode. A visible System option is optional. Design owns how the supported themes look; Interaction owns how the choice behaves and is remembered.
 
