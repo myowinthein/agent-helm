@@ -39,6 +39,11 @@ async function checkThemeFeedback(page) {
    box.top>=top&&box.bottom<=top+(viewport?.height||innerHeight)+1;
  }),'Theme feedback escapes the visible viewport');
 }
+async function openCompactMenu(page) {
+ const menu=page.locator('#menu-button');
+ await menu.waitFor({state:'visible'});
+ if(await menu.getAttribute('aria-expanded')!=='true')await menu.click();
+}
 try {
  browser=await chromium.launch({executablePath:await chromeExecutable('run the browser checks'),headless:true});
  for(const width of [1280,390]) {
@@ -107,6 +112,7 @@ try {
   const context=await createContext({viewport:{width,height:390},colorScheme:scheme,reducedMotion:'reduce'});
   const page=await context.newPage();await page.goto(pageUrl('docs/commands/log.html'));
   await page.addStyleTag({content:'html {font-size:32px!important;}'});
+  await openCompactMenu(page);
   await page.locator('#search-input').fill('normalize');await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
   for(const selector of ['#search-input','#search-results']) {
    const box=await page.locator(selector).boundingBox();
@@ -115,7 +121,9 @@ try {
   }
   const title=await page.locator('.search-result-title').first().boundingBox();
   const preview=await page.locator('.search-result-previews').first().boundingBox();
-  assert(preview.y>=title.y+title.height-1,'Enlarged result columns did not stack in the narrow panel');
+  const stacked=await page.locator('#search-results').evaluate(el=>el.clientWidth<=28*parseFloat(getComputedStyle(document.documentElement).fontSize));
+  if(stacked)assert(preview.y>=title.y+title.height-1,'Enlarged result columns did not stack in the narrow panel');
+  else assert(preview.x>=title.x+title.width-1,'Wide result columns overlap');
   console.log(`PASS ${width}px ${scheme}: enlarged search field and results stay in the visible viewport`);
   await context.close();
  }
@@ -155,6 +163,7 @@ try {
   if(width<800)await page.locator('#menu-button').click();
   const fontSize=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));
   await page.addStyleTag({content:`html { font-size: ${fontSize*2}px !important; }`});
+  await openCompactMenu(page);
   assert.equal(await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize)),fontSize*2);
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Enlarged text causes horizontal page scrolling');
   const header=await page.locator('#main-header').boundingBox();
@@ -175,6 +184,70 @@ try {
   await page.addStyleTag({content:'* { line-height: 1.5 !important; letter-spacing: 0.12em !important; word-spacing: 0.16em !important; } p { margin-bottom: 2em !important; }'});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Enlarged, spaced text causes horizontal page scrolling');
   console.log(`PASS ${width}px ${scheme}: doubled text, spacing overrides, header controls, search and wrapping setup tabs`);
+  await context.close();
+ }
+ // Enlarged text changes the navigation layout while preserving reading space and focus.
+ for(const width of [800,1024,1280]) for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width,height:900},colorScheme:scheme,reducedMotion:'reduce'});
+  const page=await context.newPage();await page.goto(pageUrl('docs/setup/codex.html'));
+  const original=await page.locator('.main-content').boundingBox();
+  const setup=page.locator('#site-nav').getByRole('link',{name:'Setup',exact:true});
+  await setup.focus();
+  const enlarged=await page.addStyleTag({content:'html {font-size:32px!important;} * {line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important;} p {margin-bottom:2em!important;}'});
+  const menu=page.locator('#menu-button');await menu.waitFor({state:'visible'});
+  assert.equal(await page.locator('.side-bar').evaluate(el=>getComputedStyle(el).position),'static');
+  assert(await setup.evaluate(el=>el===document.activeElement&&el.checkVisibility({checkVisibilityCSS:true})),'Layout collapse hid or moved navigation focus');
+  assert.equal(await menu.getAttribute('aria-expanded'),'true','Focused navigation was collapsed out of view');
+  const article=await page.locator('.main-content').boundingBox();
+  assert(article.width>width*.75,`Enlarged article is cramped: ${article.width}px at ${width}px`);
+  assert(await page.locator('h1').evaluate(el=>el.getBoundingClientRect().height<=parseFloat(getComputedStyle(el).lineHeight)+1),'Codex title still breaks across lines');
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  assert(await page.locator('footer .d-md-none a').isVisible(),'Compact layout lost the footer theme credit');
+  await menu.focus();await page.keyboard.press('Enter');
+  assert.equal(await menu.getAttribute('aria-expanded'),'false');
+  assert.equal(await page.locator('#site-nav').isVisible(),false);
+  await page.keyboard.press('Enter');assert.equal(await menu.getAttribute('aria-expanded'),'true');
+  const query=page.locator('#search-input');await query.fill('normalize');
+  await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
+  const results=await page.locator('#search-results').boundingBox();
+  assert(results.x>=0&&results.x+results.width<=width+1&&results.y>=0&&results.y+results.height<=901,'Compact search escapes the viewport');
+  await page.keyboard.press('ArrowDown');assert(await page.locator('.search-result.active').evaluate(el=>el===document.activeElement));
+  await page.keyboard.press('Escape');assert.equal(await query.inputValue(),'');
+  const terminal=page.getByRole('tab',{name:'Terminal',exact:true});await terminal.click();
+  assert.equal(await terminal.getAttribute('aria-selected'),'true');
+  assert(await page.locator('.main-content').evaluate(el=>el.getBoundingClientRect().width>innerWidth*.75));
+  await menu.focus();await enlarged.evaluate(el=>el.remove());
+  await menu.waitFor({state:'hidden'});
+  assert(await page.locator('.site-title').evaluate(el=>el===document.activeElement),'Returning to desktop left focus on a hidden menu button');
+  assert.equal(await page.locator('.side-bar').evaluate(el=>getComputedStyle(el).position),'fixed');
+  const restored=await page.locator('.main-content').boundingBox();assert(Math.abs(restored.width-original.width)<1);
+  console.log(`PASS ${width}px ${scheme}: enlarged text uses a full-width article, reachable menu/search/setup panels and preserved focus through layout changes`);
+  await context.close();
+ }
+ // Breakpoint changes preserve an active search, including selected-result focus.
+ {
+  const context=await createContext({viewport:{width:1600,height:900},reducedMotion:'reduce'});
+  const page=await context.newPage();await page.goto(pageUrl('docs/commands/log.html'));
+  await page.addStyleTag({content:'html {font-size:32px!important;}'});
+  const query=page.locator('#search-input');await query.fill('normalize');
+  await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
+  for(const width of [1599,799,800,1600]) {
+   await page.setViewportSize({width,height:900});
+   await page.waitForFunction(compact=>document.documentElement.classList.contains('helm-compact')===compact,width<1600);
+   assert.equal(await query.inputValue(),'normalize','Layout transition cleared the query');
+   assert(await query.evaluate(el=>el===document.activeElement),'Layout transition moved search focus');
+   assert(await page.locator('#search-results').isVisible(),'Layout transition dismissed search');
+   const box=await page.locator('#search-results').boundingBox();
+   assert(box.x>=0&&box.x+box.width<=width+1&&box.y>=0&&box.y+box.height<=901,'Search overflows across the adaptive breakpoint');
+  }
+  await page.keyboard.press('ArrowDown');
+  const selected=page.locator('.search-result.active');const href=await selected.getAttribute('href');
+  await page.setViewportSize({width:1599,height:900});
+  await page.waitForFunction(()=>document.documentElement.classList.contains('helm-compact'));
+  assert(await selected.evaluate(el=>el===document.activeElement&&el.checkVisibility({checkVisibilityCSS:true})));
+  assert.equal(await selected.getAttribute('href'),href);
+  await page.keyboard.press('Escape');assert.equal(await query.inputValue(),'');
+  console.log('PASS adaptive breakpoint: active search and selected-result focus survive text-relative and standard-width transitions');
   await context.close();
  }
  // Full-size viewers center fitting diagrams and return to the exact guide link.
@@ -515,6 +588,7 @@ try {
   const page=await context.newPage();await page.goto(pageUrl('docs/commands/log.html'));
   if(width<800)await page.locator('#menu-button').click();
   await page.addStyleTag({content:'html {font-size:32px!important;} body {line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important;}'});
+  await openCompactMenu(page);
   await page.locator('#theme-mode').focus();
   await background(scheme)(page);
   let failDownload;
@@ -634,7 +708,10 @@ try {
    for(const selector of selectors) {
     const target=page.locator(selector).first();
     const before=await target.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight}));
-    await target.focus();await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');
+    await target.focus();
+    // Let scroll-driven controls settle before checking the adjacent Tab stops.
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    await page.keyboard.press('Shift+Tab');await page.keyboard.press('Tab');
     const result=await target.evaluate(el=>{
      const style=getComputedStyle(el),width=parseFloat(style.outlineWidth),offset=parseFloat(style.outlineOffset);
      const frames=Array.from(el.getClientRects(),r=>({left:r.left-offset-width,right:r.right+offset+width,top:r.top-offset-width,bottom:r.bottom+offset+width,innerLeft:r.left-offset,innerRight:r.right+offset,innerTop:r.top-offset,innerBottom:r.bottom+offset}));

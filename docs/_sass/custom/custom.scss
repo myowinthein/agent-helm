@@ -270,6 +270,107 @@ figure.highlight > button[aria-busy="true"] {
   }
 }
 
+// Keep the mobile arrangement when enlarged text outgrows the desktop columns.
+@include mq(md) {
+  .helm-compact {
+    .side-bar {
+      position: static;
+      flex-flow: row wrap;
+      align-items: stretch;
+      width: 100%;
+      min-width: 0;
+      height: auto;
+      border-right: 0;
+    }
+
+    .site-header,
+    .site-nav {
+      width: 100%;
+    }
+
+    .site-header {
+      height: auto;
+      max-height: none;
+    }
+
+    .site-header .site-button {
+      display: flex;
+    }
+
+    .site-nav {
+      display: none;
+      flex: none;
+      padding-block: 0;
+      overflow: visible;
+    }
+
+    .site-nav.nav-open {
+      display: block;
+    }
+
+    .side-bar > .site-footer {
+      display: none !important;
+    }
+
+    .side-bar + .main {
+      position: static;
+      max-width: none;
+      margin-left: 0;
+    }
+
+    .side-bar + .main .main-header {
+      display: none;
+      container-type: normal;
+    }
+
+    .side-bar + .main .main-header.nav-open {
+      display: block;
+    }
+
+    .main-content-wrap {
+      padding: $sp-4 calc(56px + max(1rem, env(safe-area-inset-right))) $sp-4 $sp-4;
+    }
+
+    .breadcrumb-nav {
+      margin-top: 0;
+    }
+
+    footer .d-md-none {
+      display: block !important;
+    }
+
+    .main-header .search {
+      height: 4rem !important;
+      padding: $sp-2;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      max-width: none;
+      height: 3rem !important;
+    }
+
+    &.search-active .search {
+      position: fixed !important;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      padding: 0;
+    }
+
+    &.search-active .search-input-wrap {
+      width: 100%;
+      height: 4rem !important;
+    }
+
+    .search-results {
+      top: 4rem;
+      width: 100%;
+      max-height: calc(100dvh - 4rem) !important;
+    }
+  }
+}
+
 .theme-switcher {
   display: flex;
   flex: 0 0 auto;

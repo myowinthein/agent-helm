@@ -7,6 +7,28 @@
     link => [link, link.getAttribute('href')]);
 
   const initialize = () => {
+    const root = document.documentElement;
+    const menu = document.getElementById('menu-button');
+    const header = document.getElementById('main-header');
+    const desktop = matchMedia('(min-width: 50rem)');
+    const updateLayout = () => {
+      // Media-query rems use the browser default, not an enlarged page font.
+      const compact = !desktop.matches || innerWidth < 50 * parseFloat(getComputedStyle(root).fontSize);
+      const wasCompact = root.classList.contains('helm-compact');
+      const focused = document.activeElement;
+      root.classList.toggle('helm-compact', compact);
+      if (compact && !wasCompact && (navigation.contains(focused) || header?.contains(focused))) {
+        // Reveal focused controls without a synthetic click dismissing search.
+        [menu, navigation, header].forEach(element => element.classList.add('nav-open'));
+        menu.setAttribute('aria-expanded', 'true');
+      }
+      if (!compact && wasCompact && focused === menu) document.querySelector('.site-title').focus();
+    };
+    updateLayout();
+    window.addEventListener('resize', updateLayout);
+    desktop.addEventListener('change', updateLayout);
+    new ResizeObserver(updateLayout).observe(document.querySelector('.site-header'));
+
     links.forEach(([link, href]) => link.setAttribute('href', href));
     const rows = new Map();
     const synchronize = ({ button, link, item }) => {
