@@ -2,7 +2,7 @@
 
 ## Project Identity
 
-Agent Helm is a workflow plugin for Claude and Codex. Its eleven portable skills load Markdown workflows; Python provides read-only ledger/normalize checks and private recovery-locator I/O, Ruby scripts check packaging, client discovery and offline acceptance oracles, and Jekyll publishes the documentation site.
+Agent Helm is a workflow plugin for Claude and Codex. Its eleven portable skills load Markdown workflows; Python provides bounded mechanical helpers and private recovery I/O, Ruby scripts check packaging, client discovery and offline acceptance oracles, and Jekyll publishes the documentation site.
 
 Plugin name: `agent-helm`. Marketplace: `agent-helm-marketplace`. Workflow changes affect installed consumers; changes to copied rules also affect projects that adopt those updates.
 
@@ -20,11 +20,11 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `ruby scripts/test_plugin.rb`: offline package, relocation and Git-export checks in temporary repositories; does not execute Python helpers or call models.
 - `ruby scripts/check_clients.rb`: native discovery through installed Claude/Codex CLIs, including Codex's actual `skills/list`; uses temporary installations and calls no models.
 - `python3 -I -B scripts/test_normalize.py`: offline normalize mechanics tests with synthetic messages, graphs and schema-2 records; no real history or live state access.
-- `python3 -I -B scripts/test_normalize_handoff.py`: private locator safety, independent-process discovery and worktree/clone checks in disposable repositories.
+- `python3 -I -B scripts/test_normalize_handoff.py`: private locator safety, independent-process discovery, worktree/clone checks and completed-backup retention in disposable repositories.
 - `python3 -I -B scripts/test_ledger.py`: offline ledger isolation, validation and retrieval contracts with disposable consumers.
 - `cd docs && bundle install && npm ci --ignore-scripts`: install the locked Ruby and Node docs dependencies. Chrome must be installed; use `HELM_DOCS_CHROME` for a nonstandard executable path.
 - `cd docs && bundle exec jekyll serve`: preview the docs site.
-- `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake test`: the full offline suite, no models: plugin, normalize, handoff, ledger, smoke-support, acceptance-support, docs-link, asset-digest and human-guide checks, then a Jekyll build with HTMLProofer, setup contracts and isolated Chrome frontend checks. Run one task with `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake <task>`; see `Rakefile` and `docs/tasks.rb`. Remote-theme resolution may need network access.
+- `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake test`: the full offline suite, no models: standards, plugin, normalize, handoff, ledger, smoke-support, acceptance-support, docs-link, asset-digest and human-guide checks, then a Jekyll build with HTMLProofer, setup contracts and isolated Chrome frontend checks. Run one task with `BUNDLE_GEMFILE=docs/Gemfile bundle exec rake <task>`; see `Rakefile` and `docs/tasks.rb`. Remote-theme resolution may need network access.
 - `ruby scripts/smoke_layout.rb [codex|claude] [case ...]`, `ruby scripts/smoke_workflows.rb [codex|claude] [case]` and `ruby scripts/smoke_acceptance.rb [--list|scenario]`: optional behavioral checks that call signed-in models in disposable projects. The first two pin Claude Opus 5.5 at high effort for Claude cases; acceptance runs one bounded Claude scenario (Sonnet 5.5) per invocation and never runs under rake. Review their model, usage and execution effects separately from offline checks.
 - `docs/scripts/browser_acceptance.py` serves the built `docs/_site` for opt-in browser checks; `scripts/acceptance-plan.md` records the acceptance design rationale.
 
@@ -37,10 +37,12 @@ The Markdown plugin needs no install/build step. Run commands from the repositor
 - `guides/polish.md` reviews scoped user-facing content/interfaces against consumer-selected Writing, Design and Interaction rules. Runtime-loaded bundled Writing does not establish that selection. At least one selected rule is required; broken selected references stop the run. Polish keeps no ledger and changes no rule loading.
 - `prompts/shared/scan-scope.md` recommends Full scan / Gap scan only at an existing choice. `investigation-evidence.md` defines transient source/commit inventories and coverage; neither is runtime-autoloaded or grants state access.
 - `helpers/helm.py`, `helpers/helm_lib/` and `helpers/ledger-contract.json` implement read-only validation and digest-bound retrieval. Python 3.11+ and standard library only; no writer, project-code execution or network. `prompts/shared/ledger-helper.md` owns invocation and the checked fallback when Python is unavailable.
+- `helpers/env_keys.py` supplies value-free lexical dotenv projections for env, without validating loaders or credentials. Its focused offline checks are in `scripts/test_acceptance_support.rb`.
 - `prompts/refactor-ledger.md` defines refactor's native provenance and checkpoint semantics. `prompts/shared/project-state.md` defines owning-workflow access and preservation.
 - `guides/archive.md` sequences the five supporting `prompts/archive/step*.md` files. These steps are not independently discoverable skills.
 - `guides/ship.md` holds routing and ordinary source publication together. `prompts/ship/{targets,release}.md` load only for their selected procedures; they are supporting prompts, never skills. History/archive protocols remain in `prompts/shared/`; `ci.md` and relevant provider sections define exact-source checks and handoffs.
 - `prompts/shared/normalize-handoff.md` owns normalize-to-ship discovery across sessions; `review-anchor.md` lazily permits log/manifest to recover their own rewritten review baseline from bounded read-only evidence. `helpers/normalize_handoff.py` only registers/reads immutable private locators in the actual Git common directory; it executes no Git, reads no recovery bodies/ledgers and grants no publication authority. Source work leaves real locators untouched.
+- `prompts/shared/normalize-retention.md` and `helpers/normalize_retention.py` handle backup inspection, fallback registration and retention of completed backups for ship.
 - `.claude-plugin/plugin.json` owns the release version; ship synchronizes `.claude-plugin/marketplace.json`. Keep their plugin identity, version and description aligned, preserving `commands: []` and avoiding legacy command adapters.
 - `docs/_config.yml`, `docs/Gemfile`, `docs/tasks.rb`, `Rakefile` and `.github/workflows/docs.yml` own the docs build. Main pushes, PRs and manual dispatch build; only main publishes Pages. The docs workflow resolves the latest stable Just the Docs release and runs no package, helper, native-client or model checks; `.github/workflows/tests.yml` runs the offline package, helper and acceptance-support suites separately.
 - `docs/setup/{claude,codex}.md` use `docs/_includes/setup-tabs.html` and four `docs/_includes/setup/` instruction bodies. The four older setup URLs use `docs/_layouts/setup-redirect.html`; preserve panel/heading anchors and redirect fragments together with `docs/assets/js/setup-tabs.js`.
@@ -110,9 +112,9 @@ This covers Helm's agent-facing instructions. Generic prose stays in `rules/writ
 - `scripts/validate_plugin.rb` requires each `guides/*.md` to keep a `## Question points` section and the literal `[question mechanism (QM)](../prompts/shared/question-mechanism.md)` link, and rejects any `workflows/` source. Rewording that link fails `ruby scripts/test_plugin.rb`.
 - Normalize uses explicit `git filter-repo --refs` partial mode to preserve remotes and excluded refs. Default full-rewrite mode removes `origin` and affects more refs; never substitute it or reconstruct a remote from its URL alone.
 - Headless `claude -p` has no native question tool, so workflows ask in chat and end the run; profiling needs `--resume <session_id>` per answer. Runs that return $0 or a 429 hit the usage limit; discard them.
-- `docs/_plugins/frontend.rb` and `docs/_plugins/repository_content.rb` patch Just the Docs output with exact-string replacements and raise `Just the Docs theme changed`. CI resolves the latest stable theme, so a theme release can fail the Pages build until those patterns and `docs/tests/test_frontend.rb` or `test_repository_content.rb` are updated.
+- `docs/_plugins/frontend.rb` patches Just the Docs output with exact-string replacements and raises `Just the Docs theme changed`. CI resolves the latest stable theme, so a theme release can fail the Pages build until those patterns and `docs/tests/test_frontend.rb` are updated.
 - `docs/tests/test_human_guides.rb` hard-codes the expected Overview and Details pair count per site (21 here). Adding or removing a pair fails it until the count changes.
-- `docs/_plugins/repository_content.rb` links the sidebar version to the `myowinthein/agent-helm` GitHub release `v<version>` from `plugin.json`. Browser tests stub that URL and HTMLProofer skips external links, so keep ship's `v`-prefixed tag and hosted release in step with the version; a mismatch leaves a dead link that no check reports.
+- `docs/_includes/header_custom.html` links the header version to the `myowinthein/agent-helm` GitHub release `v<version>` supplied by `docs/_plugins/repository_content.rb` from `plugin.json`. Browser tests stub that URL and HTMLProofer skips external links, so keep ship's `v`-prefixed tag and hosted release in step with the version; a mismatch leaves a dead link that no check reports.
 - `docs/legal/privacy.md` states that the site serves its pages, diagrams and favicon from GitHub Pages and stores only the `agent-helm-theme` preference. Adding a CDN, external font or asset, analytics or another stored value makes the notice inaccurate until it is updated.
 
 ## Rules
@@ -123,4 +125,4 @@ Read and follow all three shipped rules before project work:
 - `rules/safety.md`
 - `rules/writing.md`
 
-<!-- last-reviewed: 293a5280529e389e1dd8c08f689ef75d59ba758f -->
+<!-- last-reviewed: 3177fad026473e681259f76e6a19e35950459206 -->
