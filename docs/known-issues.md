@@ -7,7 +7,7 @@ permalink: /docs/known-issues.html
 
 # Known issues
 
-Agent Helm supplies workflows for Claude and Codex; the host agent carries out their steps and provides the question controls and plugin interface. These notes combine observations from maintainer testing on macOS with documented platform behavior. Results can vary by model, client and version.
+Observations from maintainer testing and use on macOS, alongside documented platform limitations.
 
 <div id="agent-behaviour"></div>
 <div id="agent-choice"></div>
