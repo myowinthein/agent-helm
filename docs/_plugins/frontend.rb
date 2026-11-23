@@ -57,6 +57,7 @@ module HelmFrontend
   def self.lazy_search(source)
     source = replace_once(source, 'function initSearch() {', <<~JS.chomp)
       let helmSearchStarted = false;
+      let helmSearchReady = false;
       let helmSearchFailedState = false;
       let helmSearchPendingTimer;
       let helmSearchErrorTimer;
@@ -75,10 +76,14 @@ module HelmFrontend
         helmSearchRetry.hidden = false;
         helmSearchRetry.disabled = false;
         helmSearchStatus.textContent = 'Search unavailable. Press Enter or select Retry search.';
-        helmSearchErrorTimer = setTimeout(() => { helmSearchStatus.textContent = ''; }, 4000);
+        const dismiss = () => {
+          if (document.activeElement === helmSearchStatus) helmSearchErrorTimer = setTimeout(dismiss, 500);
+          else helmSearchStatus.textContent = '';
+        };
+        helmSearchErrorTimer = setTimeout(dismiss, 4000);
       }
-      function initSearch() {
-        if (helmSearchStarted) return;
+      function initSearch(retry = false) {
+        if (helmSearchStarted || (helmSearchFailedState && retry !== true)) return;
         helmSearchStarted = true;
         helmSearchFailedState = false;
         clearHelmSearchFeedback();
@@ -90,6 +95,7 @@ module HelmFrontend
       "      try {\n      var docs = JSON.parse(request.responseText);")
     source = replace_once(source, '      searchLoaded(index, docs);', <<~JS.chomp)
             searchLoaded(index, docs);
+            helmSearchReady = true;
             clearHelmSearchFeedback();
             helmSearchRetry.hidden = true;
             helmSearchInput.removeAttribute('aria-busy');
@@ -163,16 +169,41 @@ module HelmFrontend
           helmSearchInput = searchInput;
           helmSearchStatus = document.getElementById('search-status');
           helmSearchRetry = document.getElementById('search-retry');
+          const search = searchInput.closest('.search');
+          // Keep the search field and recovery reachable before the index is ready.
+          const showSearchShell = () => {
+            if (!helmSearchReady) document.documentElement.classList.add('search-active');
+          };
+          search.addEventListener('focusin', showSearchShell);
+          search.addEventListener('focusout', event => {
+            if (!helmSearchReady && !search.contains(event.relatedTarget)) document.documentElement.classList.remove('search-active');
+          });
+          document.addEventListener('click', event => {
+            if (!helmSearchReady && !search.contains(event.target)) document.documentElement.classList.remove('search-active');
+          });
           searchInput.addEventListener("focus", initSearch);
-          searchInput.addEventListener("input", () => { if (!helmSearchFailedState) initSearch(); });
+          searchInput.addEventListener("input", () => {
+            showSearchShell();
+            if (!helmSearchFailedState) initSearch();
+          });
+          search.addEventListener("keydown", event => {
+            if (event.key === 'Escape' && !helmSearchReady) {
+              event.preventDefault();
+              searchInput.value = '';
+              clearHelmSearchFeedback();
+              searchInput.focus();
+              document.documentElement.classList.remove('search-active');
+              searchInput.scrollIntoView({ block: 'nearest' });
+            }
+          });
           searchInput.addEventListener("keydown", event => {
             if (event.key === 'Enter' && !event.isComposing && !event.repeat && helmSearchFailedState) {
               event.preventDefault();
-              initSearch();
+              initSearch(true);
             }
           });
           helmSearchRetry.addEventListener("click", () => {
-            initSearch();
+            initSearch(true);
             searchInput.focus();
           });
           const mainHeader = document.getElementById('main-header');
@@ -199,6 +230,10 @@ module HelmFrontend
             feedback.textContent = '';
             if (clearCopyConfirmation === resetConfirmation) clearCopyConfirmation = null;
             if (clearCopyFailure === resetConfirmation) clearCopyFailure = null;
+          };
+          const dismissConfirmation = () => {
+            if (document.activeElement === feedback) timeout = setTimeout(dismissConfirmation, 500);
+            else resetConfirmation();
           };
           copyButton.addEventListener('click', async function () {
     JS
@@ -227,13 +262,13 @@ module HelmFrontend
     JS
     source = replace_once(source, '        var timeoutSetting = 4000;', '        var timeoutSetting = 2000;')
     replace_once(source, "        timeout = setTimeout(function () {\n          copyButton.innerHTML = svgCopy;\n          timeout = null;\n        }, timeoutSetting);", <<~JS.chomp)
-              timeout = setTimeout(resetConfirmation, timeoutSetting);
+              timeout = setTimeout(dismissConfirmation, timeoutSetting);
               } catch {
                 if (clearCopyFailure) clearCopyFailure();
                 clearCopyFailure = resetConfirmation;
                 copyButton.innerHTML = svgCopy;
                 feedback.textContent = 'Could not copy. Try again or select the code to copy it manually.';
-                timeout = setTimeout(resetConfirmation, 4000);
+                timeout = setTimeout(dismissConfirmation, 4000);
               } finally {
                 clearTimeout(pendingFeedback);
                 copying = false;

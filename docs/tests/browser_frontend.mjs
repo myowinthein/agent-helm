@@ -44,6 +44,17 @@ async function openCompactMenu(page) {
  await menu.waitFor({state:'visible'});
  if(await menu.getAttribute('aria-expanded')!=='true')await menu.click();
 }
+async function checkFloatingFeedback(page, status, anchor) {
+ assert(await status.isVisible(),'Feedback is hidden');
+ await page.waitForFunction(el=>{
+  const box=el.getBoundingClientRect(),v=visualViewport;
+  return box.width>0&&box.height>0&&box.left>=v.offsetLeft-1&&box.top>=v.offsetTop-1&&box.right<=v.offsetLeft+v.width+1&&box.bottom<=v.offsetTop+v.height+1;
+ },await status.elementHandle());
+ const box=await status.boundingBox(),field=await anchor.boundingBox();
+ const viewport=await page.evaluate(()=>({left:visualViewport.offsetLeft,top:visualViewport.offsetTop,width:visualViewport.width,height:visualViewport.height}));
+ assert(box.x>=viewport.left-1&&box.y>=viewport.top-1&&box.x+box.width<=viewport.left+viewport.width+1&&box.y+box.height<=viewport.top+viewport.height+1,'Feedback escapes the visible viewport');
+ assert(box.x+box.width<=field.x||box.x>=field.x+field.width||box.y+box.height<=field.y||box.y>=field.y+field.height,'Feedback covers its control');
+}
 try {
  browser=await chromium.launch({executablePath:await chromeExecutable('run the browser checks'),headless:true});
  for(const width of [1280,390]) {
@@ -441,6 +452,90 @@ try {
   await page.clock.runFor(250);
   assert.equal(await page.locator('#search-status').textContent(),'','Stale loading timer appeared after recovery');
   assert.equal(count,2);console.log(`PASS failed search (${failure}): stable typing, timed popup and persistent keyboard retry`);await context.close();
+ }
+ // Archive breadcrumbs keep their labels and separators inside narrow enlarged layouts.
+ for(const width of [320,390]) for(const scheme of ['light','dark']) {
+  const context=await createContext({viewport:{width,height:700},colorScheme:scheme});const page=await context.newPage();
+  for(const step of ['1-explore','2-restore-and-freeze','3-postman','4-documentation','5-finalize']) for(const detail of [false,true]) {
+   await page.goto(pageUrl(`docs/commands/archive/${step}${detail?'/detailed':''}.html`));
+   const font=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));
+   await page.addStyleTag({content:`html {font-size:${font*2}px!important;} * {line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important;} p {margin-bottom:2em!important;}`});
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Archive breadcrumb causes page overflow');
+   assert(await page.locator('.breadcrumb-nav').evaluate(nav=>{
+    const walker=document.createTreeWalker(nav,NodeFilter.SHOW_TEXT);let node;
+    while(node=walker.nextNode()){
+     const range=document.createRange();range.selectNodeContents(node);
+     if([...range.getClientRects()].some(b=>b.width>0&&(b.left<0||b.right>innerWidth+1)))return false;
+    }
+    return true;
+   }),'Archive breadcrumb text is clipped');
+  }
+  console.log(`PASS ${width}px ${scheme}: all five Archive steps and both guide views reflow with doubled text and spacing`);await context.close();
+ }
+ // Touch copy controls and their pending/error messages remain usable at screen edges.
+ for(const [width,height] of [[320,240],[390,390],[800,320]]) for(const scheme of ['light','dark']) for(const enlarged of [false,true]) {
+  const context=await createContext({viewport:{width,height},colorScheme:scheme,hasTouch:true,isMobile:true,reducedMotion:'reduce'});
+  const page=await context.newPage();await page.clock.install();
+  await page.addInitScript(()=>Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>new Promise((resolve,reject)=>{window.finishCopy=resolve;window.failCopy=()=>reject(new Error('Denied fixture'));})}}));
+  await page.goto(pageUrl('docs/commands/normalize.html'));
+  if(enlarged){const font=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.addStyleTag({content:`html {font-size:${font*2}px!important;} * {line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important;}`});}
+  const block=page.locator('div.highlighter-rouge').first(),button=block.locator('button'),status=block.locator('.copy-status');
+  assert.equal(await button.evaluate(el=>getComputedStyle(el).opacity),'1','Touch copy control requires hover');
+  await block.evaluate(el=>scrollTo(0,el.getBoundingClientRect().top+scrollY-8));
+  const before=await block.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight}));
+  await button.tap();await page.clock.runFor(200);
+  assert.equal(await status.textContent(),'Copying…');await checkFloatingFeedback(page,status,button);
+  const after=await block.evaluate(el=>({top:el.getBoundingClientRect().top+scrollY,height:document.documentElement.scrollHeight}));
+  assert.equal(after.top,before.top);assert.equal(after.height,before.height,'Copy popup moved nearby content');
+  await block.evaluate(el=>{const button=el.querySelector('button');scrollTo(0,el.getBoundingClientRect().top+scrollY-(innerHeight-button.getBoundingClientRect().height-8));});
+  await page.clock.runFor(50);await checkFloatingFeedback(page,status,button);
+  await page.evaluate(()=>window.failCopy());await page.waitForFunction(()=>document.querySelector('.copy-status').textContent.startsWith('Could not copy.'));
+  await checkFloatingFeedback(page,status,button);
+  if(await status.evaluate(el=>el.scrollHeight>el.clientHeight+1)) {
+   await button.focus();await page.keyboard.press('Tab');assert(await status.evaluate(el=>el===document.activeElement),'Long copy error is not keyboard reachable');
+   await page.keyboard.press('ArrowDown');await page.waitForFunction(el=>el.scrollTop>0,await status.elementHandle());
+   assert(await status.evaluate(el=>el.scrollTop>0),'Long copy error cannot be scrolled');
+   await page.clock.runFor(4500);assert((await status.textContent()).startsWith('Could not copy.'),'Focused copy error expired while being read');
+   await button.focus();await page.clock.runFor(500);
+  } else await page.clock.runFor(4000);
+  assert.equal(await status.textContent(),'');
+  await button.tap();await page.evaluate(()=>window.finishCopy());await page.waitForFunction(()=>document.querySelector('.copy-status').textContent==='Copied');
+  await checkFloatingFeedback(page,status,button);await page.clock.runFor(2000);assert.equal(await status.textContent(),'');
+  console.log(`PASS touch copy ${width}x${height} ${scheme}, enlarged ${enlarged}: visible control, top/bottom feedback, stable layout, scrollable focused error and retry`);await context.close();
+ }
+ // Failed search setup keeps its field, recovery and explanation in short viewports.
+ for(const width of [320,390,800]) for(const scheme of ['light','dark']) for(const enlarged of [false,true]) {
+  const context=await createContext({viewport:{width,height:390},colorScheme:scheme,hasTouch:true,isMobile:true,reducedMotion:'reduce'});
+  const page=await context.newPage();await page.clock.install();let attempts=0,failDownload;
+  const download=new Promise(resolve=>{failDownload=resolve;});
+  await page.route('**/search-data.json',async route=>{if(++attempts===1){await download;await route.abort();}else await route.continue();});
+  await page.goto(pageUrl('docs/commands/log.html'));
+  if(enlarged){const font=await page.evaluate(()=>parseFloat(getComputedStyle(document.documentElement).fontSize));await page.addStyleTag({content:`html {font-size:${font*2}px!important;} * {line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important;}`});}
+  if(width<800||enlarged)await openCompactMenu(page);
+  const query=page.locator('#search-input'),status=page.locator('#search-status'),retry=page.locator('#search-retry'),field=page.locator('.search-input-wrap');
+  await query.fill('archive');await page.clock.runFor(200);
+  assert.equal(await status.textContent(),'Loading search…');await checkFloatingFeedback(page,status,field);
+  failDownload();await page.waitForFunction(()=>document.getElementById('search-status').textContent.startsWith('Search unavailable.'));
+  for(const height of [390,240]) {
+   await page.setViewportSize({width,height});await page.clock.runFor(50);
+   await checkFloatingFeedback(page,status,field);
+   for(const control of [query,retry]){const box=await control.boundingBox();assert(box.x>=0&&box.y>=0&&box.x+box.width<=width+1&&box.y+box.height<=height+1,'Search or Retry is clipped');}
+   assert(await retry.evaluate(el=>{
+    const input=document.getElementById('search-input'),box=input.getBoundingClientRect(),button=el.getBoundingClientRect(),style=getComputedStyle(input);
+    return button.left>=box.left+parseFloat(style.paddingLeft)&&button.left>=box.right-parseFloat(style.paddingRight);
+   }),'Retry covers the editable search text');
+  }
+  if(await status.evaluate(el=>el.scrollHeight>el.clientHeight+1)) {
+   await status.focus();await page.keyboard.press('ArrowDown');await page.waitForFunction(el=>el.scrollTop>0,await status.elementHandle());assert(await status.evaluate(el=>el.scrollTop>0));
+   await page.clock.runFor(4500);assert((await status.textContent()).startsWith('Search unavailable.'),'Focused search error expired while being read');
+   await query.focus();
+  }
+  await query.press('Escape');assert.equal(await query.inputValue(),'');assert(await query.evaluate(el=>el===document.activeElement));
+  assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('search-active')),false);
+  await query.fill('archive');assert.equal(attempts,1,'Editing retried failed setup');
+  await retry.tap();await page.waitForFunction(()=>document.querySelectorAll('#search-results a').length>0);
+  assert.equal(attempts,2);assert.equal(await query.inputValue(),'archive');assert.equal(await status.textContent(),'');assert.equal(await retry.isVisible(),false);
+  console.log(`PASS failed search ${width}px ${scheme}, enlarged ${enlarged}: pending/error visibility, short viewport, readable recovery, Escape and deliberate retry`);await context.close();
  }
  for(const fault of ['no-js','storage-blocked','saved-light','saved-dark','dark-css-failed']) {
   const context=await createContext({javaScriptEnabled:fault!=='no-js',colorScheme:'dark'});const page=await context.newPage();

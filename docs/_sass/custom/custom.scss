@@ -81,6 +81,42 @@ a:not([class]) {
   opacity: 1;
 }
 
+.breadcrumb-nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  row-gap: $sp-1;
+}
+
+.breadcrumb-nav-list-item {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  max-width: 100%;
+
+  > a,
+  > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  &::after {
+    flex-shrink: 0;
+  }
+
+  &:last-child::after {
+    display: none;
+  }
+}
+
+@media (hover: none), (any-pointer: coarse) {
+  div.highlighter-rouge > button,
+  div.listingblock > div.content > button,
+  figure.highlight > button {
+    opacity: 1;
+  }
+}
+
 .search-results {
   container-type: inline-size;
 }
@@ -135,6 +171,7 @@ a:not([class]) {
   background: $body-background-color;
   border: 1px solid $border-color;
   border-radius: 4px;
+  max-width: calc(100% - 6rem);
 }
 
 .search-input-wrap:has(.search-retry:not([hidden])) .search-input {
