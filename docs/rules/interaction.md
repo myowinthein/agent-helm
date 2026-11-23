@@ -34,7 +34,9 @@ Errors preserve the person's input and leave a way to understand and recover fro
 
 ### Keyboard focus and autofocus
 
-Keyboard users should be able to identify the focused control throughout their task. Focus remains visible without moving nearby content, using the project's treatment across supported themes and accessibility settings.
+Keyboard users should be able to identify the focused control throughout their task. Its highlight stays complete at page and scrolling boundaries, with room around text, icons and underlines. Border alignment and spacing follow the project's components without moving nearby content, across supported themes and accessibility settings.
+
+Tab stops should correspond to understandable actions. A shared row highlight should not make separate stops look identical; combining stops still preserves keyboard access to every action.
 
 Moving focus automatically needs a clear purpose because it can scroll the page, open a mobile keyboard or skip context. Tab widgets distinguish keyboard focus from the selected panel; navigation links styled as tabs remain links.
 
@@ -86,4 +88,4 @@ Links remain readable across supported themes, with visible keyboard focus and f
 
 Use existing components, storage and validation boundaries. Preserve user input and explicit preferences; a new rule does not authorize unrelated changes. Verify affected states and recovery after completion, cancellation or failure with keyboard, touch and pointing devices. For affected mobile forms, check that fields and actions remain reachable with the on-screen keyboard open. A cursor or hover effect alone does not establish usable interaction.
 
-The hand cursor, external icon and link underline defaults are Helm conventions. Follow explicit project requirements and distinguish these preferences from accessibility requirements. Report checks that could not be performed.
+The hand cursor, external icon and link underline defaults are Helm conventions. Follow explicit project requirements and distinguish these preferences from accessibility requirements. Focus reviews check both keyboard operation and rendered appearance across the affected components and page layouts. Report the pages and states actually checked, identifying representative samples and checks that could not be performed; passing assertions alone do not establish visual correctness.

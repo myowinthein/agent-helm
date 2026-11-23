@@ -14,9 +14,11 @@ Respect reduced-motion preferences across affected controls, feedback and transi
 
 ### Keyboard focus and autofocus
 
-Keep keyboard focus visible on the actual focused control independently of hover, for as long as it remains focused; feedback dismissal timers never apply to focus indicators. Reuse the project's focus treatment across comparable controls, with appropriate contrast in supported themes and forced-colors mode. A replacement for the native indicator must remain clearly visible; a shadow alone can disappear in forced colors. Avoid moving surrounding content when focus appears. Exact colors, shape and thickness remain project choices, subject to accessibility requirements.
+Keep keyboard focus visible on the actual focused control independently of hover, for as long as it remains focused; feedback dismissal timers never apply to focus indicators. Reuse the project's focus treatment across comparable controls, with appropriate contrast in supported themes and forced-colors mode. A replacement for the native indicator must remain clearly visible; a shadow alone can disappear in forced colors. Keep custom indicators complete and unclipped at control, scroll-container and viewport edges, with clear separation from underlines and enough space around text and icons. Follow the component's border-alignment convention without moving surrounding content. Exact colors, shape, thickness, offsets and padding remain project choices, subject to accessibility requirements.
 
 Use `:focus-visible` where supported to avoid forcing keyboard-style outlines on ordinary pointer activation, retaining a visible fallback where needed. Preserve native focus behavior, including text editing; do not blur controls merely to hide an indicator. Author-created sticky headers, banners and overlays must not entirely hide a focused component under [WCAG's Focus Not Obscured minimum](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html), retaining its stated conditions.
+
+Match Tab order and stops to meaningful actions. Where several controls share a row highlight, make the focused action understandable and avoid indistinguishable repeated stops. Combine stops only while preserving native semantics and keyboard access to every action; a shared highlight alone does not justify removing a control from keyboard access.
 
 Autofocus means moving focus automatically, not styling Tab-key navigation. Use it only for a clear task purpose; avoid unexpected scrolling, opening a mobile keyboard or skipping necessary context. Do not steal focus on routine renders or updates, or move it merely to display a visual effect.
 
@@ -139,14 +141,14 @@ Use available authorized tools on affected controls and states, preserving requi
 | Changed area | Relevant checks |
 |---|---|
 | Feedback | Quick/slow actions, confirmed outcomes, deliberate retries and preserved input, recovery after timed errors, stale timers and copy-confirmation replacement. |
-| Focus and autofocus | Tab/Shift+Tab navigation, persistent visible indication, supported themes/forced colors, no layout shift, deliberate initial focus and applicable tab-widget behavior. |
+| Focus and autofocus | Tab/Shift+Tab order and meaningful stops, persistent indication, rendered focus appearance across affected components, page layouts, viewport widths and themes/forced colors, no layout shift, deliberate initial focus and applicable tab-widget behavior. |
 | Preferences | Valid/default/invalid/cleared values, reload/later visits, project/setting isolation, open-view updates, storage failures and unaffected active operations. |
 | Themes | Named control and selected-mode semantics, initial paint, manual overrides and automatic system changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
 | Cursors | Actual hit area, pointer target size/spacing, hover, press, disabled/read-only, processing and drag states, and selection. |
 | Links | Destinations, fragments, opening behavior, indicators, contrast at rest/focus/hover/visited states in supported themes, and stable layout. |
 
-Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Report unavailable checks, important limitations and unfinished placeholders in the normal handoff. This rule requires no detector, tool installation, report artifact or added approval process.
+Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Computed styles and automated test results do not replace visual inspection. Report which pages, components and states were checked, distinguishing representative samples from complete requested coverage, along with unavailable checks, important limitations and unfinished placeholders in the normal handoff. This rule requires no detector, tool installation, report artifact or added approval process.
 
 ## References
 
