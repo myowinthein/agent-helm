@@ -1,7 +1,7 @@
 {
   "schema_version": 3,
-  "assessed_commit": "6488825d4ccc68e9463b132f28c8d1335614d97c",
-  "full_scan_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
+  "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
+  "full_scan_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
   "cases": [
     {
       "id": "g-1eb1b70f-f70f-4be8-884f-a1d2ff3c16a6",
@@ -212,7 +212,7 @@
       "action": "add",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
@@ -223,6 +223,29 @@
         "date": "2026-11-13",
         "commit": "8b26cefcc8d22480819efeb7f291242de1382c5b"
       }
+    },
+    {
+      "id": "g-55da46dd-0475-4a85-bac0-ffbc82ccd592",
+      "expected": "The normalize acceptance oracle rejects a newly written checkpoint with an outdated review contract, an invalid canonical date or a missing or malformed policy fingerprint",
+      "basis": [
+        "prompts/normalize-review.md Schema 2 and review_contract 2",
+        "guides/normalize.md Step 6 truthful semantic checkpoints",
+        "scripts/acceptance_support.rb verify_normalize!",
+        "scripts/test_acceptance_oracles.rb direct normalize oracle"
+      ],
+      "paths": [
+        "scripts/acceptance_support.rb",
+        "scripts/test_acceptance_oracles.rb"
+      ],
+      "priority": "medium",
+      "reason": "The oracle checks the reviewed prefix but accepts its positive fixture's outdated review_contract 1 and omits date and fingerprint validation, so invalid new provenance can pass. Fingerprint shape alone cannot establish correspondence to the actual effective policy; the live fixture supplies no complete independent policy snapshot.",
+      "action": "improve",
+      "layer": "acceptance oracle",
+      "state": "open",
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
+      "tests": [
+        "scripts/test_acceptance_oracles.rb::direct normalize oracle"
+      ]
     },
     {
       "id": "g-5bd8c9f8-2c65-408a-ba75-6413770a7bea",
@@ -284,7 +307,7 @@
       "action": "add",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "f8c3e0d2ab7bb2217dddf4f25d09fc1b7c4975b2",
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
       "blocker": {
         "kind": "execution",
         "note": "Verifying a new scenario needs paid opt-in model runs (scripts/smoke_acceptance.rb); not approved"
@@ -335,7 +358,7 @@
       "expected": "The offline suites listed in .github/workflows/tests.yml cannot silently drift from the non-docs suites of the Rakefile test task",
       "basis": [
         ".github/workflows/tests.yml run steps",
-        "Rakefile plugin_test, normalize_test, normalize_handoff_test, ledger_test, smoke_support_test and acceptance_support_test tasks",
+        "Rakefile root-defined offline prerequisites of the test task, including standards_test",
         "8b26cef ci(tests): run the offline suites on every push and PR"
       ],
       "paths": [
@@ -343,11 +366,11 @@
         "Rakefile"
       ],
       "priority": "low",
-      "reason": "A suite added to the Rakefile but not to tests.yml would stay unrun in CI with no failing check; local rake still runs it, so the loss is recoverable",
+      "reason": "Current CI runs all nine root-defined offline commands on main pushes, PRs and manual dispatch, but no test protects command parity or those triggers. A later omitted suite could silently stay unrun in CI while local rake still runs it.",
       "action": "add",
       "layer": "ci",
       "state": "open",
-      "assessed_commit": "6488825d4ccc68e9463b132f28c8d1335614d97c"
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956"
     },
     {
       "id": "g-7d59a9cb-8eb8-46c4-bbb5-dc5fcd9121d1",
@@ -544,11 +567,11 @@
         "guides/normalize.md"
       ],
       "priority": "medium",
-      "reason": "Commit 78eb686 moved the fixture and oracle to the standard recovery folder, and commit ee8fb38 now tests the pre-filter locator branch of verify_normalize! directly; the end-to-end live normalize-rewrite scenario is still unrun, so only the offline oracle is verified",
+      "reason": "The fixture overrides HOME and requires recovery under container/home, while the workflow resolves the actual OS account home. The offline oracle therefore does not establish the required real-home behavior; it also checks directory privacy without checking every proof file's permissions. The live rewrite scenario remains unrun.",
       "action": "improve",
       "layer": "acceptance",
       "state": "open",
-      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
       "tests": [
         "scripts/test_acceptance_oracles.rb::direct normalize oracle",
         "scripts/test_acceptance_oracles.rb::normalize fixture",
@@ -556,7 +579,7 @@
       ],
       "blocker": {
         "kind": "verification",
-        "note": "The live normalize-rewrite scenario (scripts/smoke_acceptance.rb, a paid model call) has not been run; offline oracle checks pass (ruby scripts/test_acceptance_oracles.rb), including the fixed Agent Helm/normalize/<uuid> recovery location."
+        "note": "The existing deferral is preserved. A safe fixture strategy for actual OS-home resolution and complete owner-only proof checks needs review before any paid live normalize-rewrite verification; overriding HOME does not relocate the OS account home."
       },
       "decision": {
         "type": "deferred",
@@ -639,6 +662,28 @@
       }
     },
     {
+      "id": "g-a6e77533-85a5-4414-8817-7e194e2e16f9",
+      "expected": "Retention validates the entire eligible deletion set before removing any backup, locator or completion checksum, so a changed later candidate preserves every candidate",
+      "basis": [
+        "prompts/shared/normalize-retention.md Automatic retirement and reporting",
+        "helpers/normalize_retention.py cleanup whole-set prevalidation",
+        "scripts/test_normalize_handoff.py RetentionTests"
+      ],
+      "paths": [
+        "scripts/test_normalize_handoff.py",
+        "helpers/normalize_retention.py"
+      ],
+      "priority": "medium",
+      "reason": "Existing changed-content cases always corrupt the oldest candidate. Removing whole-set prevalidation while retaining per-run checks would still pass them and could delete an unchanged older backup before detecting a changed later candidate.",
+      "action": "improve",
+      "layer": "unit",
+      "state": "open",
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
+      "tests": [
+        "scripts/test_normalize_handoff.py::RetentionTests.test_new_file_changed_file_or_link_blocks_whole_deletion_set"
+      ]
+    },
+    {
       "id": "g-b38adff8-a9fd-4f1b-be78-dec4165f9593",
       "expected": "The docs workflow builds from docs/ and uploads the directory Jekyll writes, so a mismatch between the workflow and docs/_config.yml fails offline instead of on the first push to main",
       "basis": [
@@ -718,6 +763,33 @@
       }
     },
     {
+      "id": "g-c8c8a561-cec8-488d-bb82-643d34ad02fe",
+      "expected": "The archive package-path smoke authorizes its prerequisite source confirmation before requiring the packaged Step 1 report, while preserving the consumer decoy and all no-write isolation guarantees",
+      "basis": [
+        "guides/archive.md Confirm the archive source branch",
+        "prompts/archive/step1-explore.md entry approval",
+        "scripts/smoke_workflows.rb archive-package-path request and report assertion"
+      ],
+      "paths": [
+        "scripts/smoke_workflows.rb",
+        "guides/archive.md",
+        "prompts/archive/step1-explore.md"
+      ],
+      "priority": "low",
+      "reason": "The request says no step is approved, yet the oracle requires Project name and Archiving from report fields. A correct pending source-confirmation question can fail this smoke. Explicit static Step 1 approval must bind the actual fixture branch and SHA; model behavior would still need separate live verification.",
+      "action": "improve",
+      "layer": "workflow acceptance",
+      "state": "open",
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
+      "tests": [
+        "scripts/smoke_workflows.rb::archive-package-path"
+      ],
+      "blocker": {
+        "kind": "verification",
+        "note": "No paid live model run is approved; the fixture repair and its behavioral verification are outside the selected offline work."
+      }
+    },
+    {
       "id": "g-d3754cf5-b74b-4787-838e-b6663c8bd0a9",
       "expected": "Live Claude acceptance runs keep the sandbox enabled and mandatory, deny writes to the package and extra read-only paths, allow no network domains or unsandboxed commands, and expose only Bash with the pinned model",
       "basis": [
@@ -753,23 +825,23 @@
       "id": "g-d790087c-2368-4312-ae92-3dccd82cb867",
       "expected": "The offline helper, script and acceptance-support suites run automatically before changes reach main, or the build-only CI policy is confirmed as deliberate",
       "basis": [
-        ".github/workflows/docs.yml steps",
-        "AGENTS.md Architecture Pointers and Known Traps: Docs CI is build-only",
+        ".github/workflows/tests.yml main push, PR and manual triggers",
+        "AGENTS.md distinguishes offline-tests validation from docs publication",
         "Rakefile test task"
       ],
       "paths": [
-        ".github/workflows/docs.yml",
+        ".github/workflows/tests.yml",
         "Rakefile"
       ],
       "priority": "unknown",
-      "reason": "CI builds the docs only, so helper and script regressions are caught only by a manual rake test; AGENTS.md records this as deliberate, but the owner's intent for the offline suites is unconfirmed Owner chose to add an offline CI job on 2026-11-13.",
+      "reason": "The owner chose an offline CI job on 2026-11-13, and tests.yml contains all current offline suites. Static configuration establishes the intended automation but not an actual hosted Linux pass; that verification remains pending.",
       "action": "manual",
       "layer": "ci",
       "state": "open",
-      "assessed_commit": "d3d19400ab6595d363d042e6b02e3151bd5ec1f1",
+      "assessed_commit": "70a469c77acf5fedb6a90eb8b5bb9051c089a956",
       "blocker": {
         "kind": "verification",
-        "note": "tests.yml now runs the offline suites on push and PR; its commands pass locally. Confirm the first hosted Linux run after the next push."
+        "note": "Confirm a hosted Linux offline-tests run for the exact published source after a separately approved push. This Full scan ran no hosted checks."
       }
     },
     {
