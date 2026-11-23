@@ -130,7 +130,7 @@ Publishing changes involves checks and decisions that are easy to miss when hand
 Codex → $ship    Claude → /ship
 ```
 
-It reviews the changes and where they will go, runs required checks, then pushes them or opens pull requests after I approve. I can choose other branches to update independently. Each push needs approval; pull requests stay open for review. A run on main or master can offer a separately approved release once the changes are integrated and ready.
+It reviews changes and destinations, runs required checks, then pushes or opens pull requests after I approve. After a direct push, required validation must pass before it continues. I can choose other branches to update independently. Each push needs approval; pull requests stay open for review. On main or master, it can offer a separately approved release once changes are integrated and ready.
 
 ### Archive
 
@@ -152,4 +152,4 @@ If a command behaves unexpectedly, a guide is unclear or you have an idea for Ag
 
 Agent Helm is licensed under the [MIT License](https://github.com/myowinthein/agent-helm/blob/main/LICENSE). © Myo Win Thein.
 
-<!-- last-reviewed: d9cf92c676c8742ae7a2a94f40bb83612eac0fa4 -->
+<!-- last-reviewed: 2ca91263af7c19094455a4bac2091d9ae70e507d -->
