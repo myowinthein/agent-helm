@@ -277,7 +277,7 @@ figure.highlight > button[aria-busy="true"] {
   .main-header .search {
     flex: 1 1 10rem;
     min-width: 0;
-    height: 3.75rem !important;
+    height: calc(3.75rem - 1px) !important;
   }
 
   .search-active .search-input-wrap,
