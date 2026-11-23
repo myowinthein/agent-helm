@@ -1,6 +1,7 @@
 # Trace handling and acceptance oracles. Requiring this file executes no client or workflow.
 require "base64"
 require "json"
+require "shellwords"
 require "timeout"
 require_relative "smoke_support"
 require_relative "git_acceptance"
@@ -33,7 +34,10 @@ module HelmAcceptance
         raise "Incomplete tool-call/result trace"
       end
       answer = result["result"]
-      calls = uses.map { |b| { "name" => b["name"], "input" => b["input"], "output" => replies.find { |r| r["tool_use_id"] == b["id"] }["content"] } }
+      calls = uses.map do |use|
+        reply = replies.find { |r| r["tool_use_id"] == use["id"] }
+        { "name" => use["name"], "input" => use["input"], "output" => reply["content"], "failed" => reply["is_error"] == true }
+      end
       outputs = replies.map { |b| b["content"] }
     elsif client == "codex"
       unless events.any? { |e| e["type"] == "thread.started" } && events.last["type"] == "turn.completed" &&
@@ -45,7 +49,8 @@ module HelmAcceptance
       raise "Incomplete command trace" unless started.all? { |e| completed.any? { |i| i["id"] == e.dig("item", "id") } }
       calls = completed.select { |i| i["type"] == "command_execution" }.map do |item|
         raise "Incomplete command output" unless item["status"] == "completed" && item.key?("aggregated_output") && item.key?("exit_code")
-        { "name" => "Bash", "input" => { "command" => item["command"] }, "output" => item["aggregated_output"] }
+        { "name" => "Bash", "input" => { "command" => item["command"] }, "output" => item["aggregated_output"],
+          "exit_code" => item["exit_code"], "failed" => item["exit_code"] != 0 }
       end
       answer = completed.select { |i| i["type"] == "agent_message" }.map { |i| i["text"] }.join("\n")
       outputs = completed.select { |i| i["type"] == "command_execution" }.map { |i| i["aggregated_output"] }
@@ -263,8 +268,35 @@ module HelmAcceptance
     HelmAcceptance.assert_fixture_files!(workspace, before, approved)
     if contract.fetch(:deferred)
       raise "Deferred tests were executed" if result.fetch(:calls).any? { |c| HelmAcceptance.strings(c["input"]).any? { |s| s.match?(/\b(?:unittest|pytest)\b/) && s.match?(/\bpython\S*\s+(?:-\S+\s+)*-m\s/) } }
-    elsif !contract.fetch(:successful)
-      raise "Expected failed verification never ran" unless HelmAcceptance.strings(result.fetch(:tool_outputs)).any? { |s| s.include?("FAILED") && s.include?("TypeError") }
+    else
+      # This fixture approves one command, optionally prefixed by a move to its
+      # workspace. Bind unittest summaries to that call, not unrelated output.
+      executions = result.fetch(:calls).select do |call|
+        next false unless call["name"] == "Bash" && call.dig("input", "command").is_a?(String)
+        begin
+          tokens = Shellwords.split(call.dig("input", "command"))
+          command = Shellwords.split(contract.fetch(:command))
+          tokens == command || tokens == ["cd", workspace.to_s, "&&", *command]
+        rescue ArgumentError
+          false
+        end
+      end
+      passed = lambda do |call, count|
+        call["failed"] == false && strings(call["output"]).any? do |output|
+          output.match?(/^Ran #{count} tests? in [^\r\n]+\r?\n\r?\nOK\r?$/)
+        end
+      end
+      baseline = executions.index { |call| passed.call(call, 1) }
+      expanded = baseline && executions.drop(baseline + 1).any? do |call|
+        if contract.fetch(:successful)
+          passed.call(call, 2)
+        else
+          call["failed"] == true && strings(call["output"]).any? do |output|
+            output.match?(/^Ran 2 tests in [^\r\n]+/) && output.include?("FAILED (errors=1)") && output.include?("TypeError")
+          end
+        end
+      end
+      raise "Missing completed baseline and expanded test execution evidence" unless expanded
     end
   end
 

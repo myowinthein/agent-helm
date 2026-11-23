@@ -28,7 +28,7 @@ async function createContext(options = {}) {
 }
 let assertions=0;
 const counted=check=>(...args)=>{assertions++;return check(...args);};
-const assert=Object.assign(counted(assertStrict),{equal:counted(assertStrict.equal),notEqual:counted(assertStrict.notEqual)});
+const assert=Object.assign(counted(assertStrict),{equal:counted(assertStrict.equal),notEqual:counted(assertStrict.notEqual),rejects:counted(assertStrict.rejects)});
 async function checkThemeFeedback(page) {
  const status=page.locator('#theme-status');
  assert(await status.isVisible(),'Theme feedback is hidden');
@@ -51,8 +51,6 @@ async function checkFloatingFeedback(page, status, anchor) {
   return box.width>0&&box.height>0&&box.left>=v.offsetLeft-1&&box.top>=v.offsetTop-1&&box.right<=v.offsetLeft+v.width+1&&box.bottom<=v.offsetTop+v.height+1;
  },await status.elementHandle());
  const box=await status.boundingBox(),field=await anchor.boundingBox();
- const viewport=await page.evaluate(()=>({left:visualViewport.offsetLeft,top:visualViewport.offsetTop,width:visualViewport.width,height:visualViewport.height}));
- assert(box.x>=viewport.left-1&&box.y>=viewport.top-1&&box.x+box.width<=viewport.left+viewport.width+1&&box.y+box.height<=viewport.top+viewport.height+1,'Feedback escapes the visible viewport');
  assert(box.x+box.width<=field.x||box.x>=field.x+field.width||box.y+box.height<=field.y||box.y>=field.y+field.height,'Feedback covers its control');
 }
 try {
@@ -233,6 +231,19 @@ try {
   assert.equal(await page.locator('.side-bar').evaluate(el=>getComputedStyle(el).position),'fixed');
   const restored=await page.locator('.main-content').boundingBox();assert(Math.abs(restored.width-original.width)<1);
   console.log(`PASS ${width}px ${scheme}: enlarged text uses a full-width article, reachable menu/search/setup panels and preserved focus through layout changes`);
+  await context.close();
+ }
+ // A label color regression must fail even while diagram lines/surfaces remain.
+ for(const scheme of ['light','dark']) {
+  const context=await createContext({colorScheme:scheme});const page=await context.newPage();
+  await page.route('**/assets/diagrams/*.svg',async route=>{
+   const response=await route.fetch();
+   const body=(await response.text()).replace(/--diagram-text:\s*#[0-9a-f]+;/gi,'--diagram-text: var(--diagram-surface);');
+   await route.fulfill({response,body});
+  });
+  await page.goto(pageUrl('docs/commands/ship/detailed.html'));await background(scheme)(page);
+  await assert.rejects(()=>checkThemeColors(page,scheme,assertStrict),/diagram labels have insufficient contrast/);
+  console.log(`PASS ${scheme}: unreadable diagram labels are rejected with unchanged lines and surfaces`);
   await context.close();
  }
  // Breakpoint changes preserve an active search, including selected-result focus.
@@ -494,7 +505,6 @@ try {
   if(await status.evaluate(el=>el.scrollHeight>el.clientHeight+1)) {
    await button.focus();await page.keyboard.press('Tab');assert(await status.evaluate(el=>el===document.activeElement),'Long copy error is not keyboard reachable');
    await page.keyboard.press('ArrowDown');await page.waitForFunction(el=>el.scrollTop>0,await status.elementHandle());
-   assert(await status.evaluate(el=>el.scrollTop>0),'Long copy error cannot be scrolled');
    await page.clock.runFor(4500);assert((await status.textContent()).startsWith('Could not copy.'),'Focused copy error expired while being read');
    await button.focus();await page.clock.runFor(500);
   } else await page.clock.runFor(4000);
@@ -526,7 +536,7 @@ try {
    }),'Retry covers the editable search text');
   }
   if(await status.evaluate(el=>el.scrollHeight>el.clientHeight+1)) {
-   await status.focus();await page.keyboard.press('ArrowDown');await page.waitForFunction(el=>el.scrollTop>0,await status.elementHandle());assert(await status.evaluate(el=>el.scrollTop>0));
+   await status.focus();await page.keyboard.press('ArrowDown');await page.waitForFunction(el=>el.scrollTop>0,await status.elementHandle());
    await page.clock.runFor(4500);assert((await status.textContent()).startsWith('Search unavailable.'),'Focused search error expired while being read');
    await query.focus();
   }

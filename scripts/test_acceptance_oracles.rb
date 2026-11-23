@@ -109,16 +109,26 @@ end
 puts "PASS direct normalize oracle: reviewed prefix, approved bytes, independent recovery, private proof, pre-filter locator and standard recovery location"
 
 with_consumer do |workspace, container|
-  backend = ENV.fetch("PATH").split(File::PATH_SEPARATOR).any? { |directory| Pathname(directory).join("git-filter-repo").executable? }
-  package = backend ? Pathname(__dir__).parent : nil
-  setup = HelmAcceptanceCases.prepare_normalize(workspace, container, package: package)
+  backend_bin = container.join("stub backend")
+  backend_bin.mkpath
+  backend = backend_bin.join("git-filter-repo")
+  backend.write("#!/usr/bin/env ruby\nputs ARGV.inspect\n")
+  backend.chmod(0700)
+  previous_path = ENV.fetch("PATH")
+  begin
+    ENV["PATH"] = "#{backend_bin}#{File::PATH_SEPARATOR}#{previous_path}"
+    setup = HelmAcceptanceCases.prepare_normalize(workspace, container, package: Pathname(__dir__).parent)
+  ensure
+    ENV["PATH"] = previous_path
+  end
   expect(setup[:home] == container.join("home") && setup[:extra_writes] == [setup[:home]])
   expect(!setup.key?(:private_path) && !setup.fetch(:request).include?("private proof"))
-  if package
-    expect(setup.dig(:environment, "HOME") == setup[:home].to_s)
-    _, status = Open3.capture2e("ruby", "-c", container.join("controlled bin", "git-filter-repo").to_s)
-    expect(status.success?)
-  end
+  expect(setup.dig(:environment, "HOME") == setup[:home].to_s)
+  wrapper = container.join("controlled bin", "git-filter-repo").to_s
+  output, status = Open3.capture2e("ruby", wrapper, "--version")
+  expect(status.success? && output.strip == '["--version"]')
+  output, status = Open3.capture2e("ruby", wrapper, "--refs", "main")
+  expect(!status.success? && output.include?("No exact private recovery handoff before filtering"))
 end
 puts "PASS normalize fixture: controlled HOME, standard recovery location, no custom path and a valid controlled backend wrapper"
 
@@ -147,6 +157,21 @@ puts "PASS normalize fixture: controlled HOME, standard recovery location, no cu
     verify = -> { HelmAcceptance.verify_test_lifecycle!(workspace: workspace,
       package: Pathname(__dir__).parent, scenario: scenario, before: before,
       before_git: before_git, approved: approved, result: result) }
+    command = setup.fetch(:test_fixture).fetch(:command)
+    baseline = { "name" => "Bash", "input" => { "command" => command }, "failed" => false,
+      "output" => ".\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nOK\n" }
+    expanded = baseline.merge("input" => { "command" => "cd #{Shellwords.escape(workspace.to_s)} && #{command}" },
+      "output" => "..\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK\n")
+    if successful
+      rejects_with("Missing completed baseline and expanded test execution evidence", &verify)
+      [[baseline], [expanded, baseline], [baseline, expanded.merge("failed" => true)],
+       [baseline, expanded.merge("input" => { "command" => "echo #{command}" })],
+       [baseline, expanded.merge("output" => "Ran 2 tests in 0.001s\n\nOK (skipped=2)\n")]].each do |calls|
+        result[:calls] = calls
+        rejects_with("Missing completed baseline and expanded test execution evidence", &verify)
+      end
+      result[:calls] = [baseline, expanded]
+    end
     verify.call
     expect(approved.fetch(".helm/test-log.json") == record.binread)
     if successful
@@ -158,14 +183,19 @@ puts "PASS normalize fixture: controlled HOME, standard recovery location, no cu
       rejects_with("Deferred tests were executed", &verify)
       result[:calls] = []
       scenario.fetch(:test_fixture)[:deferred] = false
-      rejects_with("Expected failed verification never ran", &verify)
+      rejects_with("Missing completed baseline and expanded test execution evidence", &verify)
       # This supplied trace is a unit-test input, not an executed model workflow.
       result[:tool_outputs] = ["FAILED (errors=1)\nTypeError: synthetic fixture"]
+      rejects_with("Missing completed baseline and expanded test execution evidence", &verify)
+      failure = expanded.merge("failed" => true, "output" => "TypeError: synthetic fixture\nRan 2 tests in 0.001s\n\nFAILED (errors=1)\n")
+      result[:calls] = [baseline, failure.merge("failed" => false)]
+      rejects_with("Missing completed baseline and expanded test execution evidence", &verify)
+      result[:calls] = [baseline, failure]
       verify.call
     end
   end
 end
-puts "PASS direct test oracle: open drafts, failure evidence, and distinct code-before-closure commits"
+puts "PASS direct test oracle: open drafts, command-bound baseline/expanded results, and distinct code-before-closure commits"
 
 with_consumer do |workspace, container|
   old_tip = HelmSmoke.git(workspace, "rev-parse", "HEAD").strip
@@ -235,4 +265,4 @@ with_consumer do |workspace, _|
   end
 end
 puts "PASS declared ref-change oracle: exact new refs, approved tracking moves and unrelated Git drift"
-puts "Passed 4 direct acceptance-oracle groups; synthetic inputs only, no models or workflow executions."
+puts "Passed 5 direct acceptance-oracle groups; synthetic inputs only, no models or workflow executions."

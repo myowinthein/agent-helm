@@ -67,6 +67,10 @@ checks["complete exposed Claude tool stream is required"] = lambda do
   parsed = HelmAcceptance.trace("claude", wire(events))
   expect(parsed[:calls].length == 1 && parsed[:answer].include?("API_TOKEN"))
   expect(parsed[:calls][0]["output"] == "API_TOKEN")
+  expect(parsed[:calls][0]["failed"] == false)
+  failed = claude_events
+  failed[2]["message"]["content"][0]["is_error"] = true
+  expect(HelmAcceptance.trace("claude", wire(failed))[:calls][0]["failed"] == true)
   rejects { HelmAcceptance.trace("claude", wire(events.reject { |e| e["type"] == "user" })) }
   rejects { HelmAcceptance.trace("claude", wire(events[0...-1])) }
   rejects { HelmAcceptance.trace("claude", wire(events[1..])) }
@@ -140,7 +144,12 @@ checks["Codex requires completed commands and a completed turn"] = lambda do
             { "type" => "item.completed", "item" => item },
             { "type" => "item.completed", "item" => { "type" => "agent_message", "text" => "Audit complete" } },
             { "type" => "turn.completed" }]
-  expect(HelmAcceptance.trace("codex", wire(events))[:calls].length == 1)
+  parsed = HelmAcceptance.trace("codex", wire(events))
+  expect(parsed[:calls].length == 1 && parsed[:calls][0]["failed"] == false && parsed[:calls][0]["exit_code"] == 0)
+  item["exit_code"] = 1
+  failed = HelmAcceptance.trace("codex", wire(events))[:calls][0]
+  expect(failed["failed"] == true && failed["exit_code"] == 1)
+  item["exit_code"] = 0
   rejects { HelmAcceptance.trace("codex", wire(events[0...-1])) }
   rejects { HelmAcceptance.trace("codex", wire(events.reject { |e| e["type"] == "item.completed" && e.dig("item", "id") == "cmd1" })) }
   item.delete("aggregated_output")
