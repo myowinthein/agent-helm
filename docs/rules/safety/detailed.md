@@ -82,6 +82,14 @@ Approval does not start another command or establish its completed review. The a
 
 Actual generated material is updated through its authoritative input and producer, with approval covering any affected command-maintained documents. A build or generator does not bypass that boundary. Ordinary implementation and tests remain editable even if a command originally wrote them; a demonstration fix in an archived application does not authorize changing its captured recovery evidence. Ledgers, checkpoints and recovery proofs still require their owning procedures, regardless of approval for a document edit.
 
+## Test quality
+
+Focused tests can accompany an ordinary feature or fix without invoking test. They follow the same standards as tests written through that command: known inputs, an expected outcome grounded in the intended behavior, and assertions that would detect a realistic failure. Existing useful cases may already provide that protection or need only a targeted extension.
+
+For example, a retry test should check that the operation happens once despite repeated requests. Comparing a result with itself or mocking away the retry behavior would not protect that contract. More assertions and a consistently passing suite do not establish useful protection by themselves.
+
+Broader audits, suite cleanup and tooling changes need their own selected scope. The [test command](../../commands/test.html) can assess those needs and maintain saved findings. Direct test edits do not update those records or close their findings.
+
 ## Host capabilities
 
 The agent verifies only the capabilities needed for the action: the actual workspace, account, runtime and target. Folder access is not proof of Git permissions or a safe database. Missing access blocks the dependent action while drafts and completed results remain intact.

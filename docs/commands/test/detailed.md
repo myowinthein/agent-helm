@@ -9,6 +9,7 @@ permalink: /docs/commands/test/detailed.html
 title_category: Details
 source_files:
   - guides/test.md
+  - rules/safety.md
 ---
 
 # Test
@@ -65,6 +66,8 @@ Revisits use the same numbered report and Apply actions below. Approved meaningf
 
 Suggestions follow the actual stack and risk: unit cases, integration checks, accessibility behavior, fixtures, runner repairs or a different testing technique when it serves the project.
 
+The [shared test-quality standards](../../rules/safety/detailed.html#test-quality) also apply when ordinary development adds focused tests. Those edits need no test invocation; this command provides a wider review and saved assessment when you choose that workflow.
+
 Existing tests can be clarified or consolidated. Removing one needs evidence that its behavior is obsolete or remains protected elsewhere. A failing assertion is not permission to weaken the guarantee.
 
 For example, a payment retry case should verify the externally important outcome, such as avoiding a duplicate charge. Repeating each internal helper call in an assertion can make the test brittle without protecting that outcome.
@@ -111,4 +114,4 @@ Changes finish locally on the same branch. [Refactor](../refactor.html#refactor-
 
 ## Explore the source
 
-For implementation details, read [guides/test.md](https://github.com/myowinthein/agent-helm/blob/main/guides/test.md).
+For implementation details, read [guides/test.md](https://github.com/myowinthein/agent-helm/blob/main/guides/test.md) and [rules/safety.md](https://github.com/myowinthein/agent-helm/blob/main/rules/safety.md).

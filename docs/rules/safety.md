@@ -48,6 +48,10 @@ This includes AGENTS.md, standard and custom READMEs, adopted rules and legal do
 
 Approval for a document edit does not grant access to ledgers or recovery evidence. Ordinary edits preserve review markers and do not establish a fresh assessment, passing test or archive seal.
 
+## Test quality
+
+Ordinary development can include focused regression tests without running test. The same quality standards apply: protect behavior against a realistic failure, check existing protection before adding cases and weigh the benefit against maintenance cost. Finishing a task does not automatically justify another test. Use [test](../commands/test.html) for a broader review and saved assessments.
+
 ## Host capabilities
 
 Verify the workspace, account and runtime needed for the action. Missing capability blocks dependent work while preserving drafts and completed results. Markdown instructions guide decisions; they do not replace enforced permissions or guarantee prevention.

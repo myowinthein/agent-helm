@@ -53,7 +53,7 @@ Human task authority, application tool approvals and OS/sandbox enforcement are 
 
 ## Maintaining workflow outputs
 
-Maintain ordinary implementation, tests and general guides through focused authorized development, even if a command originally wrote them. Maintained Helm package sources are ordinary source; adopted consumer outputs follow their own roles. Apply only approved changes, verify affected facts/consumers/results, and preserve custom content, intended behavior, contracts, imports, formats and unrelated work.
+Maintain ordinary implementation, tests and general guides through focused authorized development, even if a command originally wrote them. Apply [Test quality](#test-quality) before adding or substantially changing tests. Maintained Helm package sources are ordinary source; adopted consumer outputs follow their own roles. Apply only approved changes, verify affected facts/consumers/results, and preserve custom content, intended behavior, contracts, imports, formats and unrelated work.
 
 Classify the actual role/producer, including mixed files:
 
@@ -79,6 +79,15 @@ This map includes conditional outputs at their actual selected paths. It governs
 | **test** | Tests, fixtures/mocks/replays, snapshots/visual references, runner/config/scripts and owning manifests/locks remain maintainable within approved scope. Preserve scenarios, assertions, discovery and consumers. Retirement needs evidence of authoritative obsolescence or remaining/replacement protection; production deletion alone is insufficient. Setup/dependency compatibility and effects still matter. Coverage/performance/mutation/reporter artifacts come from actual tools, not edited pass claims. Only test owns recorded assessments/closures. |
 
 Owning workflows use actual current contents as the replacement baseline, preserving useful intervening edits. Origin/markers alone justify neither replacement nor currency; reassess content fit and provenance under the next owning run. Report concrete affected assessments, references, rename/deletion or recovery dependencies and their relevant owner in the normal handoff using source/human docs/supplied evidence. Add no stale flags, sidecars, schema, live-state scan or automatic command. Copied-only sessions can preserve outputs; missing authoring instructions block only that edit. Adopted copies receive updates through reviewed adopt, never automatic synchronization.
+
+## Test quality
+
+These standards apply during ordinary development and every workflow. Focused regression tests can accompany authorized implementation work without invoking test. Broader audits, suite cleanup and tooling changes need their own selected scope; existing execution approvals and assessment/state ownership remain unchanged.
+
+- **Justify the protection.** Identify the behavior or contract, a realistic failure and the observable result that would distinguish it from correct behavior. Weigh that protection against setup, fragility, runtime and maintenance cost. Do not add tests automatically because a task finished or a file changed. A high pass rate alone establishes neither usefulness nor redundancy.
+- **Use existing protection first.** Inspect relevant assertions, fixtures and cross-module coverage before adding cases. Prefer a focused extension when it preserves clarity. Choose the lowest fitting unit/component/integration/contract/E2E layer and existing project tools; no test per file, fixed case quota or assertion count establishes quality.
+- **Make assertions sensitive to failure.** Derive expected results from the intended contract, established regression evidence or an independent oracle, not a duplicate of the implementation or blindly accepted current output. Verify controlled preconditions where correct and regressed behavior differ. Assert meaningful results, errors or invariants; exact before/after equality and negative assertions are valid for unchanged-state or absence guarantees. Avoid tautologies and fragile internal-call assertions.
+- **Keep execution reliable.** Use realistic fixtures and mocks at actual external boundaries without mocking away the behavior under test. Keep cases independent, control time/randomness, await actual conditions instead of arbitrary sleeps, and clean up on failure. Parameterize when shared setup and assertions stay clear with identifiable cases. Preserve existing guarantees and do not weaken assertions, skip cases or bless snapshots merely to make checks pass.
 
 ## Operational Helm state
 

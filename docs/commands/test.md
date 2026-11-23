@@ -12,6 +12,8 @@ nav_order: 4
 
 Use test to find missing protection and improve useful existing tests. You choose which cases and tooling changes to implement after reviewing the findings.
 
+Focused regression tests can also accompany ordinary development. The same [test-quality standards](../rules/safety.html#test-quality) apply to both; running test is not required for those edits.
+
 ## Flow
 
 ```mermaid

@@ -216,7 +216,7 @@ Apply these perspectives only when the project exposes the behavior or requireme
 | Time, concurrency and idempotency | Evidenced asynchronous ordering, duplicate events, races and repeat-operation guarantees. |
 | Performance/resource requirements | Defined constraints or observed regression risks, with appropriate bounded checks. |
 
-Choose the lowest fitting unit/component/integration/contract/E2E layer that can prove the behavior. Check existing assertions and cross-module coverage before adding tests. Prefer targeted extensions to useful existing cases; do not create tests for every file or every lens, mirror implementation, or multiply trivial assertions to increase counts.
+Apply the shared [test-quality standards](../rules/safety.md#test-quality) when selecting cases and their layer. These also govern focused tests written during ordinary development; invoking test supplies this workflow's assessment and selection process, not a separate quality standard.
 
 ### Maintain existing tests within scope
 
@@ -356,9 +356,7 @@ Full scan means complete static assessment, not compulsory full-project runtime 
 
 Group approved cases into bounded coherent domain/module units with the reviewed prerequisites/mappings, then process sequentially in the reviewed dependency and benefit order. A similar recommendation or shared fixture alone does not merge unrelated features into one commit. Every member retains its explicit selection. Preserve project naming/placement conventions. Large units can use coherent sequential batches with an actual completed/pending list.
 
-Write tests that assert meaningful observable results, errors or invariants and would detect the intended regression. Establish controlled inputs/preconditions where correct and regressed behavior produce different observable results; shared/seeded fixtures are valid when those relevant preconditions are verified and isolation is adequate. For unchanged-state guarantees, assert exact before/after equality; negative assertions remain valid for a contract of "not X".
-
-Use realistic fixtures and mocks at actual external boundaries without mocking away the behavior being tested. Keep cases independent; control time/randomness and await actual conditions instead of arbitrary sleeps. Include cleanup on failure. Avoid tautologies, implementation duplication, fragile internal-call assertions, blindly accepted snapshots and accidental real side effects. Parameterize when shared setup/assertion shape remains clear with useful case IDs; there is no rigid three-case requirement.
+Apply the shared test-quality standards to each approved cluster's assertions, fixture preconditions, isolation and cleanup. Shared/seeded fixtures remain valid when their relevant preconditions are verified and isolation is adequate; prevent accidental real side effects under the reviewed execution plan.
 
 For each cluster:
 
