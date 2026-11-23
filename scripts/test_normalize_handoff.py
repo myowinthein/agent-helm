@@ -318,6 +318,34 @@ class RetentionTests(unittest.TestCase):
         digest = retention.inspect(str(self.common))[2]
         return retention.complete(str(self.common), self.request(number, required), digest)
 
+    def test_symlinked_os_home_supports_canonical_backup_registration_and_retention(self):
+        self.patch.stop()
+        alias = self.root / "home alias"
+        alias.symlink_to(self.home, target_is_directory=True)
+        account = types.SimpleNamespace(pw_dir=str(alias))
+        with patch.object(retention.pwd, "getpwuid", return_value=account):
+            self.assertEqual(retention.home_directory(), self.home)
+            for number in range(1, 5):
+                self.add_run(number, "normalize" if number % 2 else "ship")
+                result = self.finish(number)
+            self.assertEqual(result["deleted_runs"], [self.run_id(1)])
+            self.assertEqual(result["kept_completed"], 3)
+            self.assertFalse((self.base / self.run_id(1)).exists())
+            _, runs, _, opaque = retention.inspect(str(self.common))
+            self.assertFalse(opaque)
+            self.assertEqual({run["backup_kind"] for run in runs}, {"normalize", "ship"})
+
+    def test_unavailable_or_cyclic_os_home_stops_without_exposing_the_path(self):
+        self.patch.stop()
+        cycle = self.root / "private-home-cycle"
+        cycle.symlink_to(cycle, target_is_directory=True)
+        for path in (self.root / "private-missing-home", cycle):
+            with self.subTest(path=path.name), patch.object(retention.pwd, "getpwuid",
+                    return_value=types.SimpleNamespace(pw_dir=str(path))):
+                with self.assertRaises(retention.Invalid) as caught:
+                    retention.home_directory()
+                self.assertEqual(str(caught.exception), "OS home directory cannot be resolved safely")
+
     def test_fourth_completed_cycle_removes_only_oldest_folder_and_matching_locator(self):
         for number in range(1, 5):
             self.add_run(number)

@@ -51,7 +51,7 @@ The report leads with how many commits were reviewed and how many messages need 
 
 ### Code-assisted checks and incremental review
 
-Python checks formatting; the agent reviews meaning against the actual changes. A syntax pass is not semantic approval. Later runs reuse earlier review only while its evidence remains valid.
+Python checks formatting; the agent reviews meaning against the actual changes. A syntax pass is not semantic approval. Later runs reuse earlier review only when its evidence and review requirements still match; otherwise the saved record is preserved and the affected history needs fresh review.
 
 ## Which branches change?
 

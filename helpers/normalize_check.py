@@ -14,7 +14,7 @@ import sys
 
 sys.dont_write_bytecode = True
 
-REVIEW_CONTRACT = 1
+REVIEW_CONTRACT = 2
 MAX_BYTES = 32 * 1024 * 1024
 MAX_COMMITS = 100_000
 MAX_MESSAGE_BYTES = 1024 * 1024
@@ -31,6 +31,13 @@ class Invalid(ValueError):
     """Messages are fixed diagnostics, never raw input or parser excerpts."""
 
 
+class JSONNumber:
+    """Keep numeric tokens that built-in conversions would change."""
+
+    def __init__(self, token):
+        self.token = token
+
+
 def require(condition, message):
     if not condition:
         raise Invalid(message)
@@ -41,7 +48,14 @@ def reject_constant(_):
 
 
 def canonical(value):
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    if isinstance(value, JSONNumber):
+        return value.token
+    if isinstance(value, dict):
+        return "{" + ",".join(canonical(key) + ":" + canonical(value[key])
+                              for key in sorted(value)) + "}"
+    if isinstance(value, list):
+        return "[" + ",".join(canonical(item) for item in value) + "]"
+    return json.dumps(value, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
 
 
 def digest(value):
@@ -293,7 +307,8 @@ def main():
         raw = sys.stdin.buffer.read(MAX_BYTES + 1)
         require(len(raw) <= MAX_BYTES, "Input exceeds resource limit")
         payload = json.loads(raw, object_pairs_hook=object_pairs,
-                             parse_constant=reject_constant)
+                             parse_int=lambda token: JSONNumber(token) if token == "-0" else int(token),
+                             parse_float=JSONNumber, parse_constant=reject_constant)
         result = execute(payload, args.operation, args.offset, args.limit, args.expect_digest)
     except (ValueError, TypeError, RecursionError):
         # Do not echo malformed JSON, messages, policy values or parser excerpts.

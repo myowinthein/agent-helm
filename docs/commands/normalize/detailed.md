@@ -77,7 +77,9 @@ The current local branch is the default, with named branches, ranges or broader 
 
 Python can check message syntax, while the agent reads changes to assess meaning. A correctly formatted subject can still misdescribe a commit. Bodies, trailers and breaking-change information remain unless their proposed changes are shown explicitly.
 
-The report starts with the reviewed scope and proposed change count, followed by compact before/after messages identified by commit. A short reason helps when the original title misdescribes the patch; routine prefix corrections need no repeated explanation. Small plans show every edit once. Larger plans can show representative examples with the complete exact plan available before approval, without cutting off undisplayed corrections. Earlier semantic review is reused only while its evidence still matches; an unchanged formatting result alone establishes no such coverage.
+The report starts with the reviewed scope and proposed change count, followed by compact before/after messages identified by commit. A short reason helps when the original title misdescribes the patch; routine prefix corrections need no repeated explanation. Small plans show every edit once. Larger plans can show representative examples with the complete exact plan available before approval, without cutting off undisplayed corrections.
+
+Earlier semantic review is reused only when its evidence and recorded review requirements still match. If a helper update makes an old review incompatible, the saved record stays intact and the affected history needs fresh review. An unchanged formatting result alone does not establish that coverage.
 
 For example, a title such as `update README.md` could become `fix(navigation): update active-link highlighting` when the patch also corrects navigation behavior. The explanation should identify that mismatch, without describing every changed line or showing a table of successful checks.
 

@@ -219,7 +219,7 @@ Reuse Step 1's complete schema-2 validation and baseline snapshot under `{packag
       "last_checked_commit": "<full lowercase commit ID>",
       "last_checked_date": "YYYY-MM-DD",
       "review_kind": "semantic",
-      "review_contract": 1,
+      "review_contract": 2,
       "policy_fingerprint": "<64 lowercase hexadecimal characters>"
     }
   }

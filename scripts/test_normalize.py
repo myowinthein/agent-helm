@@ -32,7 +32,7 @@ def policy():
 
 def baseline(number, effective=None):
     return {"last_checked_commit": oid(number), "last_checked_date": "2026-10-27",
-            "review_kind": "semantic", "review_contract": 1,
+            "review_kind": "semantic", "review_contract": mod.REVIEW_CONTRACT,
             "policy_fingerprint": mod.policy_info(effective or policy())[0]}
 
 
@@ -221,6 +221,94 @@ class NormalizeTests(unittest.TestCase):
         with self.assertRaises(mod.Invalid):
             mod.execute(payload, "plan", offset=1, limit=1, expected_digest=first["input_digest"])
 
+    def test_cli_preserves_numeric_policy_changes_in_fingerprints_and_page_binding(self):
+        payload = {"policy": policy(), "commits": [
+            {"id": oid(1), "parents": [], "message": "fix(api): first"},
+            {"id": oid(2), "parents": [oid(1)], "message": "fix(api): second"}],
+            "tips": {"main": oid(2)}, "ledger": None}
+        payload["policy"]["rules"]["custom_numeric_rule"] = "NUMBER_TOKEN"
+        template = json.dumps(payload)
+        pairs = [("9007199254740992.0", "9007199254740993.0"),
+                 ("0.123456789012345678901", "0.123456789012345678902"),
+                 ("1e-10000", "2e-10000"), ("1e10000", "2e10000"), ("0", "-0")]
+        for operation in ("check", "plan"):
+            command = [sys.executable, "-I", "-B", str(HELPER), operation, "--limit", "1"]
+            for original, replacement in pairs:
+                with self.subTest(operation=operation, original=original):
+                    raw = template.replace('"NUMBER_TOKEN"', original)
+                    changed = template.replace('"NUMBER_TOKEN"', replacement)
+                    first = subprocess.run(command, input=raw, text=True, capture_output=True)
+                    second = subprocess.run(command, input=changed, text=True, capture_output=True)
+                    self.assertEqual(first.returncode, 0, first.stderr)
+                    self.assertEqual(second.returncode, 0, second.stderr)
+                    before, after = json.loads(first.stdout), json.loads(second.stdout)
+                    self.assertNotEqual(before["policy_fingerprint"], after["policy_fingerprint"])
+                    self.assertNotEqual(before["input_digest"], after["input_digest"])
+                    continuation = subprocess.run(command + ["--offset", "1", "--expect-digest", before["input_digest"]],
+                                                  input=changed, text=True, capture_output=True)
+                    self.assertEqual(continuation.returncode, 2)
+                    self.assertEqual(json.loads(continuation.stdout), {
+                        "interface_version": 1, "error": "Invalid or unsupported normalize input"})
+                    self.assertEqual(continuation.stderr, "")
+
+    def test_changed_numeric_policy_requires_fresh_semantic_review(self):
+        payload = {"policy": policy(), "commits": graph((1, []), (2, [1])),
+                   "tips": {"main": oid(2)}, "ledger": None}
+        payload["policy"]["rules"]["custom_numeric_rule"] = "NUMBER_TOKEN"
+        command = [sys.executable, "-I", "-B", str(HELPER), "plan"]
+        first = subprocess.run(command, input=json.dumps(payload).replace('"NUMBER_TOKEN"', '9007199254740992.0'),
+                               text=True, capture_output=True)
+        self.assertEqual(first.returncode, 0, first.stderr)
+        saved = baseline(2)
+        saved["policy_fingerprint"] = json.loads(first.stdout)["policy_fingerprint"]
+        payload["ledger"] = ledger({"main": saved})
+        changed = subprocess.run(command, input=json.dumps(payload).replace('"NUMBER_TOKEN"', '9007199254740993.0'),
+                                 text=True, capture_output=True)
+        self.assertEqual(changed.returncode, 0, changed.stderr)
+        result = json.loads(changed.stdout)
+        self.assertEqual(result["branches"]["main"]["baseline_status"], "policy_changed")
+        self.assertEqual(result["records"], [oid(1), oid(2)])
+
+    def test_page_binding_preserves_unknown_payload_and_ledger_numbers(self):
+        for location in ("payload", "ledger"):
+            with self.subTest(location=location):
+                payload = {"policy": policy(), "commits": graph((1, []), (2, [1]), (3, [2])),
+                           "tips": {"main": oid(3)}, "ledger": ledger({"main": baseline(1)})}
+                target = payload if location == "payload" else payload["ledger"]
+                target["future"] = {"nested": ["NUMBER_TOKEN"]}
+                template = json.dumps(payload)
+                command = [sys.executable, "-I", "-B", str(HELPER), "plan", "--limit", "1"]
+                first = subprocess.run(command, input=template.replace('"NUMBER_TOKEN"', '9007199254740992.0'),
+                                       text=True, capture_output=True)
+                self.assertEqual(first.returncode, 0, first.stderr)
+                continuation = subprocess.run(command + ["--offset", "1", "--expect-digest", json.loads(first.stdout)["input_digest"]],
+                    input=template.replace('"NUMBER_TOKEN"', '9007199254740993.0'), text=True, capture_output=True)
+                self.assertEqual(continuation.returncode, 2)
+                self.assertEqual(continuation.stderr, "")
+
+    def test_unknown_numeric_tokens_do_not_alias_other_json_values(self):
+        payload = {"policy": policy(), "commits": []}
+        payload["policy"]["future"] = "NUMBER_TOKEN"
+        template = json.dumps(payload)
+        fingerprints = set()
+        for token in ('0', '-0', '0.0', '0.00', '0e0', '"0.0"', '["0.0"]', '{"value":"0.0"}'):
+            with self.subTest(token=token):
+                result = subprocess.run([sys.executable, "-I", "-B", str(HELPER), "check"],
+                    input=template.replace('"NUMBER_TOKEN"', token), text=True, capture_output=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                fingerprint = json.loads(result.stdout)["policy_fingerprint"]
+                self.assertNotIn(fingerprint, fingerprints)
+                fingerprints.add(fingerprint)
+
+    def test_previous_review_contract_cannot_reuse_a_potentially_rounded_fingerprint(self):
+        record = baseline(2)
+        record["review_contract"] = 1
+        before = copy.deepcopy(record)
+        result = self.plan(graph((1, []), (2, [1])), records={"main": record})
+        self.assertEqual(result["branches"]["main"]["baseline_status"], "review_contract_changed")
+        self.assertEqual(result["records"], [oid(1), oid(2)])
+        self.assertEqual(record, before)
+
     def test_old_noncanonical_fingerprint_is_preserved_and_not_recertified(self):
         record = baseline(1)
         record["policy_fingerprint"] = mod.digest(policy())
@@ -244,7 +332,7 @@ class NormalizeTests(unittest.TestCase):
         changed_policy = baseline(1)
         changed_policy["policy_fingerprint"] = "f" * 64
         changed_contract = baseline(1)
-        changed_contract["review_contract"] = 2
+        changed_contract["review_contract"] = mod.REVIEW_CONTRACT + 1
         for record, reason in ((changed_policy, "policy_changed"), (changed_contract, "review_contract_changed"),
                                (baseline(9), "baseline_not_ancestor")):
             result = self.plan(graph((1, []), (2, [1])), records={"main": record})
@@ -424,7 +512,7 @@ class NormalizeTests(unittest.TestCase):
                                  input=json.dumps(shared), text=True, capture_output=True, check=False)
             self.assertEqual(run.returncode, 0, run.stderr)
             result = json.loads(run.stdout)
-            self.assertEqual(result["review_contract"], 1)
+            self.assertEqual(result["review_contract"], mod.REVIEW_CONTRACT)
             self.assertEqual(len(result["records"]), 1)
             self.assertEqual(run.stderr, "")
 

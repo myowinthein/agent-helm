@@ -37,7 +37,10 @@ REGISTRIES = {"normalize": "normalize-handoffs", "ship": "ship-backups"}
 
 
 def home_directory():
-    return Path(pwd.getpwuid(os.getuid()).pw_dir)
+    try:
+        return Path(pwd.getpwuid(os.getuid()).pw_dir).resolve(strict=True)
+    except (OSError, RuntimeError):
+        raise Invalid("OS home directory cannot be resolved safely") from None
 
 
 def root_directory(kind="normalize"):
