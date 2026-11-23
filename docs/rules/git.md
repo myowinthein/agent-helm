@@ -22,7 +22,7 @@ Shared settings normally live in `AGENTS.md`, imported by `CLAUDE.md`. Actual im
 |---|---|---|
 | `ship-method` | `direct` | Direct pushes or PR/MR handoffs. |
 | `git-auto-commit` | `true` | Whether completed local work can be committed without another question. |
-| `git-merge-strategy` | `squash` | Squash, merge or rebase of reviewed private, unpushed work. |
+| `git-merge-strategy` | `squash` | Squash or merge reviewed integrations; rebase only eligible private, unpushed work. |
 
 Defaults apply only when a setting is absent. Team size does not select a mode. New configuration uses Markdown bullets; supported existing formats are preserved.
 
