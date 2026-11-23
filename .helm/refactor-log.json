@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "assessed_commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-  "full_scan_commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
+  "assessed_commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+  "full_scan_commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
   "findings": [
     {
       "id": "r-7d02b3b4-6359-416d-a0d0-29b8f96fc8bb",
@@ -469,19 +469,30 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "A refactor run reads the same Set up Python / Continue without Python / Stop rule from ledger-helper.md, runtime.md, project-state.md, refactor-ledger.md and the guide, and the checklist wording already differs between copies; a policy change must be mirrored by hand.",
+        "reason": "Commit 99dd2d4 centralized the detailed unavailable-runtime choice and equivalent-tool contract in ledger-helper.md. The other five files now delegate to that owner and retain brief state-entry, failure or question-routing reminders; the original multi-file policy-maintenance burden is addressed.",
         "evidence": [
-          "prompts/shared/ledger-helper.md:20-43 owns the rule and its four-point equivalence checklist.",
-          "prompts/shared/runtime.md:55, prompts/shared/project-state.md:22, prompts/refactor-ledger.md:86 and :94, guides/refactor.md:78-82 and guides/test.md:62-66 restate it.",
-          "runtime.md:55 says 'complete validation, bounded retrieval and preservation'; project-state.md:22 and refactor-ledger.md:86 add 'safe-path, resource, digest/retrieval'; ledger-helper.md:34-39 lists four numbered checks."
+          "prompts/shared/ledger-helper.md:48 owns the complete choice, authorization, equivalent-tool requirements and stop behavior; its failure table and write contract remain authoritative.",
+          "prompts/shared/runtime.md:74, project-state.md:22, prompts/refactor-ledger.md:100 and :110, guides/refactor.md:80 and guides/test.md:64 delegate rather than reproduce the detailed fallback.",
+          "The choice labels in guides/refactor.md:313 are its required QM map, not a competing fallback definition. The six-file consolidation is present in commit 99dd2d4b3038a7007300042966c53e83233fe2e5 and remains intact at the reviewed source."
         ],
-        "invariant": "Keep the run-scoped single choice, the advisory-only manual view, the no-writer statement, invalid-state and drift blockers that fallback cannot bypass, and that preview and report-only exits never load the helper."
+        "invariant": "Keep the single run-scoped choice, complete equivalent-tool validation and preservation requirements, no-writer boundary, strict failure stops and source-only/report-only state exclusions under the current owning contract."
       },
-      "state": "open",
+      "state": "resolved",
+      "closure": {
+        "origin": "native",
+        "kind": "fixed",
+        "commit": "99dd2d4b3038a7007300042966c53e83233fe2e5",
+        "date": "2026-11-24",
+        "method": "static",
+        "evidence": [
+          "The accepted six-file change replaces full caller fallback definitions with references to prompts/shared/ledger-helper.md, whose current unavailable-runtime section owns the detailed policy.",
+          "Full current-source review and a bounded independent reread confirmed that only brief caller boundaries and QM labels remain. The historical deferral is preserved; no new source edit or runtime pass is claimed."
+        ]
+      },
       "depends_on": [],
       "decision": {
         "origin": "native",
@@ -508,7 +519,7 @@
     {
       "id": "r-1f089f0a-ab11-49c4-b9fd-b46c4c614a62",
       "category": "Consistency",
-      "summary": "Normalize's schema-2 ledger contract and checkpoint rules are written in both guides/normalize.md and prompts/normalize-review.md, and the two give different outcomes for an invalid coverage record.",
+      "summary": "Normalize repeats its schema-2 JSON and checkpoint rules in the guide and the authoritative review-mechanics prompt.",
       "paths": [
         "guides/normalize.md",
         "prompts/normalize-review.md"
@@ -520,14 +531,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "c549df32ce952859bda2163ae4f2ad8d59056830",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "low",
         "risk": "needs-review",
-        "reason": "The two documents do not contradict each other: guides/normalize.md:237 covers the case where no safe anchor remains and prompts/normalize-review.md:53 covers an invalid policy or coverage entry, and both allow reviewed invalidation of non-reusable records. What remains is that the schema JSON and checkpoint rules are written in both files.",
+        "reason": "The schema block and coverage limits remain duplicated, but the current procedures agree on invalid-state stops, non-reusable historical coverage and reviewed invalidation. The small consolidation benefit does not overturn the recorded approval-text risk judgment; retain the hold.",
         "evidence": [
-          "guides/normalize.md:216-249 repeats the schema-2 JSON that prompts/normalize-review.md:34-55 defines.",
-          "guides/normalize.md:243 already forbids turning non-reusable historical records into today's coverage."
+          "guides/normalize.md Step 6 repeats the native schema-2 shape and checkpoint limits defined in prompts/normalize-review.md Schema 2.",
+          "Both preserve policy/contract compatibility, no automatic fingerprint rehashing and no fresh coverage for consistency-only rewrites; no current contradiction was found."
         ],
         "invariant": "Preserve coverage-advancement limits, the no-rehash rule, strict readback, the fixed commit message and that invalid coverage is never presented as reusable."
       },
@@ -554,7 +565,7 @@
     {
       "id": "r-44324732-f81b-43ea-9bab-07a540901978",
       "category": "Consistency",
-      "summary": "The refactor guide and the refactor ledger prompt both define decisions, closure, recurrence and checkpoint eligibility with slightly different lists.",
+      "summary": "The refactor guide repeats decision, closure, recurrence and checkpoint rules alongside their authoritative ledger prompt.",
       "paths": [
         "guides/refactor.md",
         "prompts/refactor-ledger.md"
@@ -566,15 +577,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "Both files are loaded together at refactor Step 3 and describe the same checkpoint rules in three phrasings, so the lists of conditions that do not make a scan incomplete have already drifted.",
+        "reason": "Both loaded files still explain the same lifecycle and checkpoint boundaries. Their current conditions agree, and the potential maintenance saving remains smaller than the risk of moving approval and provenance wording; retain the human deferral.",
         "evidence": [
-          "guides/refactor.md:90-92, :198-210 and :276 against prompts/refactor-ledger.md:60-73 and :75-82.",
-          "guides/refactor.md:210 lists unknown priority, held decisions and pending fixes; prompts/refactor-ledger.md:82 also lists nonselection and deferred verification of future fixes; guides/refactor.md:200 lists only unknown priority or a pending remedy.",
-          "prompts/refactor-ledger.md:3 declares itself the authoritative schema, reader and update contract."
+          "guides/refactor.md Steps 3, 4 and 6 repeat lifecycle, assessment eligibility and A/B/C closure requirements owned by prompts/refactor-ledger.md.",
+          "Both distinguish genuinely incomplete reads from assessed uncertainty, held decisions, nonselection and deferred future verification. The ledger prompt remains the declared authoritative schema and update contract."
         ],
         "invariant": "Preserve the A/B/C commit semantics, anchor advancement rules, held-decision handling and every approval gate."
       },
@@ -601,7 +611,7 @@
     {
       "id": "r-744f7f67-7069-4963-9729-8a99d7068bb6",
       "category": "Architecture",
-      "summary": "Ship's missing-proof replacement review, helper/PR reuse, correspondence and CI-gate rules are restated across guides/ship.md and four prompts, so a protocol change needs edits in several files that load together.",
+      "summary": "Ship's routing guide and supporting procedures repeat history-publication, shared-helper and exact-source CI boundaries.",
       "paths": [
         "guides/ship.md",
         "prompts/shared/history-publication.md",
@@ -618,16 +628,15 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "guides/ship.md Step 0 alone is about 300 words restating what history-publication.md owns, and the helper/PR reuse rules appear in ship.md, targets.md and release-providers.md; no conflict exists today but each change is a multi-file edit.",
+        "reason": "The routing and specialist documents still repeat consequential protocol boundaries, but the current statements agree and serve different action gates. Consolidation would move fixed-lease, backup and publication approval requirements for modest benefit; preserve the hold.",
         "evidence": [
-          "guides/ship.md:33, :79 and :149 repeat the Publish replacement history / Leave local review, the 'divergence proves nothing' rule and the backup and lease requirements owned by prompts/shared/history-publication.md:3, :23 and :41.",
-          "guides/ship.md:83-103, prompts/shared/release-providers.md:17, :25 and :32, and prompts/ship/targets.md:21 and :43-47 restate the shared-helper rules.",
-          "prompts/ship/release.md:41, prompts/shared/history-publication.md:19 and prompts/shared/normalize-handoff.md:38 each state the per-run correspondence rule.",
-          "AGENTS.md says ship.md holds routing and ordinary publication while protocols stay in prompts/shared."
+          "guides/ship.md routes specialist work to history-publication.md and repeats its replacement-review, backup-before-push and fixed-expectation boundaries.",
+          "ship.md, prompts/ship/targets.md and release-providers.md retain consistent shared-source/helper reuse rules; ci.md owns exact-source validation and distinguishes validation from deployment.",
+          "normalize-handoff.md and release.md retain independently verified correspondence requirements; no current protocol conflict was found."
         ],
         "invariant": "Keep every approval, fixed-lease, backup-before-replacement, proof and no-ordinary-force requirement; do not move requirement-bearing text without checking the owner still states it."
       },
@@ -658,7 +667,7 @@
     {
       "id": "r-7cabc6ae-bc3a-44cf-9cf2-acf37e1af6ec",
       "category": "Consistency",
-      "summary": "Archive's local-payload proof set is worded four different ways, the guide's formulation omits items the prompts require, and the payload_committed journal phase is never entered by any procedure.",
+      "summary": "Archive's local-payload proof requirements are repeated across the guide, finalization step and publication procedure.",
       "paths": [
         "guides/archive.md",
         "prompts/archive/step5-finalize.md",
@@ -671,15 +680,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "Resume and recovery rely on the proof set, so a reader following guides/archive.md alone checks less than archive-publication.md requires, and the word manifest also names a separate Helm workflow.",
+        "reason": "The proof descriptions remain distributed across local preparation and publication. Current text explicitly preserves payload_committed when found and directs new local work to prepared; the residual consolidation need is small relative to changing recovery requirements, so retain the deferral.",
         "evidence": [
-          "guides/archive.md:118 lists archive ID, reviewed manifest/report, expected parent and committed journal; :125 says exact Git/source/report/manifest proof.",
-          "prompts/archive/step5-finalize.md:49 adds inventory/output fingerprints and local Git proof; prompts/shared/archive-publication.md:57 adds the actual complete tree and :13 says source/report/manifest/journal proof.",
-          "guides/archive.md:113 supports phase payload_committed, while step5-finalize.md:47 and archive-publication.md:13 record prepared with a null payload ID and archive-publication.md:39 says prepared/payload_committed 'as appropriate' without a rule."
+          "guides/archive.md State and checkpoints requires archive ID, expected source/parent, committed journal and report/inventory proof; step5-finalize.md Task 6 and archive-publication.md Payload publication expand route-specific checks.",
+          "The guide identifies payload_committed as preserved historical state, while new local payloads remain cursor 4/phase prepared with null payload ID and no post-commit cosmetic update."
         ],
         "invariant": "Preserve that a payload is never recommitted, that commit subject or newest HEAD alone is never proof, that cursor 4 with phase prepared and a null payload ID stays valid, and the receipt recovery requirements."
       },
@@ -707,7 +715,7 @@
     {
       "id": "r-eed5ad92-e0b3-45c7-b81f-6dd94e56cc3e",
       "category": "Consistency",
-      "summary": "guides/adopt.md restates the external-pointer stop, the Skip-keeps-pointers rule and the all-foreign-skip rule in three to nine sections each and keeps wording from the removed branch-return flow.",
+      "summary": "Adopt repeats external-pointer, kept-copy and all-foreign-Skip safeguards across its phase boundaries.",
       "paths": [
         "guides/adopt.md"
       ],
@@ -718,16 +726,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "At 326 lines it is the second-largest guide and the same rule is edited in several places, with variant wordings that invite drift.",
+        "reason": "Repeated safeguards still require coordinated wording changes, but the current guide is consistent and the repetitions guard discovery, selection, copying and finalization separately. No current benefit justifies lifting the recorded hold.",
         "evidence": [
-          "guides/adopt.md:3, :56, :86, :96, :119, :146, :217, :235 and :312 restate the external-pointer rule.",
-          "guides/adopt.md:152, :185 and :223 restate Skip, and :150 and :189 the all-foreign-skip rule.",
-          "guides/adopt.md:267 says 'a different original branch after cleanup' although adopt never returns or cleans up (:241, :261), and :162-164 record {original_branch} only to call it the same branch as {branch}.",
-          "{adopt_file} is defined at :48 and again at :56 as {memory_file}."
+          "guides/adopt.md Entry files, Step 2, Step 3 and Step 4 consistently stop external-pointer conversion and preserve kept/skipped bodies and existing pointers.",
+          "Source-project protection, independent optional-rule selection and all-foreign-Skip adapter restrictions remain explicit. Reporting warns against verifying another branch after cleanup rather than authorizing such a route."
         ],
         "invariant": "Keep every per-step action-boundary reminder, the foreign-file overwrite approval, the external-pointer blocker, and the current-branch-only and no-checkout rules."
       },
@@ -753,7 +759,7 @@
     {
       "id": "r-d0c57b64-5022-4dbe-af0d-2cb3e0ffa4a7",
       "category": "Architecture",
-      "summary": "runtime.md, loaded by all ten skills, carries about 4.6 KB of workflow-specific policy that its owners already state, and its worker-restriction list differs from the owner list in investigation-evidence.md.",
+      "summary": "The shared runtime carries workflow-specific access and delegation boundaries alongside references to their specialist owners.",
       "paths": [
         "prompts/shared/runtime.md",
         "prompts/shared/investigation-evidence.md",
@@ -766,16 +772,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "low",
         "risk": "needs-review",
-        "reason": "About 38% of runtime.md serves only ship/normalize, log/manifest, delegation or the refactor and test ledger helper, so every run reads it; the two worker lists could drift.",
+        "reason": "All eleven skills load these specialist boundary reminders. They add shared context but make narrow exceptions discoverable without granting access, and current owner references preserve stricter investigation restrictions. The modest trimming benefit does not overturn the boundary-preservation hold.",
         "evidence": [
-          "prompts/shared/runtime.md:15, :17, :51, :53 and :55 are the workflow-specific paragraphs.",
-          "prompts/shared/investigation-evidence.md:34-47 and prompts/shared/ledger-helper.md:3 own the delegation and helper rules.",
-          "runtime.md:53 lists worker restrictions; investigation-evidence.md:36 adds probes, collection, tests, builds, installers, services, network actions and writes.",
-          "runtime.md:11 relies on 'the narrow exceptions below', so any trimming must keep them discoverable."
+          "prompts/shared/runtime.md Package and workspace identifies the narrow publication, review-anchor and backup-retention exceptions; owners retain their detailed procedures.",
+          "Its Delegation and checkpoints section delegates detailed investigation and ledger availability to investigation-evidence.md and ledger-helper.md while preserving parent-only mutation and state ownership."
         ],
         "invariant": "Keep every access boundary, read-only exception scope and sequential-editing rule, and use the stricter union of the two worker lists."
       },
@@ -802,7 +806,7 @@
     {
       "id": "r-7b9d0875-b0c3-4880-9399-d84d56355f4d",
       "category": "Code Quality",
-      "summary": "The 'Finish verified local work' paragraph is copied into five guides and the scan-depth recommendation rules are restated in three guides, although content-sync.md and scan-scope.md own them.",
+      "summary": "Local-finalization and scan-depth boundary reminders recur in guides that also load their shared owning procedures.",
       "paths": [
         "guides/env.md",
         "guides/log.md",
@@ -820,14 +824,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "low",
         "risk": "needs-review",
-        "reason": "About 430 bytes per guide copy are read next to the identical text in content-sync.md, and the scan-depth rule appears twice inside guides/test.md.",
+        "reason": "The repeated text remains a short action-boundary reminder permitted by project authoring rules. Each guide points to the shared owner and retains its specific no-publication and checkpoint limits; reducing the repetition has no new benefit sufficient to lift the hold.",
         "evidence": [
-          "guides/env.md:165, guides/log.md:171, guides/legal.md:248, guides/manifest.md:198 and guides/test.md:378 repeat the finish paragraph that prompts/shared/content-sync.md:17-23 states.",
-          "guides/refactor.md:102 and :104, guides/test.md:79 and :160, and guides/manifest.md:58 restate prompts/shared/scan-scope.md:29-30 and :35."
+          "The finalization sections in env, log, legal, manifest, test and refactor reference content-sync.md and explicitly retain current-branch-only local completion.",
+          "The four scan callers reference scan-scope.md at their existing depth choice and preserve their different coverage and checkpoint meanings."
         ],
         "invariant": "Keep a short action-boundary reminder in each guide, the no-push/PR/branch-change boundary, the workflow-specific suffixes, and the rule that a recommendation is never a selection."
       },
@@ -1138,15 +1142,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "low",
         "risk": "needs-review",
-        "reason": "Adding an owner, changing the interface version or an exit code needs edits at each site, and the contract's interface_version is declared but the literal 1 is what is compared and emitted.",
+        "reason": "Assessment selection and protocol literals still repeat, but they agree across validation, projection and bootstrap/error boundaries. A generic abstraction would add coupling for a small maintenance benefit; the existing stable-helper deferral remains appropriate.",
         "evidence": [
-          "helpers/helm_lib/ledger.py:144, :170 and :228 each compute 'record[\"assessment\"] if owner == \"refactor\" else record'.",
-          "helpers/helm_lib/ledger.py:261-263 use literal exit codes 6 and 7 and build the failure envelope by hand instead of using EXIT_CODES.",
-          "helpers/ledger-contract.json:2 declares interface_version 1; ledger.py:194, :240 and :264 and helpers/helm.py:12 and :20 use the literal."
+          "helpers/helm_lib/ledger.py:144, :170 and :230 select the owner-specific assessment block; interface version 1 is repeated at explicit protocol boundaries.",
+          "The common exit-code map coexists with two safe error fallbacks at ledger.py:263-265. Full helper and Python-suite review found no current inconsistency or new maintenance burden."
         ],
         "invariant": "Preserve the wire format, exit codes 2 to 7, the no-echo behaviour and the index and record projections."
       },
@@ -1173,7 +1176,7 @@
     {
       "id": "r-8b73a0cf-b0a4-41b3-b8ed-e0abdd097220",
       "category": "Architecture",
-      "summary": "About half of smoke_acceptance.rb's oracles are inline in the 200-line top-level runner and are not exercised by any offline suite.",
+      "summary": "The live acceptance runner retains scenario-specific verifiers inline with dispatch while major verifiers are shared.",
       "paths": [
         "scripts/smoke_acceptance.rb",
         "scripts/acceptance_support.rb",
@@ -1186,15 +1189,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "A typo or changed branch in the branch-preparation, ordinary-ship, tampered-archive, readiness, legal and QM checks surfaces only in a paid live model run, while normalize, test-lifecycle and publication checks are already extracted and tested.",
+        "reason": "Remaining dispatch and assertion code could be separated, but the major normalize, test-lifecycle and publication checks are already shared. Moving the remainder offers limited additional maintenance benefit and would affect live-runner behavior; retain the human deferral.",
         "evidence": [
-          "scripts/smoke_acceptance.rb:86-192 holds the boundary, release rubric, canary, branch preparation, ordinary ship, tampered archive, required-answer, legal, QM and readiness checks inline.",
-          "scripts/test_acceptance_oracles.rb:1 says it guards the live runner's extracted checks; scripts/acceptance-plan.md:11 lists only normalize, test-lifecycle and publication as extracted.",
-          "The runner appends workspace to reads at :81 after the instructions interpolated reads at :72."
+          "scripts/smoke_acceptance.rb:86-193 retains scenario-specific dispatch and checks while acceptance_support.rb provides coherent reusable verifiers.",
+          "test_acceptance_oracles.rb directly protects the extracted normalize, test-lifecycle and publication checks. The new checkpoint-provenance guard is localized and needs no further extraction."
         ],
         "invariant": "Preserve check order, exact messages, warn side effects, the before and before_git snapshots taken before the model call and the final package-preservation check."
       },
@@ -1221,7 +1223,7 @@
     {
       "id": "r-f21875a0-cabf-428d-8fd8-4eb49921c2a3",
       "category": "Consistency",
-      "summary": "The acceptance scenario hash is an undocumented, untyped contract between acceptance_cases.rb, smoke_acceptance.rb and acceptance_support.rb, and prepare_history is a 97-line method with three boolean variants.",
+      "summary": "Acceptance scenario keys and history-fixture variants require coordinated changes across producers, runner dispatch and verifiers.",
       "paths": [
         "scripts/acceptance_cases.rb",
         "scripts/smoke_acceptance.rb",
@@ -1234,15 +1236,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "A misspelt or renamed scenario key silently skips an oracle, related facts are held twice, and one variant overwrites six keys after construction, so each change needs reading all producers and consumers.",
+        "reason": "Implicit scenario keys and history variants still couple fixture construction to runner selection and verification. Named variants might clarify changes, but a general schema adds machinery to a bounded harness and the recorded behavioral-risk tradeoff remains unchanged; retain the hold.",
         "evidence": [
-          "Producers: scripts/acceptance_cases.rb:24-115 and the prepare_* returns; consumers: about 30 scenario[:key] reads in scripts/smoke_acceptance.rb and scripts/acceptance_support.rb:163-285.",
-          "scripts/acceptance_cases.rb:192-193 sets expected_new_refs to nil while allowed_preparation_tracking is {} when unapproved; :331-338 overwrite six already-set keys when missing is true.",
-          "scripts/acceptance_cases.rb:248-344 is one method taking moved, discovery and missing flags."
+          "scripts/acceptance_cases.rb prepares hashes consumed by smoke_acceptance.rb and acceptance_support.rb; optional keys choose different fixture and verification behavior.",
+          "prepare_history at acceptance_cases.rb:270 retains moved, discovery and missing variants with distinct proof and side-effect responsibilities. Current source review found no reason to replace this contract."
         ],
         "invariant": "Preserve key names and values and request text for every scenario, the side-effect order (hook written before registration, proof renamed only when missing is true) and raise messages."
       },
@@ -1270,7 +1271,7 @@
     {
       "id": "r-06b371fa-fa07-45ae-96da-482b42242f77",
       "category": "Consistency",
-      "summary": "The managed-rule marker line and expected rule-copy bytes are built by hand in seven places across three smoke and acceptance scripts.",
+      "summary": "Several live fixtures construct the same managed-rule marker and source body separately.",
       "paths": [
         "scripts/smoke_layout.rb",
         "scripts/smoke_workflows.rb",
@@ -1284,14 +1285,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "If adopt's marker format changes, someone must find seven sites, and these are paid-model scripts so a missed one is found late and expensively.",
+        "reason": "A marker-format change still needs coordinated caller edits. A shared constructor could reduce that work but would couple independent expected bytes across live fixtures; the current format is consistent and no changed benefit overturns the deferral.",
         "evidence": [
-          "scripts/smoke_layout.rb:38-42 and :79-83, scripts/smoke_workflows.rb:51-56 and :90-97, and scripts/acceptance_cases.rb:16-18 each build '<!-- helm-rule: agent-helm@v<version> -->' plus the rule body.",
-          "The plugin version lookup from .claude-plugin/plugin.json is duplicated in smoke_layout.rb and smoke_workflows.rb."
+          "acceptance_cases.rb:17, smoke_layout.rb:74 and smoke_workflows.rb:88 separately construct managed marker/version/source bytes.",
+          "Current consumers preserve exact marker/body comparisons and the deliberately newer 9.9.9 fixture. Extraction would need to preserve those independent expectations."
         ],
         "invariant": "Preserve the exact marker and body bytes, the 9.9.9 fixture version and the approved-output key order."
       },
@@ -1319,7 +1320,7 @@
     {
       "id": "r-f08944aa-1b81-4529-abaa-93206b20c63a",
       "category": "Architecture",
-      "summary": "smoke_layout.rb and smoke_workflows.rb duplicate their fixture write, Claude and Codex command lines and answer parsing, and the two parsers have already diverged in wording.",
+      "summary": "The layout and workflow smoke runners retain similar client setup and answer parsing around different fixture semantics.",
       "paths": [
         "scripts/smoke_layout.rb",
         "scripts/smoke_workflows.rb",
@@ -1332,15 +1333,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "A pinned-model or tool-flag change needs two edits, and the parsing cannot be tested offline because it lives in load-time scripts.",
+        "reason": "Client flags and parsing remain similar, while capture is already shared and each runner has distinct invocation and fixture semantics. A general driver would add abstraction and behavioral risk for limited savings; preserve the existing hold.",
         "evidence": [
-          "scripts/smoke_layout.rb:90-96 and scripts/smoke_workflows.rb:104-110 repeat the Claude flags --setting-sources, --strict-mcp-config, --model, --effort and --tools.",
-          "scripts/smoke_layout.rb:110-119 and scripts/smoke_workflows.rb:114-125 parse modelUsage, is_error and result for Claude and agent_message events for Codex with different message wording.",
-          "scripts/smoke_workflows.rb:136-155 selects post-checks with eight if name == chains, and smoke_support.rb:31-45 dispatches preconditions on the names configuration-conflict and conflicting-config."
+          "smoke_layout.rb:84-102 and smoke_workflows.rb:100-120 retain similar Claude/Codex execution and result handling around shared process capture.",
+          "Pinned model/effort checks, client-specific case selection, timeouts and exact preservation assertions remain current contracts; consolidation must not normalize their deliberate differences."
         ],
         "invariant": "Preserve each script's timeout and process handling, the pinned CLAUDE_MODEL, every assertion and its message, and which cases run per client."
       },
@@ -1484,7 +1484,7 @@
     {
       "id": "r-e4922de0-7dd2-4d57-9c85-4781564dedd7",
       "category": "Consistency",
-      "summary": "The initial theme contract (storage key, modes, stylesheet naming, stylesheet id and error fallback) is written in both a Ruby heredoc in frontend.rb and in theme-switcher.js, and the fallbacks differ.",
+      "summary": "The theme bootstrap and interactive controller share contract literals across separate loading and interaction phases.",
       "paths": [
         "docs/_plugins/frontend.rb",
         "docs/assets/js/theme-switcher.js",
@@ -1498,14 +1498,14 @@
       },
       "assessment": {
         "origin": "native",
-        "commit": "a0027473a987ddf98ce3ffa49a4540dc64c00949",
-        "date": "2026-11-14",
+        "commit": "ae9412178a6ce29693bfcc1cff21a9e22c341cd4",
+        "date": "2026-11-24",
         "priority": "medium",
         "risk": "needs-review",
-        "reason": "A change to the key, a mode or the stylesheet naming must be made in a render-blocking inline script and a deferred file, and only the browser suite, which is not part of the offline test job, catches a mismatch.",
+        "reason": "Storage/mode/stylesheet literals still overlap, but initial loading and later interaction have different valid failure responsibilities. Consolidation would couple a render-critical bootstrap to controller behavior for modest deduplication; no new evidence overturns the hold.",
         "evidence": [
-          "docs/_plugins/frontend.rb:23-50 holds the inline bootstrap; docs/assets/js/theme-switcher.js:2-47 restates the agent-helm-theme key, system/light/dark modes, just-the-docs-{light,dark}.css names and helm-theme-stylesheet id.",
-          "The literals also appear in docs/scripts/browser_acceptance.py:12-13 and docs/tests/browser_frontend.mjs lines 44, 45, 64, 104, 105, 122, 142 and 157."
+          "docs/_plugins/frontend.rb:19-57 chooses the initial stylesheet before content and uses a light fallback after initial download failure.",
+          "docs/assets/js/theme-switcher.js:114-176 preserves the working stylesheet during later changes and reports failure. test_frontend.rb and browser_frontend.mjs protect the distinct loading and interaction paths; differing fallbacks do not establish a defect."
         ],
         "invariant": "Preserve one stylesheet request, the render-blocking initial theme, behaviour with blocked storage, an invalid saved value, a failed dark stylesheet and cross-tab changes, the noscript default link and the #theme-mode selector."
       },
