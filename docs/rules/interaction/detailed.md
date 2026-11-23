@@ -172,6 +172,8 @@ A new context can preserve an unfinished task or meet an explicit product requir
 
 Readers should recognize a link before moving a pointer over it. Underlining is the default for prose, reference lists and table text. Keep the underline clearly visible against its background at rest, choosing color and thickness suited to the project. Hover and keyboard focus can strengthen it or another established cue. A standalone text link follows that default unless it already belongs to a clearly recognizable component.
 
+Helm favors a continuous underline beneath the whole linked phrase on each line, including under descending letters such as `g`, `p` and `y`. Leave enough room below those letters so the line stays unbroken without touching them. Wrapped links and enlarged text should retain that spacing, with no underline cut off at a line or container edge. This is a Helm styling preference, subject to explicit project conventions.
+
 Other contexts communicate interaction through their structure:
 
 | Component | At rest | Hover feedback |

@@ -82,7 +82,7 @@ Labels describe the destination without extra announcements solely for opening a
 
 ### Link appearance
 
-Readers should recognize links before interacting. Prose and reference links normally use visible underlines; clearly grouped navigation, button links, cards and icons can use their established styling.
+Readers should recognize links before interacting. Prose and reference links normally use visible underlines that continue beneath every word on each line, with room below descending letters such as `g`, `p` and `y`. Clearly grouped navigation, button links, cards and icons can use their established styling.
 
 Links remain readable across supported themes, with visible keyboard focus and feedback that does not move nearby content. Touch users do not need hover to discover them. Visited styling can show reading history, while a current-page marker shows location.
 

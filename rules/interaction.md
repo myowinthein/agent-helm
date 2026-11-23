@@ -132,6 +132,7 @@ Make links recognizable before interaction, using the existing palette and compo
 | Icon or logo link | Recognizable placement and accessible name; no underline needed. | Suitable component feedback. |
 
 - Do not rely on hue or hover alone. Keep underlines visible at rest; reserve them for links rather than ordinary emphasis. If an explicit convention omits them, verify a persistent distinction; 3:1 contrast against surrounding text is one W3C technique, separate from background contrast.
+- Keep underlines continuous beneath the full link text on each rendered line, including letters with descenders such as `g`, `p` and `y`. Leave enough space below letters and avoid clipping at line or container edges. In HTML/CSS, use `text-decoration-skip-ink: none` with a suitable `text-underline-offset`.
 - Text contrast against its background in rest, hover and visited states meets WCAG AA: 4.5:1 for ordinary text or 3:1 for qualifying large text. Muted links must remain readable and usable-looking; blue is not required.
 - Essential labels and indicators remain available on touch. Avoid emphasis that shifts layout.
 - Use visited styling when reading history helps; it is optional for menus or buttons where it adds little. Keep it readable and distinct from the current-page marker, which indicates location.
@@ -148,7 +149,7 @@ Use available authorized tools on affected controls and states, preserving requi
 | Themes | Named control and selected-mode semantics, initial paint, manual overrides, automatic system changes and recovery after failed appearance changes, using the shared persistence checks above. |
 | Input limits | Boundaries, paste, autofill, imports, relevant languages and text composition, counting agreement, accessible feedback and preserved answers. Distinguish browser checks from receiving validation. |
 | Cursors | Actual hit area, pointer target size/spacing, hover, press, disabled/read-only, processing and drag states, and selection. |
-| Links | Destinations, fragments, opening behavior, indicators, contrast at rest/focus/hover/visited states in supported themes, and stable layout. |
+| Links | Destinations, fragments, opening behavior, indicators, continuous unclipped underlines with clearance below letters (including wrapped links and enlarged text), contrast at rest/focus/hover/visited states in supported themes, and stable layout. |
 
 Source inspection, screenshots and observed behavior provide different evidence; none alone proves overall accessibility or usability. Computed styles and automated test results do not replace visual inspection. Report which pages, components and states were checked, distinguishing representative samples from complete requested coverage, along with unavailable checks, important limitations and unfinished placeholders in the normal handoff. This rule requires no detector, tool installation, report artifact or added approval process.
 
