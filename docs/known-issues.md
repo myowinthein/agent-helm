@@ -50,7 +50,9 @@ Some commands have taken longer in Codex than in other agents, even with similar
 </div>
 </details>
 
-## Codex CLI
+<div id="codex-cli"></div>
+
+## Codex
 
 <details id="questions-appear-as-plain-text-in-default-mode" markdown="block">
 <summary>You may need to type your answers</summary>
@@ -64,7 +66,9 @@ In our testing with Codex in a terminal, some Helm questions appeared as chat me
 </div>
 </details>
 
-## Claude Desktop
+<div id="claude-desktop"></div>
+
+## Claude
 
 <details id="the-plugin-icon-is-missing" markdown="block">
 <summary>The plugin icon is missing</summary>
