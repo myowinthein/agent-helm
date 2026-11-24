@@ -59,7 +59,7 @@ Some commands have taken longer in Codex than in other agents, even with similar
 
 <div class="known-issue__body" markdown="block">
 
-Helm uses [Claude's](https://code.claude.com/docs/en/tools-reference#askuserquestion-tool-behavior) and [Codex's](https://github.com/openai/codex/blob/main/codex-rs/core/src/tools/handlers/request_user_input_spec.rs) question tools. Codex CLI couldn't display them in our testing and used its [Default-mode text fallback](https://github.com/openai/codex/blob/main/codex-rs/collaboration-mode-templates/templates/default.md).
+Helm uses [Claude's](https://code.claude.com/docs/en/tools-reference#askuserquestion-tool-behavior) and [Codex's](https://github.com/openai/codex/blob/main/codex-rs/core/src/tools/handlers/request_user_input_spec.rs) tools for choices and answers. Codex CLI couldn't show them in testing and used the [Default-mode text fallback](https://github.com/openai/codex/blob/main/codex-rs/collaboration-mode-templates/templates/default.md).
 
 **What you can do:** Type your choice from the colored bullets, or write your own answer.
 
