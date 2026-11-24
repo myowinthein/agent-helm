@@ -38,6 +38,10 @@ Running commands such as test or refactor in separate sessions can produce [diff
 </div>
 </details>
 
+<div id="codex-cli"></div>
+
+## Codex
+
 <details id="noticeably-longer-command-runtimes-in-codex" markdown="block">
 <summary>Some commands take longer in Codex</summary>
 
@@ -49,10 +53,6 @@ Some commands have taken longer in Codex than in other agents, even with similar
 
 </div>
 </details>
-
-<div id="codex-cli"></div>
-
-## Codex
 
 <details id="questions-appear-as-plain-text-in-default-mode" markdown="block">
 <summary>You may need to type your answers</summary>
