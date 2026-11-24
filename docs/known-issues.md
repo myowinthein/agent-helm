@@ -19,9 +19,9 @@ Observations from maintainer testing and use on macOS, alongside documented plat
 
 <div class="known-issue__body" markdown="block">
 
-Claude and Codex sometimes skip Helm steps, stop too soon or give results in the wrong format. [Instructions alone cannot prevent this](https://code.claude.com/docs/en/best-practices#deterministic-and-non-deterministic-instructions).
+Claude and Codex [may not follow every instruction](https://code.claude.com/docs/en/best-practices#deterministic-and-non-deterministic-instructions), so they can skip Helm steps, stop early or give results in the wrong format.
 
-**What you can do:** Tell the agent which step it missed and ask it to continue from the last step you checked. Review its changes and test results. With ship, check each result separately: were changes uploaded, did automatic checks pass, was a release published, and was the live site or app updated?
+**What you can do:** Point out what was missed and ask the agent to resume. See the [command overviews]({{ '/docs/commands.html' | relative_url }}) for the workflow steps.
 
 </div>
 </details>
