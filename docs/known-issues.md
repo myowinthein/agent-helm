@@ -75,9 +75,9 @@ Helm uses [Claude's](https://code.claude.com/docs/en/tools-reference#askuserques
 
 <div class="known-issue__body" markdown="block">
 
-Helm's icon may be missing in Claude Desktop. [Claude Code does not use the plugin's icon setting](https://code.claude.com/docs/en/plugins/manifest-reference#directory-listing-fields). We haven't confirmed why the icon is missing in Chat/Cowork or found a verified fix.
+Helm's icon is missing in Claude Desktop.
 
-**What you can do:** Find Agent Helm by name in the plugin list. Check that it is turned on, shows the expected version and lists eleven skills. A missing icon alone does not mean Helm failed to load.
+**What you can do:** Find Agent Helm by name and check its commands in the [chat input menu]({{ '/docs/setup/claude.html#desktop-install' | relative_url }}). We haven't found a fix for the icon.
 
 </div>
 </details>
