@@ -27,13 +27,13 @@ Claude and Codex [may not follow every instruction](https://code.claude.com/docs
 </details>
 
 <details id="repeated-reviews-may-keep-producing-findings" markdown="block">
-<summary>Another review may report more issues</summary>
+<summary>Review results can differ between sessions</summary>
 
 <div class="known-issue__body" markdown="block">
 
-A new Helm review may report more issues, even after you fix earlier ones. Studies of specific AI models found that [reviews can differ](https://arxiv.org/abs/2502.20747) and [some suggested fixes are unnecessary](https://link.springer.com/article/10.1007/s10515-026-00638-5).
+Running test or refactor in separate sessions can produce [different findings](https://arxiv.org/abs/2502.20747), even with the same code and command. One session may report no issues while another finds more.
 
-**What you can do:** Be clear about which files or features to review, and remind the agent of earlier decisions. Ask it to show why each reported issue is a problem and separate necessary fixes from optional improvements. Finding no issues only tells you about what was checked.
+**What you can do:** Review the suggestions and ask the agent to explain its decisions. You can type questions or feedback, even when choices are provided.
 
 </div>
 </details>
