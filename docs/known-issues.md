@@ -31,7 +31,7 @@ Claude and Codex [may not follow every instruction](https://code.claude.com/docs
 
 <div class="known-issue__body" markdown="block">
 
-Running commands such as test or refactor in separate sessions can produce [different results](https://platform.claude.com/docs/en/about-claude/glossary#temperature), even with the same code and command. One session may report no issues while another finds more.
+Running commands such as test or refactor in separate sessions can produce [different results](https://platform.claude.com/docs/en/about-claude/glossary#temperature), even with the same code and command. One session may find no issues; another finds more.
 
 **What you can do:** Review the suggestions and ask the agent to explain its decisions. You can type questions or feedback, even when choices are provided.
 
