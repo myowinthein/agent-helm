@@ -27,11 +27,11 @@ Claude and Codex [may not follow every instruction](https://code.claude.com/docs
 </details>
 
 <details id="repeated-reviews-may-keep-producing-findings" markdown="block">
-<summary>Review results can differ between sessions</summary>
+<summary>Command results can differ between sessions</summary>
 
 <div class="known-issue__body" markdown="block">
 
-Running test or refactor in separate sessions can produce [different findings](https://arxiv.org/abs/2502.20747), even with the same code and command. One session may report no issues while another finds more.
+Commands such as log, manifest, test and refactor can produce [different results](https://platform.claude.com/docs/en/about-claude/glossary#temperature) across sessions, even with identical project files. One session may report everything is complete while another suggests more work.
 
 **What you can do:** Review the suggestions and ask the agent to explain its decisions. You can type questions or feedback, even when choices are provided.
 
