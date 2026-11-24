@@ -59,9 +59,9 @@ Some commands have taken longer in Codex than in other agents, even with similar
 
 <div class="known-issue__body" markdown="block">
 
-In our testing with Codex in a terminal, some Helm questions appeared as chat messages without answer buttons. Its [Default-mode instructions](https://github.com/openai/codex/blob/main/codex-rs/collaboration-mode-templates/templates/default.md) limit when those buttons appear.
+Helm uses [Claude's](https://code.claude.com/docs/en/tools-reference#askuserquestion-tool-behavior) and [Codex's](https://github.com/openai/codex/blob/main/codex-rs/core/src/tools/handlers/request_user_input_spec.rs) question tools to ask for choices or written answers. In our testing, only Codex CLI showed these questions as text.
 
-**What you can do:** Type your answer to continue; you don't need to switch modes. An option shown as selected does not count as your permission. Neither does leaving a question unanswered, however long you wait.
+**What you can do:** Type your choice from the colored bullets, or write your own answer.
 
 </div>
 </details>
