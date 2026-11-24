@@ -31,7 +31,7 @@ Claude and Codex [may not follow every instruction](https://code.claude.com/docs
 
 <div class="known-issue__body" markdown="block">
 
-Commands such as log, manifest, test and refactor can produce [different results](https://platform.claude.com/docs/en/about-claude/glossary#temperature) across sessions, even with identical project files. One session may report everything is complete while another suggests more work.
+Running commands such as test or refactor in separate sessions can produce [different results](https://platform.claude.com/docs/en/about-claude/glossary#temperature), even with the same code and command. One session may report no issues while another finds more.
 
 **What you can do:** Review the suggestions and ask the agent to explain its decisions. You can type questions or feedback, even when choices are provided.
 
