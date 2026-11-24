@@ -34,7 +34,9 @@ Errors preserve the person's input and leave a way to understand and recover fro
 
 ### Keyboard focus and autofocus
 
-Keyboard users should be able to identify the focused control throughout their task. Its indicator stays complete at page and scrolling boundaries, with text, icons and underlines visibly clear of it. Spacing fixes keep the existing focus style and let inline links read naturally within a sentence, preserving word spacing and paragraph line height. Border alignment and the necessary clearance follow the project's components without moving nearby content, across supported themes and accessibility settings.
+Keyboard users should be able to identify the focused control throughout their task. Its indicator stays complete at page and scrolling boundaries, with text, icons and underlines visibly clear of it. Spacing fixes keep the existing focus style and let inline links read naturally within a sentence, preserving word spacing and paragraph line height.
+
+For bordered controls, the default indicator covers the existing border when it stays distinct; similar colors need a small gap. Existing project treatments take priority, with no size or layout change across supported themes and accessibility settings.
 
 Tab stops should correspond to understandable actions. A shared row highlight should not make separate stops look identical; combining stops still preserves keyboard access to every action.
 
