@@ -43,9 +43,9 @@ Running commands such as test or refactor in separate sessions can produce [diff
 
 <div class="known-issue__body" markdown="block">
 
-Some longer Helm reviews have taken noticeably more time in Codex. We haven't confirmed why. The task, chosen AI model and [how much reasoning it does](https://learn.chatgpt.com/docs/models#pick-a-reasoning-effort) can affect the wait.
+Some commands have taken longer in Codex than in other agents, even with similar model and [reasoning-effort settings](https://learn.chatgpt.com/docs/models#pick-a-reasoning-effort). We haven't confirmed why.
 
-**What you can do:** Ask whether the agent is still working, waiting for your reply or waiting for a check to finish. Use Gap scan only if the agent offers it and confirms it can build on a suitable earlier review. Keep all required review work and checks.
+**What you can do:** If the wait is too long, stop the current run and try another agent.
 
 </div>
 </details>
