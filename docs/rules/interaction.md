@@ -30,7 +30,7 @@ flowchart TD
 
 Comparable controls should communicate pending work, success and failure consistently. Quick actions avoid flashing loading indicators; slower work needs clear progress feedback and protection against accidental repeats. A copy confirmation follows an actual clipboard success.
 
-Errors preserve the person's input and leave a way to understand and recover from the failure. Small feedback popups fit their text and padding and sit close to their control, with a consistent gap from its visible edge. Loading and error popups stay readable as the visible screen area or text settings change, without covering keyboard focus or moving nearby content. Essential feedback remains available without hover, and old messages should not overwrite a newer result. Controls and feedback respect reduced-motion preferences.
+Errors preserve the person's input and leave a way to understand and recover from the failure. Small feedback popups fit their text and padding and sit close to their control, with a consistent gap from its visible edge. They scroll with their control and stay out of view while it is offscreen. Loading and error popups stay readable as the visible screen area or text settings change, without covering keyboard focus or moving nearby content. Essential feedback remains available without hover, and old messages should not overwrite a newer result. Controls and feedback respect reduced-motion preferences.
 
 ### Keyboard focus and autofocus
 

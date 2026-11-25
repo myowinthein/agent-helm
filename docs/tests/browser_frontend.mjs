@@ -31,6 +31,11 @@ const counted=check=>(...args)=>{assertions++;return check(...args);};
 const assert=Object.assign(counted(assertStrict),{equal:counted(assertStrict.equal),notEqual:counted(assertStrict.notEqual),rejects:counted(assertStrict.rejects)});
 async function checkThemeFeedback(page) {
  const status=page.locator('#theme-status');
+ const offscreen=await page.locator('#theme-mode').evaluate(el=>{
+  const box=el.getBoundingClientRect(),v=visualViewport;
+  return !el.getClientRects().length||box.bottom<=v.offsetTop||box.top>=v.offsetTop+v.height||box.right<=v.offsetLeft||box.left>=v.offsetLeft+v.width;
+ });
+ if(offscreen){assert(await status.isHidden(),'Theme feedback remained visible without its dropdown');return;}
  assert(await status.isVisible(),'Theme feedback is hidden');
  assert(await status.evaluate(el=>{
   const box=el.getBoundingClientRect(),viewport=window.visualViewport;
@@ -64,7 +69,7 @@ try {
    await page.goto(pageUrl(''));
    if(await page.locator('#menu-button').isVisible())await openCompactMenu(page);
    const target=scheme==='light'?'dark':'light';
-   await page.route(`**/just-the-docs-${target}.css?v=*`,async route=>{await download;await route.continue();});
+   await page.route(`**/just-the-docs-${target}.css?v=*`,async route=>{await download;await route.abort();});
    await page.locator('#theme-mode').selectOption(target);
    await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Loading theme…');
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
@@ -77,9 +82,28 @@ try {
    });
    assert(Math.abs(layout.extra)<1,'Theme loading box reserves unused width');
    assert(Math.abs(layout.gap-layout.expectedGap)<1,'Theme loading box is detached from the dropdown');
-   release();await background(target)(page);
+   await page.evaluate(()=>scrollTo(0,8));
+   await page.waitForFunction(()=>scrollY===8);
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+   assert(await page.locator('#theme-status').evaluate(el=>Math.abs(el.getBoundingClientRect().top-document.getElementById('theme-mode').getBoundingClientRect().bottom-parseFloat(getComputedStyle(document.documentElement).fontSize)/4)<1),'Theme feedback detached while its dropdown scrolled');
+   for(const message of ['Loading theme…','Theme unavailable. Try again.']) {
+    if(message.startsWith('Theme unavailable')) {
+     release();
+     await page.waitForFunction(()=>document.getElementById('theme-status').textContent==='Theme unavailable. Try again.');
+    }
+    await page.evaluate(()=>scrollTo(0,document.getElementById('theme-mode').getBoundingClientRect().bottom+scrollY+50));
+    await page.waitForFunction(()=>document.getElementById('theme-mode').getBoundingClientRect().bottom<=0);
+    await page.locator('#theme-status').waitFor({state:'hidden'});
+    assert.equal(await page.locator('#theme-status').textContent(),message,'Scrolling cleared the theme result');
+    await page.evaluate(()=>scrollTo(0,0));
+    await page.locator('#theme-status').waitFor({state:'visible'});
+    assert(await page.locator('#theme-status').evaluate(el=>Math.abs(el.getBoundingClientRect().top-document.getElementById('theme-mode').getBoundingClientRect().bottom-parseFloat(getComputedStyle(document.documentElement).fontSize)/4)<1),'Theme feedback did not return beside the dropdown');
+   }
+   await page.unroute(`**/just-the-docs-${target}.css?v=*`);
+   await page.locator('#theme-mode').selectOption(target);
+   await background(target)(page);
    assert.equal(await page.locator('#theme-status').textContent(),'');
-   console.log(`PASS ${width}px ${scheme}: content-sized theme loading box with a consistent dropdown gap`);
+   console.log(`PASS ${width}px ${scheme}: content-sized theme feedback follows its dropdown on scroll, hides offscreen and returns`);
   } finally {release();await context.close();}
  }
  for(const width of [1280,390]) {
@@ -833,6 +857,7 @@ try {
   await page.locator('.breadcrumb-nav a').first().focus();
   await checkThemeFeedback(page);
   assert(await page.locator('#theme-status').evaluate(el=>{
+   if(getComputedStyle(el).visibility==='hidden')return true;
    const a=el.getBoundingClientRect(),b=document.activeElement.getBoundingClientRect();
    return a.right<=b.left||a.left>=b.right||a.bottom<=b.top||a.top>=b.bottom;
   }),'Theme feedback obscures the focused breadcrumb');

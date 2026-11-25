@@ -36,7 +36,7 @@ People should be able to tell whether work is pending and understand its relevan
 
 Small feedback popups fit their message and normal padding rather than reserve an empty area. A theme message sits close to the dropdown itself; measuring from a padded wrapper can leave a distracting gap. Comparable controls use the same small gap from their visible edges.
 
-Feedback can be present yet unreadable if a popup extends beyond the screen. Loading and error popups need to fit the visible area as someone scrolls, resizes, zooms or changes text size and spacing. They can move above the control or reflow into the available space, keeping the focused control visible without shifting nearby content.
+Feedback can be present yet unreadable if a popup extends beyond the screen. A popup attached to a control scrolls with it and stays out of view while the control is offscreen. Returning to the control shows its message again if still current. While the control is visible, loading and error popups fit the available area as someone resizes, zooms or changes text size and spacing. They can move above the control or reflow into the available space, keeping the focused control visible without shifting nearby content.
 
 Across buttons, links and other controls, a near-instant action should not briefly flash a loading label, spinner or busy cursor. Slower work still needs clear pending feedback. Delaying that visual must not delay the operation, its accessibility state or protection against duplicate activation. The timing suits the task rather than one universal delay. Keep unrelated controls usable and clear stale loading feedback when work ends; labels, icons and placement follow the project.
 
