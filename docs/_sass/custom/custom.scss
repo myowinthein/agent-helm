@@ -284,7 +284,15 @@ figure.highlight > button[aria-busy="true"] {
 }
 
 @include mq(md) {
+  :root:not(.helm-compact) {
+    scroll-padding-top: var(--helm-header-height, 3.75rem);
+  }
+
   .main-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: $body-background-color;
     container-type: inline-size;
     flex-wrap: wrap;
     height: auto;
@@ -386,6 +394,7 @@ figure.highlight > button[aria-busy="true"] {
     }
 
     .side-bar + .main .main-header {
+      position: static;
       display: none;
       container-type: normal;
     }

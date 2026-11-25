@@ -17,6 +17,7 @@
       const wasCompact = root.classList.contains('helm-compact');
       const focused = document.activeElement;
       root.classList.toggle('helm-compact', compact);
+      root.style.setProperty('--helm-header-height', compact || !header ? '0px' : `${header.getBoundingClientRect().height}px`);
       if (compact && !wasCompact && (navigation.contains(focused) || header?.contains(focused))) {
         // Reveal focused controls without a synthetic click dismissing search.
         [menu, navigation, header].forEach(element => element.classList.add('nav-open'));
@@ -27,7 +28,9 @@
     updateLayout();
     window.addEventListener('resize', updateLayout);
     desktop.addEventListener('change', updateLayout);
-    new ResizeObserver(updateLayout).observe(document.querySelector('.site-header'));
+    const layoutObserver = new ResizeObserver(updateLayout);
+    layoutObserver.observe(document.querySelector('.site-header'));
+    if (header) layoutObserver.observe(header);
 
     links.forEach(([link, href]) => link.setAttribute('href', href));
     const rows = new Map();
