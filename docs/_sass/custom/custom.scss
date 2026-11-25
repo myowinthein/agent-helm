@@ -318,6 +318,18 @@ figure.highlight > button[aria-busy="true"] {
   .search-results {
     width: min(33.5rem, 100cqi);
   }
+
+  // Keep desktop search text and its icon in place when results open.
+  :root:not(.helm-compact).search-active {
+    .search-input {
+      padding-left: 3.5rem;
+      background-color: $body-background-color;
+    }
+
+    .search-label {
+      padding-left: 2rem;
+    }
+  }
 }
 
 .site-version {
