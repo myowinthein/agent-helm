@@ -289,8 +289,12 @@ figure.highlight > button[aria-busy="true"] {
 }
 
 @include mq(md) {
-  :root:not(.helm-compact) {
+  :root:not(.helm-compact):not(:has(.main-header :focus)) {
     scroll-padding-top: var(--helm-header-height, 3.75rem);
+  }
+
+  :root:not(.helm-compact).search-active .main {
+    position: relative;
   }
 
   .main-header {

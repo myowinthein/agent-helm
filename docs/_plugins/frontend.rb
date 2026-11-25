@@ -93,6 +93,9 @@ module HelmFrontend
     JS
     source = replace_once(source, "    if (input === '') {\n      return;\n    }",
       "    if (input === '' || !helmSearchReady) {\n      return;\n    }")
+    source = replace_once(source,
+      "      window.scroll(0, -1);\n      setTimeout(function(){ window.scroll(0, 0); }, 0);",
+      "      if (getComputedStyle(searchInput.closest('.search')).position === 'fixed') {\n        window.scroll(0, -1);\n        setTimeout(function(){ window.scroll(0, 0); }, 0);\n      }")
     source = replace_once(source, '  var currentInput;', <<~JS.chomp)
         var currentInput;
         searchInput.addEventListener('docs-search-ready', function() {
