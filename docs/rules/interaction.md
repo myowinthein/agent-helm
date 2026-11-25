@@ -44,7 +44,7 @@ Moving focus automatically needs a clear purpose because it can scroll the page,
 
 ### Preferences and persistence
 
-Reusable choices such as quality or theme can be remembered across visits. Temporary inputs and per-item selections keep their intended lifetime. The rule follows the product's existing settings mechanism and saves deliberate choices, using the documented default when a saved value is missing or invalid.
+Preferences such as theme and interface language can be remembered across visits. Temporary inputs and per-item selections keep their intended lifetime. The rule follows the product's existing settings mechanism and saves deliberate choices, using the documented default when a saved value is missing or invalid.
 
 If a deliberately selected new choice cannot be applied, the control returns to the last working value. If saving is unavailable, the current choice remains usable. Shared preferences can update other open views without clearing unrelated input or silently changing work already underway.
 

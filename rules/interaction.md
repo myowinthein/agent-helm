@@ -46,7 +46,7 @@ Keep only the latest copy error, clearing earlier error messages and their timer
 
 ## Preferences and persistence
 
-Reuse the project's controls, storage mechanism, defaults and intended setting scope. Persist choices meant for reuse, such as quality or theme; do not automatically persist transient inputs or per-item selections.
+Reuse the project's controls, storage mechanism, defaults and intended setting scope. Persist preferences users expect to carry across visits, such as theme and interface language. Keep temporary inputs and per-item selections scoped to their intended lifetime.
 
 - Match storage to lifetime: page-only state can stay in memory, tab-session state can use `sessionStorage`, and small non-sensitive preferences across visits can use `localStorage`. Use established cookie/account mechanisms when the server or account needs the setting; add no backend or cross-device synchronization merely to remember a choice.
 - Save deliberate preference changes, not calculated defaults on page load. Validate stored values; missing, cleared or invalid values use the setting's documented default without automatically saving that fallback. Restore valid choices before presenting a misleading selection, preserving server/client rendering consistency where applicable.

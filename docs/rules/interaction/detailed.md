@@ -68,7 +68,7 @@ For actual tab widgets, focus identifies the current keyboard position while sel
 
 ### Preferences and persistence
 
-A reusable preference and a temporary selection have different lifetimes. Someone may expect quality or display density to survive a later visit, while a resolution chosen for one item can remain specific to that item. Preserve the product's intended scope rather than saving every control automatically.
+A reusable preference and a temporary selection have different lifetimes. Someone may expect their theme or interface language to carry across visits. A resolution chosen for one item can remain specific to that item. Preserve the product's intended scope rather than saving every control automatically.
 
 | Intended lifetime or use | Suitable existing mechanism |
 |---|---|
