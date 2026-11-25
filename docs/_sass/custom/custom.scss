@@ -320,6 +320,17 @@ figure.highlight > button[aria-busy="true"] {
   }
 }
 
+.site-header .site-title {
+  gap: $sp-2;
+  padding-inline-end: $sp-2;
+}
+
+.site-title-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+}
+
 @include mq(md) {
   .site-header .site-title {
     font-size: 1.125rem !important;
