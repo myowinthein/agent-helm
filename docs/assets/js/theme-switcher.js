@@ -11,33 +11,6 @@
   let pendingFeedbackTimer;
   let errorTimer;
 
-  const positionFeedback = () => {
-    const status = document.getElementById('theme-status');
-    const selector = document.getElementById('theme-mode');
-    if (!status || !selector || !feedback) return;
-    const viewport = window.visualViewport;
-    const margin = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    const leftEdge = (viewport?.offsetLeft || 0) + margin;
-    const topEdge = (viewport?.offsetTop || 0) + margin;
-    const rightEdge = leftEdge + (viewport?.width || innerWidth) - 2 * margin;
-    const bottomEdge = topEdge + (viewport?.height || innerHeight) - 2 * margin;
-    status.style.maxWidth = `${rightEdge - leftEdge}px`;
-    const box = status.getBoundingClientRect();
-    const container = selector.closest('.theme-switcher');
-    const anchor = container.getBoundingClientRect();
-    const field = selector.getBoundingClientRect();
-    const left = Math.max(leftEdge, Math.min(field.right - box.width, rightEdge - box.width));
-    const active = document.activeElement;
-    const focused = active && active !== document.body && !container.contains(active) ? active.getBoundingClientRect() : null;
-    const candidates = [anchor.bottom + margin / 4, anchor.top - box.height - margin / 4, topEdge, bottomEdge - box.height];
-    const top = candidates.find(y => y >= topEdge && y + box.height <= bottomEdge &&
-      !(focused && left < focused.right && left + box.width > focused.left && y < focused.bottom && y + box.height > focused.top)) ??
-      Math.max(topEdge, Math.min(candidates[0], bottomEdge - box.height));
-    status.style.left = `${left - anchor.left}px`;
-    status.style.right = 'auto';
-    status.style.top = `${top - anchor.top}px`;
-  };
-
   const updateDiagramLinks = () => {
     document.querySelectorAll('[data-diagram-full-size]').forEach(link => {
       const url = new URL(link.href);
@@ -57,7 +30,6 @@
     if (status) {
       status.textContent = message;
       status.hidden = !message;
-      positionFeedback();
     }
   };
   const clearFeedback = () => {
@@ -184,15 +156,6 @@
     showFeedback(feedback);
     if (pendingStylesheet) selector.setAttribute('aria-busy', 'true');
     selector.closest('.theme-switcher').hidden = false;
-    positionFeedback();
-    window.addEventListener('resize', positionFeedback);
-    window.addEventListener('scroll', positionFeedback, { passive: true, capture: true });
-    window.visualViewport?.addEventListener('resize', positionFeedback);
-    window.visualViewport?.addEventListener('scroll', positionFeedback);
-    document.addEventListener('focusin', positionFeedback);
-    const observer = new ResizeObserver(positionFeedback);
-    observer.observe(selector.closest('.theme-switcher'));
-    observer.observe(document.getElementById('theme-status'));
     selector.addEventListener('change', () => {
       mode = selector.value;
       applyTheme(true);

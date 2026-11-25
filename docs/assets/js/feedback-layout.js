@@ -13,7 +13,8 @@
       if (status.hidden !== empty) status.hidden = empty;
       if (empty || !status.getClientRects().length) return;
       const copy = status.classList.contains('copy-status');
-      const anchor = copy ? status.parentElement.querySelector('button') : document.querySelector('.search-input-wrap');
+      const theme = status.classList.contains('theme-status');
+      const anchor = copy ? status.parentElement.querySelector('button') : document.querySelector(theme ? '#theme-mode' : '.search-input-wrap');
       if (!anchor) return;
       observe(status);
       observe(anchor);
@@ -25,12 +26,12 @@
       const rightEdge = leftEdge + (viewport?.width || innerWidth) - 2 * margin;
       const bottomEdge = topEdge + (viewport?.height || innerHeight) - 2 * margin;
       const field = anchor.getBoundingClientRect();
-      status.style.width = copy ? 'max-content' : `${Math.min(field.width, rightEdge - leftEdge)}px`;
-      status.style.maxWidth = `${Math.min(rightEdge - leftEdge, copy ? 24 * rem : field.width)}px`;
+      status.style.width = copy || theme ? 'max-content' : `${Math.min(field.width, rightEdge - leftEdge)}px`;
+      status.style.maxWidth = `${Math.min(rightEdge - leftEdge, copy || theme ? 24 * rem : field.width)}px`;
       const style = getComputedStyle(status);
       const height = status.scrollHeight + parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
       const width = status.getBoundingClientRect().width;
-      const left = Math.max(leftEdge, Math.min(copy ? field.right - width : field.left, rightEdge - width));
+      const left = Math.max(leftEdge, Math.min(copy || theme ? field.right - width : field.left, rightEdge - width));
       const gap = rem / 4;
       let below = Math.max(topEdge, field.bottom + gap);
       let above = Math.min(bottomEdge, field.top - gap);
@@ -67,7 +68,7 @@
         if (retry.hidden) input.style.removeProperty('padding-right');
         else input.style.paddingRight = `${retry.getBoundingClientRect().width + parseFloat(getComputedStyle(retry).right) + 4}px`;
       }
-      document.querySelectorAll('.copy-status, .search-status').forEach(position);
+      document.querySelectorAll('.copy-status, .search-status, .theme-status').forEach(position);
     };
     new MutationObserver(refresh).observe(document.body, {
       childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ['hidden'],
