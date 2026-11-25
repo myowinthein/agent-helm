@@ -335,6 +335,10 @@ figure.highlight > button[aria-busy="true"] {
   .site-header .site-title {
     font-size: 1.125rem !important;
   }
+
+  .site-nav {
+    padding-top: $sp-5;
+  }
 }
 
 // Keep the mobile arrangement when enlarged text outgrows the desktop columns.
