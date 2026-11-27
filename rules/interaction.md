@@ -20,7 +20,7 @@ Keep keyboard focus visible on the actual focused control independently of hover
 
 Keep custom indicators complete and unclipped at control, scroll-container and viewport edges. For inline text links, preserve natural word spacing and paragraph line height. Use only the clearance needed around text and icons to keep the indicator visibly separate from the underline, including when links wrap or text is enlarged.
 
-For bordered controls, default to placing the focus indicator over the existing border when it remains clearly distinguishable. If matching or similar colors make it blend in, leave a small gap. Keep the component's size and layout unchanged. Exact colors, shape, thickness, offsets and padding remain project choices, subject to accessibility requirements.
+For bordered controls, place the focus indicator over the existing border when it stays distinct. Leave a small gap if the colors blend. For invalid fields with borders, default to a red error border and add a separate red outline on keyboard focus with a small gap between them. Keep the component's size and layout stable. Follow the project's design system and accessibility requirements for color, shape, thickness and spacing.
 
 [Focus Appearance](https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html) adds AAA criteria, not an automatic AA requirement.
 
@@ -73,6 +73,7 @@ Keep existing accepted-data contracts. Limits need a product, format or resource
 | Composed text whose length matters, such as a title or biography | Show the maximum and a live count. |
 | Longer text rarely approaching its limit | Consider a near-limit counter with a task-appropriate threshold. |
 
+- Follow the project's pattern for identifying required fields. If it uses an asterisk, style it red by default and explain its meaning before the first field. Keep the required state programmatically available.
 - Explain restrictions and how to correct errors; color, width, borders, icons, placeholders or an unexplained disabled submit button cannot replace needed text. Associate hints, counters and errors with the field. Visible counts may update while typing; pace assistive announcements and do not interrupt text composition.
 - Preserve the answer after errors. For composed text, normally allow temporary excess and full paste so people can edit down; do not silently truncate, discard overflow or block paste. A justified hard stop needs clear feedback. Editing flexibility does not remove a larger resource-safety bound.
 - Keep counters, normalization and final validation consistent about limits and counting units, including emoji, combining characters, whitespace and newlines. HTML `maxlength` counts UTF-16 units; prefer user-perceived characters for writing limits when the data contract permits. Never strip meaningful text merely to fit.

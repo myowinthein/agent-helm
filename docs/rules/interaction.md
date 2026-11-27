@@ -36,7 +36,7 @@ Errors preserve the person's input and leave a way to understand and recover fro
 
 Keyboard users should be able to identify the focused control throughout their task. Its indicator stays complete at page and scrolling boundaries, with text, icons and underlines visibly clear of it. Spacing fixes keep the existing focus style and let inline links read naturally within a sentence, preserving word spacing and paragraph line height.
 
-For bordered controls, the default indicator covers the existing border when it stays distinct; similar colors need a small gap. Existing project treatments take priority, with no size or layout change across supported themes and accessibility settings.
+For bordered controls, the focus indicator can cover the existing border when it stays distinct. Similar colors need a small gap. On an invalid field, Helm defaults to a red border plus a separate red keyboard focus outline with that gap. Follow the project's design system and keep the field's size and layout stable.
 
 Tab stops should correspond to understandable actions. A shared row highlight should not make separate stops look identical; combining stops still preserves keyboard access to every action.
 
@@ -58,7 +58,7 @@ The existing toggle or selector keeps a clear accessible name and selected mode.
 
 ### Input limits
 
-Explain restrictions where they help someone enter or correct an answer. A counter is useful for constrained writing, but a generous technical limit rarely needs one.
+Use the project's pattern for required fields. If it uses asterisks, Helm's default is a red marker with its meaning explained before the first field. Tell people about restrictions that affect their answer. A counter is useful for constrained writing, but a generous technical limit rarely needs one.
 
 For composed text, the usual approach keeps pasted drafts available for correction rather than silently cutting them off. Feedback and counts agree with what the application accepts, including relevant languages and emoji. A working counter alone does not establish that the full validation path works.
 

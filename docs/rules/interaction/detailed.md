@@ -56,7 +56,7 @@ A custom indicator needs to remain clear in supported themes and forced-colors m
 
 Look at the rendered indicator as well as its declared style. A title touching the top of the viewport can lose its upper outline; a scrolling result list can cut off the sides. Text, icons and underlines need enough clearance to remain distinct, including where links wrap or text is enlarged. Within a sentence, links retain ordinary word spacing and paragraph line height. For example, an outlined link may need a little more clearance beneath its underline while the surrounding text keeps its normal spacing.
 
-Bordered controls normally keep the focus indicator on the same edge as their border. A blue outline over a gray border can be clear without a gap. Matching or similar colors can merge visually, so a dark indicator around a dark button may need a small gap. Existing project treatments take priority; neither approach changes the control's size or layout. Exact spacing and whole-row treatments remain project choices.
+Bordered controls normally keep the focus indicator on the same edge as their border. Leave a small gap when the colors blend. For an invalid field, Helm defaults to a red border that stays visible as you Tab away. While the field has keyboard focus, a separate red outline sits outside that border. The gap keeps the two cues distinct, even when several fields have errors at once. Project treatments take priority, and the outline adds no space to the layout.
 
 Using `:focus-visible` lets the browser identify when focus needs visual emphasis without forcing the same outline after every mouse click. Keep a visible fallback where needed and preserve native text-input focus, which may still show after a click. Never blur a control merely to hide its outline. Author-created sticky headers, banners and overlays must not entirely hide the focused component under [WCAG's minimum conditions](https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html).
 
@@ -110,6 +110,8 @@ Themes use the shared persistence guidance above. Their additional system-follow
 Set the initial theme before the page appears so the wrong scheme does not flash first, and keep browser-drawn controls aligned with it. CSS `color-scheme` affects native controls and other browser-provided UI; custom page elements still need their own theme styling. Verify the control's name and selected mode, automatic and manual paths, updates in another tab and unavailable storage. These defaults guide theme work; they do not introduce a new control, account service or redesign into unrelated tasks.
 
 ### Input limits
+
+Follow the project's way of marking required fields. If the design uses an asterisk, Helm's default is red. The form explains the symbol before the first field, and the field exposes its required state to assistive technology.
 
 Start with the reason for the limit. A fixed-format code and a short biography need different guidance, even though both accept text. A generous storage ceiling rarely needs a permanent counter. If normal answers repeatedly hit that ceiling, the constraint may need reviewing rather than more interface decoration.
 
